@@ -394,6 +394,9 @@ class graphicsView(QGraphicsView, widgetState):
         if imageType == 'svg':
             #self.convertSVG(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/')) ## handle the conversion to glyph free svg
             mainItem = QGraphicsSvgItem(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/'))
+        elif imageType == 'cairo':
+            self.convertSVG(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/')) ## handle the conversion to glyph free svg
+            mainItem = QGraphicsSvgItem(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/'))
         elif imageType in ['png', 'jpeg']:
             mainItem = QGraphicsPixmapItem(QPixmap(os.path.join(redREnviron.directoryNames['tempDir'], image.replace('\\', '/'))))
         else:
@@ -536,15 +539,17 @@ class graphicsView(QGraphicsView, widgetState):
               self.imageFileName = unicode(self.image).replace('\\', '/')+'.'+unicode('png')
               imageType = 'png'
             else:
-                  self.R('devSVG(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'],   self.imageFileName).replace('\\', '/'))+'\', width = '
-                    +unicode(dheight)+', height = '+unicode(dheight)
-                    +')', wantType = 'NoConversion')
-            
-        elif imageType == 'png':
-            self.R('png(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
-                +unicode(dwidth)+', height = '+unicode(dheight)
-                +')', wantType = 'NoConversion')
-        elif imageType == 'jpeg':
+                  self.R('devSVG(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'],   self.imageFileName).replace('\\', '/'))+'\')', wantType = 'NoConversion')
+        if imageType == 'cairo':
+            if not self.require_librarys(['Cairo']):
+                self.setImagePNG()
+                self.imageFileName = unicode(self.image).replace('\\', '/')+'.'+unicode('png')
+                imageType = 'png'
+            else:
+                self.R('Cairo(file = \'%s\')' % unicode(os.path.join(redREnviron.directoryNames['tempDir'],   self.imageFileName).replace('\\', '/')), wantType = 'NoConversion')
+        if imageType == 'png':
+            self.R('png(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', paper = "a4")', wantType = 'NoConversion')
+        if imageType == 'jpeg':
             self.R('jpeg(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
                 +unicode(dwidth)+', height = '+unicode(dheight)
                 +')', wantType = 'NoConversion')
@@ -571,7 +576,7 @@ class graphicsView(QGraphicsView, widgetState):
         self.R('dev.off()', wantType = 'NoConversion')
         self.clear()
         fileName = unicode(self.imageFileName)
-        self.addImage(fileName)
+        self.addImage(fileName, imageType = self.standardImageType)
         self.layers = layers
         self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
     
@@ -581,9 +586,9 @@ class graphicsView(QGraphicsView, widgetState):
             if unicode(self.extrasLineEdit.text()) != '':
                 self.extras += ', '+unicode(self.extrasLineEdit.text())
             if self.extras != '':
-                fullquery = '%s(%s, %s)' % (function, query, self.extras)
+                fullquery = 'print(%s(%s, %s))' % (function, query, self.extras)
             else:
-                fullquery = '%s(%s)' % (function, query)
+                fullquery = 'print(%s(%s))' % (function, query)
         else:
             fullquery = self.query
         try:
@@ -643,7 +648,106 @@ class graphicsView(QGraphicsView, widgetState):
         painter = QPainter(printer)
         self.scene().render(painter)
         painter.end()
-    
+    ###########
+    ## Convert an SVG for pyqt
+    ###########
+    def convertSVG(self, file):
+        print file
+        dom = self._getsvgdom(file)
+        #print dom
+        self._switchGlyphsForPaths(dom)
+        self._commitSVG(file, dom)
+    def _commitSVG(self, file, dom):
+        f = open(file, 'w')
+        dom.writexml(f)
+        f.close()
+    def _getsvgdom(self, file):
+        print _('getting DOM model')
+        import xml.dom
+        import xml.dom.minidom as mini
+        f = open(file, 'r')
+        svg = f.read()
+        f.close()
+        dom = mini.parseString(svg)
+        return dom
+    def _getGlyphPaths(self, dom):
+        symbols = dom.getElementsByTagName('symbol')
+        glyphPaths = {}
+        for s in symbols:
+            pathNode = [p for p in s.childNodes if 'tagName' in dir(p) and p.tagName == 'path']
+            glyphPaths[s.getAttribute('id')] = pathNode[0].getAttribute('d')
+        return glyphPaths
+    def _switchGlyphsForPaths(self, dom):
+        glyphs = self._getGlyphPaths(dom)
+        use = self._getUseTags(dom)
+        for glyph in glyphs.keys():
+            #print glyph
+            nl = self.makeNewList(glyphs[glyph].split(' '))
+            u = self._matchUseGlyphs(use, glyph)
+            for u2 in u:
+                #print u2, 'brefore'
+                self._convertUseToPath(u2, nl)
+                #print u2, 'after'
+            
+    def _getUseTags(self, dom):
+        return dom.getElementsByTagName('use')
+    def _matchUseGlyphs(self, use, glyph):
+        matches = []
+        for i in use:
+            #print i.getAttribute('xlink:href')
+            if i.getAttribute('xlink:href') == '#'+glyph:
+                matches.append(i)
+        #print matches
+        return matches
+    def _convertUseToPath(self, use, strokeD):
+        ## strokeD is a list of lists of strokes to make the glyph
+        newD = self.nltostring(self.resetStrokeD(strokeD, use.getAttribute('x'), use.getAttribute('y')))
+        use.tagName = 'path'
+        use.removeAttribute('xlink:href')
+        use.removeAttribute('x')
+        use.removeAttribute('y')
+        use.setAttribute('style', 'fill: rgb(0%,0%,0%); stroke-width: 0.5; stroke-linecap: round; stroke-linejoin: round; stroke: rgb(0%,0%,0%); stroke-opacity: 1;stroke-miterlimit: 10; ')
+        use.setAttribute('d', newD)
+    def makeNewList(self, inList):
+        i = 0
+        nt = []
+        while i < len(inList):
+            start = i + self.listFind(inList[i:], ['M', 'L', 'C', 'Z'])
+            end = start + self.listFind(inList[start+1:], ['M', 'L', 'C', 'Z', '', ' '])
+            nt.append(inList[start:end+1])
+            i = end + 1
+        return nt
+    def listFind(self, x, query):
+        for i in range(len(x)):
+            if x[i] in query:
+                return i
+        return len(x)
+    def resetStrokeD(self, strokeD, x, y):
+        nsd = []
+        for i in strokeD:
+            nsd.append(self.resetXY(i, x, y))
+        return nsd
+    def resetXY(self, nl, x, y): # convert a list of strokes to xy coords
+        nl2 = []
+        for i in range(len(nl)):
+            if i == 0:
+                nl2.append(nl[i])
+            elif i%2: # it's odd
+                nl2.append(float(nl[i]) + float(x))
+            elif not i%2: # it's even
+                nl2.append(float(nl[i]) + float(y))
+            else:
+                print i, nl[i], _('error')
+        return nl2
+    def nltostring(self, nl): # convert a colection of nl's to a string
+        col = []
+        for l in nl:
+            templ = []
+            for c in l:
+                templ.append(unicode(c))
+            templ = ' '.join(templ)
+            col.append(templ)
+        return ' '.join(col)
     
 class colorListDialog(QDialog):
     def __init__(self, parent = None, layout = 'vertical', title = _('Color List Dialog'), data = ''):

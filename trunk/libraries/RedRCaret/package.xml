@@ -1,7 +1,7 @@
 <package>
-    <Name>RedRcaret</Name>
+    <Name>RedRCaret</Name>
     <Author>Red-R Core Development Team</Author>
-    <RLibraries>ada, affy, caTools, class, e1071,, earth, elasticnet, ellipse, fastICA, foba, foreach, gam, GAMens, gbm, glmnet, gpls, grid, hda, HDclassif, ipred, kernlab, klaR, lars, LogicForest, logicFS, LogicReg, MASS, mboost, mda, mgcv, mlbench, neuralnet, nnet, nodeHarvest, pamr, partDSA, party, penalized, pls, proxy, quantregForest,randomForest, RANN, rda, relaxo, rocc, rpart, rrcov, RWeka, sda, SDDA, sparseLDA, spls, stepPlr, superpc, vbm, caret</RLibraries>
+    <RLibraries>ada, affy, caTools, class, e1071, earth, elasticnet, ellipse, fastICA, foba, foreach, gam, GAMens, gbm, glmnet, gpls, grid, hda, HDclassif, ipred, kernlab, klaR, lars, LogicForest, logicFS, LogicReg, MASS, mboost, mda, mgcv, mlbench, neuralnet, nnet, nodeHarvest, pamr, partDSA, party, penalized, pls, proxy, quantregForest,randomForest, RANN, rda, relaxo, rocc, rpart, rrcov, RWeka, sda, SDDA, sparseLDA, spls, stepPlr, superpc, vbm, caret</RLibraries>
     <Version>
         <Number>0.1</Number>
         <Stability>Alpha</Stability>
@@ -11,7 +11,7 @@
     <Dependencies></Dependencies>
     <Red-RVersion>Red-R-1.85b</Red-RVersion>
     <Summary>Caret package</Summary>
-    <Description>Install this and rename if you want to make new widgets.</Description>
+    <Description>Red-R Implementation of the Caret package.  This package performs multiple different prediction algorithms on data and performs training and predictions on those models.</Description>
     <menuTags>
          <group name="Stats">
             <Description></Description>

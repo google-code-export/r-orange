@@ -145,8 +145,7 @@ class MyTableModel(QAbstractTableModel):
             return (Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled)
         else:
             return (Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-    def rowCount(self, parent): 
-        return len(self.arraydata)
+    
  
     def initData(self,Rdata):
         self.Rdata = Rdata
@@ -154,8 +153,11 @@ class MyTableModel(QAbstractTableModel):
         self.rownames = self.R('rownames(as.data.frame(' +Rdata+'))', wantType = 'list',silent=True)
         self.arraydata = self.R('as.matrix('+Rdata+')', wantType = 'listOfLists',silent=True)
     def columnCount(self, parent): 
+        if not self.arraydata or self.arraydata == None: return 0
         return len(self.arraydata[0])
- 
+    def rowCount(self, parent): 
+        if not self.arraydata or self.arraydata == None: return 0
+        return len(self.arraydata)
     def data(self, index, role): 
         # print _('in data')
         if not index.isValid(): 
@@ -188,11 +190,14 @@ class MyTableModel(QAbstractTableModel):
     
     def headerData(self, col, orientation, role):
         # print _('in headerData'), col
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return QVariant(self.colnames[col])
-        elif orientation == Qt.Vertical and role == Qt.DisplayRole:     
-            return QVariant(self.rownames[col])
-        return QVariant()
+        try:
+            if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+                return QVariant(self.colnames[col])
+            elif orientation == Qt.Vertical and role == Qt.DisplayRole:     
+                return QVariant(self.rownames[col])
+            return QVariant()
+        except IndexError:
+            return QVariant()
     
     def setHeaderData(self,col,orientation,data,role):
         # print _('in setHeaderData')

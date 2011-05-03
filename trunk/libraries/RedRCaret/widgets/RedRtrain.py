@@ -13,6 +13,7 @@ from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox
 from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
 from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
 from libraries.base.qtWidgets.RFormulaEntry import RFormulaEntry as redRRFormulaEntry
+from libraries.base.qtWidgets.spinBox import spinBox as redRSpinBox
 import libraries.base.signalClasses as signals
 import libraries.RedRCaret.signalClasses as caret
 
@@ -31,6 +32,7 @@ class RedRtrain(OWRpy):
         
         self.RFunctionParammethod_comboBox = redRcomboBox(self.controlArea, label = "Method:", items = [("ada", "ADA Boosted Tree"), ("bagEarth", "Bagged MARS"), ("bagFDA", "Bagged FDA"), ("blackboost", "Black Boosted Tree"), ("cforest", "C Forest Random Forest"), ("ctree", "C Tree Recursive Partitioning"), ("ctree2", "C Tree2 Recursive Partitioning"), ("earth", "Earth MARS"), ("enet", "Elastic Net"), ("fda", "FDA MARS Basis"), ("gamboost", "GAM Boosted Model"), ("gaussprPoly", "Gauss R Poly"), ("gaussprRadial", "Gauss R Radial"), ("gaussprLinear", "Gauss PR Linear"), ("gbm", "GBM Boosted Tree"), ("glm", "GLM"), ("glmboost", "GLM Boosted Tree"), ("glmnet", "GLM Net"), ("gpls", "G PLS"), ("J48", "J48"), ("JRip", "JRip"), ("knn", "K Nearest Neighbors"), ("lars", "LARS"), ("lasso", "Lasso"), ("lda", "LDA"), ("Linda", "Linda"), ("lm", "LM"), ("lmStepAIC", "lmStepAIC"), ("LMT", "LMT"), ("logitBoost", "logitBoost"), ("lssvmPoly", "lssvmPoly"), ("lssvmRadial", "lssvmRadial"), ("lvq", "LVQ"), ("M5Rules", "M5Rules"), ("mda", "MDA"), ("multinom", "Multinorm"), ("nb", "NB"), ("nnet", "Neural Net"), ("nodeHarvest", "Node Harvest"), ("OneR", "OneR"), ("pam", "PAM"), ("pcaNNet", "PCA NN"), ("pcr", "PCR"), ("pda", "PDA"), ("pda2", "PDA2"), ("penalized", "Penalized"), ("pls", "PLS"), ("ppr", "PPR"), ("qda", "QDA"), ("QdaCov", "QDA Cov"), ("rda", "RDA"), ("rf", "RF"), ("rlm", "RLM"), ("rpart", "R Part"), ("rvmLinear", "RVM Linear"), ("rvmPoly", "RVM Poly"), ("rvmRadial", "RVM Radial"), ("sda", "SDA"), ("sddaLDA", "SDDA LDA"), ("sddaQDA", "SDDA QDA"), ("slda", "SLDA"), ("smda", "SMDA"), ("sparseLDA", "Spars LDA"), ("spls", "SPLS"), ("stepLDA", "Step LDA"), ("stepQDA", "Step QDA"), ("superpc", "Super PC"), ("svmPoly", "SVM Poly"), ("svmRadial", "SVM Radial"), ("svmLinear", "SVM Linear"), ("treebag", "Tree Bag"), ("vbmpRadial", "VBMP Radial")])
         
+        self.RFunctionParam_tuneLengthSpin = redRSpinBox(self.controlArea, label = 'Tune Length:', min = 1, value = 5)
         self.otherParameters = redRlineEdit(self.controlArea, label = 'Other Parameters (Advanced):')
         self.tuneParameters = redRlineEdit(self.controlArea, label = 'Tune Parameters (Advanced):')
         
@@ -64,6 +66,7 @@ class RedRtrain(OWRpy):
             injection.append(',%s' % unicode(self.otherParameters.text()))
         if unicode(self.tuneParameters.text()) != '':
             injection.append(',tuneGrid = expand.grid(%s)' % unicode(self.tuneParameters.text()))
+        injection.append(', tuneLength = %s' % str(self.RFunctionParam_tuneLengthSpin.value()))
         inj = ''.join(injection)
         self.R(self.Rvariables['train']+'<-train(x='+self.RFunctionParam_data+', y = '+self.RFunctionParam_classes+inj+')')
         newData = signals.RModelFit.RModelFit(self, data = self.Rvariables["train"])

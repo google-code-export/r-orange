@@ -208,20 +208,10 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + repository + '"; options(repos=r)})')
         if type(librarys) == str: # convert to list if it isn't already
             librarys = [librarys]
-        newLibs = [l for l in librarys if l not in installedRPackages]
+        
         if len(newLibs) > 0:
-            if redREnviron.checkInternetConnection():
-                mb = QMessageBox(_("Download R Library"), _("You are missing some key files for this widget.\n\n%s\n\nWould you like to download it(them)?"
-                ) % unicode(','.join(newLibs)), 
-                QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
-                if mb.exec_() == QMessageBox.Ok:
-                    try:
-                        redRLog.log(redRLog.R, redRLog.INFO, _('Installing library(s) %s.') % ','.join(newLibs))
-                        Rcommand('setRepositories(ind=1:7)', wantType = 'NoConversion')
-                        Rcommand('install.packages(c(%s), dependencies = c("Depends", "Suggests", "Enhances"))' % ','.join(['"%s"' % l for l in newLibs]), wantType = 'NoConversion')
-                        
-                    except:
-                        redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL,_('Library load failed') +"<br>"+ redRLog.formatException())
+            if not install_libraries(librarys):
+                return False
         installedRPackages = getInstalledLibraries() ## remake the installedRPackages list
         for library in [l for l in librarys if l not in loadedLibraries]:
             if installedRPackages and library and (library in installedRPackages):
@@ -234,3 +224,23 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                 loadedOK = False
         return loadedOK
 
+def install_libraries(librarys):
+    installedRPackages = getInstalledLibraries()
+    newLibs = [l for l in librarys if l not in installedRPackages]
+    if redREnviron.checkInternetConnection():
+        mb = QMessageBox(_("Download R Library"), _("You are missing some key files for this widget.\n\n%s\n\nWould you like to download it(them)?"
+        ) % unicode(','.join(newLibs)), 
+        QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
+        if mb.exec_() == QMessageBox.Ok:
+            try:
+                redRLog.log(redRLog.R, redRLog.INFO, _('Installing library(s) %s.') % ','.join(newLibs))
+                Rcommand('setRepositories(ind=1:7)', wantType = 'NoConversion')
+                Rcommand('install.packages(c(%s))' % ','.join(['"%s"' % l for l in newLibs]), wantType = 'NoConversion')
+            except:
+                redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL,_('Library load failed') +"<br>"+ redRLog.formatException()) 
+                return False
+        return True
+    else:
+        return False
+                        
+                    

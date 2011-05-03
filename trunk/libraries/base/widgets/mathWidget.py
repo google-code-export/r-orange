@@ -75,9 +75,11 @@ class mathWidget(OWRpy):
             self.table.clear()
             
     def textChanged(self, s):
-        print s
-        self.functionListBox.scrollToItem(self.functionListBox.findItems(s, Qt.MatchStartsWith)[0])
-        
+        #print s
+        try:
+            self.functionListBox.scrollToItem(self.functionListBox.findItems(s, Qt.MatchStartsWith)[0])
+        except:
+            pass
     def functionDone(self):
         text = unicode(self.functionLineEdit.text())
         self.executeFunction(text)

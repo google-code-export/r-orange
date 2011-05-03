@@ -68,7 +68,7 @@ class packageManager(redRdialog):
     def resolveRDependencies(self, packageList):
         import RSession
         packageList = [x.strip() for x in packageList]
-        RSession.require_librarys(packageList)
+        RSession.install_libraries(packageList)
 
     def installRRP(self,packageName,filename):
 
