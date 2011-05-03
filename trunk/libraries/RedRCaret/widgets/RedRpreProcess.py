@@ -26,7 +26,7 @@ class RedRpreProcess(OWRpy):
         self.outputs.addOutput("preProcess Output","preProcess Output", signals.RModelFit.RModelFit)
         self.outputs.addOutput('preProcess_values', 'Processed Values', signals.RList.RList)
         
-        self.trainingElement = redRcomboBox(self.controlArea, lable = 'Training Dataset:')
+        self.trainingElement = redRcomboBox(self.controlArea, label = 'Training Dataset:')
         self.RFunctionParamthresh_spinBox = redRSpinBox(self.controlArea, label = "Threshold (PCA):", value = 95, min = 1, max = 99)
         self.RFunctionParammethod_listBox = redRListBox(self.controlArea, label = "Method:", items = ["center","scale","pca","spatilaSign"], toolTip = 'Select the options to be applied to the data.  If nothing is selected then center and scale will be applied by default')
         for i in range(self.RFunctionParammethod_listBox.count()):

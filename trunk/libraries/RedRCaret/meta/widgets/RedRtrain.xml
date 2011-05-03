@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
-    <name>train</name>
-    <icon>Default.png</icon>
+    <name>Train Model</name>
+    <icon>default.png</icon>
     <tags> 
-        <tag>Prototypes</tag> 
+        <tag>Caret</tag> 
     </tags>
     <summary></summary>
     <details></details>

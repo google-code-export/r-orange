@@ -13,7 +13,7 @@ from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox
 from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
 from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
 import libraries.base.signalClasses as signals
-
+import libraries.RedRCaret.signalClasses as caret
 class RedRcreateDataPartition(OWRpy): 
     settingsList = []
     def __init__(self, **kwargs):
@@ -22,11 +22,9 @@ class RedRcreateDataPartition(OWRpy):
         self.setRvariableNames(["createDataPartition", 'dataOutputList'])
         self.data = {}
         self.RFunctionParam_y = ''
-        self.inputs.addInput("y", "Input Vector List", signals.RDataFrame.RDataFrame, self.processy)
+        self.inputs.addInput("y", "Input Caret Data", caret.CaretData.CaretData, self.processy)
         self.outputs.addOutput("createDataPartition Output","Partition/Resample/Fold List", signals.RList.RList)
-        self.outputs.addOutput("dataOutputList", "Data Output List \n(Subsets of data that matches the partitioning)", signals.RList.RList)
         
-        self.ListElementCombo = redRcomboBox(self.controlArea, label = 'List Element (Vector):')
         self.functionCombo = redRcomboBox(self.controlArea, label = 'Function:', items = ['Partition', 'Resample', 'Fold'])
         self.RFunctionParamp_spinBox = redRSpinBox(self.controlArea, label = "Percentage (Partition):", value = 50, min = 1, max = 100)
         #self.RFunctionParamlist_radioButtons = redRradioButtons(self.controlArea, label = "list:", buttons = ["TRUE"], setChecked = "")
@@ -39,16 +37,13 @@ class RedRcreateDataPartition(OWRpy):
         
         if data:
             self.RFunctionParam_y=data.getData()
-            self.ListElementCombo.update(self.R('names('+self.RFunctionParam_y+')'))
-            #self.data = data
-            #self.commitFunction()
+            self.RFunctionParam_classes = data.getClasses()
         else:
             self.RFunctionParam_y=''
     def commitFunction(self):
-        if unicode(self.RFunctionParam_y) == '': return
-        if unicode(self.ListElementCombo.currentText()) == '': return
-        if self.R('class('+self.RFunctionParam_y+'$'+unicode(self.ListElementCombo.currentText())+')') not in ['factor', 'numeric', 'character', 'logical']: return
-        if self.R('length('+self.RFunctionParam_y+'$'+unicode(self.ListElementCombo.currentText())+')') < int(self.RFunctionParamgroups_spinBox.value()): return
+        if unicode(self.RFunctionParam_classes) == '': 
+            self.status.setText('No classes to work with')
+            return
         injection = []
         if unicode(self.functionCombo.currentText()) == 'Partition':
             function = 'createDataPartition'
@@ -66,22 +61,9 @@ class RedRcreateDataPartition(OWRpy):
             function = 'createFolds'
             injection.append(', k = '+unicode(self.RFunctionParam_folds_spinBox.value()))
         inj = ''.join(injection)
-        self.R(self.Rvariables['createDataPartition']+'<-'+function+'(y='+self.RFunctionParam_y+'$'+unicode(self.ListElementCombo.currentText())+inj+')')
-        self.R('txt<-capture.output('+self.Rvariables['createDataPartition']+')')
+        self.R(self.Rvariables['createDataPartition']+'<-'+function+'(y='+self.RFunctionParam_classes+inj+')')
         self.RoutputWindow.clear()
-        tmp = self.R('paste(txt, collapse ="\n")')
+        tmp = self.R('paste(capture.output('+self.Rvariables['createDataPartition']+'), collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)
-        newData = signals.RList.RList(data = self.Rvariables["createDataPartition"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
-        #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
+        newData = signals.RList.RList(self, data = self.Rvariables["createDataPartition"])
         self.rSend("createDataPartition Output", newData)
-        self.R(self.Rvariables['dataOutputList']+'<-list()', wantType = 'NoConversion')
-        for i in range(self.R('length('+self.Rvariables['createDataPartition']+')')):
-            ## make a new sub data table for each of the partition levels
-            if unicode(self.functionCombo.currentText()) == 'Partition':
-                self.R('%s$Training_%s<-%s[%s[[%s]],]' % (self.Rvariables['dataOutputList'], unicode(i+1), self.RFunctionParam_y, self.Rvariables['createDataPartition'], unicode(i+1)))
-                self.R('%s$Test_%s<-%s[-%s[[%s]],]' % (self.Rvariables['dataOutputList'], unicode(i+1), self.RFunctionParam_y, self.Rvariables['createDataPartition'], unicode(i+1)))
-            else:
-                self.R('%s$Sample_%s<-%s[-%s[[%s]],]' % (self.Rvariables['dataOutputList'], unicode(i+1), self.RFunctionParam_y, self.Rvariables['createDataPartition'], unicode(i+1)))
-        
-        newDataOutputList = signals.RList.RList(self, data = self.Rvariables['dataOutputList'])
-        self.rSend("dataOutputList", newDataOutputList)
