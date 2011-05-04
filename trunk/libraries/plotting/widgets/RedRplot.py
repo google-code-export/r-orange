@@ -44,10 +44,6 @@ class RedRplot(OWRpy):
         self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
     def processy(self, data):
-        
-        if not self.require_librarys(["graphics"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
         if data:
             if self.R('class('+data.getData()+')') in ['data.frame', 'list']:
                 self.namesListX.setEnabled(True)
@@ -74,9 +70,6 @@ class RedRplot(OWRpy):
             self.graphicsView.clear()
             self.RFunctionParam_y=''
     def processx(self, data):
-        if not self.require_librarys(["graphics"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
         if data:
             self.RFunctionParam_x=data.getData()
             #self.data = data
@@ -84,9 +77,6 @@ class RedRplot(OWRpy):
         else:
             self.RFunctionParam_x=''
     def processplotatt(self, data, id):
-        if not self.require_librarys(["graphics"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
         if data:
             self.plotAttributes[id] = data.getData()
             #self.data = data
@@ -112,5 +102,5 @@ class RedRplot(OWRpy):
             string = 'main=\''+unicode(self.RFunctionParammain_lineEdit.text())+'\''
             injection.append(string)
         inj = ','.join(injection)
-        self.graphicsView.plot('y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj) #, layers = [a for (k, a) in self.plotAttributes.items()])
+        self.graphicsView.plotMultiple('y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj, layers = self.plotAttributes.values())
     
