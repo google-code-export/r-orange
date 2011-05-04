@@ -16,7 +16,7 @@ class caretDataModel(OWRpy):
     settingsList = []
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
-        self.require_librarys(["caret"])
+        self.require_librarys(["caret", 'ada', 'affy', 'caTools', 'class', 'e1071', 'earth', 'elasticnet', 'ellipse', 'fastICA', 'foba', 'foreach', 'gam', 'GAMens', 'gbm', 'glmnet', 'gpls', 'grid', 'hda', 'HDclassif', 'ipred', 'kernlab', 'klaR', 'lars', 'LogicForest', 'logicFS', 'LogicReg', 'MASS', 'mboost', 'mda', 'mgcv', 'mlbench', 'neuralnet', 'nnet', 'nodeHarvest', 'pamr', 'partDSA', 'party', 'penalized', 'pls', 'proxy', 'quantregForest', 'randomForest', 'RANN', 'rda', 'relaxo', 'rocc', 'rpart', 'rrcov', 'RWeka', 'sda', 'SDDA', 'sparseLDA', 'spls', 'stepPlr', 'superpc', 'vbm'])
         self.setRvariableNames(["dataModel"])
         
         self.RFunctionParam_data = ''
@@ -50,7 +50,7 @@ class caretDataModel(OWRpy):
             
         if self.RFunctionParam_predictors == '':
             classes = '%s$%s' % (self.RFunctionParam_data, self.classLabels.currentId())
-            self.R('%s<-%s[,-%s]' % (self.Rvariables['dataModel'], self.RFunctionParam_data, self.classLabels.currentId()), wantType = 'NoConversion')
+            self.R('%(NEW)s<-%(ORG)s; %(NEW)s$%(COL)s<-NULL' % {'NEW':self.Rvariables['dataModel'], 'ORG':self.RFunctionParam_data, 'COL':self.classLabels.currentId()}, wantType = 'NoConversion')
             data = self.Rvariables['dataModel']
         else:
             if self.R('length(%s[,1])' % self.RFunctionParam_data) != self.R('length(%s)' % self.RFunctionParam_predictors):

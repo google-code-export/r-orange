@@ -4,7 +4,7 @@
     <name>Train Model</name>
     <icon>default.png</icon>
     <tags> 
-        <tag>Caret</tag> 
+        <tag priority='50'>Caret</tag> 
     </tags>
     <summary></summary>
     <details></details>

@@ -4,7 +4,7 @@
     <name>predict</name>
     <icon>default.png</icon>
     <tags> 
-        <tag>Caret</tag> 
+        <tag priority='100'>Caret</tag> 
     </tags>
     <summary></summary>
     <details></details>

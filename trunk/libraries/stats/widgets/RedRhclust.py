@@ -1,5 +1,5 @@
 """
-<name>Heirarchial Clustering</name>
+<name>Hierarchical Clustering</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description>Performs a variety of clustering functions on a matrix of data.  Data can be connected in the RDataFrame form but should contain only numeric data.  If not then an error may be reported or the widget may not function as anticipated.  Please see the R help for the function hclust or a statistics text on clustering for more information on different clustering methods.</description>
 <RFunctions>stats:hclust</RFunctions>

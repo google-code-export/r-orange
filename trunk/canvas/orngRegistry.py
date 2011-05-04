@@ -33,8 +33,8 @@ class WidgetCategory(dict):
         self.directory = directory
 
 AllPackages = {}
-def readCategories(force = False):
-    if not force:
+def readCategories(force = True):
+    if not force:  ## if this is a reload of Red-R and we are using the same categories.
         if os.path.exists(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetRegistry.pic')):
             with open(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetRegistry.pic'), 'rb') as f:
                 categories = cPickle.load(f)
@@ -72,9 +72,8 @@ def readCategories(force = False):
     for dirName, directory, plugin in directories:
         if not os.path.isfile(os.path.join(directory,'package.xml')): continue
         try:
-            f = open(os.path.join(directory,'package.xml'), 'r')
-            mainTabs = xml.dom.minidom.parse(f)
-            f.close()
+            with open(os.path.join(directory,'package.xml'), 'r') as f:
+                mainTabs = xml.dom.minidom.parse(f)
             package = parsePackageXML(mainTabs)
             # we read in all the widgets in dirName, directory in the directories
             widgets = readWidgets(os.path.join(directory), package)  ## calls an internal function
@@ -103,7 +102,6 @@ def readCategories(force = False):
         
     allTemplates += readTemplates(redREnviron.directoryNames['templatesDir'])
     categories['templates'] = allTemplates
-    # cPickle.dump(categories, file(cacheFilename, "wb"))
     if splashWindow:
         splashWindow.hide()
     
@@ -128,7 +126,7 @@ def getXMLText(self, nodelist):
     return rc
 
 # takes an xml object representing a red-r package and creates a structured dict
-# TO-DO: should perform error checking to make sure the xml file is valid
+# TODO: should perform error checking to make sure the xml file is valid
 def parsePackageXML(node):
     packageDict = {}
     packageDict['Name'] = getXMLText(node.getElementsByTagName('Name')[0].childNodes)
@@ -224,9 +222,7 @@ def readWidgets(directory, package):
                         os.mkdir(os.path.join(directory, 'meta'))
                     if not os.path.exists(os.path.join(directory, 'meta', 'widgets')):
                         os.mkdir(os.path.join(directory, 'meta', 'widgets'))
-                    f = open(os.path.join(directory,'meta','widgets',widgetName+'.xml'), 'w')
-                    f.write(text)
-                    f.close()
+                    with open(os.path.join(directory,'meta','widgets',widgetName+'.xml'), 'w') as f: f.write(text)
                 else:
                     if md.notNow:
                         makeXML = False
@@ -246,11 +242,16 @@ def readWidgets(directory, package):
         widgetMetaData['description'] = getXMLText(widgetMetaXML.getElementsByTagName('summary')[0].childNodes)
         widgetMetaData['details'] = getXMLText(widgetMetaXML.getElementsByTagName('details')[0].childNodes)
         
-        widgetMetaData['tags'] = []
+        widgetMetaData['tags'] = [] ## will be a list of tuples in the form (<tag>, <priority>); ('Data Input', 4)
         for tag in widgetMetaXML.getElementsByTagName('tags')[0].childNodes:
             if getXMLText(tag.childNodes) != '':
-                widgetMetaData['tags'].append(getXMLText(tag.childNodes))
-
+                if tag.hasAttribute('priority'):
+                    widgetMetaData['tags'].append((getXMLText(tag.childNodes), int(tag.getAttribute('priority'))))
+                else:
+                    widgetMetaData['tags'].append((getXMLText(tag.childNodes), 0))
+            else:
+                widgetMetaData['tags'].append(('Prototypes', 0))  ## if there is no tag we need to put the list somewhere so it goes to the Prototypes tag.
+        print widgetMetaData['tags']
         widgetMetaData['inputs'] = []
         if len(widgetMetaXML.getElementsByTagName('input')):
             for input in widgetMetaXML.getElementsByTagName('input'):
@@ -267,13 +268,8 @@ def readWidgets(directory, package):
         
         # print widgetMetaData
 
-        if not splashWindow:
-            logo = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
-            splashWindow = QSplashScreen(logo, Qt.WindowStaysOnTopHint)
-            splashWindow.setMask(logo.mask())
-            splashWindow.show()
-            
-        splashWindow.showMessage("Registering widget %s" % widgetMetaData['name'], Qt.AlignHCenter + Qt.AlignBottom)
+        if splashWindow:
+            splashWindow.showMessage("Registering widget %s" % widgetMetaData['name'], Qt.AlignHCenter + Qt.AlignBottom)
         qApp.processEvents()
         
         # We import modules using imp.load_source to avoid storing them in sys.modules,

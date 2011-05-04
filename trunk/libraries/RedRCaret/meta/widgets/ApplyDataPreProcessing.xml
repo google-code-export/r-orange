@@ -4,7 +4,7 @@
     <name>Apply Data PreProcessing</name>
     <icon>default.png</icon>
     <tags>
-        <tag>Caret</tag>
+        <tag priorit='20'>Caret</tag>
     </tags>
     <summary>Apply a pre-processing data model to a part of a data parition, this will make the data look like the processed data to test in a model.</summary>
     <details></details>

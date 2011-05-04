@@ -4,7 +4,7 @@
     <name>Caret Predictions and Probabilities</name>
     <icon>default.png</icon>
     <tags>
-        <tag>Caret</tag>
+        <tag priority = '400'>Caret</tag>
     </tags>
     <summary>Generates two data tables one for predictions and one for probabilities of the supplied samples being of a class.</summary>
     <details></details>

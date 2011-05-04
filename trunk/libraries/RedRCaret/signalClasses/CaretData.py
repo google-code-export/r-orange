@@ -31,5 +31,7 @@ class CaretData(RArbitraryList):
     def convertToClass(self, varClass):
         if varClass == CaretData:
             return self
+        elif varClass == RDataFrame:
+            return RDataFrame(self.widget, data = 'as.data.frame('+self.getData()+')')
         else:
             return RArbitraryList.convertToClass(self, varClass)

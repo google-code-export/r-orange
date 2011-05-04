@@ -13,6 +13,7 @@ from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox
 from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
 from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
 from libraries.base.qtWidgets.RFormulaEntry import RFormulaEntry as redRRFormulaEntry
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
 import libraries.base.signalClasses as signals
 import libraries.RedRCaret.signalClasses as caret
 
@@ -29,7 +30,7 @@ class extractPredsProbs(OWRpy):
         self.inputs.addInput('predicationData', 'Classification Data', caret.CaretData.CaretData, self.processpreds)
         self.outputs.addOutput("predictions","Caret Predictions", signals.RDataFrame.RDataFrame)
         self.outputs.addOutput("probabilities", "Caret Probabilities", signals.RDataFrame.RDataFrame)
-        
+        self.widgetLabel = widgetLabel(self.bottomAreaLeft, label = '')
         self.RoutputWindow = redRtextEdit(self.controlArea, label = "R Output Window")
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processpreds(self, data):
@@ -65,18 +66,29 @@ class extractPredsProbs(OWRpy):
             dataInputs['testY'] = self.RFunctionParam_classes
         else:
             dataInputs['testY'] = 'NULL'
-        self.R('%(PRED)s<-extractPrediction(list(%(MODEL)s), testX = %(testX)s, testY = %(testY)s)' % dataInputs, wantType = 'NoConversion') 
-        self.R('%(PROB)s<-extractProb(list(%(MODEL)s), testX = %(testX)s, testY = %(testY)s)' % dataInputs, wantType = 'NoConversion')
+            
+        tmp = ''
+        try:
+            self.R('%(PRED)s<-extractPrediction(list(%(MODEL)s), testX = %(testX)s, testY = %(testY)s)' % dataInputs, wantType = 'NoConversion') 
+            newDataPred = signals.RDataFrame.RDataFrame(self, data = self.Rvariables['preds'])
+            self.rSend("predictions", newDataPred)
+            tmp += 'Predictions\n\n'
+            tmp += self.R('paste(capture.output(str('+self.Rvariables['preds']+')), collapse ="\n")') + '\n\n'
+        except RuntimeError:
+            self.widgetLabel.setText('Could not format predicitons')
+            self.rSend('predictions', None)
+            
+        try:
+            self.R('%(PROB)s<-extractProb(list(%(MODEL)s), testX = %(testX)s, testY = %(testY)s)' % dataInputs, wantType = 'NoConversion')
+            newDataProbs = signals.RDataFrame.RDataFrame(self, data = self.Rvariables['probs'])
+            self.rSend('probabilities', newDataProbs)
+            tmp += 'Probabilities\n\n'
+            tmp += self.R('paste(capture.output(str('+self.Rvariables['probs']+')), collapse ="\n")')
+        except RuntimeError:
+            self.widgetLabel.setText('Could not format predictions')
+            self.rSend('probabilities', None)
         
-        newDataPred = signals.RDataFrame.RDataFrame(self, data = self.Rvariables['preds'])
-        newDataProbs = signals.RDataFrame.RDataFrame(self, data = self.Rvariables['probs'])
         
-        self.rSend("predictions", newDataPred)
-        self.rSend('probabilities', newDataProbs)
         
         self.RoutputWindow.clear()
-        tmp = 'Predictions\n\n'
-        tmp += self.R('paste(capture.output(str('+self.Rvariables['preds']+')), collapse ="\n")')
-        tmp += 'Probabilities\n\n'
-        tmp += self.R('paste(capture.output(str('+self.Rvariables['probs']+')), collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)

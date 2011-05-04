@@ -24,7 +24,7 @@ class RedRdata(OWRpy):
         self.outputs.addOutput('id2', _('Example Data (Arbitrary Example [Advanced])'), 'All')
 
                 
-        self.R('%s <- as.data.frame(data(package = .packages(all.available = TRUE))$results[,c(1,3:4)])' % self.Rvariables['datasets'],silent=True, wantType = 'NoConversion')
+        self.R('%s <- as.data.frame(data(package = .packages())$results[,c(1,3:4)])' % self.Rvariables['datasets'],silent=True, wantType = 'NoConversion')
         self.R('%s$Title <- as.character(%s$Title)' % (self.Rvariables['datasets'],self.Rvariables['datasets']),silent=True, wantType = 'NoConversion')
         
         
@@ -37,6 +37,7 @@ class RedRdata(OWRpy):
         self.controlArea.layout().setAlignment(box,Qt.AlignHCenter)
         # the package does not need to be loaded to get its datasets
         self.package = lineEdit(box, label = _('Package:'), text = '')#, callback = self.loadPackage)
+        button(box, label = 'Load Package', callback = self.loadPackage)
         self.RFunctionParamdataName_lineEdit = lineEdit(box, label = _("Data Name:"), 
         text = '', callback = self.commitFunction)
         
@@ -46,6 +47,9 @@ class RedRdata(OWRpy):
     def loadPackage(self):
         if unicode(self.package.text()) != '':
             self.require_librarys([unicode(self.package.text())])
+        self.R('%s <- as.data.frame(data(package = .packages())$results[,c(1,3:4)])' % self.Rvariables['datasets'],silent=True, wantType = 'NoConversion')
+        self.R('%s$Title <- as.character(%s$Title)' % (self.Rvariables['datasets'],self.Rvariables['datasets']),silent=True, wantType = 'NoConversion')
+        self.table.setRTable(self.Rvariables['datasets'])
         
     
     def selectDataSet(self,ind):

@@ -4,7 +4,7 @@
     <name>PreProcess Data</name>
     <icon>default.png</icon>
     <tags> 
-        <tag>Caret</tag> 
+        <tag priority='47'>Caret</tag> 
     </tags>
     <summary></summary>
     <details></details>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
-    <name>Heirarchial Clustering</name>
-    <icon>default.png</icon>
+    <name>Hierarchical Clustering</name>
+    <icon>RedRhclust.png</icon>
     <tags> 
         <tag>Advanced Stats</tag> 
     </tags>

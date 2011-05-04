@@ -352,17 +352,27 @@ class WidgetTree(QTreeWidget):
             return
                 
     def insertWidgets(self, itab, tab, widgetRegistry):
-        #print 'Widget Registry is \n\n' + unicode(widgetRegistry) + '\n\n'
-        widgets = None
+        
+        
         try:
-            for wName in widgetRegistry['widgets'].keys():
-                widgetInfo = widgetRegistry['widgets'][wName]
+            addingWidgets = []
+            for widgetInfo in widgetRegistry['widgets'].values():
+                for t in widgetInfo.tags:
+                    if type(t) == tuple:
+                        if t[0] == unicode(itab):
+                            addingWidgets.append((widgetInfo, t[1]))
+                    else:
+                        print t
+                        if t == unicode(itab):
+                            addingWidgets.append((widgetInfo, 0))
+            print addingWidgets
+            addingWidget = sorted(addingWidgets, key = lambda info: info[1]) ## now things are sorted on the widget values.
+            for widgetInfo, val in addingWidget:
                 try:
-                    if unicode(itab) in widgetInfo.tags: # add the widget
-                        button = WidgetTreeItem(tab, widgetInfo.name, widgetInfo, self, self.canvasDlg)
-                        if button not in tab.widgets:
-                            tab.widgets.append(button)
-                        self.allWidgets.append(button)
+                    button = WidgetTreeItem(tab, widgetInfo.name, widgetInfo, self, self.canvasDlg)
+                    if button not in tab.widgets:
+                        tab.widgets.append(button)
+                    self.allWidgets.append(button)
                             
                 except Exception as inst: 
                     redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())

@@ -4,7 +4,7 @@
     <name>Partition/Resample/Fold (Caret)</name>
     <icon>default.png</icon>
     <tags> 
-        <tag>Caret</tag> 
+        <tag priority='45'>Caret</tag> 
     </tags>
     <summary>Creates a data partition, a resample of the data or a fold depending on the selections in the function box.  Partition, partitions the data into groups, resample generates a bootstrap resampling of the data and folds generates an evenly split dataset across the number of folds.</summary>
     <details>Creates a data partition, a resample of the data or a fold depending on the selections in the function box.  Partition, partitions the data into groups, resample generates a bootstrap resampling of the data and folds generates an evenly split dataset across the number of folds.</details>

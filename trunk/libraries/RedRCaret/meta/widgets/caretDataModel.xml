@@ -4,7 +4,7 @@
     <name>Caret Data Model</name>
     <icon>default.png</icon>
     <tags>
-        <tag>Caret</tag>
+        <tag priority='10'>Caret</tag>
     </tags>
     <summary>Make a data model that can be used in other Caret widgets.</summary>
     <details></details>

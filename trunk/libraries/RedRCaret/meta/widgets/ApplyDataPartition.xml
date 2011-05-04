@@ -4,7 +4,7 @@
     <name>Apply Data Partition</name>
     <icon>default.png</icon>
     <tags>
-        <tag>Caret</tag>
+        <tag priority='30'>Caret</tag>
     </tags>
     <summary>Used in conjunction with the Partition widget, this widget subsets caret data based on an established parition into two groups; in the partition and not in the partition.</summary>
     <details></details>
