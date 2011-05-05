@@ -584,7 +584,7 @@ class graphicsView(QGraphicsView, widgetState):
         if not self.plotExactlySwitch:
             self.extras = self._setParameters()
             if unicode(self.extrasLineEdit.text()) != '':
-                self.extras += ', '+unicode(self.extrasLineEdit.text())
+                self.extras += unicode(self.extrasLineEdit.text())
             if self.extras != '':
                 fullquery = 'print(%s(%s, %s))' % (function, query, self.extras)
             else:
