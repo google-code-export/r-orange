@@ -42,7 +42,7 @@ class plot(OWRpy):
             self.clearPlots()
     def processLayer(self, data, id):
         if data:
-            self.plotAttributes[id.widgetID] = data.getData()
+            self.plotAttributes[id] = data.getData()
             self.commitFunction()
         else:
             del self.plotAttributes[id.widgetID]
