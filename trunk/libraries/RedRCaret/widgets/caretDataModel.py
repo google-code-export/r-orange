@@ -53,7 +53,7 @@ class caretDataModel(OWRpy):
             self.R('%(NEW)s<-%(ORG)s; %(NEW)s$%(COL)s<-NULL' % {'NEW':self.Rvariables['dataModel'], 'ORG':self.RFunctionParam_data, 'COL':self.classLabels.currentId()}, wantType = 'NoConversion')
             data = self.Rvariables['dataModel']
         else:
-            if self.R('length(%s[,1])' % self.RFunctionParam_data) != self.R('length(%s)' % self.RFunctionParam_predictors):
+            if self.R('length(%s[,1])' % self.RFunctionParam_data)%self.R('length(%s)' % self.RFunctionParam_predictors) != 0:
                 self.status.setText('Data not of the same length, these are not valid pairs')
                 return
             classes = self.RFunctionParam_predictors
