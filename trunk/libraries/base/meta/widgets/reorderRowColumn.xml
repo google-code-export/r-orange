@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation>
+    <name>Reorder Rows and Columns</name>
+    <icon>reorder.png</icon>
+    <tags>
+        <tag>Data Manipulation</tag>
+    </tags>
+    <summary>Reorders the rows and columns of a Data Table</summary>
+    <details></details>
+    <relatedWidgets>
+        <inputWidget><!-- <package>.<widget> ie. base.apply, plotting.heatmap --></inputWidget>
+    </relatedWidgets>
+    <signals>
+    <!-- [REQUIRED] List all the widget input output slots and their data type.-->
+        <input>
+            <signalClass>base.RDataFrame</signalClass>
+            <description>Input Data Table</description>
+        </input>
+        <output>
+            <signalClass>base:RDataFrame</signalClass>
+            <description>Reordered Data Table</description>
+        </output>
+    </signals>
+    <GUIElements>
+        <parameter>
+            <name></name>
+            <description></description>
+        </parameter>
+        <!-- [REQUIRED] A list of the GUI elements that output data and a description of what they output.-->
+        <display>
+            <name>Table Component</name>
+            <description>Select the index to reorder by, either Row or Column.</description>
+        </display>
+        <display>
+        	<name>Revised Order (Must Commit!!)</name>
+	<description>Reorder the rows or columns here, note that the table must be committed before the renaming will take place.  Only the rows or columns can be reordered in a single widget.</description>
+	</display>
+    </GUIElements>
+    <RFunctions>
+    <!-- [REQUIRED] R functions used in this widget.-->
+        <function><!-- In format <package>:<function>. i.e. stats:cor, base:apply--></function>
+        <function></function>
+    </RFunctions>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Kyle R Covington</name>
+            <contact>kyle@red-r.org</contact>
+        </author>
+        <reference></reference>
+    </citation>
+</documentation>
+
+
