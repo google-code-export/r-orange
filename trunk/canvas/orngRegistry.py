@@ -249,8 +249,6 @@ def readWidgets(directory, package):
                     widgetMetaData['tags'].append((getXMLText(tag.childNodes), int(tag.getAttribute('priority'))))
                 else:
                     widgetMetaData['tags'].append((getXMLText(tag.childNodes), 0))
-            else:
-                widgetMetaData['tags'].append(('Prototypes', 0))  ## if there is no tag we need to put the list somewhere so it goes to the Prototypes tag.
         print widgetMetaData['tags']
         widgetMetaData['inputs'] = []
         if len(widgetMetaXML.getElementsByTagName('input')):
