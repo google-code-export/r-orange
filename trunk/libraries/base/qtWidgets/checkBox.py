@@ -93,19 +93,15 @@ class checkBox(widgetState,QWidget):
     def uncheckAll(self):
         for i in self.buttons.buttons():
             i.setChecked(False)
-        
+    def clear(self):
+        self.items = {}
+        for i in self.buttons.buttons():
+            self.removeButton(i)
     def getChecked(self):
         return self.getCheckedItems().values()
-        # checked = []
-        # for i in self.buttons.buttons():
-            # if i.isChecked(): checked.append(unicode(i.text()))
-        # return checked
+        
     def getCheckedIds(self):
         return self.getCheckedItems().keys()
-        # checked = []
-        # for i in self.buttons.buttons():
-            # if i.isChecked(): checked.append(self.items.keys()[i.id()])
-        # return checked
         
     def getCheckedItems(self):
         checked = {}
@@ -113,12 +109,16 @@ class checkBox(widgetState,QWidget):
             id = self.buttons.id(i)
             if i.isChecked(): checked[self.items.keys()[id]] = self.items[self.items.keys()[id]]
         return checked
-        
-    def getUnchecked(self):
-        unChecked = []
+    def getUncheckedItems(self):
+        checked = {}
         for i in self.buttons.buttons():
-            if not i.isChecked(): unChecked.append(unicode(i.text()))
-        return unChecked
+            id = self.buttons.id(i)
+            if not i.isChecked(): checked[self.items.keys()[id]] = self.items[self.items.keys()[id]]
+        return checked
+    def getUnchecked(self):
+        return self.getUncheckedItems.values()
+    def getUncheckedIds(self):
+        return self.getUncheckedItems.keys()
     
     def buttonAt(self,ind):
         return unicode(self.buttons.button(ind).text())
