@@ -48,7 +48,8 @@ class colorButton(QPushButton, widgetState):
         self.setIcon(QIcon(pixmap))
         self.setIconSize(QSize(self.w+1,self.h+1))
 
-
+    def getColor(self):
+        return self.color
     def drawButtonLabel(self, painter):
         painter.setBrush(QBrush(QColor(self.color)))
         painter.setPen(QPen(QColor(self.color)))

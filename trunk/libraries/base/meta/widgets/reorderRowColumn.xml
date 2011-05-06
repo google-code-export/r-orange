@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Reorder Rows and Columns</name>
-    <icon>reorder.png</icon>
+    <icon>default.png</icon>
     <tags>
         <tag>Data Manipulation</tag>
     </tags>

@@ -498,10 +498,6 @@ class redRGGPlot(QGraphicsView, widgetState):
         self.clear()
         self.addImage(file)
         self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
-    def resizeEvent(self,ev):
-        if self.mainItem and 'true' in self.resizeCheck.getCheckedIds():
-            self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
-        
     def setExtrasLineEditEnabled(self, enabled = True):
         
         self.extrasLineEdit.enabled(enabled)

@@ -209,8 +209,8 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         if type(librarys) == str: # convert to list if it isn't already
             librarys = [librarys]
         
-	if not install_libraries(librarys, repository):
-	    return False
+        if not install_libraries(librarys, repository):
+            return False
         installedRPackages = getInstalledLibraries() ## remake the installedRPackages list
         for library in [l for l in librarys if l not in loadedLibraries]:
             if installedRPackages and library and (library in installedRPackages):
