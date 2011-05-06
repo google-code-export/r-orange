@@ -98,10 +98,10 @@ class packageManager(redRdialog):
             redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Installing package %(PACKAGENAME)s') % {'PACKAGENAME':packageName})
         
             redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'package installation complete')
-        except:
-            redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL, _('This was an error installing %(PACKAGENAME)s.') % {'PACKAGENAME':packageName})
+        except Exception as inst:
+            redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL, _('There was an error installing %(PACKAGENAME)s. %(ERROR)s') % {'PACKAGENAME':packageName, 'ERROR':unicode(inst)})
             redRLog.log(redRLog.REDRCORE, redRLog.DEBUG,redRLog.formatException())
-            mb = QMessageBox(_("Package Installation Error"),_('This was an error installing %(PACKAGENAME)s.') % {'PACKAGENAME':packageName}, QMessageBox.Information, 
+            mb = QMessageBox(_("Package Installation Error"),_('There was an error installing %(PACKAGENAME)s. %(ERROR)s') % {'PACKAGENAME':packageName, 'ERROR':unicode(inst)}, QMessageBox.Information, 
             QMessageBox.Ok | QMessageBox.Default,
             QMessageBox.NoButton, 
             QMessageBox.NoButton, 
