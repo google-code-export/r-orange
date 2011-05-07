@@ -41,15 +41,19 @@ class krcggplotbarplot(OWRpy):
         self.colourScaleWidgets = []
         mainBox = redRWidgetBox(self.controlArea, orientation = 'horizontal')
         leftBox = redRWidgetBox(mainBox)
+        leftBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         topBox = redRWidgetBox(leftBox, orientation = 'horizontal')
         aestheticsBox = redRGroupBox(topBox, label = _('Aesthetics'), orientation = 'horizontal')
         aestheticsBox.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
-        self.xGroup = comboBox(aestheticsBox, label = _('X Groupings'), callback = self.xGroupChanged)
-        self.yData = comboBox(aestheticsBox, label = _('Y Values'))
-        self.fillData = comboBox(aestheticsBox, label = _('Fill Data'), callback = self.fillDataChanged)
-        self.colourScale = comboBox(aestheticsBox, label = _('Color Scale'), items = self.colours, callback = self.colourScaleChanged)
+        aboxLeft = redRWidgetBox(aestheticsBox, orientation = 'vertical')
+        aboxMid = redRWidgetBox(aestheticsBox, orientation = 'vertical')
+        aboxRight = redRWidgetBox(aestheticsBox, orientation = 'vertical')
+        self.xGroup = comboBox(aboxLeft, label = _('X Groupings'), callback = self.xGroupChanged)
+        self.yData = comboBox(aboxLeft, label = _('Y Values'))
+        self.fillData = comboBox(aboxMid, label = _('Fill Data'), callback = self.fillDataChanged)
+        self.colourScale = comboBox(aboxMid, label = _('Color Scale'), items = self.colours, callback = self.colourScaleChanged)
         ## make the scale selector
-        self.colourSelectorStack = stackedWidget(aestheticsBox)
+        self.colourSelectorStack = stackedWidget(aboxRight)
         
         
         
@@ -100,7 +104,9 @@ class krcggplotbarplot(OWRpy):
         name = self.captionTitle)
         self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,
         processOnInput=True)
+        
         rightBox = redRWidgetBox(mainBox)
+        rightBox.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Minimum)
         self.fillShuffle = shuffleBox(rightBox, label = 'Column Order')
         self.groupShuffle = shuffleBox(rightBox, label = 'Grouping Order')
         self.colourScaleChanged()

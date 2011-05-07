@@ -26,6 +26,7 @@ class RedRInitWizard(QWizard):
 
         self.setWindowTitle(_('Red-R Setup'))
         self.settings = dict(redREnviron.settings)
+        
         self.registerPage = QWizardPage()
         self.registerPage.setLayout(QVBoxLayout())
         self.registerPage.setTitle(_('Please Register Red-R'))
@@ -66,6 +67,16 @@ class RedRInitWizard(QWizard):
         callback = self.setMirror)
         self.libMessageBox = redRwidgetLabel(self.rlibrariesBox)
         
+        self.RLibraryPage = QWizardPage()
+        self.RLibraryPage.setLayout(QVBoxLayout())
+        self.RLibraryPage.setTitle(_('Load R Libraries'))
+        redRwidgetLabel(self.RLibraryPage, 
+'''Red-R needs to install these R libraries on this machine:
+    'RSvgDevice', 'reshape', 'lattice', 'hexbin', 'ggplot2', 
+    'graph', 'grid', 'limma', 'gregmisc', 'MASS', 'Matrix', 
+    'RSQLite', 'splines'
+    \n\nPlease click the Next Button''')
+        
         self.runExamplePage = QWizardPage()
         self.runExamplePage.setLayout(QVBoxLayout())
         self.runExamplePage.setTitle(_('Finished'))
@@ -89,12 +100,14 @@ class RedRInitWizard(QWizard):
         self.addPage(self.registerPage)
         # self.addPage(self.errorReportingPage)
         self.addPage(self.RSetupPage)
+        self.addPage(self.RLibraryPage)
         self.addPage(self.runExamplePage)
     
     def pageChanged(self,id):
         if id ==1:
             self.loadMirrors()
-            
+        if id ==3:
+            self.loadBaseLibs()
     def loadMirrors(self):
         self.libMessageBox.clear()
         if not redREnviron.checkInternetConnection():
@@ -109,7 +122,13 @@ class RedRInitWizard(QWizard):
         RSession.Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + unicode(self.libs['URL'][item]) + '"; options(repos=r)})')
         #print self.settings['CRANrepos']
         self.libInfo.setText('Repository URL changed to: '+unicode(self.libs['URL'][item]))
-        
+    def loadBaseLibs(self):
+        try:
+            QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+            RSession.updatePackages(repository = self.settings['CRANrepos'])
+            RSession.install_libraries(['RSvgDevice', 'reshape', 'lattice', 'hexbin', 'ggplot2', 'graph', 'grid', 'limma', 'gregmisc', 'MASS', 'Matrix', 'RSQLite', 'splines'], repository = self.settings['CRANrepos'])
+        finally:
+            QApplication.restoreOverrideCursor()
 def startSetupWizard():
     setupWizard = RedRInitWizard()
     if setupWizard.exec_() == QDialog.Accepted:

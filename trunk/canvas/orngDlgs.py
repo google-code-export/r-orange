@@ -252,6 +252,7 @@ class CanvasOptionsDlg(QDialog):
         #####################################
         # R Settings Tab
         self.rlibrariesBox = OWGUI.widgetBox(RSettings, _('R Libraries'))
+        redRbutton(RSettings, label = _('Update R Libraries'), callback = self.updatePackages)
         self.libInfo = redRwidgetLabel(self.rlibrariesBox, label='Repository URL:\n '+ self.settings['CRANrepos'])
         self.libListBox = redRlistBox(self.rlibrariesBox, label = _('Mirrors'), 
         callback = self.setMirror)
@@ -267,6 +268,10 @@ class CanvasOptionsDlg(QDialog):
 
         self.topLayout.addWidget(self.tabs)
         self.topLayout.addWidget(hbox)
+    def updatePackages(self):
+        url = redREnviron.settings['CRANrepos']
+        RSession.Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + url + '"; options(repos=r)})',silent=True)
+        RSession.updatePackages(repository = url)
     def numberOfDaysChanged(self):
         redRLog.log(redRLog.DEBUG, redRLog.ERROR, 'changing day value to %s' % int(self.numberOfDays.value()))
         self.settings['keepForXDays'] = int(self.numberOfDays.value())

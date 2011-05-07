@@ -231,7 +231,7 @@ def install_libraries(librarys, repository = 'http://cran.r-project.org'):
     if redREnviron.checkInternetConnection():
         mb = QMessageBox(_("Download R Library"), _("You are missing some key files for this widget.\n\n%s\n\nWould you like to download it(them)?"
         ) % unicode(','.join(newLibs)), 
-        QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
+        QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
         if mb.exec_() == QMessageBox.Ok:
             try:
                 #updatePackages(repository)
