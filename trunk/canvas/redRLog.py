@@ -1,9 +1,7 @@
 """redRLog
 
 Handles the standard output and error and redirects it to the various output managers. 
-    .. note::
 
-       An example of intersphinx is this: you **cannot** use :mod:`pickle` on this class.
 """
 
 import redREnviron, os, traceback, sys

@@ -1,7 +1,7 @@
-redRLog
+redRCanvasToolbar
 =================================
    
-.. automodule:: redRLog
+.. automodule:: redRCanvasToolbar
    :members:
    :undoc-members:
    :show-inheritance:

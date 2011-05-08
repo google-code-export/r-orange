@@ -12,9 +12,15 @@
 # serve to show the default.
 
 import sys, os
-
-sys.path.append(os.path.abspath('../canvas'))
-
+#
+#print os.path.abspath('../')
+os.chdir(os.path.abspath('../'))
+#print os.path.abspath('canvas')
+sys.path.append(os.path.abspath('canvas'))
+import redREnviron
+directoryNames = redREnviron.__getDirectoryNames(os.path.abspath(''))
+redREnviron.directoryNames = directoryNames
+redREnviron.addOrangeDirectoriesToPath(directoryNames)
 
 
 # If extensions (or modules to document with autodoc) are in another directory,

@@ -41,7 +41,8 @@ if sys.platform == 'darwin':
 
 ## if windows ##
 elif sys.platform == 'win32':
-    os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
+    print redREnviron.directoryNames['RDir']
+    os.environ['R_HOME'] = redREnviron.directoryNames['RDir']
     import rpy3.robjects as rpy
 ## if linux ##
 elif sys.platform == 'linux2':

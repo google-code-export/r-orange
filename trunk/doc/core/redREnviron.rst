@@ -1,7 +1,7 @@
-redRLog
+redREnviron
 =================================
    
-.. automodule:: redRLog
+.. automodule:: redREnviron
    :members:
    :undoc-members:
    :show-inheritance:
