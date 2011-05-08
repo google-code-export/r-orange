@@ -14,7 +14,14 @@ Contents:
     
    intro
    core
-   base
+   
+Red-R Packages:
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+    
+   libraries/*/*
    
 
 Indices and tables

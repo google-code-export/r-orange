@@ -21,6 +21,7 @@ import redREnviron
 directoryNames = redREnviron.__getDirectoryNames(os.path.abspath(''))
 redREnviron.directoryNames = directoryNames
 redREnviron.addOrangeDirectoriesToPath(directoryNames)
+import orngDlgs
 
 
 # If extensions (or modules to document with autodoc) are in another directory,

@@ -1,5 +1,0 @@
-redRLog
-=================================
-   
-.. automodule:: redRLog
-   :members:

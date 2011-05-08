@@ -1,7 +1,0 @@
-redRLog
-=================================
-   
-.. automodule:: redRLog
-   :members:
-   :undoc-members:
-   :show-inheritance:
