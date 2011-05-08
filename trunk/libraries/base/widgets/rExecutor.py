@@ -145,12 +145,7 @@ class rExecutor(OWRpy):
                 text = unicode(self.command.textCursor().selectedText())
             else:
                 text = unicode(self.command.toPlainText())
-            output = self.R('capture.output(eval(parse(text = \"'+unicode(text).replace('\"', '\\\"')+'\")))', wantType = 'list')
-
-            #pasted = self.R('paste(txt, collapse = " \n")')
-            # if type(pasted) != type(''):
-                # pasted = 'Error occured with evaluation, please chech output for error.'
-            #self.thistext.insertPlainText('>>>'+unicode(text)+'##Done')
+            output = self.R('capture.output(eval(parse(text = \"'+unicode(text).replace('\"', '\\\"')+'\")))', wantType = 'list', silent = True)
             self.thistext.insertPlainText('\n'+'\n'.join(output)+'\n')
             self.thistext.setAlignment(Qt.AlignBottom)
         except Exception as inst:

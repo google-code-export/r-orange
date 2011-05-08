@@ -1,6 +1,8 @@
+# python create.py 1 1, argv[1] = create compiled, argv[2] = make nsis installer
+
 import os, subprocess, sys
-baseDir = 'C:/Users/anup/Documents/red/develop/makeInstallers/installerCode'
-redRDir = 'C:/Users/anup/Documents/red/develop/makeInstallers/code/Version1.85_gold'
+baseDir = 'C:/Users/anup/Documents/red/develop/makeInstallers/installerCode'  # change for system specific
+redRDir = 'C:/Users/anup/Documents/red/develop/makeInstallers/code/Version1.85_gold'  # change for system specific
 
 runCompile = sys.argv[1]
 runInstaller = sys.argv[2]
@@ -12,14 +14,14 @@ if runCompile == '1':
     os.system(cmd)
 
 
-makensisw = "C:/Program Files (x86)/NSIS/makensis.exe"
+makensisw = "C:/Program Files (x86)/NSIS/makensis.exe" # change for system specific
 ##########compiled version
 defines = {}
 defines['REDRVERSION1'] =  "1.85b"
 defines['Red-RDIR']=       redRDir
-defines['RDIRECTORY'] =    "C:/Users/anup/Documents/red/develop/makeInstallers/includes/R-2.11.1"
+defines['RDIRECTORY'] =    "C:/Users/anup/Documents/red/develop/makeInstallers/includes/R-2.11.1"  # system specific
 defines['RVER']=           "R-2.11.1"
-defines['OUTPUTDIR'] =     "C:/Users/anup/Documents/red/develop/makeInstallers/installer"
+defines['OUTPUTDIR'] =     "C:/Users/anup/Documents/red/develop/makeInstallers/installer"  # system specific
 
 params = ''
 for k,v in defines.items():

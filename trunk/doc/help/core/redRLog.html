@@ -1,0 +1,231 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>redRLog &mdash; Red-R v1 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Red-R v1 documentation" href="../index.html" />
+    <link rel="up" title="RedR Core" href="../core.html" />
+    <link rel="next" title="Base Package" href="../base.html" />
+    <link rel="prev" title="redREnviron" href="redREnviron.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../base.html" title="Base Package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="redREnviron.html" title="redREnviron"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Red-R v1 documentation</a> &raquo;</li>
+          <li><a href="../core.html" accesskey="U">RedR Core</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-redRLog">
+<span id="redrlog"></span><h1>redRLog<a class="headerlink" href="#module-redRLog" title="Permalink to this headline">¶</a></h1>
+<p>redRLog</p>
+<p>Handles the standard output and error and redirects it to the various output managers.</p>
+<dl class="class">
+<dt id="redRLog.LogHandler">
+<em class="property">class </em><tt class="descclassname">redRLog.</tt><tt class="descname">LogHandler</tt><a class="reference internal" href="../_modules/redRLog.html#LogHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.LogHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Captures standard out and error and redirects to logging system.</p>
+<p>Redirects the standard out and error to output writers. Also manages the default output writing to log files. Setting output log files and removing old log files.</p>
+<dl class="method">
+<dt id="redRLog.LogHandler.clearOldLogs">
+<tt class="descname">clearOldLogs</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRLog.html#LogHandler.clearOldLogs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.LogHandler.clearOldLogs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRLog.LogHandler.closeLogFile">
+<tt class="descname">closeLogFile</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRLog.html#LogHandler.closeLogFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.LogHandler.closeLogFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRLog.LogHandler.closeLogger">
+<tt class="descname">closeLogger</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRLog.html#LogHandler.closeLogger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.LogHandler.closeLogger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRLog.LogHandler.exceptionHandler">
+<tt class="descname">exceptionHandler</tt><big>(</big><em>type</em>, <em>value</em>, <em>tracebackInfo</em><big>)</big><a class="reference internal" href="../_modules/redRLog.html#LogHandler.exceptionHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.LogHandler.exceptionHandler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRLog.LogHandler.flush">
+<tt class="descname">flush</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRLog.html#LogHandler.flush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.LogHandler.flush" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRLog.LogHandler.moveLogFile">
+<tt class="descname">moveLogFile</tt><big>(</big><em>oldDir</em>, <em>newDir</em><big>)</big><a class="reference internal" href="../_modules/redRLog.html#LogHandler.moveLogFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.LogHandler.moveLogFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRLog.LogHandler.openLogFile">
+<tt class="descname">openLogFile</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRLog.html#LogHandler.openLogFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.LogHandler.openLogFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRLog.LogHandler.showLogFile">
+<tt class="descname">showLogFile</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRLog.html#LogHandler.showLogFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.LogHandler.showLogFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRLog.LogHandler.write">
+<tt class="descname">write</tt><big>(</big><em>text</em><big>)</big><a class="reference internal" href="../_modules/redRLog.html#LogHandler.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.LogHandler.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRLog.LogHandler.writetoFile">
+<tt class="descname">writetoFile</tt><big>(</big><em>table</em>, <em>logLevel</em>, <em>comment</em>, <em>html</em><big>)</big><a class="reference internal" href="../_modules/redRLog.html#LogHandler.writetoFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.LogHandler.writetoFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="redRLog.formatException">
+<tt class="descclassname">redRLog.</tt><tt class="descname">formatException</tt><big>(</big><em>type=None</em>, <em>value=None</em>, <em>tracebackInfo=None</em>, <em>errorMsg=None</em>, <em>plainText=False</em><big>)</big><a class="reference internal" href="../_modules/redRLog.html#formatException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.formatException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format Exception for output.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="redRLog.formatedLogOutput">
+<tt class="descclassname">redRLog.</tt><tt class="descname">formatedLogOutput</tt><big>(</big><em>table</em>, <em>logLevel</em>, <em>stack</em>, <em>comment</em>, <em>widget</em>, <em>html</em><big>)</big><a class="reference internal" href="../_modules/redRLog.html#formatedLogOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.formatedLogOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format Log entry for output.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="redRLog.getSafeString">
+<tt class="descclassname">redRLog.</tt><tt class="descname">getSafeString</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="../_modules/redRLog.html#getSafeString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.getSafeString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Escape log strings for HTML.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="redRLog.log">
+<tt class="descclassname">redRLog.</tt><tt class="descname">log</tt><big>(</big><em>table</em>, <em>logLevel=20</em>, <em>comment=''</em>, <em>widget=None</em>, <em>html=True</em><big>)</big><a class="reference internal" href="../_modules/redRLog.html#log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a log entry.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="redRLog.logOutput">
+<tt class="descclassname">redRLog.</tt><tt class="descname">logOutput</tt><big>(</big><em>table</em>, <em>logLevel</em>, <em>comment</em>, <em>html=False</em><big>)</big><a class="reference internal" href="../_modules/redRLog.html#logOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.logOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute all log writers.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="redRLog.logTrigger">
+<tt class="descclassname">redRLog.</tt><tt class="descname">logTrigger</tt><big>(</big><em>table</em>, <em>logLevel</em><big>)</big><a class="reference internal" href="../_modules/redRLog.html#logTrigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.logTrigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute log trigger with level &gt; logLevel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="redRLog.removeOutputManager">
+<tt class="descclassname">redRLog.</tt><tt class="descname">removeOutputManager</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="../_modules/redRLog.html#removeOutputManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.removeOutputManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a log output manager</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="redRLog.setLogTrigger">
+<tt class="descclassname">redRLog.</tt><tt class="descname">setLogTrigger</tt><big>(</big><em>name</em>, <em>manager</em>, <em>level</em><big>)</big><a class="reference internal" href="../_modules/redRLog.html#setLogTrigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.setLogTrigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a trigger for a certain level. Given a log entry of some level, execute manager.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="redRLog.setOutputManager">
+<tt class="descclassname">redRLog.</tt><tt class="descname">setOutputManager</tt><big>(</big><em>name</em>, <em>manager</em>, <em>level=None</em><big>)</big><a class="reference internal" href="../_modules/redRLog.html#setOutputManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRLog.setOutputManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add log output manager</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="redREnviron.html"
+                        title="previous chapter">redREnviron</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../base.html"
+                        title="next chapter">Base Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/core/redRLog.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../base.html" title="Base Package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="redREnviron.html" title="redREnviron"
+             >previous</a> |</li>
+        <li><a href="../index.html">Red-R v1 documentation</a> &raquo;</li>
+          <li><a href="../core.html" >RedR Core</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anup Parikh, Kyle Covington.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

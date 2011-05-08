@@ -1,0 +1,248 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>OWRpy &mdash; Red-R v1 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Red-R v1 documentation" href="../index.html" />
+    <link rel="up" title="RedR Core" href="../core.html" />
+    <link rel="next" title="redRCanvasToolbar" href="redRCanvasToolbar.html" />
+    <link rel="prev" title="RedR Core" href="../core.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="redRCanvasToolbar.html" title="redRCanvasToolbar"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../core.html" title="RedR Core"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Red-R v1 documentation</a> &raquo;</li>
+          <li><a href="../core.html" accesskey="U">RedR Core</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-OWRpy">
+<span id="owrpy"></span><h1>OWRpy<a class="headerlink" href="#module-OWRpy" title="Permalink to this headline">¶</a></h1>
+<p>&#64;module OWRpy</p>
+<p class="graphviz">
+<img src="../_images/inheritance-f93af8e980a06477dfc5d9157b6b121ce5882760.png" alt="Inheritance diagram of OWRpy" usemap="#inheritance443273aecc" class="inheritance"/>
+<map id="inheritance443273aecc" name="inheritance443273aecc">
+<area shape="rect" id="node7" href="#OWRpy.OWRpy" title="OWRpy.OWRpy" alt="" coords="698,31,764,47"/>
+</map>
+</p>
+<p>General Documentation</p>
+<p>OWRpy is the base class for all Red-R widgets.  All widgets in the Red-R Framework must inherit from this class.
+OWRpy provides, by default, an importation of many of the standard base classes as indicated in the following...</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.graphicsView</span> <span class="kn">import</span> <span class="n">graphicsView</span> <span class="k">as</span> <span class="n">redRgraphicsView</span>
+<span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.widgetBox</span> <span class="kn">import</span> <span class="n">widgetBox</span> <span class="k">as</span> <span class="n">redRwidgetBox</span>
+<span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.button</span> <span class="kn">import</span> <span class="n">button</span> <span class="k">as</span> <span class="n">redRButton</span>
+<span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.spinBox</span> <span class="kn">import</span> <span class="n">spinBox</span> <span class="k">as</span> <span class="n">redRSpinBox</span>
+<span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.lineEdit</span> <span class="kn">import</span> <span class="n">lineEdit</span> <span class="k">as</span> <span class="n">redRLineEdit</span>
+<span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.textEdit</span> <span class="kn">import</span> <span class="n">textEdit</span> <span class="k">as</span> <span class="n">redRTextEdit</span>
+<span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.separator</span> <span class="kn">import</span> <span class="n">separator</span> <span class="k">as</span> <span class="n">redRSeparator</span>
+<span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.filterTable</span> <span class="kn">import</span> <span class="n">filterTable</span> <span class="k">as</span> <span class="n">redRFilterTable</span>
+<span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.radioButtons</span> <span class="kn">import</span> <span class="n">radioButtons</span> <span class="k">as</span> <span class="n">redRRadioButtons</span>
+<span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.listBox</span> <span class="kn">import</span> <span class="n">listBox</span> <span class="k">as</span> <span class="n">redRListBox</span>
+<span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.widgetBox</span> <span class="kn">import</span> <span class="n">widgetBox</span> <span class="k">as</span> <span class="n">redRWidgetBox</span>
+<span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.checkBox</span> <span class="kn">import</span> <span class="n">checkBox</span> <span class="k">as</span> <span class="n">redRCheckBox</span>
+<span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.commitButton</span> <span class="kn">import</span> <span class="n">commitButton</span> <span class="k">as</span> <span class="n">redRCommitButton</span>
+<span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.comboBox</span> <span class="kn">import</span> <span class="n">comboBox</span> <span class="k">as</span> <span class="n">redRComboBox</span>
+<span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.groupBox</span> <span class="kn">import</span> <span class="n">groupBox</span> <span class="k">as</span> <span class="n">redRGroupBox</span>
+<span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.splitter</span> <span class="kn">import</span> <span class="n">splitter</span> <span class="k">as</span> <span class="n">redRSplitter</span>
+<span class="kn">from</span> <span class="nn">libraries.base.qtWidgets.statusLabel</span> <span class="kn">import</span> <span class="n">statusLabel</span> <span class="k">as</span> <span class="n">redRStatusLabel</span>
+</pre></div>
+</div>
+<dl class="class">
+<dt id="OWRpy.OWRpy">
+<em class="property">class </em><tt class="descclassname">OWRpy.</tt><tt class="descname">OWRpy</tt><big>(</big><em>wantGUIDialog=0</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/OWRpy.html#OWRpy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OWRpy.OWRpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">widgetSignals.widgetSignals</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">redRWidgetGUI.redRWidgetGUI</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">widgetSession.widgetSession</span></tt></p>
+<p>This is the base class.</p>
+<p>The class is a meta class of <tt class="xref py py-mod docutils literal"><span class="pre">widgetSignals</span></tt>, <tt class="xref py py-mod docutils literal"><span class="pre">redRWidgetGUI</span></tt>, and <tt class="xref py py-mod docutils literal"><span class="pre">widgetSession</span></tt></p>
+<dl class="method">
+<dt id="OWRpy.OWRpy.R">
+<tt class="descname">R</tt><big>(</big><em>query</em>, <em>callType='getRData'</em>, <em>processingNotice=False</em>, <em>silent=False</em>, <em>showException=True</em>, <em>wantType='convert'</em>, <em>listOfLists=True</em><big>)</big><a class="reference internal" href="../_modules/OWRpy.html#OWRpy.R"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OWRpy.OWRpy.R" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connection to the R session for widgets.</p>
+<p>This function passes most arguments to <tt class="xref py py-mod docutils literal"><span class="pre">RSession</span></tt> as Rcommand.  callType is currently depricated. processingNotice sets the widget status to processing.  silent indicates that the function call should be run in silent mode, silent calls will not be appended to the log or the history, silent should only be set when checking the value of an R object while assignment should not be slient.  Note that if silent is True, exceptions will not be raised should they occur and None will be returned silently.  showException indicates if a popup dialog should be shown when an exception occurs.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="OWRpy.OWRpy.addToCM">
+<tt class="descname">addToCM</tt><big>(</big><em>colname='tmepColname'</em>, <em>CM=None</em>, <em>values=None</em><big>)</big><a class="reference internal" href="../_modules/OWRpy.html#OWRpy.addToCM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OWRpy.OWRpy.addToCM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="OWRpy.OWRpy.assignR">
+<tt class="descname">assignR</tt><big>(</big><em>name</em>, <em>object</em><big>)</big><a class="reference internal" href="../_modules/OWRpy.html#OWRpy.assignR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OWRpy.OWRpy.assignR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="OWRpy.OWRpy.customWidgetDelete">
+<tt class="descname">customWidgetDelete</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/OWRpy.html#OWRpy.customWidgetDelete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OWRpy.OWRpy.customWidgetDelete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by onDeleteWidget and can run arbitrary code to handle the deletion of a widget.</p>
+<p>Should be reimplemented in child classes if desired.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="OWRpy.OWRpy.getReportText2">
+<tt class="descname">getReportText2</tt><big>(</big><em>fileDir</em><big>)</big><a class="reference internal" href="../_modules/OWRpy.html#OWRpy.getReportText2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OWRpy.OWRpy.getReportText2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="OWRpy.OWRpy.getReportText3">
+<tt class="descname">getReportText3</tt><big>(</big><em>fileDir</em><big>)</big><a class="reference internal" href="../_modules/OWRpy.html#OWRpy.getReportText3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OWRpy.OWRpy.getReportText3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="OWRpy.OWRpy.log">
+<tt class="descname">log</tt><big>(</big><em>comment</em>, <em>level=0</em><big>)</big><a class="reference internal" href="../_modules/OWRpy.html#OWRpy.log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OWRpy.OWRpy.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class implemnetation of logging</p>
+<p>Passes parameters to the <a class="reference internal" href="redRLog.html#module-redRLog" title="redRLog"><tt class="xref py py-mod docutils literal"><span class="pre">redRLog</span></tt></a> module.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="OWRpy.OWRpy.makeCM">
+<tt class="descname">makeCM</tt><big>(</big><em>Variable</em><big>)</big><a class="reference internal" href="../_modules/OWRpy.html#OWRpy.makeCM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OWRpy.OWRpy.makeCM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="OWRpy.OWRpy.onDeleteWidget">
+<tt class="descname">onDeleteWidget</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/OWRpy.html#OWRpy.onDeleteWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OWRpy.OWRpy.onDeleteWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when widget is deleted.</p>
+<p>This should be called by Red-R Core only.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="OWRpy.OWRpy.refresh">
+<tt class="descname">refresh</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/OWRpy.html#OWRpy.refresh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OWRpy.OWRpy.refresh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by the sendRefresh command.</p>
+<p>Should be reimplemented in child classes if desired.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="OWRpy.OWRpy.reloadWidget">
+<tt class="descname">reloadWidget</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/OWRpy.html#OWRpy.reloadWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OWRpy.OWRpy.reloadWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called on widget reload.</p>
+<p>Should be reimplemented in child classes if desired.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="OWRpy.OWRpy.require_librarys">
+<tt class="descname">require_librarys</tt><big>(</big><em>librarys</em>, <em>repository=None</em><big>)</big><a class="reference internal" href="../_modules/OWRpy.html#OWRpy.require_librarys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OWRpy.OWRpy.require_librarys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load R libraries using the <tt class="xref py py-mod docutils literal"><span class="pre">RSession</span></tt> require_librarys function.</p>
+<p>Takes a list of strings as R libraries to load.  These should be valid R packages or an error will occur.  repository is an optional argument to specity a custom repository if the library is not in a standard location.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="OWRpy.OWRpy.resetRvariableNames">
+<tt class="descname">resetRvariableNames</tt><big>(</big><em>id=None</em><big>)</big><a class="reference internal" href="../_modules/OWRpy.html#OWRpy.resetRvariableNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OWRpy.OWRpy.resetRvariableNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the self.Rvariables dict with a unique string for each variable desired.</p>
+<p>This should be considered a private function to core but there may be the extreme case where it would be useful.  One major problem with calling this function after setting a new widgetID (using self.widgetID = float) would be that variables that are already declared would be lost to Red-R and would be a waste of memory.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="OWRpy.OWRpy.sendRefresh">
+<tt class="descname">sendRefresh</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/OWRpy.html#OWRpy.sendRefresh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OWRpy.OWRpy.sendRefresh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicates that all widgets should run their refresh functions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="OWRpy.OWRpy.setRvariableNames">
+<tt class="descname">setRvariableNames</tt><big>(</big><em>names</em><big>)</big><a class="reference internal" href="../_modules/OWRpy.html#OWRpy.setRvariableNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OWRpy.OWRpy.setRvariableNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the self.Rvariables dict with a unicode string for each variable, this is called in __init__.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../core.html"
+                        title="previous chapter">RedR Core</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="redRCanvasToolbar.html"
+                        title="next chapter">redRCanvasToolbar</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/core/OWRpy.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="redRCanvasToolbar.html" title="redRCanvasToolbar"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../core.html" title="RedR Core"
+             >previous</a> |</li>
+        <li><a href="../index.html">Red-R v1 documentation</a> &raquo;</li>
+          <li><a href="../core.html" >RedR Core</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anup Parikh, Kyle Covington.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -612,9 +612,9 @@ class MyCanvasText(QGraphicsSimpleTextItem):
 
         xOff = 0; yOff = 0
         rect = painter.boundingRect(QRectF(0,0,2000,2000), self.flags, self.text())
-        if self.flags & Qt.AlignHCenter: xOff = rect.width()/2.
+        if self.flags & Qt.AlignHCenter: xOff = rect.width()/2.0
         elif self.flags & Qt.AlignRight: xOff = rect.width()
-        if self.flags & Qt.AlignVCenter: yOff = rect.height()/2.
+        if self.flags & Qt.AlignVCenter: yOff = rect.height()/2.0
         elif self.flags & Qt.AlignBottom:yOff = rect.height()
         #painter.drawText(self.pos().x()-xOff, self.pos().y()-yOff, rect.width(), rect.height(), self.flags, self.text())
         painter.drawText(-xOff, -yOff, rect.width(), rect.height(), self.flags, self.text())

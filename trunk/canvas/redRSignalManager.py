@@ -1,6 +1,6 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import orngDoc, redRObjects, redRLog
+import redRObjects, redRLog
 import redRi18n
 # def _(a):
     # return a

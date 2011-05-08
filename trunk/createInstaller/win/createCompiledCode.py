@@ -37,7 +37,7 @@ if os.path.exists('build'):
 if os.path.exists(os.path.join(base,'dist')):
     shutil.rmtree(os.path.join(base,'dist'))
 
-includesDir = 'C:/Users/anup/Documents/red/develop/makeInstallers/includes'
+includesDir = 'C:/Users/anup/Documents/red/develop/makeInstallers/includes' # system specific: important for developers version, should have docutils and R2.11.1-basic and msvcp90.dll in directory
 sys.path.insert(0, includesDir)
 sys.path.insert(0, base)
 sys.path.insert(0, os.path.join(base,'canvas'))

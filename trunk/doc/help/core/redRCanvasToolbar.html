@@ -1,0 +1,447 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>redRCanvasToolbar &mdash; Red-R v1 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Red-R v1 documentation" href="../index.html" />
+    <link rel="up" title="RedR Core" href="../core.html" />
+    <link rel="next" title="redREnviron" href="redREnviron.html" />
+    <link rel="prev" title="OWRpy" href="OWRpy.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="redREnviron.html" title="redREnviron"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="OWRpy.html" title="OWRpy"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Red-R v1 documentation</a> &raquo;</li>
+          <li><a href="../core.html" accesskey="U">RedR Core</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-redRCanvasToolbar">
+<span id="redrcanvastoolbar"></span><h1>redRCanvasToolbar<a class="headerlink" href="#module-redRCanvasToolbar" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="redRCanvasToolbar.HTMLDelegate">
+<em class="property">class </em><tt class="descclassname">redRCanvasToolbar.</tt><tt class="descname">HTMLDelegate</tt><big>(</big><em>parent=None</em>, <em>*args</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#HTMLDelegate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.HTMLDelegate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QItemDelegate</span></tt></p>
+<dl class="method">
+<dt id="redRCanvasToolbar.HTMLDelegate.flags">
+<tt class="descname">flags</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#HTMLDelegate.flags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.HTMLDelegate.flags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.HTMLDelegate.paint">
+<tt class="descname">paint</tt><big>(</big><em>painter</em>, <em>option</em>, <em>index</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#HTMLDelegate.paint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.HTMLDelegate.paint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.HTMLDelegate.sizeHint">
+<tt class="descname">sizeHint</tt><big>(</big><em>option</em>, <em>index</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#HTMLDelegate.sizeHint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.HTMLDelegate.sizeHint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="redRCanvasToolbar.SearchBox">
+<em class="property">class </em><tt class="descclassname">redRCanvasToolbar.</tt><tt class="descname">SearchBox</tt><big>(</big><em>widget</em>, <em>label='Search'</em>, <em>orientation='horizontal'</em>, <em>items=</em><span class="optional">[</span><span class="optional">]</span>, <em>toolTip=None</em>, <em>width=-1</em>, <em>callback=None</em>, <em>**args</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#SearchBox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.SearchBox" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">libraries.base.qtWidgets.lineEditHint.lineEditHint</span></tt></p>
+<dl class="method">
+<dt id="redRCanvasToolbar.SearchBox.eventFilter">
+<tt class="descname">eventFilter</tt><big>(</big><em>object</em>, <em>ev</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#SearchBox.eventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.SearchBox.eventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.SearchBox.searchCallback">
+<tt class="descname">searchCallback</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#SearchBox.searchCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.SearchBox.searchCallback" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.SearchBox.searchDialog">
+<tt class="descname">searchDialog</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#SearchBox.searchDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.SearchBox.searchDialog" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="redRCanvasToolbar.SearchBox2">
+<em class="property">class </em><tt class="descclassname">redRCanvasToolbar.</tt><tt class="descname">SearchBox2</tt><big>(</big><em>widget</em>, <em>label='Search'</em>, <em>orientation='horizontal'</em>, <em>items={}</em>, <em>toolTip=None</em>, <em>width=-1</em>, <em>callback=None</em>, <em>**args</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#SearchBox2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.SearchBox2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">libraries.base.qtWidgets.lineEdit.lineEdit</span></tt></p>
+<dl class="method">
+<dt id="redRCanvasToolbar.SearchBox2.doneCompletion">
+<tt class="descname">doneCompletion</tt><big>(</big><em>*args</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#SearchBox2.doneCompletion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.SearchBox2.doneCompletion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.SearchBox2.eventFilter">
+<tt class="descname">eventFilter</tt><big>(</big><em>object</em>, <em>ev</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#SearchBox2.eventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.SearchBox2.eventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.SearchBox2.getLastTextItem">
+<tt class="descname">getLastTextItem</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#SearchBox2.getLastTextItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.SearchBox2.getLastTextItem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.SearchBox2.searchCallback">
+<tt class="descname">searchCallback</tt><big>(</big><em>widgetInfo</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#SearchBox2.searchCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.SearchBox2.searchCallback" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.SearchBox2.searchDialog">
+<tt class="descname">searchDialog</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#SearchBox2.searchDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.SearchBox2.searchDialog" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.SearchBox2.setItems">
+<tt class="descname">setItems</tt><big>(</big><em>items</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#SearchBox2.setItems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.SearchBox2.setItems" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.SearchBox2.textEdited">
+<tt class="descname">textEdited</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#SearchBox2.textEdited"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.SearchBox2.textEdited" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.SearchBox2.updateSuggestedItems">
+<tt class="descname">updateSuggestedItems</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#SearchBox2.updateSuggestedItems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.SearchBox2.updateSuggestedItems" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="redRCanvasToolbar.myQListView">
+<em class="property">class </em><tt class="descclassname">redRCanvasToolbar.</tt><tt class="descname">myQListView</tt><big>(</big><em>parent=None</em>, <em>*args</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#myQListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.myQListView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QListView</span></tt></p>
+<dl class="method">
+<dt id="redRCanvasToolbar.myQListView.keyPressEvent">
+<tt class="descname">keyPressEvent</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#myQListView.keyPressEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.myQListView.keyPressEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.myQListView.mousePressEvent">
+<tt class="descname">mousePressEvent</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#myQListView.mousePressEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.myQListView.mousePressEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu">
+<em class="property">class </em><tt class="descclassname">redRCanvasToolbar.</tt><tt class="descname">redRCanvasToolbarandMenu</tt><big>(</big><em>canvas</em>, <em>toolbar</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.addToRecentMenu">
+<tt class="descname">addToRecentMenu</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.addToRecentMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.addToRecentMenu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.dumpVariables">
+<tt class="descname">dumpVariables</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.dumpVariables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.dumpVariables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.importSchema">
+<tt class="descname">importSchema</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.importSchema"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.importSchema" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.initMenu">
+<tt class="descname">initMenu</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.initMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.initMenu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.initToolbar">
+<tt class="descname">initToolbar</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.initToolbar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.initToolbar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuCheckForUpdates">
+<tt class="descname">menuCheckForUpdates</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuCheckForUpdates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuCheckForUpdates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemAboutOrange">
+<tt class="descname">menuItemAboutOrange</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemAboutOrange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemAboutOrange" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemCanvasOptions">
+<tt class="descname">menuItemCanvasOptions</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemCanvasOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemCanvasOptions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemClearOutputWindow">
+<tt class="descname">menuItemClearOutputWindow</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemClearOutputWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemClearOutputWindow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemDeleteWidgetSettings">
+<tt class="descname">menuItemDeleteWidgetSettings</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemDeleteWidgetSettings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemDeleteWidgetSettings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemDisableAll">
+<tt class="descname">menuItemDisableAll</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemDisableAll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemDisableAll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemEditWidgetShortcuts">
+<tt class="descname">menuItemEditWidgetShortcuts</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemEditWidgetShortcuts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemEditWidgetShortcuts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemEnableAll">
+<tt class="descname">menuItemEnableAll</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemEnableAll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemEnableAll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemInstallPackage">
+<tt class="descname">menuItemInstallPackage</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemInstallPackage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemInstallPackage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemNewScheme">
+<tt class="descname">menuItemNewScheme</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemNewScheme"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemNewScheme" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemOpen">
+<tt class="descname">menuItemOpen</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemOpen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemOpen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemOpenFreeze">
+<tt class="descname">menuItemOpenFreeze</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemOpenFreeze"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemOpenFreeze" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemOpenLastSchema">
+<tt class="descname">menuItemOpenLastSchema</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemOpenLastSchema"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemOpenLastSchema" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemReport">
+<tt class="descname">menuItemReport</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemReport" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemSave">
+<tt class="descname">menuItemSave</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemSave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemSave" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemSaveAs">
+<tt class="descname">menuItemSaveAs</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemSaveAs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemSaveAs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemSaveAsAppButtons">
+<tt class="descname">menuItemSaveAsAppButtons</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemSaveAsAppButtons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemSaveAsAppButtons" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemSaveAsAppTabs">
+<tt class="descname">menuItemSaveAsAppTabs</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemSaveAsAppTabs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemSaveAsAppTabs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemSaveOutputWindow">
+<tt class="descname">menuItemSaveOutputWindow</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemSaveOutputWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemSaveOutputWindow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemSaveSettings">
+<tt class="descname">menuItemSaveSettings</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemSaveSettings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemSaveSettings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemSaveTemplate">
+<tt class="descname">menuItemSaveTemplate</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemSaveTemplate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemSaveTemplate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemSelectAll">
+<tt class="descname">menuItemSelectAll</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemSelectAll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemSelectAll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemShowOutputWindow">
+<tt class="descname">menuItemShowOutputWindow</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemShowOutputWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemShowOutputWindow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemShowToolbar">
+<tt class="descname">menuItemShowToolbar</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemShowToolbar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemShowToolbar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemShowWidgetToolbar">
+<tt class="descname">menuItemShowWidgetToolbar</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuItemShowWidgetToolbar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuItemShowWidgetToolbar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuOpenLocalCanvasHelp">
+<tt class="descname">menuOpenLocalCanvasHelp</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuOpenLocalCanvasHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuOpenLocalCanvasHelp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuOpenLocalOrangeHelp">
+<tt class="descname">menuOpenLocalOrangeHelp</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuOpenLocalOrangeHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuOpenLocalOrangeHelp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuOpenOnlineCanvasHelp">
+<tt class="descname">menuOpenOnlineCanvasHelp</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuOpenOnlineCanvasHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuOpenOnlineCanvasHelp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuOpenOnlineOrangeHelp">
+<tt class="descname">menuOpenOnlineOrangeHelp</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuOpenOnlineOrangeHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuOpenOnlineOrangeHelp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.menuOpenPackageManager">
+<tt class="descname">menuOpenPackageManager</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.menuOpenPackageManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.menuOpenPackageManager" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.openRecentFile">
+<tt class="descname">openRecentFile</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.openRecentFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.openRecentFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.readRecentFiles">
+<tt class="descname">readRecentFiles</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.readRecentFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.readRecentFiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.readShortcuts">
+<tt class="descname">readShortcuts</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.readShortcuts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.readShortcuts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.reloadWidgets">
+<tt class="descname">reloadWidgets</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.reloadWidgets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.reloadWidgets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.restartRedR">
+<tt class="descname">restartRedR</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.restartRedR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.restartRedR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.selectAllWidgets">
+<tt class="descname">selectAllWidgets</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.selectAllWidgets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.selectAllWidgets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.showOutputException">
+<tt class="descname">showOutputException</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.showOutputException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.showOutputException" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.updateSnapToGrid">
+<tt class="descname">updateSnapToGrid</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.updateSnapToGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.updateSnapToGrid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="redRCanvasToolbar.redRCanvasToolbarandMenu.updateStyle">
+<tt class="descname">updateStyle</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/redRCanvasToolbar.html#redRCanvasToolbarandMenu.updateStyle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#redRCanvasToolbar.redRCanvasToolbarandMenu.updateStyle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="OWRpy.html"
+                        title="previous chapter">OWRpy</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="redREnviron.html"
+                        title="next chapter">redREnviron</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/core/redRCanvasToolbar.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="redREnviron.html" title="redREnviron"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="OWRpy.html" title="OWRpy"
+             >previous</a> |</li>
+        <li><a href="../index.html">Red-R v1 documentation</a> &raquo;</li>
+          <li><a href="../core.html" >RedR Core</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anup Parikh, Kyle Covington.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
