@@ -1,7 +1,10 @@
 """
-<name>Read Files</name>
-<tags>Data Input</tags>
-<icon>readfile.png</icon>
+:Name: Read File
+:Icon: readfile.png
+:Authors: Red-R Development Team
+:Summary: Read data files into Red-R.
+:Details: This widget will read data from tab, comma, or space delimited text files. On Microsoft Windows it will also ready Excel files. Click the browse button to search your computer for the file to read. Select how the columns are delimited. On data read or change in these options, the first few lines of the file will be scanned. R will try to automaticlly determine the type of the column. The column data types can be changed. Once the data, column and row header information is properly selected click Load Data to read the full file into Red-R and send forward.
+:Outputs: `signals.base.RDataFrame`
 """
 
 from OWRpy import *
@@ -30,9 +33,14 @@ from libraries.base.qtWidgets.widgetBox import widgetBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class readFile(OWRpy):
-    
+    """
+        asdfasdfsd
+        
+        :py:class:`signals.base.RDataFrame`
+    """
     globalSettingsList = ['filecombo','path']
     def __init__(self, **kwargs):
+        """asdfasdfasdaaaaaaaaaaaaaaaaaaaaaaaaaa"""
         OWRpy.__init__(self, **kwargs)
         self.path = os.path.abspath('/')
         self.colClasses = []
@@ -44,6 +52,7 @@ class readFile(OWRpy):
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         
         #signals
+        self.__doc__ += """signals.base.RDataFrame"""
         self.outputs.addOutput('od1', _('Output Data'), signals.base.RDataFrame) #[("data.frame", rdf.RDataFrame)]
         #GUI
         area = widgetBox(self.controlArea,orientation='horizontal',alignment=Qt.AlignTop)       
