@@ -175,9 +175,11 @@ class CanvasLine(QGraphicsPathItem):
         self.setNoData(False)
         self.view.scene().update()
         return
-# #######################################
-# # CANVAS WIDGET
-# #######################################
+        
+
+    # #######################################
+    # # CANVAS WIDGET
+    # #######################################
 class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a graphical representation of it
     def __init__(self, canvas, view, widgetInfo, defaultPic, canvasDlg, instanceID, tabName):        
         # print widgetSettings
@@ -203,7 +205,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.ghostWidgets = []          # list of ghost widgets that this widget could connect to
         self.ghost = False
         self.icon = QIcon(widgetInfo.icon)
-        self.tab = canvasDlg.schema.activeTabName()
+        self.tab = redRObjects.activeTabName()
         #self.instance.updateStatusBarState()
 
         QGraphicsRectItem.__init__(self, None, canvas)

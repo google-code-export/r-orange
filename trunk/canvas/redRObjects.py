@@ -22,10 +22,12 @@ import orngCanvasItems
 # print 'after canvasitems'
 import redREnviron
 # print 'after enrivon'
-import orngView, time, orngRegistry, OWRpy
+import orngView, time, orngRegistry, OWRpy, math
 # print 'after orngview'
-import redRLog
+import redRLog, redRStyle
 # print 'after log'
+from orngSignalManager import SignalManager, SignalDialog
+sm = SignalManager()
 
 import redRi18n
 print 'after imports'
@@ -211,6 +213,85 @@ def removeWidgetIcon(icon):
         while icon in t:
             redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('removing widget icon instance %s') % icon)
             t.remove(icon)
+
+#################################
+####    Core Widget Functions ###
+#################################
+def widgets():
+    wlist = []
+    rolist = getIconsByTab()
+    for k, l in rolist.items():
+        wlist += l
+    return wlist
+def resolveCollisions(newwidget, x, y):
+    if x==-1 or y==-1:
+        if activeTab().getSelectedWidgets():
+            x = activeTab().getSelectedWidgets()[-1].x() + 110
+            y = activeTab().getSelectedWidgets()[-1].y()
+        elif widgets() != []:
+            x = widgets()[-1].x() + 110  # change to selected widget 
+            y = widgets()[-1].y()
+        else:
+            x = 30
+            y = 50
+    newwidget.setCoords(x, y)
+    # move the widget to a valid position if necessary
+    invalidPosition = (activeTab().findItemTypeCount(activeCanvas().collidingItems(newwidget), orngCanvasItems.CanvasWidget) > 0)
+    if invalidPosition:
+        for r in range(50, 300, 50):
+            for fi in [90, -90, 0, 45, -45]:
+                xOff = r * math.cos(math.radians(fi))
+                yOff = r * math.sin(math.radians(fi))
+                rect = QRectF(x+xOff-20, y+yOff-20, 75, 75)
+                invalidPosition = activeTab().findItemTypeCount(activeCanvas().items(rect), orngCanvasItems.CanvasWidget) > 0
+                if not invalidPosition:
+                    newwidget.setCoords(x+xOff, y+yOff)
+                    break
+            if not invalidPosition:
+                break
+def addWidget(widgetInfo, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None, id = None):
+    """A core function to expose widget addition to the rest of core.  Taken over from :mod:`orngDoc`.
+    .. note::
+        The function in :mod:`orngDoc` is still active but will soon be depricated for this function.
+    """
+    global sm
+    global canvasDlg
+    qApp.setOverrideCursor(Qt.WaitCursor)
+    try:
+        instanceID = addInstance(sm, widgetInfo, widgetSettings, forceInSignals, forceOutSignals, id = id)
+        caption = widgetInfo.name
+        if getIconByIconCaption(caption):
+            i = 2
+            while getIconByIconCaption('%s (%s)' % (caption, str(i))): i += 1
+            caption = '%s (%s)' % (caption, str(i))
+        
+        newwidget = newIcon(activeCanvas(), activeTab(), widgetInfo, redRStyle.defaultWidgetIcon, canvasDlg, instanceID = instanceID, tabName = activeTabName())
+        newwidget.caption = caption
+        newwidget.updateText(caption)
+        redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Create new widget named %s.') % newwidget.caption)
+    except:
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+        qApp.restoreOverrideCursor()
+        return None
+        
+    resolveCollisions(newwidget, x, y)
+    newwidget.instance().setWindowTitle(newwidget.caption)
+    activeCanvas().update()
+    
+    try:
+        sm.addWidget(newwidget.instance())
+        newwidget.show()
+        newwidget.updateTooltip()
+        newwidget.setProcessing(1)
+        # if redREnviron.settings["saveWidgetsPosition"]:
+            # newwidget.instance().restoreWidgetPosition()
+        newwidget.setProcessing(0)
+    except:
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            
+    qApp.restoreOverrideCursor()
+    return newwidget.instanceID
+
 ###########################
 ######  instances       ###
 ###########################

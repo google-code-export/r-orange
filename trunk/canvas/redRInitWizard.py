@@ -4,7 +4,7 @@ import os, sys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRGUI
-import RSession, redREnviron, redRSaveLoad
+import RSession, redREnviron, redRSaveLoad, redRLog
 import redRi18n
 _ = redRi18n.Coreget_()
 class RedRInitWizard(QWizard):
@@ -43,6 +43,7 @@ class RedRInitWizard(QWizard):
         _('Check this if you want to send errors to Red-R.\nWe will only show the errors to Red-R or package maintainers.'), 
         _('Check this if you want to be asked before a report is sent to Red-R.\nOtherwise a report will be sent automatically to Red-R.')])
         self.redRExceptionHandling.setChecked(['submitError','showErrorWindow'])
+        #self.REDRCORE_initWizard_ouptutVerbosity = redRGUI.base.comboBox(self.registerPage, label = _('Output Verbosity Level'), items=redRLog.logLevelsByLevel)
         
         
         self.RSetupPage = QWizardPage()
@@ -63,12 +64,13 @@ class RedRInitWizard(QWizard):
         self.RLibraryPage.setLayout(QVBoxLayout())
         self.RLibraryPage.setTitle(_('Load R Libraries'))
         redRGUI.base.widgetLabel(self.RLibraryPage, 
-'''Red-R needs to install these R libraries on this machine:
+'''Red-R needs to verify that these R libraries are installed on this machine:
     'RSvgDevice', 'reshape', 'lattice', 'hexbin', 'ggplot2', 
     'graph', 'grid', 'limma', 'gregmisc', 'MASS', 'Matrix', 
     'RSQLite', 'splines'
+    \n\nThe libraries will be installed after this dialog closes.  The process may take several minutes.
     \n\nPlease click the Next Button''')
-        
+    
         self.runExamplePage = QWizardPage()
         self.runExamplePage.setLayout(QVBoxLayout())
         self.runExamplePage.setTitle(_('Finished'))
@@ -94,7 +96,7 @@ class RedRInitWizard(QWizard):
         self.addPage(self.RSetupPage)
         
         self.addPage(self.runExamplePage)
-        self.loadBaseLibs()
+        self.show()
         
         
     def pageChanged(self,id):
@@ -114,13 +116,15 @@ class RedRInitWizard(QWizard):
         RSession.Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + unicode(self.libs['URL'][item]) + '"; options(repos=r)})')
         #print self.settings['CRANrepos']
         self.libInfo.setText('Repository URL changed to: '+unicode(self.libs['URL'][item]))
-    def loadBaseLibs(self):
-        try:
-            QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-            RSession.updatePackages(repository = self.settings['CRANrepos'])
-            RSession.install_libraries(['RSvgDevice', 'reshape', 'lattice', 'hexbin', 'ggplot2', 'graph', 'grid', 'limma', 'gregmisc', 'MASS', 'Matrix', 'RSQLite', 'splines'], repository = self.settings['CRANrepos'])
-        finally:
-            QApplication.restoreOverrideCursor()
+
+def loadBaseLibs():
+    try:
+        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        RSession.updatePackages(repository = redREnviron.settings['CRANrepos'])
+        RSession.install_libraries(['RSvgDevice', 'reshape', 'lattice', 'hexbin', 'ggplot2', 'graph', 'grid', 'limma', 'gregmisc', 'MASS', 'Matrix', 'RSQLite', 'splines'], repository = redREnviron.settings['CRANrepos'])
+    finally:
+        QApplication.restoreOverrideCursor()
+        
 def startSetupWizard():
     setupWizard = RedRInitWizard()
     if setupWizard.exec_() == QDialog.Accepted:
@@ -132,13 +136,15 @@ def startSetupWizard():
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             pass
         redREnviron.settings['focusOnCatchException'] = 'showErrorWindow' in setupWizard.redRExceptionHandling.getCheckedIds()
-        
+        #redREnviron.settings['outputVerbosity'] = setupWizard.REDRCORE_initWizard_ouptutVerbosity.currentId()
         redREnviron.settings['uploadError'] = 'submitError' in setupWizard.redRExceptionHandling.getCheckedIds()
         redREnviron.settings['askToUploadError'] = 'askToSubmit' in setupWizard.redRExceptionHandling.getCheckedIds()
-    
+        loadBaseLibs()
         if _('Start Example') in setupWizard.showExample.getChecked():
             redRSaveLoad.loadDocument(os.path.join(redREnviron.directoryNames['examplesDir'], 'firstSchema.rrs'))
         
     #print redREnviron.settings
     redREnviron.settings['firstLoad'] = False
     redREnviron.saveSettings()
+    
+

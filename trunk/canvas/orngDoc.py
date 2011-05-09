@@ -1,18 +1,28 @@
-# Author: Gregor Leban (gregor.leban@fri.uni-lj.si) modified by Kyle R Covington and Anup Parikh
+"""orngDoc
+
+Unfortunately, this module and the class SchemaDoc have been used for many different tasks.  RRCDT is currently in the process of cleaning this code and assigning tasks to separate modules.  Some functionality in this module includes;
+
+    1 - Handling the tab view, checking active tabs, collecting and manipulating icons on the tabs.  These functions are moving to :mod:`redRObjects` but many will stay here.
+    2 - Loading and saving of widgets.  These functions are moving to :mod:`redRSaveLoad`
+    3 - Instantiation of widget.  These functions are moving to :mod:`redRObjects`
+    4 - Environment changes such as keypress events, icon clicking, line clicking, etc.  These are moving to :mod:`orngView` and :mod:`redR`, though some may stay here.
+    
+One may wonder what the SchemaDoc actually is.  It's a QWidget that sits in the main application and actually holds the tab view for the canvas(s).  As you can see the functions of this widget have largely exceeded those initially planned by the fine people at Qt.
+"""
+
+# Author: Gregor Leban (gregor.leban@fri.uni-lj.si) modified by RRCDT
 # Description:
 #    document class - main operations (save, load, ...)
 #
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys, os, os.path, traceback, redRLog
-from xml.dom.minidom import Document, parse
-import xml.dom.minidom
 import orngView, orngCanvasItems
 from orngDlgs import *
 import RSession, globalData, redRPackageManager, redRStyle, redRHistory, redREnviron
 import redRi18n
 from orngSignalManager import SignalManager, SignalDialog
-import cPickle, math, zipfile, urllib, sip, redRObjects, redRSaveLoad
+import cPickle, math, sip, redRObjects, redRSaveLoad
 import redRGUI
 #import pprint, 
 # pp = pprint.PrettyPrinter(indent=4)
@@ -62,7 +72,6 @@ class SchemaDoc(QWidget):
         
         self.layout().setMargin(0)
         self.RVariableRemoveSupress = 0
-        self.urlOpener = urllib.FancyURLopener()
         # log.setOutputManager(self)
         # self.printOutput = canvasDlg.printOutput
         redRObjects.setSchemaDoc(self)
@@ -73,6 +82,7 @@ class SchemaDoc(QWidget):
     def setActiveTab(self, tabname):
         redRObjects.setActiveTab(tabname)
     def widgets(self):
+        """Returns all of the icons using :mod:`redRObjects` function widgets()"""
         wlist = []
         rolist = redRObjects.getIconsByTab()
         for k, l in rolist.items():
@@ -141,11 +151,13 @@ class SchemaDoc(QWidget):
             ## remove the references to the tab in the redRObjects
             redRObjects.removeSchemaTab(tabname)
     def selectAllWidgets(self):
+        """Selects all widgets in the active tab.  In the process of deprication"""
         self.activeTab().selectAllWidgets()
     # add line connecting widgets outWidget and inWidget
     # if necessary ask which signals to connect
-    def addLine(self, outWidget, inWidget, enabled = True, process = True, ghost = False):  # adds the signal link between the data and instantiates the line on the canvas.  move to the signal manager or the view?
-        
+    def addLine(self, outWidget, inWidget, enabled = True, process = True, ghost = False):  
+        """adds the signal link between the data and instantiates the line on the canvas.  move to the signal manager or the view?
+        """
         if outWidget == inWidget: 
             raise Exception, _('Same Widget')
         
@@ -397,6 +409,9 @@ class SchemaDoc(QWidget):
         ##self.widgets.append(newwidget)
         return newwidget
     def addWidget(self, widgetInfo, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None, id = None):
+        """Calls several functions in redRObjects to make a new widget.  This is in the process of deprication"""
+        return redRObjects.addWidget(widgetInfo, x = x, y = y, caption = caption, widgetSettings = widgetSettings, saveTempDoc = saveTempDoc, forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
+        
         qApp.setOverrideCursor(Qt.WaitCursor)
         try:
             instanceID = self.addInstance(self.signalManager, widgetInfo, widgetSettings, forceInSignals, forceOutSignals, id = id)

@@ -6,7 +6,7 @@ from OWRpy import *
 import redRGUI, signals
 import redRi18n
 _ = redRi18n.get_(package = 'base')
-class redRGUI.base.table(OWRpy): 
+class RedRtable(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)

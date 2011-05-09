@@ -1,4 +1,13 @@
-# Author: Gregor Leban (gregor.leban@fri.uni-lj.si) modified by Kyle R Covington
+"""orngRegistry
+
+This module registers widgets, signals, qtWidgets, and templates for use in Red-R.  
+
+In general these functions should be called only by Core.
+"""
+
+
+
+# Author: Gregor Leban (gregor.leban@fri.uni-lj.si) modified by RRCDT
 #
 
 import os, sys, re, glob, stat, redRLog
@@ -21,33 +30,46 @@ import redRi18n
     # return a
 _ = redRi18n.Coreget_()
 class WidgetDescription:
+    """Widget description container"""
     def __init__(self, **attrs):
         self.__dict__.update(attrs)
 class TemplateDescription:
+    """Template description container"""
     def __init__(self, **attrs):
         self.__dict__.update(attrs)
         
 class WidgetCategory(dict):
+    """Widget category container"""
     def __init__(self, directory, widgets):
         self.update(widgets)
         self.directory = directory
 
 AllPackages = {}
 def readCategories(force = True):
+    """Reads the categories of widgets from the libraries dir of Red-R.  force indicates if the categories should be remade.  If not then a cashed categories object is used instead.  Using the cashed categories makes loading of Red-R much faster, but might result in unexpected behavior for developers.  
+    
+    .. note::
+        When new packages are loaded force is set to true.
+        
+    """
     if not force:  ## if this is a reload of Red-R and we are using the same categories.
-        if os.path.exists(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetRegistry.pic')):
-            with open(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetRegistry.pic'), 'rb') as f:
-                categories = cPickle.load(f)
-                import imp
-                for c, v in categories['widgets'].items():
-                    print c, v, v.name
-                    try:
-                        wmod = imp.load_source(v.fileName, v.fullName)
-                    except Exception as inst:
-                        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException()) 
-                        #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('<b>Error loading meta data for %s; %s</b>') % (metaFile, unicode(inst)))
-                        continue
-                return categories
+        try:
+            if os.path.exists(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetRegistry.pic')):
+                with open(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetRegistry.pic'), 'rb') as f:
+                    categories = cPickle.load(f)
+                    import imp
+                    for c, v in categories['widgets'].items():
+                        # debugging print c, v, v.name
+                        try:
+                            wmod = imp.load_source(v.fileName, v.fullName)
+                        except Exception as inst:
+                            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException()) 
+                            #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('<b>Error loading meta data for %s; %s</b>') % (metaFile, unicode(inst)))
+                            continue
+                    return categories
+        except Exception as inst:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            pass
     # print '##########################in readCategories'
     redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Loading repository of packages.'))
     global widgetsWithError 
@@ -66,7 +88,7 @@ def readCategories(force = True):
             # directory = os.path.join(addOnDirName, dirName)
             # if os.path.isdir(directory):
                 # directories.append((dirName, directory, ""))
-    categories = {'widgets':[], 'templates':[], 'tags': None}     
+    categories = {'widgets':{}, 'templates':[], 'tags': None}     
     allWidgets = []
     theTags = xml.dom.minidom.parseString('<tree></tree>')
     for dirName, directory, plugin in directories:
@@ -115,19 +137,10 @@ hasErrors = False
 splashWindow = None
 widgetsWithError = []
 
-# takes an xml node and returns the text 
-def getXMLText(self, nodelist):
-    rc = ''
-    for node in nodelist:
-        if node.nodeType == node.TEXT_NODE:
-            rc = rc + node.data
-            
-    rc = unicode(rc).strip()
-    return rc
-
 # takes an xml object representing a red-r package and creates a structured dict
 # TODO: should perform error checking to make sure the xml file is valid
 def parsePackageXML(node):
+    """Parse the XML data structure of the meta file."""
     packageDict = {}
     packageDict['Name'] = getXMLText(node.getElementsByTagName('Name')[0].childNodes)
     packageDict['Author'] = getXMLText(node.getElementsByTagName('Author')[0].childNodes)
@@ -156,12 +169,16 @@ def parsePackageXML(node):
     return packageDict
 
 def addTagsSystemTag(tags,newTag):
-                
+    """Make the tag system that will appear in the tree view.
+    
+    move through the group tags in tags, if you find the grouname of tag 
+    then you don't need to add it, rather just add the child tags to that tag.
+    tags = theTags.childNodes[0]
+    print tags.childNodes, _('Child Nodes')
+    
+    """
     name = unicode(newTag.getAttribute('name'))
-    # move through the group tags in tags, if you find the grouname of tag 
-    #then you don't need to add it, rather just add the child tags to that tag.
-    #tags = theTags.childNodes[0]
-    #print tags.childNodes, _('Child Nodes')
+    
     for t in tags.childNodes:
         if t.nodeName == 'group':
             #print t
@@ -179,6 +196,11 @@ def addTagsSystemTag(tags,newTag):
     tags.appendChild(newTag)
     #theTags.childNodes[0] = tags    
 def getXMLText(nodelist):
+    """A function to handle retrieval of xml text.  
+    
+    .. note:: 
+        This is such a ubiquitous function that we may consider making our own xml handler with this built in.
+    """
     rc = ''
     for node in nodelist:
         if node.nodeType == node.TEXT_NODE:
@@ -188,6 +210,10 @@ def getXMLText(nodelist):
     return rc
 
 def readWidgets(directory, package):
+    """Read widgets from a package.
+    
+    All .py files are compiled in the directory and then registered using the meta tags.  Developers should make a valid meta file for each widget.  If the meta file does not exist there is an opportunity to add one if the exception output level is set to devel.  In not then the widget will not appear on the tree and you will be really confused!!!    
+    """
     import sys, imp
     global hasErrors, splashWindow, widgetsWithError
     import compileall
@@ -195,7 +221,7 @@ def readWidgets(directory, package):
     #print '################readWidgets', directory, package
     widgets = []
     for filename in glob.iglob(os.path.join(directory,'widgets', "*.py")):
-        if os.path.isdir(filename) or os.path.islink(filename):
+        if os.path.isdir(filename) or os.path.islink(filename) or '__init__' in filename:
             continue
         
         datetime = unicode(os.stat(filename)[stat.ST_MTIME])
@@ -211,24 +237,26 @@ def readWidgets(directory, package):
         widgetMetaData = {}
         metaFile = os.path.join(directory,'meta','widgets',widgetName+'.xml')
         makeXML = True
-        if not os.path.exists(metaFile):
+        if not os.path.exists(metaFile) and '__init__' not in filename:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('<b>Meta file for %s does not exist.</b>') % (filename))
             
-            if redREnviron.settings['outputVerbosity'] == 5 and makeXML:
-                md = orngDlgs.MetaDialog(filename)
-                if md.exec_() == QDialog.Accepted:
-                    text = md.text.toPlainText()
-                    if not os.path.exists(os.path.join(directory, 'meta')):
-                        os.mkdir(os.path.join(directory, 'meta'))
-                    if not os.path.exists(os.path.join(directory, 'meta', 'widgets')):
-                        os.mkdir(os.path.join(directory, 'meta', 'widgets'))
-                    with open(os.path.join(directory,'meta','widgets',widgetName+'.xml'), 'w') as f: f.write(text)
-                else:
-                    if md.notNow:
-                        makeXML = False
-                        continue
+            if redREnviron.settings['outputVerbosity'] == 5 and makeXML and '__init__' not in filename:
+                try:
+                    md = orngDlgs.MetaDialog(filename)
+                    if md.exec_() == orngDlgs.QDialog.Accepted:
+                        text = md.text.toPlainText()
+                        if not os.path.exists(os.path.join(directory, 'meta')):
+                            os.mkdir(os.path.join(directory, 'meta'))
+                        if not os.path.exists(os.path.join(directory, 'meta', 'widgets')):
+                            os.mkdir(os.path.join(directory, 'meta', 'widgets'))
+                        with open(os.path.join(directory,'meta','widgets',widgetName+'.xml'), 'w') as f: f.write(text)
                     else:
-                        continue
+                        if md.notNow:
+                            makeXML = False
+                            continue
+                        else:
+                            continue
+                except: pass
             else:
                 continue
         try:
@@ -249,7 +277,7 @@ def readWidgets(directory, package):
                     widgetMetaData['tags'].append((getXMLText(tag.childNodes), int(tag.getAttribute('priority'))))
                 else:
                     widgetMetaData['tags'].append((getXMLText(tag.childNodes), 0))
-        print widgetMetaData['tags']
+        # debugging print widgetMetaData['tags']
         widgetMetaData['inputs'] = []
         if len(widgetMetaXML.getElementsByTagName('input')):
             for input in widgetMetaXML.getElementsByTagName('input'):
@@ -337,6 +365,8 @@ def readWidgets(directory, package):
     return widgets
 
 def readTemplates(directory):
+    """Reads the templates that are availabel in the package specified by directory."""
+    
     import sys, imp
     global hasErrors, splashWindow, widgetsWithError
     
@@ -367,33 +397,25 @@ def readTemplates(directory):
         
     return templates
 def loadPackage(package):
+    """Loads a Red-R package.  This will also ensure that dependencies are fulfilled for each package."""
     # print package
     downloadList = {}
     downloadList[package['Name']] = {'Version':unicode(package['Version']['Number']), 'installed':False}
     deps = redRPackageManager.packageManager.getDependencies(downloadList)
     downloadList.update(deps)
-    # print downloadList
-    # for name,version in downloadList.items():
-        # if package =='base': continue
-        # if not hasattr(redRGUI,name):
-            # redRGUI.registerQTWidgets(name)
-        # if not hasattr(signals,name):
-            # signals.registerRedRSignals(name)
     
-    
-    
-    
-### we really need to change this...
-re_inputs = re.compile(r'[ \t]+self.inputs\s*=\s*(?P<signals>\[[^]]*\])', re.DOTALL)
-re_outputs = re.compile(r'[ \t]+self.outputs\s*=\s*(?P<signals>\[[^]]*\])', re.DOTALL)
+#### Depricated
+#### we really need to change this...
+#re_inputs = re.compile(r'[ \t]+self.inputs\s*=\s*(?P<signals>\[[^]]*\])', re.DOTALL)
+#re_outputs = re.compile(r'[ \t]+self.outputs\s*=\s*(?P<signals>\[[^]]*\])', re.DOTALL)
 
 
-re_tuple = re.compile(r"\(([^)]+)\)")
+#re_tuple = re.compile(r"\(([^)]+)\)")
 
-def getSignalList(regex, data):
-    inmo = regex.search(data)
-    if inmo:
-        return unicode([tuple([y[0] in "'\"" and y[1:-1] or unicode(y) for y in (x.strip() for x in ttext.group(1).split(","))])
-               for ttext in re_tuple.finditer(inmo.group("signals"))])
-    else:
-        return "[]"
+#def getSignalList(regex, data):
+    #inmo = regex.search(data)
+    #if inmo:
+        #return unicode([tuple([y[0] in "'\"" and y[1:-1] or unicode(y) for y in (x.strip() for x in ttext.group(1).split(","))])
+               #for ttext in re_tuple.finditer(inmo.group("signals"))])
+    #else:
+        #return "[]"

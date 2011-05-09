@@ -213,7 +213,7 @@ class OrangeCanvasDlg(QMainWindow):
         
         self.show()
         redRSaveLoad.setCanvasDlg(self)
-
+        redRObjects.setCanvasDlg(self)
         if splashWindow:
             splashWindow.hide()
 
@@ -241,6 +241,7 @@ class OrangeCanvasDlg(QMainWindow):
             pass
         
         qApp.processEvents()
+        #redRInitWizard.startSetupWizard()
     
     def saveOutputToFile(self):
         self.toolbarFunctions.menuItemSaveOutputWindow()
