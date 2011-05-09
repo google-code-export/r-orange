@@ -6,7 +6,7 @@ import time as ti
 from datetime import tzinfo, timedelta, datetime, time
 import traceback
 import os.path, os
-import redREnviron, redRLog, SQLiteSession
+import redREnviron, redRLog
 
 import redRi18n
 # def _(a):

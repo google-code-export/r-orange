@@ -348,7 +348,6 @@ class SchemaView(QGraphicsView):
                     self.doc.addLine(start, end)
             else:
                 state = [self.doc.widgets()[i].widgetInfo.name for i in range(min(len(self.doc.widgets()), 5))]
-                #predictedWidgets = orngHistory.predictWidgets(state, 20)
 
                 newCoords = QPoint(ev.globalPos())
                 self.doc.widgetPopupMenu.updateMenu()
@@ -370,7 +369,6 @@ class SchemaView(QGraphicsView):
                 newCoords = QPoint(ev.globalPos())
                 self.doc.widgetPopupMenu.showAllWidgets()
                 state = [self.doc.widgets()[i].widgetInfo.name for i in range(min(len(self.doc.widgets()), 5))]
-                #predictedWidgets = orngHistory.predictWidgets(state, 20)
                 #self.doc.widgetPopupMenu.updatePredictedWidgets(predictedWidgets, 'inputClasses')
                 self.doc.widgetPopupMenu.updateMenu()
                 height = sum([self.doc.widgetPopupMenu.actionGeometry(action).height() for action in self.doc.widgetPopupMenu.actions()])
