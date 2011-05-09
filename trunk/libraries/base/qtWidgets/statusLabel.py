@@ -1,3 +1,9 @@
+"""Status Label, for displaying widget status
+
+The status label is useful for showing the processing status of a widget.  This class is implemented by default in all child classes inheriting from :mod:`OWRpy`.
+In general the status label will be accessed throught the setText() function.
+"""
+
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRWidgetBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
@@ -30,19 +36,23 @@ class statusLabel(QLabel,widgetState):
         self.setWordWrap(wordWrap)
         
     def getSettings(self):
+        """Standard getSettings functions"""
         # print _('in widgetLabel getSettings')
         r = {'text':self.text(),'status':self.status}
         print r
         return r
     def loadSettings(self,data):
+        """Standard loadSettings functions"""
         # print _('in widgetLabel loadSettings')
         print data
         self.setText(data['text'])
         self.setStatus(data['status'])
     def getReportText(self, fileDir):
-        return ''
+        """Returns current status"""
+        return uncode(self.text())
         
     def setText(self, string,color=None):
+        """Sets the text of the label, color can be specified to change the background color"""
         # self.setStyleSheet("QLabel { background-color: #ffff00 }")
         #string = '<table><tr><td class="indicator">aaaaa</td><td>%s</td></tr></table>' % string
         if color:
@@ -51,6 +61,7 @@ class statusLabel(QLabel,widgetState):
         QLabel.setText(self, string)
         qApp.processEvents()    
     def setStatus(self, statusInt):
+        """Sets the status to one of several prespecified status values, see source code for a list and explaination"""
         self.status = statusInt
         if statusInt == 0: ## No valid data
             self.setText(_('No Data To Process'))
