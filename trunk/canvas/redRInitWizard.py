@@ -88,18 +88,18 @@ class RedRInitWizard(QWizard):
         self.showExample = redRGUI.base.checkBox(self.runExamplePage,label=_('Show Example'),displayLabel=False,
         buttons = [('start',_('Start Example'))], setChecked=['start'])
         
-        
+        self.addPage(self.RLibraryPage)
         self.addPage(self.registerPage)
         # self.addPage(self.errorReportingPage)
         self.addPage(self.RSetupPage)
-        self.addPage(self.RLibraryPage)
+        
         self.addPage(self.runExamplePage)
-    
+        self.loadBaseLibs()
+        
+        
     def pageChanged(self,id):
-        if id ==1:
+        if id ==2:
             self.loadMirrors()
-        if id ==3:
-            self.loadBaseLibs()
     def loadMirrors(self):
         self.libMessageBox.clear()
         if not redREnviron.checkInternetConnection():
