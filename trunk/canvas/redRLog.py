@@ -247,12 +247,14 @@ class LogHandler():
                 logOutput(REDRCORE, DEVEL, text = unicode(inst))
                 return
             logOutput(REDRCORE,DEVEL, text,html=False)
-            self.defaultStdout.write(text)
+            if sys.platform == 'linux2':
+                self.defaultStdout.write(text)
         except: pass
     def exceptionHandler(self, type, value, tracebackInfo):
         
         log(REDRCORE,CRITICAL,formatException(type,value,tracebackInfo))
-        self.defaultExceptionHandler(type, value, tracebackInfo)
+        if sys.platform == 'linux2':
+            self.defaultExceptionHandler(type, value, tracebackInfo)
         
 # print 'setting log handler'
 fileLogger = LogHandler()

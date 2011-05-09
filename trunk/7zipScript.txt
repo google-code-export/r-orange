@@ -1,4 +1,4 @@
-7z a -tzip -xr!*.svn* -xr!*.pyc -xr!*.pyo C:\Python26\Lib\site-packages\redRTrunk\libraries\survival.zip C:\Python26\Lib\site-packages\redRTrunk\libraries\survival\*
+7z a -tzip -xr!*.svn* -xr!*.pyc -xr!*.pyo C:\Python26\Lib\site-packages\redRTrunk\libraries\RedRCaret.zip C:\Python26\Lib\site-packages\redRTrunk\libraries\RedRCaret\*
 
 affy
 doseResponse

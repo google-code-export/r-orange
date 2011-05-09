@@ -1,3 +1,8 @@
+"""Zoom Select Toolbar Class
+
+Provides a toolbar to be used with PyQwt dependent plotting widgets.
+"""
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os.path
@@ -29,6 +34,9 @@ dlg_zoom_extent = os.path.join(dir ,  "dlg_zoom_extent.png")
 
 
 def createButton(parent, text, action = None, icon = None, toggle = 0):
+    """Function to create a button, only called by the zoomSelectToolbar class.
+    
+    """
     btn = QToolButton(parent)
     btn.setMinimumSize(30,30)
     if parent.layout():
@@ -98,6 +106,7 @@ class zoomSelectToolbar(QGroupBox,widgetState):
 
 
     def action(self, b):
+        """Sets the action of the toolbar at this time"""
         f = self.functions[b]
         if not f:
             return
@@ -116,6 +125,12 @@ class zoomSelectToolbar(QGroupBox,widgetState):
             self.graph.setCursor(cursor)
 
     # for backward compatibility with a previous version of this class
-    def actionZooming(self): self.action(0)
-    def actionRectangleSelection(self): self.action(3)
-    def actionPolygonSelection(self): self.action(4)
+    def actionZooming(self): 
+        """Sets the toolbar to zooming, called by the zooming button."""
+        self.action(0)
+    def actionRectangleSelection(self): 
+        """Sets the toolbar to rectangular selection"""
+        self.action(3)
+    def actionPolygonSelection(self): 
+        """Sets the toolbar to polygonal selection"""
+        self.action(4)

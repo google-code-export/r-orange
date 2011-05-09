@@ -130,6 +130,7 @@ Section "" ;this is the section that will install Red-R and all of it's files
     CreateDirectory "$DOCUMENTS\Red-R"
     CreateDirectory "$DOCUMENTS\Red-R\Templates"
     CreateDirectory "$DOCUMENTS\Red-R\Schemas"
+    SetShellVarContext all
 	CreateDirectory "$SMPROGRAMS\Red-R\${NAME}-${REDRVERSION}"
 	CreateShortCut "$SMPROGRAMS\Red-R\${NAME}-${REDRVERSION}\Red-R Canvas.lnk" "$INSTDIR\${NAME}-${REDRVERSION}\bin\red-RCanvas.exe" "" "$INSTDIR\${NAME}-${REDRVERSION}\canvas\icons\orange.ico" 0
     CreateShortCut "$SMPROGRAMS\Red-R\${NAME}-${REDRVERSION}\Uninstall Red-R.lnk" "$INSTDIR\uninst ${NAME}-${REDRVERSION}.exe"
