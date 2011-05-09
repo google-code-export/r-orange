@@ -4,26 +4,24 @@
 <icon>plot.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.plotting.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.button import button
 class arrows(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(["arrows"])
         self.data = {}
-        self.outputs.addOutput('id0', 'arrows Output', redRRPlotAttribute)
+        self.outputs.addOutput('id0', 'arrows Output', signals.plotting.RPlotAttribute)
 
         self.standardTab = self.controlArea
-        self.RFunctionParamx0_lineEdit =  lineEdit(self.standardTab,  label = "x0:", text = '')
-        self.RFunctionParamy0_lineEdit =  lineEdit(self.standardTab,  label = "y0:", text = '')
+        self.RFunctionParamx0_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "x0:", text = '')
+        self.RFunctionParamy0_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "y0:", text = '')
         
-        self.RFunctionParamx1_lineEdit =  lineEdit(self.standardTab,  label = "x1:", text = '')
-        self.RFunctionParamy1_lineEdit =  lineEdit(self.standardTab,  label = "y1:", text = '')
-        self.RFunctionParamcode_lineEdit =  lineEdit(self.standardTab,  label = "code:", text = '1')
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamx1_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "x1:", text = '')
+        self.RFunctionParamy1_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "y1:", text = '')
+        self.RFunctionParamcode_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "code:", text = '1')
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def commitFunction(self):
         if unicode(self.RFunctionParamx0_lineEdit.text()) == '':
             self.status.setText('No x0 specified')
@@ -55,6 +53,6 @@ class arrows(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         
-        newData = redRRPlotAttribute(self, data = 'arrows('+inj+')')# moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.plotting.RPlotAttribute(self, data = 'arrows('+inj+')')# moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

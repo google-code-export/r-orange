@@ -12,9 +12,6 @@ from orngDlgs import *
 import RSession, globalData, redRPackageManager, redRStyle, redRHistory
 from orngSignalManager import SignalManager, SignalDialog
 import cPickle, math, zipfile, urllib, sip, redRObjects, redRSaveLoad
-from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
-from libraries.base.qtWidgets.splitter import splitter as redRSplitter
-from libraries.base.qtWidgets.button import button as redRbutton
 #import pprint, 
 # pp = pprint.PrettyPrinter(indent=4)
 
@@ -34,14 +31,14 @@ class SchemaDoc(QWidget):
         
         self.loadedSettingsDict = {}
         self.setLayout(QHBoxLayout())
-        # self.splitter = redRSplitter(self)
+        # self.splitter = redRGUI.base.splitter(self)
         # left = self.splitter.widgetArea()
         self.tabsWidget = QTabWidget()
         self.tabsWidget.setDocumentMode(True)
         self.tabsWidget.setTabsClosable(True)
         self.tabsWidget.setMovable(True)
         self.tabsWidget.tabBar().setShape(QTabBar.RoundedNorth)
-        addTabButton = redRbutton(None,label='',
+        addTabButton = redRGUI.base.button(None,label='',
         icon=os.path.join(redREnviron.directoryNames['canvasIconsDir'],'plus.png'),
         callback=self.newTab)
         self.tabsWidget.setCornerWidget(addTabButton.controlArea)
@@ -276,8 +273,7 @@ class SchemaDoc(QWidget):
         ## this is where we have a diversion from the normal loading.  obviously if we made it to here there aren't the signal names in the in or out widgets that match.
         ##      we will open a dialog and show the names of the signals and ask the user to connect them
         dialog = SignalDialog(self.canvasDlg, None)
-        from libraries.base.qtWidgets.widgetLabel import widgetLabel
-        widgetLabel(dialog, 'Please connect the signals that best match these: %s to %s' % (outSignalName, inSignalName)) 
+        redRGUI.base.widgetLabel(dialog, 'Please connect the signals that best match these: %s to %s' % (outSignalName, inSignalName)) 
         dialog.setOutInWidgets(outWidget, inWidget)
 
         # if there are multiple choices, how to connect this two widget, then show the dialog
@@ -756,7 +752,6 @@ class TemplateDialog(QDialog):
         QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
         QObject.connect(cancelButton, SIGNAL("clicked()"), self.reject)
         
-from libraries.base.qtWidgets.lineEditHint import lineEditHint as redRlineEditHint
      
 class SearchBox(redRlineEditHint):
     def __init__(self, widget, label=_('Search'),orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):

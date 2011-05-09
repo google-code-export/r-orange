@@ -4,15 +4,9 @@
 <tags>Parametric</tags>
 """
 from OWRpy import * 
+import redRGUI, signals
 import OWGUI 
 import redRGUI 
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
-from libraries.base.signalClasses.RModelFit import RModelFit as redRRModelFit
-import libraries.base.signalClasses as signals
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.checkBox import checkBox
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
 class prcomp(OWRpy): 
     globalSettingsList = ['commit']
@@ -21,14 +15,14 @@ class prcomp(OWRpy):
         self.setRvariableNames(["prcomp"])
          
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'x', redRRDataFrame, self.processx)
+        self.inputs.addInput('id0', 'x', signals.base.RDataFrame, self.processx)
 
-        self.outputs.addOutput('id0', 'prcomp Output', redRRModelFit)
-        self.outputs.addOutput('id1', 'Scaled Data', redRRMatrix)
-        self.options = checkBox(self.controlArea, label = 'Options:', buttons = ['Center', 'Scale'])
+        self.outputs.addOutput('id0', 'prcomp Output', signals.base.RModelFit)
+        self.outputs.addOutput('id1', 'Scaled Data', signals.base.RMatrix)
+        self.options = redRGUI.base.checkBox(self.controlArea, label = 'Options:', buttons = ['Center', 'Scale'])
         self.options.setChecked(['Center', 'Scale'])
 
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
     def processx(self, data):
         if data:
@@ -51,7 +45,7 @@ class prcomp(OWRpy):
         inj = ','.join(injection)
         self.R(self.Rvariables['prcomp']+'<-prcomp(x=data.matrix('+unicode(self.RFunctionParam_x)+'), '+inj+')')
         
-        newPRComp = redRRModelFit(self, data = self.Rvariables['prcomp'])
+        newPRComp = signals.base.RModelFit(self, data = self.Rvariables['prcomp'])
         self.rSend("id0", newPRComp)
-        newPRCompMatrix = redRRMatrix(self, data = self.Rvariables['prcomp']+'$x')
+        newPRCompMatrix = signals.base.RMatrix(self, data = self.Rvariables['prcomp']+'$x')
         self.rSend("id1", newPRCompMatrix)

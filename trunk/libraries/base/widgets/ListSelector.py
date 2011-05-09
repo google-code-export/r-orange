@@ -4,19 +4,9 @@
 """
 
 from OWRpy import *
+import redRGUI, signals
 import redRGUI
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.signalClasses.RList import RList as redRRList
-from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
-from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
-from libraries.base.signalClasses.RArbitraryList import RArbitraryList as redRRArbitraryList
 
-from libraries.base.qtWidgets.listBox import listBox
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.widgetLabel import widgetLabel
-from libraries.base.qtWidgets.button import button as RedRButton
-from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class ListSelector(OWRpy):
@@ -28,23 +18,23 @@ class ListSelector(OWRpy):
         self.setRvariableNames(['listelement'])
         self.data = None
         
-        self.inputs.addInput('id0', _('R List'), [redRRList, redRRArbitraryList] , self.process)
+        self.inputs.addInput('id0', _('R List'), [signals.base.RList, signals.base.RArbitraryList] , self.process)
 
-        self.outputs.addOutput('id0', _('R Data Frame'), redRRDataFrame)
-        self.outputs.addOutput('id1', _('R Vector'), redRRVector)
-        self.outputs.addOutput('id2', _('R List'), redRRList)
-        self.outputs.addOutput('id3', _('R Variable'), redRRVariable)
-        self.outputs.addOutput('id4', _('R Matrix'), redRRMatrix)
+        self.outputs.addOutput('id0', _('R Data Frame'), signals.base.RDataFrame)
+        self.outputs.addOutput('id1', _('R Vector'), signals.base.RVector)
+        self.outputs.addOutput('id2', _('R List'), signals.base.RList)
+        self.outputs.addOutput('id3', _('R Variable'), signals.base.RVariable)
+        self.outputs.addOutput('id4', _('R Matrix'), signals.base.RMatrix)
 
         
         #GUI
-        #box = groupBox(self.controlArea, "List Data")
+        #box = redRGUI.base.groupBox(self.controlArea, "List Data")
         
-        self.names = listBox(self.controlArea, label=_("List of Data"), displayLabel=True,
+        self.names = redRGUI.base.listBox(self.controlArea, label=_("List of Data"), displayLabel=True,
         callback = self.selectionChanged)
-        self.infoa = widgetLabel(self.controlArea, '')
+        self.infoa = redRGUI.base.widgetLabel(self.controlArea, '')
         
-        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.sendSelection,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.sendSelection,
         processOnChange=True, processOnInput=True)
 
         
@@ -82,27 +72,27 @@ class ListSelector(OWRpy):
         print myclass
         if myclass == 'data.frame':
             
-            newData = redRRDataFrame(self, data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'])
+            newData = signals.base.RDataFrame(self, data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'])
             self.rSend("id0", newData)
             #self.infoa.setText('Sent Data Frame')
             slot = 'Data Frame'
         elif myclass == 'list':
-            newData = redRRList(self, data = self.Rvariables['listelement'])
+            newData = signals.base.RList(self, data = self.Rvariables['listelement'])
             self.rSend("id2", newData)
             #self.infoa.setText('Sent List')
             slot = 'List'
         elif myclass in ['vector', 'character', 'factor', 'logical', 'numeric', 'integer', ['POSIXt', 'POSIXct']]:
-            newData = redRRVector(self, data = self.Rvariables['listelement'])
+            newData = signals.base.RVector(self, data = self.Rvariables['listelement'])
             self.rSend("id1", newData)
             #self.infoa.setText('Sent Vector')
             slot = 'Vector'
         elif myclass in ['matrix']:
-            newData = redRRMatrix(self, data = self.Rvariables['listelement'])
+            newData = signals.base.RMatrix(self, data = self.Rvariables['listelement'])
             self.rSend("id4", newData)
             #self.infoa.setText('Sent Matrix')
             slot = 'Matrix'
         else:
-            newData = redRRVariable(self, data = self.Rvariables['listelement'])
+            newData = signals.base.RVariable(self, data = self.Rvariables['listelement'])
             self.rSend("id3", newData)
             slot = 'R Variable'
         

@@ -3,12 +3,9 @@
 <tags>Data Manipulation</tags>
 """
 from OWRpy import * 
+import redRGUI, signals
 
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class t(OWRpy): 
@@ -20,11 +17,11 @@ class t(OWRpy):
         self.data={}
         
         
-        self.inputs.addInput('id0', _('Input Data Table or Matrix'), [redRRDataFrame, redRRMatrix], self.processx)
+        self.inputs.addInput('id0', _('Input Data Table or Matrix'), [signals.base.RDataFrame, signals.base.RMatrix], self.processx)
 
-        self.outputs.addOutput('id0', _('Transposed Data Table'), redRRDataFrame)
+        self.outputs.addOutput('id0', _('Transposed Data Table'), signals.base.RDataFrame)
 
-        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,
         processOnInput=True)
     def processx(self, data):
         if data:
@@ -37,6 +34,6 @@ class t(OWRpy):
         
         self.R(self.Rvariables['t']+'<-as.data.frame(t(x='+unicode(self.RFunctionParam_x)+'))', wantType = 'NoConversion')
         
-        newData = redRRDataFrame(self, data = self.Rvariables['t'])
+        newData = signals.base.RDataFrame(self, data = self.Rvariables['t'])
         newData.dictAttrs = self.data.dictAttrs.copy()
         self.rSend("id0", newData)

@@ -7,16 +7,7 @@
 <icon></icon>
 """
 from OWRpy import * 
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 
-from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButtons 
-from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
-from libraries.base.qtWidgets.RFormulaEntry import RFormulaEntry as redRRFormulaEntry
-from libraries.base.qtWidgets.spinBox import spinBox as redRSpinBox
-from libraries.base.qtWidgets.tabWidget import tabWidget as redRtabWidget
-from libraries.base.qtWidgets.graphicsView import graphicsView as redRPlot
-import libraries.base.signalClasses as signals
+import redRGUI, signals
 import libraries.RedRCaret.signalClasses as caret
 
 class RedRtrain(OWRpy): 
@@ -29,21 +20,21 @@ class RedRtrain(OWRpy):
         self.RFunctionParam_data = ''
         self.RFunctionParam_classes = ''
         self.inputs.addInput("data", "Caret Data Model", caret.CaretData.CaretData, self.processdata)
-        self.outputs.addOutput("train Output","Caret Train Output", signals.RModelFit.RModelFit)
+        self.outputs.addOutput("train Output","Caret Train Output", signals.base.RModelFit)
         self.outputs.addOutput("finalModel", "Final Fitted Model (For Prediction)", caret.CaretModelFit.CaretModelFit)
         
-        self.RFunctionParammethod_comboBox = redRcomboBox(self.controlArea, label = "Method:", items = [("ada", "ADA Boosted Tree"), ("bagEarth", "Bagged MARS"), ("bagFDA", "Bagged FDA"), ("blackboost", "Black Boosted Tree"), ("cforest", "C Forest Random Forest"), ("ctree", "C Tree Recursive Partitioning"), ("ctree2", "C Tree2 Recursive Partitioning"), ("earth", "Earth MARS"), ("enet", "Elastic Net"), ("fda", "FDA MARS Basis"), ("gamboost", "GAM Boosted Model"), ("gaussprPoly", "Gauss R Poly"), ("gaussprRadial", "Gauss R Radial"), ("gaussprLinear", "Gauss PR Linear"), ("gbm", "GBM Boosted Tree"), ("glm", "GLM"), ("glmboost", "GLM Boosted Tree"), ("glmnet", "GLM Net"), ("gpls", "G PLS"), ("J48", "J48"), ("JRip", "JRip"), ("knn", "K Nearest Neighbors"), ("lars", "LARS"), ("lasso", "Lasso"), ("lda", "LDA"), ("Linda", "Linda"), ("lm", "LM"), ("lmStepAIC", "lmStepAIC"), ("LMT", "LMT"), ("logitBoost", "logitBoost"), ("lssvmPoly", "lssvmPoly"), ("lssvmRadial", "lssvmRadial"), ("lvq", "LVQ"), ("M5Rules", "M5Rules"), ("mda", "MDA"), ("multinom", "Multinorm"), ("nb", "NB"), ("nnet", "Neural Net"), ("nodeHarvest", "Node Harvest"), ("OneR", "OneR"), ("pam", "PAM"), ("pcaNNet", "PCA NN"), ("pcr", "PCR"), ("pda", "PDA"), ("pda2", "PDA2"), ("penalized", "Penalized"), ("pls", "PLS"), ("ppr", "PPR"), ("qda", "QDA"), ("QdaCov", "QDA Cov"), ("rda", "RDA"), ("rf", "Random Forest"), ("rlm", "RLM"), ("rpart", "R Part"), ("rvmLinear", "RVM Linear"), ("rvmPoly", "RVM Poly"), ("rvmRadial", "RVM Radial"), ("sda", "SDA"), ("sddaLDA", "SDDA LDA"), ("sddaQDA", "SDDA QDA"), ("slda", "SLDA"), ("smda", "SMDA"), ("sparseLDA", "Spars LDA"), ("spls", "SPLS"), ("stepLDA", "Step LDA"), ("stepQDA", "Step QDA"), ("superpc", "Super PC"), ("svmPoly", "SVM Poly"), ("svmRadial", "SVM Radial"), ("svmLinear", "SVM Linear"), ("treebag", "Tree Bag"), ("vbmpRadial", "VBMP Radial")])
+        self.RFunctionParammethod_comboBox = redRGUI.base.comboBox(self.controlArea, label = "Method:", items = [("ada", "ADA Boosted Tree"), ("bagEarth", "Bagged MARS"), ("bagFDA", "Bagged FDA"), ("blackboost", "Black Boosted Tree"), ("cforest", "C Forest Random Forest"), ("ctree", "C Tree Recursive Partitioning"), ("ctree2", "C Tree2 Recursive Partitioning"), ("earth", "Earth MARS"), ("enet", "Elastic Net"), ("fda", "FDA MARS Basis"), ("gamboost", "GAM Boosted Model"), ("gaussprPoly", "Gauss R Poly"), ("gaussprRadial", "Gauss R Radial"), ("gaussprLinear", "Gauss PR Linear"), ("gbm", "GBM Boosted Tree"), ("glm", "GLM"), ("glmboost", "GLM Boosted Tree"), ("glmnet", "GLM Net"), ("gpls", "G PLS"), ("J48", "J48"), ("JRip", "JRip"), ("knn", "K Nearest Neighbors"), ("lars", "LARS"), ("lasso", "Lasso"), ("lda", "LDA"), ("Linda", "Linda"), ("lm", "LM"), ("lmStepAIC", "lmStepAIC"), ("LMT", "LMT"), ("logitBoost", "logitBoost"), ("lssvmPoly", "lssvmPoly"), ("lssvmRadial", "lssvmRadial"), ("lvq", "LVQ"), ("M5Rules", "M5Rules"), ("mda", "MDA"), ("multinom", "Multinorm"), ("nb", "NB"), ("nnet", "Neural Net"), ("nodeHarvest", "Node Harvest"), ("OneR", "OneR"), ("pam", "PAM"), ("pcaNNet", "PCA NN"), ("pcr", "PCR"), ("pda", "PDA"), ("pda2", "PDA2"), ("penalized", "Penalized"), ("pls", "PLS"), ("ppr", "PPR"), ("qda", "QDA"), ("QdaCov", "QDA Cov"), ("rda", "RDA"), ("rf", "Random Forest"), ("rlm", "RLM"), ("rpart", "R Part"), ("rvmLinear", "RVM Linear"), ("rvmPoly", "RVM Poly"), ("rvmRadial", "RVM Radial"), ("sda", "SDA"), ("sddaLDA", "SDDA LDA"), ("sddaQDA", "SDDA QDA"), ("slda", "SLDA"), ("smda", "SMDA"), ("sparseLDA", "Spars LDA"), ("spls", "SPLS"), ("stepLDA", "Step LDA"), ("stepQDA", "Step QDA"), ("superpc", "Super PC"), ("svmPoly", "SVM Poly"), ("svmRadial", "SVM Radial"), ("svmLinear", "SVM Linear"), ("treebag", "Tree Bag"), ("vbmpRadial", "VBMP Radial")])
         
-        self.RFunctionParam_tuneLengthSpin = redRSpinBox(self.controlArea, label = 'Tune Length:', min = 1, value = 5)
-        self.otherParameters = redRlineEdit(self.controlArea, label = 'Other Parameters (Advanced):')
-        self.tuneParameters = redRlineEdit(self.controlArea, label = 'Tune Parameters (Advanced):')
-        outputTabs = redRtabWidget(self.controlArea)
+        self.RFunctionParam_tuneLengthSpin = redRGUI.base.spinBox(self.controlArea, label = 'Tune Length:', min = 1, value = 5)
+        self.otherParameters = redRGUI.base.lineEdit(self.controlArea, label = 'Other Parameters (Advanced):')
+        self.tuneParameters = redRGUI.base.lineEdit(self.controlArea, label = 'Tune Parameters (Advanced):')
+        outputTabs = redRGUI.base.tabWidget(self.controlArea)
         textBox = outputTabs.createTabPage('Training Summary')
-        self.RoutputWindow = redRtextEdit(textBox, label = "R Output Window", displayLabel = False)
+        self.RoutputWindow = redRGUI.base.textEdit(textBox, label = "R Output Window", displayLabel = False)
         imageBox = outputTabs.createTabPage('Training Plot')
-        self.RFunctionParam_plotType = redRcomboBox(imageBox, label = 'Plot Type', items = [('scatter', 'Scatter'), ('level', 'Level'), ('line', 'Line')], callback = self.replot)
-        self.plotArea = redRPlot(imageBox, label = 'Training Plot', displayLabel = False)
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParam_plotType = redRGUI.base.comboBox(imageBox, label = 'Plot Type', items = [('scatter', 'Scatter'), ('level', 'Level'), ('line', 'Line')], callback = self.replot)
+        self.plotArea = redRGUI.base.graphicsView(imageBox, label = 'Training Plot', displayLabel = False)
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processdata(self, data):
         
         if data:
@@ -75,7 +66,7 @@ class RedRtrain(OWRpy):
         injection.append(', tuneLength = %s' % str(self.RFunctionParam_tuneLengthSpin.value()))
         inj = ''.join(injection)
         self.R(self.Rvariables['train']+'<-train(x='+self.RFunctionParam_data+', y = '+self.RFunctionParam_classes+inj+')')
-        newData = signals.RModelFit.RModelFit(self, data = self.Rvariables["train"])
+        newData = signals.base.RModelFit(self, data = self.Rvariables["train"])
         self.rSend("train Output", newData)
         newDataModel = caret.CaretModelFit.CaretModelFit(self, data = self.Rvariables['train']+'$finalModel')
         self.rSend("finalModel", newDataModel)

@@ -7,11 +7,9 @@
 <icon></icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-import libraries.base.signalClasses as signals
 
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.button import button
 class RedRplot_mvrVal(OWRpy): 
         settingsList = []
         def __init__(self, **kwargs):
@@ -20,9 +18,9 @@ class RedRplot_mvrVal(OWRpy):
                 self.inputs.addInput('id0', 'x', redRRModelFit, self.processx)
 
                 
-                self.RFunctionParamtype_comboBox = comboBox(self.controlArea, label = "type:", items = ["'b',both","'l','lines'","'p',points"])
-                self.RFunctionParamlegendpos_comboBox = comboBox(self.controlArea, label = "legendpos:", items = ["'topright'","'topleft'","'bottomright'","'bottomleft'"])
-                redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+                self.RFunctionParamtype_comboBox = redRGUI.base.comboBox(self.controlArea, label = "type:", items = ["'b',both","'l','lines'","'p',points"])
+                self.RFunctionParamlegendpos_comboBox = redRGUI.base.comboBox(self.controlArea, label = "legendpos:", items = ["'topright'","'topleft'","'bottomright'","'bottomleft'"])
+                redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         def processx(self, data):
                 if not self.require_librarys(["pls"]):
                         self.status.setText('R Libraries Not Loaded.')

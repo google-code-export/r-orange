@@ -4,21 +4,17 @@
 <icon>boxplot.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import OWGUI, redRGUI
-from libraries.base.signalClasses.RList import RList as redRRList
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.checkBox import checkBox
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 class boxplot(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'x', redRRList, self.processx)
+        self.inputs.addInput('id0', 'x', signals.base.RList, self.processx)
 
         
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,processOnInput=True)
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,processOnInput=True)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()

@@ -7,15 +7,7 @@
 <icon>default.png</icon>
 """
 from OWRpy import * 
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 
-from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButtons 
-from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
-from libraries.base.qtWidgets.listBox import listBox as redRlistBox
-from libraries.base.qtWidgets.spinBox import spinBox as redRspinBox
-from libraries.base.qtWidgets.filterTable import filterTable as redRfilterTable
-import libraries.base.signalClasses as signals
+import redRGUI, signals
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class score(OWRpy): 
@@ -28,15 +20,15 @@ class score(OWRpy):
         self.data = {}
         self.RFunctionParam_data = ''
         self.RFunctionParam_score = ''
-        self.inputs.addInput("data", _("Sample Data"), signals.RDataFrame.RDataFrame, self.processdata)
-        self.inputs.addInput("scoremat", _("Scoring Matrix"), signals.RDataFrame.RDataFrame, self.processscores)
-        self.outputs.addOutput("fscoremat",_("Sored Samples"), signals.RDataFrame.RDataFrame)
-        self.outputs.addOutput("maxScore", _("Max Scored Class"), signals.RVector.RVector)
+        self.inputs.addInput("data", _("Sample Data"), signals.base.RDataFrame, self.processdata)
+        self.inputs.addInput("scoremat", _("Scoring Matrix"), signals.base.RDataFrame, self.processscores)
+        self.outputs.addOutput("fscoremat",_("Sored Samples"), signals.base.RDataFrame)
+        self.outputs.addOutput("maxScore", _("Max Scored Class"), signals.base.RVector)
 
-        wb = redRwidgetBox(self.controlArea, orientation = 'horizontal')
-        self.scoremethod = redRcomboBox(wb, label = _('Scoring Method'), items = [_('Multiplication'), _('Correlation')], callback = self.commitFunction)
-        redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
-        self.RoutputWindow = redRfilterTable(wb,label=_('Scores'), displayLabel=False,
+        wb = redRGUI.base.widgetBox(self.controlArea, orientation = 'horizontal')
+        self.scoremethod = redRGUI.base.comboBox(wb, label = _('Scoring Method'), items = [_('Multiplication'), _('Correlation')], callback = self.commitFunction)
+        redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
+        self.RoutputWindow = redRGUI.base.filterTable(wb,label=_('Scores'), displayLabel=False,
             sortable=True,filterable=False)
             
     def processdata(self, data):
@@ -72,6 +64,6 @@ class score(OWRpy):
             # perform cor and show the results
             self.R('%s<-as.data.frame(cor(data.matrix(%s), data.matrix(%s)))' % (self.Rvariables['score'], self.Rvariables['mergedmatrix'], self.Rvariables['mergedvals']), wantType = 'NoConversion')
         self.RoutputWindow.setRTable(self.Rvariables['score'])
-        newScores = signals.RDataFrame.RDataFrame(self, data = self.Rvariables['score'])
+        newScores = signals.base.RDataFrame(self, data = self.Rvariables['score'])
         self.rSend('fscoremat', newScores)
         

@@ -2,10 +2,6 @@ import redREnviron,redRStyle, redRObjects, redRSaveLoad, redRGUI,signals, orngDl
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, sys
-from libraries.base.qtWidgets.SearchDialog import SearchDialog as redRSearchDialog
-from libraries.base.qtWidgets.lineEditHint import lineEditHint as redRlineEditHint
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit
-from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 import redRi18n, redRLog
 # def _(a):
     # return a
@@ -51,7 +47,7 @@ class redRCanvasToolbarandMenu():
         self.toolReloadWidgets = self.toolbar.addAction(QIcon(redRStyle.optionsIcon), 
         _("Red-R Options"), self.menuItemCanvasOptions)
 
-        space = redRwidgetBox(None)
+        space = redRGUI.base.widgetBox(None)
         space.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.toolbar.addWidget(space)
         
@@ -486,14 +482,14 @@ class redRCanvasToolbarandMenu():
             QApplication.setPalette(self.originalPalette)
 
       
-class SearchBox(redRlineEditHint):
+class SearchBox(redRGUI.base.lineEditHint):
     def __init__(self, widget, label=_('Search'),orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
-        redRlineEditHint.__init__(self, widget = widget, label = label,displayLabel=True,
+        redRGUI.base.lineEditHint.__init__(self, widget = widget, label = label,displayLabel=True,
         orientation = orientation, items = items, toolTip = toolTip, width = width, callback = self.searchCallback,
         **args)
         self.setStyleSheet("QLineEdit {border: 2px solid grey; border-radius: 10px; padding: 0 8px;margin-right:60px; selection-background-color: darkgray;}")
  
-        self.searchBox = redRSearchDialog()
+        self.searchBox = redRGUI.base.SearchDialog()
         QObject.connect(self, SIGNAL('returnPressed()'), self.searchDialog)
         self.caseSensitive = 0
         self.matchAnywhere = 1
@@ -567,7 +563,6 @@ class SearchBox(redRlineEditHint):
                     # return
         return
 import re
-from libraries.base.qtWidgets.lineEdit import lineEdit
 class myQListView(QListView):
     def __init__(self, parent=None, *args):
         QListView .__init__(self, parent, *args)
@@ -633,9 +628,9 @@ class HTMLDelegate(QItemDelegate):
     def flags(self, index):
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable 
 
-class SearchBox2(lineEdit):
+class SearchBox2(redRGUI.base.lineEdit):
     def __init__(self, widget, label=_('Search'),orientation='horizontal', items = {}, toolTip = None,  width = -1, callback = None, **args):
-        lineEdit.__init__(self, widget = widget, label = label, displayLabel=False,
+        redRGUI.base.lineEdit.__init__(self, widget = widget, label = label, displayLabel=False,
         orientation = orientation, toolTip = toolTip, width = width, **args)
         QObject.connect(self, SIGNAL("textEdited(const QString &)"), self.textEdited)
 

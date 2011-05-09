@@ -4,14 +4,9 @@
 <tags>Stats</tags>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RVector import RVector as redRRVector
 
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.textEdit import textEdit
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
 class RedRvar_test(OWRpy): 
     globalSettingsList = ['commit']
@@ -21,16 +16,16 @@ class RedRvar_test(OWRpy):
         self.data = {}
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'y', redRRVector, self.processy)
-        self.inputs.addInput('id1', 'x', redRRVector, self.processx)
+        self.inputs.addInput('id0', 'y', signals.base.RVector, self.processy)
+        self.inputs.addInput('id1', 'x', signals.base.RVector, self.processx)
 
         
-        self.RFunctionParamalternative_comboBox = comboBox(self.controlArea, label = "alternative:", items = ["two.sided","less","greater"])
-        self.RFunctionParamratio_lineEdit = lineEdit(self.controlArea, label = "ratio:", text = '1')
-        self.RFunctionParamconf_level_lineEdit = lineEdit(self.controlArea, label = 'Confidence Interval:', text = '0.95')
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.RFunctionParamalternative_comboBox = redRGUI.base.comboBox(self.controlArea, label = "alternative:", items = ["two.sided","less","greater"])
+        self.RFunctionParamratio_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "ratio:", text = '1')
+        self.RFunctionParamconf_level_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = 'Confidence Interval:', text = '0.95')
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
-        self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
+        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "RoutputWindow")
     def processy(self, data):
         if not self.require_librarys(["stats"]):
             self.status.setText('R Libraries Not Loaded.')

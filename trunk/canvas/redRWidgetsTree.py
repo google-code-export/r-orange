@@ -10,8 +10,6 @@ import orngDoc, orngRegistry, redRObjects
 import OWGUIEx, redRSaveLoad, redRStyle
 import redREnviron, redRLog
 import xml.dom.minidom
-# from libraries.base.qtWidgets.SearchDialog import SearchDialog as redRSearchDialog
-# from libraries.base.qtWidgets.lineEditHint import lineEditHint as redRlineEditHint
 
 # we have to use a custom class since QLabel by default ignores the mouse
 # events if it is showing text (it does not ignore events if it's showing an icon)

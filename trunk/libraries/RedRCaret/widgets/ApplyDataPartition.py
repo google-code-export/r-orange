@@ -7,12 +7,7 @@
 <icon></icon>
 """
 from OWRpy import * 
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 
-from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButtons 
-from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
-import libraries.base.signalClasses as signals
+import redRGUI, signals
 import libraries.RedRCaret.signalClasses as caret
 class ApplyDataPartition(OWRpy): 
     settingsList = []
@@ -25,12 +20,12 @@ class ApplyDataPartition(OWRpy):
         self.RFunctionParam_classes = ''
         self.RFunctionParam_partitionList = ''
         self.inputs.addInput("y", "Input Caret Data", caret.CaretData.CaretData, self.processy)
-        self.inputs.addInput('partition', 'Partition List', signals.RList.RList, self.processList)
+        self.inputs.addInput('partition', 'Partition List', signals.base.RList, self.processList)
         self.outputs.addOutput("createDataPartitionOutput1","Partitioned Data Included", caret.CaretData.CaretData)
         self.outputs.addOutput("createDataPartitionOutput2","Partitioned Data Excluded", caret.CaretData.CaretData)
 
-        self.ListElementCombo = redRcomboBox(self.controlArea, label = 'List Element:')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.ListElementCombo = redRGUI.base.comboBox(self.controlArea, label = 'List Element:')
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processy(self, data):
         
         if data:

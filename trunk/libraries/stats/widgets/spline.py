@@ -7,17 +7,10 @@
 <icon>stats.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.signalClasses.RModelFit import RModelFit as redRRModelFit
-from libraries.plotting.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
 
 
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.textEdit import textEdit
 class spline(OWRpy): 
     settingsList = []
     def __init__(self, **kwargs):
@@ -26,24 +19,24 @@ class spline(OWRpy):
         self.data = {}
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'y', redRRVector, self.processy)
-        self.inputs.addInput('id1', 'x', redRRVector, self.processx)
+        self.inputs.addInput('id0', 'y', signals.base.RVector, self.processy)
+        self.inputs.addInput('id1', 'x', signals.base.RVector, self.processx)
 
-        self.outputs.addOutput('id0', 'spline Output', redRRModelFit)
-        self.outputs.addOutput('id1', 'spline plot attribute', redRRPlotAttribute)
+        self.outputs.addOutput('id0', 'spline Output', signals.base.RModelFit)
+        self.outputs.addOutput('id1', 'spline plot attribute', signals.plotting.RPlotAttribute)
 
         
-        self.standardTab = groupBox(self.controlArea, label = 'Parameters')
-        self.RFunctionParamxmin_lineEdit =  lineEdit(self.standardTab,  label = "xmin:", text = 'min(x)')
-        self.RFunctionParamties_lineEdit =  lineEdit(self.standardTab,  label = "ties:", text = 'mean')
-        self.RFunctionParammethod_lineEdit =  lineEdit(self.standardTab,  label = "method:", text = '"fmm"')
-        self.RFunctionParamxmax_lineEdit =  lineEdit(self.standardTab,  label = "xmax:", text = 'max(x)')
-        self.RFunctionParamn_lineEdit =  lineEdit(self.standardTab,  label = "n:", text = '3*length(x)')
+        self.standardTab = redRGUI.base.groupBox(self.controlArea, label = 'Parameters')
+        self.RFunctionParamxmin_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "xmin:", text = 'min(x)')
+        self.RFunctionParamties_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "ties:", text = 'mean')
+        self.RFunctionParammethod_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "method:", text = '"fmm"')
+        self.RFunctionParamxmax_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "xmax:", text = 'max(x)')
+        self.RFunctionParamn_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "n:", text = '3*length(x)')
         
-        self.xcolumnComboBox = comboBox(self.standardTab, label = 'X data')
-        self.ycolumnComboBox = comboBox(self.standardTab, label = 'Y data')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
+        self.xcolumnComboBox = redRGUI.base.comboBox(self.standardTab, label = 'X data')
+        self.ycolumnComboBox = redRGUI.base.comboBox(self.standardTab, label = 'Y data')
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "RoutputWindow")
     def processy(self, data):
         if not self.require_librarys(["stats"]):
             self.status.setText('R Libraries Not Loaded.')
@@ -103,9 +96,9 @@ class spline(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-        newData = redRRModelFit(self, data = self.Rvariables["spline"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.base.RModelFit(self, data = self.Rvariables["spline"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
         
-        newLine = redRRPlotAttribute(self, data = 'lines('+self.Rvariables['spline']+')')
+        newLine = signals.plotting.RPlotAttribute(self, data = 'lines('+self.Rvariables['spline']+')')
         self.rSend("id1", newLine)

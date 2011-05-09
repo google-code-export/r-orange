@@ -7,12 +7,7 @@
 <icon></icon>
 """
 from OWRpy import * 
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 
-from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButtons 
-from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
-import libraries.base.signalClasses as signals
+import redRGUI, signals
 import libraries.RedRCaret.signalClasses as caret
 class RedRcreateDataPartition(OWRpy): 
     settingsList = []
@@ -23,16 +18,16 @@ class RedRcreateDataPartition(OWRpy):
         self.data = {}
         self.RFunctionParam_y = ''
         self.inputs.addInput("y", "Input Caret Data", caret.CaretData.CaretData, self.processy)
-        self.outputs.addOutput("createDataPartition Output","Partition/Resample/Fold List", signals.RList.RList)
+        self.outputs.addOutput("createDataPartition Output","Partition/Resample/Fold List", signals.base.RList)
         
-        self.functionCombo = redRcomboBox(self.controlArea, label = 'Function:', items = ['Partition', 'Resample', 'Fold'])
-        self.RFunctionParamp_spinBox = redRSpinBox(self.controlArea, label = "Percentage (Partition):", value = 50, min = 1, max = 100)
-        #self.RFunctionParamlist_radioButtons = redRradioButtons(self.controlArea, label = "list:", buttons = ["TRUE"], setChecked = "")
-        self.RFunctionParamgroups_spinBox = redRSpinBox(self.controlArea, label = "Number of Quantiles (Partition on Numeric Data):", value = 5, min = 1)
-        self.RFunctionParamtimes_spinBox = redRSpinBox(self.controlArea, label = "Number of Partitions (Partition and Resample):", value = 1, min = 1, toolTip = 'Typically higher values are set for resampling because one wants to generate several resamples at once.')
-        self.RFunctionParam_folds_spinBox = redRSpinBox(self.controlArea, label = "Number of Folds (Folds):", value = 10, min = 1)
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = redRtextEdit(self.controlArea, label = "R Output Window")
+        self.functionCombo = redRGUI.base.comboBox(self.controlArea, label = 'Function:', items = ['Partition', 'Resample', 'Fold'])
+        self.RFunctionParamp_spinBox = redRGUI.base.spinBox(self.controlArea, label = "Percentage (Partition):", value = 50, min = 1, max = 100)
+        #self.RFunctionParamlist_radioButtons = redRGUI.base.radioButtons(self.controlArea, label = "list:", buttons = ["TRUE"], setChecked = "")
+        self.RFunctionParamgroups_spinBox = redRGUI.base.spinBox(self.controlArea, label = "Number of Quantiles (Partition on Numeric Data):", value = 5, min = 1)
+        self.RFunctionParamtimes_spinBox = redRGUI.base.spinBox(self.controlArea, label = "Number of Partitions (Partition and Resample):", value = 1, min = 1, toolTip = 'Typically higher values are set for resampling because one wants to generate several resamples at once.')
+        self.RFunctionParam_folds_spinBox = redRGUI.base.spinBox(self.controlArea, label = "Number of Folds (Folds):", value = 10, min = 1)
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "R Output Window")
     def processy(self, data):
         
         if data:
@@ -65,5 +60,5 @@ class RedRcreateDataPartition(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(capture.output('+self.Rvariables['createDataPartition']+'), collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)
-        newData = signals.RList.RList(self, data = self.Rvariables["createDataPartition"])
+        newData = signals.base.RList(self, data = self.Rvariables["createDataPartition"])
         self.rSend("createDataPartition Output", newData)

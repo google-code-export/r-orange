@@ -9,24 +9,15 @@
 #OWRpy is the parent of all widgets. 
 #Contains all the functionality for connecting the widget to the underlying R session.
 from OWRpy import *
+import redRGUI, signals
 import os.path, redREnviron
 # signalClasses classes contain the data that is passed between widgets. 
 # In this case we are using the RDataFrame and RMatrix signals
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.signalClasses.RList import RList as redRRList
 
 
 
 # redRGUI contains all the QT gui elements. 
 # These elements all have special functions for saving and loading state. 
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.checkBox import checkBox
-from libraries.base.qtWidgets.radioButtons import radioButtons
-from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox
-from libraries.base.qtWidgets.widgetBox import widgetBox
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.spinBox import spinBox as RedRSpinBox
 
 # our first widget. Must be a child of OWRpy class
 # The wiget class name must be the same as the file name
@@ -42,16 +33,16 @@ class distributions(OWRpy):
         self.setRvariableNames(["distri"])
 
         # Define the outputs of this widget
-        self.outputs.addOutput('id0', 'Results', redRRVector)
+        self.outputs.addOutput('id0', 'Results', signals.base.RVector)
 
         
         #START THE GUI LAYOUT
-        area = widgetBox(self.controlArea,orientation='horizontal')       
-        options = widgetBox(area,orientation='vertical')
+        area = redRGUI.base.widgetBox(self.controlArea,orientation='horizontal')       
+        options = redRGUI.base.widgetBox(area,orientation='vertical')
         area.layout().setAlignment(options,Qt.AlignTop)
-        self.count = RedRSpinBox(options, label='# Observations to Generate', min = 0,max=60000000, value = 10)
+        self.count = redRGUI.base.spinBox(options, label='# Observations to Generate', min = 0,max=60000000, value = 10)
         
-        self.methodButtons = redRcomboBox(options,  label = "Distributions", 
+        self.methodButtons = redRGUI.base.comboBox(options,  label = "Distributions", 
         items = [("rnorm", "Normal"),
         ('rbeta','Beta'),
         ('rbinom','Binomial'),
@@ -63,51 +54,51 @@ class distributions(OWRpy):
         editable=True, callback = self.onDistChange)
         
         textBoxWidth = 70
-        self.distOptions = widgetBox(options)
-        self.normalDist = groupBox(self.distOptions,label='Normal Distribution')
-        self.normMean = redRlineEdit(self.normalDist, label='Mean',id='mean', text='0', width=textBoxWidth)
-        self.normSD = redRlineEdit(self.normalDist, label='Standard Deviations',id='sd', text='1',width=textBoxWidth)
+        self.distOptions = redRGUI.base.widgetBox(options)
+        self.normalDist = redRGUI.base.groupBox(self.distOptions,label='Normal Distribution')
+        self.normMean = redRGUI.base.lineEdit(self.normalDist, label='Mean',id='mean', text='0', width=textBoxWidth)
+        self.normSD = redRGUI.base.lineEdit(self.normalDist, label='Standard Deviations',id='sd', text='1',width=textBoxWidth)
         
-        self.betaDist = groupBox(self.distOptions,label='Beta Distribution')
-        self.betaShape1 = redRlineEdit(self.betaDist, label='Shape 1', id='shape1', width=textBoxWidth,text='1')
-        self.betaShape2 = redRlineEdit(self.betaDist, label='Shape 2', id='shape2', width=textBoxWidth,text='1')
-        self.betaNCP = redRlineEdit(self.betaDist, label='Non-centrality', id='ncp', width=textBoxWidth,text='0')
+        self.betaDist = redRGUI.base.groupBox(self.distOptions,label='Beta Distribution')
+        self.betaShape1 = redRGUI.base.lineEdit(self.betaDist, label='Shape 1', id='shape1', width=textBoxWidth,text='1')
+        self.betaShape2 = redRGUI.base.lineEdit(self.betaDist, label='Shape 2', id='shape2', width=textBoxWidth,text='1')
+        self.betaNCP = redRGUI.base.lineEdit(self.betaDist, label='Non-centrality', id='ncp', width=textBoxWidth,text='0')
         self.betaDist.hide()
 
         
-        self.binomDist = groupBox(self.distOptions,label='Binomial Distribution')
-        self.binomSize = redRlineEdit(self.binomDist, label='Size', id='size', width=textBoxWidth,text='1')
-        self.binomProb = redRlineEdit(self.binomDist, label='Probability', id='prob', width=textBoxWidth,text='.5')
+        self.binomDist = redRGUI.base.groupBox(self.distOptions,label='Binomial Distribution')
+        self.binomSize = redRGUI.base.lineEdit(self.binomDist, label='Size', id='size', width=textBoxWidth,text='1')
+        self.binomProb = redRGUI.base.lineEdit(self.binomDist, label='Probability', id='prob', width=textBoxWidth,text='.5')
         self.binomDist.hide()
         
         
-        self.cauchyDist = groupBox(self.distOptions,label='Cauchy Distribution')
-        self.cauchyLocation = redRlineEdit(self.cauchyDist, label='Location', id='location', width=textBoxWidth,text='0')
-        self.cauchyScale = redRlineEdit(self.cauchyDist, label='Scale', id='scale', width=textBoxWidth,text='1')
+        self.cauchyDist = redRGUI.base.groupBox(self.distOptions,label='Cauchy Distribution')
+        self.cauchyLocation = redRGUI.base.lineEdit(self.cauchyDist, label='Location', id='location', width=textBoxWidth,text='0')
+        self.cauchyScale = redRGUI.base.lineEdit(self.cauchyDist, label='Scale', id='scale', width=textBoxWidth,text='1')
         self.cauchyDist.hide()
         
-        self.gammaDist = groupBox(self.distOptions,label='Gamma Distribution')
-        self.gammaShape = redRlineEdit(self.gammaDist, label='Shape', id='location', width=textBoxWidth,text='1')
-        self.gammaRate = redRlineEdit(self.gammaDist, label='Rate', id='scale', width=textBoxWidth,text='1')
-        self.gammaScale = redRlineEdit(self.gammaDist, label='Scale', id='scale', width=textBoxWidth,text='.5')
+        self.gammaDist = redRGUI.base.groupBox(self.distOptions,label='Gamma Distribution')
+        self.gammaShape = redRGUI.base.lineEdit(self.gammaDist, label='Shape', id='location', width=textBoxWidth,text='1')
+        self.gammaRate = redRGUI.base.lineEdit(self.gammaDist, label='Rate', id='scale', width=textBoxWidth,text='1')
+        self.gammaScale = redRGUI.base.lineEdit(self.gammaDist, label='Scale', id='scale', width=textBoxWidth,text='.5')
         self.gammaDist.hide()
         
-        self.chiDist = groupBox(self.distOptions,label='Chi Square Distribution')
-        self.chiDF = redRlineEdit(self.chiDist, label='Degrees of Freedom', id='df', width=textBoxWidth,text='1')
-        self.chiNCP = redRlineEdit(self.chiDist, label='Non-centrality', id='ncp', width=textBoxWidth,text='0')
+        self.chiDist = redRGUI.base.groupBox(self.distOptions,label='Chi Square Distribution')
+        self.chiDF = redRGUI.base.lineEdit(self.chiDist, label='Degrees of Freedom', id='df', width=textBoxWidth,text='1')
+        self.chiNCP = redRGUI.base.lineEdit(self.chiDist, label='Non-centrality', id='ncp', width=textBoxWidth,text='0')
         self.chiDist.hide()
         
-        self.fDist = groupBox(self.distOptions,label='F Distribution')
-        self.fDF1 = redRlineEdit(self.fDist, label='Degrees of Freedom 1', id='df1', width=textBoxWidth,text='1')
-        self.fDF2 = redRlineEdit(self.fDist, label='Degrees of Freedom 2', id='df2', width=textBoxWidth,text='1')
-        self.fNCP = redRlineEdit(self.fDist, label='Non-centrality', id='ncp', width=textBoxWidth,text='0')
+        self.fDist = redRGUI.base.groupBox(self.distOptions,label='F Distribution')
+        self.fDF1 = redRGUI.base.lineEdit(self.fDist, label='Degrees of Freedom 1', id='df1', width=textBoxWidth,text='1')
+        self.fDF2 = redRGUI.base.lineEdit(self.fDist, label='Degrees of Freedom 2', id='df2', width=textBoxWidth,text='1')
+        self.fNCP = redRGUI.base.lineEdit(self.fDist, label='Non-centrality', id='ncp', width=textBoxWidth,text='0')
         self.fDist.hide()
         
-        self.expDist = groupBox(self.distOptions,label='Exponential Distribution')
-        self.expRate = redRlineEdit(self.expDist, label='Rate ', id='rate', width=textBoxWidth,text='1')
+        self.expDist = redRGUI.base.groupBox(self.distOptions,label='Exponential Distribution')
+        self.expRate = redRGUI.base.lineEdit(self.expDist, label='Rate ', id='rate', width=textBoxWidth,text='1')
         self.expDist.hide()
         
-        commit = redRCommitButton(options, "Commit", toolTip='Calculate values', callback = self.commitFunction)
+        commit = redRGUI.base.commitButton(options, "Commit", toolTip='Calculate values', callback = self.commitFunction)
         options.layout().setAlignment(commit, Qt.AlignRight)
         
     # Based on the user selections some parameters is not valid. This is all documented in the R help for cor/var/cov
@@ -183,6 +174,6 @@ class distributions(OWRpy):
         self.R('%s <- %s(%s,%s)' % (self.Rvariables['distri'], dist, self.count.value(),inj), wantType = 'NoConversion')
         
         # create a new signal of type RMatrix and load the results 
-        newData = redRRVector(self, data = '%s' % self.Rvariables["distri"]) 
+        newData = signals.base.RVector(self, data = '%s' % self.Rvariables["distri"]) 
         # send the signal forward
         self.rSend("id0", newData)

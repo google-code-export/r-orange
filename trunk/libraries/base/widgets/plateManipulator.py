@@ -8,20 +8,7 @@
 
 import redRGUI
 from OWRpy import *
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.UnstructuredDict import UnstructuredDict
-from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
-from libraries.base.signalClasses.RList import RList as redRRList
-from libraries.base.qtWidgets.table import table
-from libraries.base.qtWidgets.pyDataTable import pyDataTable as pyDataTable
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.lineEditHint import lineEditHint
-from libraries.base.qtWidgets.widgetBox import widgetBox
-from libraries.base.qtWidgets.widgetLabel import widgetLabel
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.tabWidget import tabWidget
+import redRGUI, signals
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class plateManipulator(OWRpy):
@@ -34,35 +21,35 @@ class plateManipulator(OWRpy):
         self.groupings = {}
         self.tables = {}
         self.processInt = 1
-        self.inputs.addInput('plateData', 'Plate Data (must be numeric)', redRRMatrix, self.processData, multiple = True)
-        self.outputs.addOutput('normPlate', 'Processed Values', redRRList)
+        self.inputs.addInput('plateData', 'Plate Data (must be numeric)', signals.base.RMatrix, self.processData, multiple = True)
+        self.outputs.addOutput('normPlate', 'Processed Values', signals.base.RList)
         
         ## GUI
         
-        box = widgetBox(self.controlArea, orientation = 'horizontal')
-        tableBox = widgetBox(box)
+        box = redRGUI.base.widgetBox(self.controlArea, orientation = 'horizontal')
+        tableBox = redRGUI.base.widgetBox(box)
         
-        self.tableTabWidget = tabWidget(tableBox)
+        self.tableTabWidget = redRGUI.base.tabWidget(tableBox)
         
-        rightBox = widgetBox(box)
+        rightBox = redRGUI.base.widgetBox(box)
         
-        addBox = groupBox(rightBox, label = _('Selections'))
-        self.groupEdit = lineEditHint(addBox, label = _('Group'))
-        self.classEdit = lineEditHint(addBox, label = _('Class'))
-        button(addBox, label = _('Add Selections To Model'), callback = self.addSelections)
-        self.addBoxLable = widgetLabel(addBox, label = _('Add Box Label'), wordWrap = True)
+        addBox = redRGUI.base.groupBox(rightBox, label = _('Selections'))
+        self.groupEdit = redRGUI.base.lineEditHint(addBox, label = _('Group'))
+        self.classEdit = redRGUI.base.lineEditHint(addBox, label = _('Class'))
+        redRGUI.base.button(addBox, label = _('Add Selections To Model'), callback = self.addSelections)
+        self.addBoxLable = redRGUI.base.widgetLabel(addBox, label = _('Add Box Label'), wordWrap = True)
         
         
-        processBox = groupBox(rightBox, label = _('Prosess'))
-        self.processSelect = comboBox(processBox, label = _('Process Method:'), items = ['Subtract', 'Divide', 'Add', 'Multiply'])
-        self.acrossSelect = comboBox(processBox, label = _('Across:'))
-        self.byGroupSelect = comboBox(processBox, label = _('By:'), callback = self.byGroupSelectChanged)
-        self.bySubGroupSelect = comboBox(processBox, label = _('Control:'))
-        self.methodSelect = comboBox(processBox, label = _('Combine Method:'), items = ['Average', 'Median', 'Max', 'Min'])
-        self.constantEdit = lineEdit(processBox, label = _('Constant:'))
-        button(processBox, label = _('Process'), callback = self.processAdjustment)
-        #reshapeBox = groupBox(rightBox, label = _('Commit Data'))
-        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
+        processBox = redRGUI.base.groupBox(rightBox, label = _('Prosess'))
+        self.processSelect = redRGUI.base.comboBox(processBox, label = _('Process Method:'), items = ['Subtract', 'Divide', 'Add', 'Multiply'])
+        self.acrossSelect = redRGUI.base.comboBox(processBox, label = _('Across:'))
+        self.byGroupSelect = redRGUI.base.comboBox(processBox, label = _('By:'), callback = self.byGroupSelectChanged)
+        self.bySubGroupSelect = redRGUI.base.comboBox(processBox, label = _('Control:'))
+        self.methodSelect = redRGUI.base.comboBox(processBox, label = _('Combine Method:'), items = ['Average', 'Median', 'Max', 'Min'])
+        self.constantEdit = redRGUI.base.lineEdit(processBox, label = _('Constant:'))
+        redRGUI.base.button(processBox, label = _('Process'), callback = self.processAdjustment)
+        #reshapeBox = redRGUI.base.groupBox(rightBox, label = _('Commit Data'))
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
     def byGroupSelectChanged(self):
         self.bySubGroupSelect.update(['Constant'] + self.groupings[unicode(self.byGroupSelect.currentText())].keys())
     def processAdjustment(self):
@@ -120,13 +107,13 @@ class plateManipulator(OWRpy):
                 for i in self.groupings[acrossSelect][c]:
                     self.R('%s[%s,%s]<-%s[%s, %s] * %s' % (tempTables[i[0]], i[1]+1, i[2]+1, i[0], i[1]+1, i[2]+1, conVal), wantType = 'NoConversion')
         for table in tempTables.values():
-            self.processData(redRRDataFrame(self, data = 'as.data.frame(%s)' % table), table)
+            self.processData(signals.base.RDataFrame(self, data = 'as.data.frame(%s)' % table), table)
             
     def processData(self, data, id):
         if data:
             if id not in self.data.keys():
                 page = self.tableTabWidget.createTabPage(str(id))
-                self.tables[str(id)] = table(page, label = str(id), displayLabel = False, data = self.R('as.data.frame(%s)' % data.getData(), wantType = 'dict'), keys = self.R('colnames(%s)' % data.getData(), wantType = 'list'))
+                self.tables[str(id)] = redRGUI.base.table(page, label = str(id), displayLabel = False, data = self.R('as.data.frame(%s)' % data.getData(), wantType = 'dict'), keys = self.R('colnames(%s)' % data.getData(), wantType = 'list'))
             self.data[id] = data.getData()
             
                 
@@ -168,4 +155,4 @@ class plateManipulator(OWRpy):
         
     def commitFunction(self):
         self.R('%s<-list(%s)' % (self.Rvariables['normList'], ','.join(self.data.values())))
-        self.rSend('normPlate', redRRList(self, data = self.Rvariables['normList']))
+        self.rSend('normPlate', signals.base.RList(self, data = self.Rvariables['normList']))

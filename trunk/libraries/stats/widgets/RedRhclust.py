@@ -7,12 +7,8 @@
 <icon></icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-import libraries.base.signalClasses as signals
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.button import button
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.RList import RList as redRRList
 
 class RedRhclust(OWRpy): 
     settingsList = []
@@ -21,14 +17,14 @@ class RedRhclust(OWRpy):
         self.setRvariableNames(["hclust"])
         self.data = {}
         self.RFunctionParam_d = ''
-        self.inputs.addInput('id0', 'd', redRRDataFrame, self.processd)
+        self.inputs.addInput('id0', 'd', signals.base.RDataFrame, self.processd)
 
-        self.outputs.addOutput('id0', 'hclust Output', redRRList)
+        self.outputs.addOutput('id0', 'hclust Output', signals.base.RList)
 
         
-        self.RFunctionParammethod_comboBox = comboBox(self.controlArea, label = "Cluster Method:", items = ["complete","ward","single","average","mcquitty","centroid"])
-        self.RFunctionParamdistmethod_comboBox = comboBox(self.controlArea, label = 'Dist Method:', items = ["euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"])
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParammethod_comboBox = redRGUI.base.comboBox(self.controlArea, label = "Cluster Method:", items = ["complete","ward","single","average","mcquitty","centroid"])
+        self.RFunctionParamdistmethod_comboBox = redRGUI.base.comboBox(self.controlArea, label = 'Dist Method:', items = ["euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"])
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processd(self, data):
         if not self.require_librarys(["stats"]):
             self.status.setText('R Libraries Not Loaded.')
@@ -48,6 +44,6 @@ class RedRhclust(OWRpy):
         injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['hclust']+'<-hclust(d=dist(x='+unicode(self.RFunctionParam_d)+', method = \''+unicode(self.RFunctionParamdistmethod_comboBox.currentText())+'\'),'+inj+')')
-        newData = redRRList(self, data = self.Rvariables["hclust"], checkVal = False) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.base.RList(self, data = self.Rvariables["hclust"], checkVal = False) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

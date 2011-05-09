@@ -7,13 +7,9 @@
 <icon></icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-import libraries.base.signalClasses as signals
 
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.textEdit import textEdit
 class RedRks_test(OWRpy): 
     settingsList = []
     def __init__(self, **kwargs):
@@ -22,14 +18,14 @@ class RedRks_test(OWRpy):
             self.data = {}
             self.RFunctionParam_y = ''
             self.RFunctionParam_x = ''
-            self.inputs.addInput('id0', 'y', signals.RVector.RVector, self.processy)
-            self.inputs.addInput('id1', 'x', signals.RVector.RVector, self.processx)
+            self.inputs.addInput('id0', 'y', signals.base.RVector, self.processy)
+            self.inputs.addInput('id1', 'x', signals.base.RVector, self.processx)
 
             
-            self.RFunctionParamalternative_comboBox = comboBox(self.controlArea, label = "alternative:", items = ["two.sided","less","greater"])
-            self.RFunctionParamexact_lineEdit = lineEdit(self.controlArea, label = "exact:", text = 'NULL')
-            redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-            self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
+            self.RFunctionParamalternative_comboBox = redRGUI.base.comboBox(self.controlArea, label = "alternative:", items = ["two.sided","less","greater"])
+            self.RFunctionParamexact_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "exact:", text = 'NULL')
+            redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+            self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "RoutputWindow")
     def processy(self, data):
             if not self.require_librarys(["stats"]):
                     self.status.setText('R Libraries Not Loaded.')

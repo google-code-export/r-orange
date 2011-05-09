@@ -5,12 +5,6 @@
 #
 
 # import redRGUI 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit
-from libraries.base.qtWidgets.button import button as redRbutton
-from libraries.base.qtWidgets.groupBox import groupBox as redRgroupBox
-from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
-from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
-from libraries.base.qtWidgets.statusLabel import statusLabel as redRStatusLabel
 from PyQt4 import QtWebKit
 import urllib, os, redREnviron
 from PyQt4.QtCore import *
@@ -18,6 +12,7 @@ from PyQt4.QtGui import *
 import redRStyle
 from datetime import date
 import redRi18n
+import redRGUI
 # def _(a):
     # return a
 _ = redRi18n.Coreget_()
@@ -78,20 +73,20 @@ class redRWidgetGUI(QMainWindow):
         #self.setLayout(QVBoxLayout())
         self.layout().setMargin(2)
         self.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
-        topWidgetPart = redRwidgetBox(self, orientation="vertical", margin=0)
+        topWidgetPart = redRGUI.base.widgetBox(self, orientation="vertical", margin=0)
         topWidgetPart.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         self.setCentralWidget(topWidgetPart)
-        self.controlArea = redRwidgetBox(topWidgetPart, orientation="vertical", margin=4)
+        self.controlArea = redRGUI.base.widgetBox(topWidgetPart, orientation="vertical", margin=4)
         #self.controlArea.setLayout(QVBoxLayout())
         #self.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.controlArea.setMinimumWidth(300)
         topWidgetPart.layout().setAlignment(self.controlArea,Qt.AlignTop | Qt.AlignLeft)
         #self.layout().addWidget(self.controlArea)
-        bottomArea = redRwidgetBox(topWidgetPart, orientation="horizontal", margin=4)
-        self.bottomAreaLeft = redRwidgetBox(bottomArea, orientation = 'horizontal')
-        self.bottomAreaCenter = redRwidgetBox(bottomArea, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
+        bottomArea = redRGUI.base.widgetBox(topWidgetPart, orientation="horizontal", margin=4)
+        self.bottomAreaLeft = redRGUI.base.widgetBox(bottomArea, orientation = 'horizontal')
+        self.bottomAreaCenter = redRGUI.base.widgetBox(bottomArea, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
         orientation = 'horizontal')
-        self.bottomAreaRight = redRwidgetBox(bottomArea, orientation = 'horizontal')
+        self.bottomAreaRight = redRGUI.base.widgetBox(bottomArea, orientation = 'horizontal')
         #start widget GUI
         
         
@@ -101,13 +96,13 @@ class redRWidgetGUI(QMainWindow):
         
         self.setStatusBar(self.statusBar)
         
-        self.RIndicator = redRwidgetLabel(self.statusBar)
+        self.RIndicator = redRGUI.base.widgetLabel(self.statusBar)
         self.statusBar.addWidget(self.RIndicator)
         self.setRIndicator(False)
         
         
         
-        self.status = redRStatusLabel(self.statusBar, '')
+        self.status = redRGUI.base.statusLabel(self.statusBar, '')
         self.status.setStatus(0)
         self.status.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.statusBar.addPermanentWidget(self.status,4)
@@ -128,16 +123,16 @@ class redRWidgetGUI(QMainWindow):
         self.notesDock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea | Qt.BottomDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea,self.notesDock)
 
-        self.notesBox = redRwidgetBox(None,orientation=QVBoxLayout())
+        self.notesBox = redRGUI.base.widgetBox(None,orientation=QVBoxLayout())
         self.notesDock.setWidget(self.notesBox)
         
         self.notesBox.setMinimumWidth(minWidth)
         self.notesBox.setMinimumHeight(50)
         self.notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        redRwidgetLabel(self.notesBox, label="Notes:", icon=redRStyle.notesIcon)
+        redRGUI.base.widgetLabel(self.notesBox, label="Notes:", icon=redRStyle.notesIcon)
 
-        self.notes = redRtextEdit(self.notesBox, label = _('Notes'), displayLabel=False)
+        self.notes = redRGUI.base.textEdit(self.notesBox, label = _('Notes'), displayLabel=False)
         self.notes.setMinimumWidth(minWidth)
         self.notes.setMinimumHeight(50)
         self.notes.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -158,18 +153,18 @@ class redRWidgetGUI(QMainWindow):
         
         self.addDockWidget(Qt.RightDockWidgetArea,self.RoutputDock)
 
-        self.ROutputBox = redRwidgetBox(None,orientation=QVBoxLayout())
+        self.ROutputBox = redRGUI.base.widgetBox(None,orientation=QVBoxLayout())
         self.RoutputDock.setWidget(self.ROutputBox)
 
         self.ROutputBox.setMinimumHeight(50)
-        redRwidgetLabel(self.ROutputBox, label=_("R code executed in this widget:"),
+        redRGUI.base.widgetLabel(self.ROutputBox, label=_("R code executed in this widget:"),
         icon=redRStyle.RIcon)
 
-        self.ROutput = redRtextEdit(self.ROutputBox, label = _('R Output'),displayLabel=False)
+        self.ROutput = redRGUI.base.textEdit(self.ROutputBox, label = _('R Output'),displayLabel=False)
         self.ROutput.setMinimumWidth(minWidth)
         self.ROutput.setMinimumHeight(50)
         self.ROutput.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        redRbutton(self.ROutputBox, label = _('Run Selected Code'), callback = self._runSelectedRCode, toolTip = _('You may select any code to execute in the R session.  This will override anything that other widgets have done to this point and will be overriden when this widget executes again.  Use this with great caution.'))
+        redRGUI.base.button(self.ROutputBox, label = _('Run Selected Code'), callback = self._runSelectedRCode, toolTip = _('You may select any code to execute in the R session.  This will override anything that other widgets have done to this point and will be overriden when this widget executes again.  Use this with great caution.'))
         
         ### help ####
         self.helpFile = None
@@ -192,28 +187,28 @@ class redRWidgetGUI(QMainWindow):
         
         self.windowState['documentationState'] = {'notesBox':True,'ROutputBox':False}
 
-        docBox = redRwidgetBox(self.controlArea,orientation='horizontal',spacing=4)
+        docBox = redRGUI.base.widgetBox(self.controlArea,orientation='horizontal',spacing=4)
         
-        self.showNotesButton = redRbutton(docBox, '',toggleButton=True, 
+        self.showNotesButton = redRGUI.base.button(docBox, '',toggleButton=True, 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'),
         toolTip=_('Notes'),
         callback = self.updateDocumentationDock)
-        self.showROutputButton = redRbutton(docBox, '',toggleButton=True, 
+        self.showROutputButton = redRGUI.base.button(docBox, '',toggleButton=True, 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'R_icon.png'),
         toolTip=_('R Code'),
         callback = self.updateDocumentationDock)
         
-        self.printButton = redRbutton(docBox, "",
+        self.printButton = redRGUI.base.button(docBox, "",
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'printer_icon.png'),
         toolTip=_('Print'),
         callback = self.createReport)
 
-        self.showHelpButton = redRbutton(docBox, '',
+        self.showHelpButton = redRGUI.base.button(docBox, '',
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'help_icon.png'),
         toolTip=_('Help'),
         callback = self.showHelp)
 
-        self.includeInReport = redRbutton(docBox, '', 
+        self.includeInReport = redRGUI.base.button(docBox, '', 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'report_icon.png'),
         toolTip=_('Include In Report'), toggleButton = True)
         self.includeInReport.setChecked(True)
@@ -236,10 +231,10 @@ class redRWidgetGUI(QMainWindow):
             self.leftDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
             self.leftDock.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
             self.addDockWidget(Qt.LeftDockWidgetArea,self.leftDock)
-            self.GUIDialog = redRwidgetBox(self.leftDock,orientation='vertical')
+            self.GUIDialog = redRGUI.base.widgetBox(self.leftDock,orientation='vertical')
             self.GUIDialog.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
             self.leftDock.setWidget(self.GUIDialog)
-            self.leftDockButton = redRbutton(self.bottomAreaLeft, _('Advanced Options'),toggleButton=True, callback = self.showLeftDock)
+            self.leftDockButton = redRGUI.base.button(self.bottomAreaLeft, _('Advanced Options'),toggleButton=True, callback = self.showLeftDock)
             self.statusBar.insertPermanentWidget(2,self.leftDockButton)
             self.windowState['leftDockState'] = True
   

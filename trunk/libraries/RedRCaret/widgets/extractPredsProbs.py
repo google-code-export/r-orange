@@ -7,14 +7,7 @@
 <icon></icon>
 """
 from OWRpy import * 
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 
-from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButtons 
-from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
-from libraries.base.qtWidgets.RFormulaEntry import RFormulaEntry as redRRFormulaEntry
-from libraries.base.qtWidgets.widgetLabel import widgetLabel
-import libraries.base.signalClasses as signals
+import redRGUI, signals
 import libraries.RedRCaret.signalClasses as caret
 
 class extractPredsProbs(OWRpy): 
@@ -26,13 +19,13 @@ class extractPredsProbs(OWRpy):
         self.data = {}
         self.RFunctionParam_predictions = ''
         self.RFunctionParam_classes = ''
-        self.inputs.addInput("data", "Fitted Prediction Model", signals.RModelFit.RModelFit, self.processdata, multiple = True)
+        self.inputs.addInput("data", "Fitted Prediction Model", signals.base.RModelFit, self.processdata, multiple = True)
         self.inputs.addInput('predicationData', 'Classification Data', caret.CaretData.CaretData, self.processpreds)
-        self.outputs.addOutput("predictions","Caret Predictions", signals.RDataFrame.RDataFrame)
-        self.outputs.addOutput("probabilities", "Caret Probabilities", signals.RDataFrame.RDataFrame)
-        self.widgetLabel = widgetLabel(self.bottomAreaLeft, label = '')
-        self.RoutputWindow = redRtextEdit(self.controlArea, label = "R Output Window")
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.outputs.addOutput("predictions","Caret Predictions", signals.base.RDataFrame)
+        self.outputs.addOutput("probabilities", "Caret Probabilities", signals.base.RDataFrame)
+        self.widgetLabel = redRGUI.base.widgetLabel(self.bottomAreaLeft, label = '')
+        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "R Output Window")
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processpreds(self, data):
         if data:
             self.RFunctionParam_predictions = data.getData()
@@ -70,7 +63,7 @@ class extractPredsProbs(OWRpy):
         tmp = ''
         try:
             self.R('%(PRED)s<-extractPrediction(list(%(MODEL)s), testX = %(testX)s, testY = %(testY)s)' % dataInputs, wantType = 'NoConversion') 
-            newDataPred = signals.RDataFrame.RDataFrame(self, data = self.Rvariables['preds'])
+            newDataPred = signals.base.RDataFrame(self, data = self.Rvariables['preds'])
             self.rSend("predictions", newDataPred)
             tmp += 'Predictions\n\n'
             tmp += self.R('paste(capture.output(str('+self.Rvariables['preds']+')), collapse ="\n")') + '\n\n'
@@ -80,7 +73,7 @@ class extractPredsProbs(OWRpy):
             
         try:
             self.R('%(PROB)s<-extractProb(list(%(MODEL)s), testX = %(testX)s, testY = %(testY)s)' % dataInputs, wantType = 'NoConversion')
-            newDataProbs = signals.RDataFrame.RDataFrame(self, data = self.Rvariables['probs'])
+            newDataProbs = signals.base.RDataFrame(self, data = self.Rvariables['probs'])
             self.rSend('probabilities', newDataProbs)
             tmp += 'Probabilities\n\n'
             tmp += self.R('paste(capture.output(str('+self.Rvariables['probs']+')), collapse ="\n")')

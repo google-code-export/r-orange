@@ -7,13 +7,7 @@
 <icon></icon>
 """
 from OWRpy import * 
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 
-from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButtons 
-from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
-from libraries.base.qtWidgets.gridBox import gridBox as redRGridBox
-import libraries.base.signalClasses as signals
+import redRGUI, signals
 import libraries.RedRCaret.signalClasses as caret
 
 class RedRfindCorrelation(OWRpy): 
@@ -25,32 +19,32 @@ class RedRfindCorrelation(OWRpy):
         self.data = {}
         self.RFunctionParam_x = ''
         self.RFunctionParam_data = ''
-        #self.inputs.addInput("x", "Correlation Matrix", signals.RMatrix.RMatrix, self.processx)
+        #self.inputs.addInput("x", "Correlation Matrix", signals.base.RMatrix, self.processx)
         self.inputs.addInput("data", "Data Table / Sample List", caret.CaretData.CaretData , self.processdata)
         self.outputs.addOutput("findCorrelation Output","Reduced Data Table", caret.CaretData.CaretData)
         self.outputs.addOutput("preprocess model", "PreProcess Model (To Calibrate Test Data)", caret.CaretModelFit.CaretModelFit)
-        grid = redRGridBox(self.controlArea)
-        self.nearZero = redRRadioButtons(grid.cell(0,0), label = 'Remove Near Zero Variance Predictors?', buttons = ['Yes', 'No'], setChecked = 'Yes', callback = self.nzvShowHide)
+        grid = redRGUI.base.gridBox(self.controlArea)
+        self.nearZero = redRGUI.base.radioButtons(grid.cell(0,0), label = 'Remove Near Zero Variance Predictors?', buttons = ['Yes', 'No'], setChecked = 'Yes', callback = self.nzvShowHide)
         
-        self.nzvBox = redRWidgetBox(grid.cell(0,0))
-        self.freqCut = redRLineEdit(self.nzvBox, label = 'Frequency Cut:', text = '95/5')
-        self.uniqueCut = redRLineEdit(self.nzvBox, label = 'Unique Cut:', text = '10')
+        self.nzvBox = redRGUI.base.widgetBox(grid.cell(0,0))
+        self.freqCut = redRGUI.base.lineEdit(self.nzvBox, label = 'Frequency Cut:', text = '95/5')
+        self.uniqueCut = redRGUI.base.lineEdit(self.nzvBox, label = 'Unique Cut:', text = '10')
         
-        self.preProcess = redRRadioButtons(grid.cell(0,1), label = 'Perform Pre Processing?', buttons = ['Yes', 'No'], setChecked = 'Yes', callback = self.nzvShowHide)
-        self.preprocessMethodsCombo = redRListBox(grid.cell(0,1), label = 'Pre Process Methods', items = [("BoxCox", "BoxCox"), ("center", "Center"), ("scale", "Scale"), ("range", "Range"), ("knnImpute", "KNN Impute"), ("bagImpute", "Bag Impute"), ("pca", "Principal Components"), ("ica", "Independent Components"), ("spatialSign", "Spatial Sign")])
+        self.preProcess = redRGUI.base.radioButtons(grid.cell(0,1), label = 'Perform Pre Processing?', buttons = ['Yes', 'No'], setChecked = 'Yes', callback = self.nzvShowHide)
+        self.preprocessMethodsCombo = redRGUI.base.listBox(grid.cell(0,1), label = 'Pre Process Methods', items = [("BoxCox", "BoxCox"), ("center", "Center"), ("scale", "Scale"), ("range", "Range"), ("knnImpute", "KNN Impute"), ("bagImpute", "Bag Impute"), ("pca", "Principal Components"), ("ica", "Independent Components"), ("spatialSign", "Spatial Sign")])
         self.preprocessMethodsCombo.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.preprocessMethodsCombo.setSelectedIds(["center", "scale"])
         
-        self.preprocessTresh = redRSpinBox(grid.cell(0,2), label = 'Pre Process Threshold:', min = 0, value = 0.95, decimals = 3)
-        self.preProcessNARM = redRRadioButtons(grid.cell(0,2), label = 'Remove NA?', buttons = [('TRUE', 'Yes'), ('FALSE', 'No')], setChecked = 'TRUE', callback = self.nzvShowHide)
-        self.preProcessKNN = redRSpinBox(grid.cell(0,2), label = 'Pre Process Threshold:', min = 0, value = 5, decimals = 0)
-        self.preProcessKNNSUM = redRComboBox(grid.cell(0,2), label = 'KNN Summary', items = [('mean', 'Mean'), ('median', 'Median'), ('min', 'Minimum'), ('max', 'Maximum')])
-        self.preProcessFUDGE = redRSpinBox(grid.cell(0,2), label = 'Fudge Value:', min = 0, value = 0.2, decimals = 3)
-        self.preProcessNUMUNI = redRSpinBox(grid.cell(0,2), label = 'Box-Cot Unique Values', min = 2, value = 3, decimals = 0)
+        self.preprocessTresh = redRGUI.base.spinBox(grid.cell(0,2), label = 'Pre Process Threshold:', min = 0, value = 0.95, decimals = 3)
+        self.preProcessNARM = redRGUI.base.radioButtons(grid.cell(0,2), label = 'Remove NA?', buttons = [('TRUE', 'Yes'), ('FALSE', 'No')], setChecked = 'TRUE', callback = self.nzvShowHide)
+        self.preProcessKNN = redRGUI.base.spinBox(grid.cell(0,2), label = 'Pre Process Threshold:', min = 0, value = 5, decimals = 0)
+        self.preProcessKNNSUM = redRGUI.base.comboBox(grid.cell(0,2), label = 'KNN Summary', items = [('mean', 'Mean'), ('median', 'Median'), ('min', 'Minimum'), ('max', 'Maximum')])
+        self.preProcessFUDGE = redRGUI.base.spinBox(grid.cell(0,2), label = 'Fudge Value:', min = 0, value = 0.2, decimals = 3)
+        self.preProcessNUMUNI = redRGUI.base.spinBox(grid.cell(0,2), label = 'Box-Cot Unique Values', min = 2, value = 3, decimals = 0)
         
-        self.RFunctionParamcutoff_spinBox = redRSpinBox(grid.cell(0,2), label = "Max Correlation Coef (/100):", min = 1, max = 99, value = 90)
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = redRtextEdit(self.controlArea, label = "R Output Window")
+        self.RFunctionParamcutoff_spinBox = redRGUI.base.spinBox(grid.cell(0,2), label = "Max Correlation Coef (/100):", min = 1, max = 99, value = 90)
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "R Output Window")
     def nzvShowHide(self):
         if unicode(self.nearZero.getChecked()) == 'Yes':
             self.nzvBox.show()

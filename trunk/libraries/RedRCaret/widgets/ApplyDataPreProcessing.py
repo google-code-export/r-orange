@@ -2,12 +2,7 @@
 <name>Apply Data PreProcessing (Caret)</name>
 """
 from OWRpy import * 
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 
-from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButtons 
-from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
-import libraries.base.signalClasses as signals
+import redRGUI, signals
 import libraries.RedRCaret.signalClasses as caret
 class ApplyDataPreProcessing(OWRpy): 
     settingsList = []
@@ -20,10 +15,10 @@ class ApplyDataPreProcessing(OWRpy):
         self.RFunctionParam_classes = ''
         self.RFunctionParam_preprocessModel = ''
         self.inputs.addInput("y", "Input Caret Data", caret.CaretData.CaretData, self.processy)
-        self.inputs.addInput('preprocess', 'PreProcessed Model', signals.RModelFit.RModelFit, self.processList)
+        self.inputs.addInput('preprocess', 'PreProcessed Model', signals.base.RModelFit, self.processList)
         self.outputs.addOutput("applyPreprocessData","Processed Data", caret.CaretData.CaretData)
 
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processy(self, data):
         
         if data:

@@ -5,23 +5,10 @@
 """
 
 from OWRpy import *
+import redRGUI, signals
 import globalData
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.StructuredDict import StructuredDict
 ##############################################################################
 
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.widgetLabel import widgetLabel
-from libraries.base.qtWidgets.filterTable import filterTable
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.listBox import listBox
-from libraries.base.qtWidgets.widgetBox import widgetBox
-from libraries.base.qtWidgets.textEdit import textEdit
-from libraries.base.qtWidgets.scrollArea import scrollArea
-from libraries.base.qtWidgets.splitter import splitter
-from libraries.base.qtWidgets.tabWidget import tabWidget
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class RDataTable(OWRpy):
@@ -31,7 +18,7 @@ class RDataTable(OWRpy):
         
         self.setRvariableNames(['summaryData'])
 
-        self.inputs.addInput('id1', _('Input Data Table'), [redRRDataFrame, StructuredDict], self.dataset) 
+        self.inputs.addInput('id1', _('Input Data Table'), [signals.base.RDataFrame, signals.base.StructuredDict], self.dataset) 
 
         self.data = {}          # dict containing the table infromation
         self.dataParent = None
@@ -51,44 +38,44 @@ class RDataTable(OWRpy):
         self.mylink = ''
         self.link = {}
         #The settings
-        self.advancedOptions = tabWidget(self.GUIDialog, position = QTabWidget.West) #orientation = 'vertical')
+        self.advancedOptions = redRGUI.base.tabWidget(self.GUIDialog, position = QTabWidget.West) #orientation = 'vertical')
         self.GUIDialog.layout().setAlignment(self.advancedOptions,Qt.AlignTop)
         
         diBox = self.advancedOptions.createTabPage(_("Data Information"))
-        vbox = widgetBox(diBox)
-        self.infoBox = groupBox(vbox, label=_("Data Information"))
+        vbox = redRGUI.base.widgetBox(diBox)
+        self.infoBox = redRGUI.base.groupBox(vbox, label=_("Data Information"))
         self.infoBox.setHidden(False)
-        widgetLabel(self.infoBox, label = _("A summary of your data will be displayed below when data is available."),  wordWrap = True)
-        self.rowColCount = widgetLabel(self.infoBox)
-        summaryBox = groupBox(vbox, label=_("Selected Data Summary"))
+        redRGUI.base.widgetLabel(self.infoBox, label = _("A summary of your data will be displayed below when data is available."),  wordWrap = True)
+        self.rowColCount = redRGUI.base.widgetLabel(self.infoBox)
+        summaryBox = redRGUI.base.groupBox(vbox, label=_("Selected Data Summary"))
         
-        self.customSummary = lineEdit(summaryBox, label = _('Custom Summary:'), toolTip = _('Place a custom summary function in here which will be added to the regular summary, use {Col} for the column number.  Ex. mean({Col})'))
-        self.summaryLabel = textEdit(summaryBox, label = _('Summary'),displayLabel=False)
+        self.customSummary = redRGUI.base.lineEdit(summaryBox, label = _('Custom Summary:'), toolTip = _('Place a custom summary function in here which will be added to the regular summary, use {Col} for the column number.  Ex. mean({Col})'))
+        self.summaryLabel = redRGUI.base.textEdit(summaryBox, label = _('Summary'),displayLabel=False)
 
         #saveTab = self.tabWidgeta.createTabPage('Save Data')
         sdBox = self.advancedOptions.createTabPage(_("Save Data"))
-        saveTab = groupBox(sdBox,label=_('Save Data'),orientation='horizontal')
-        #widgetLabel(saveTab, label=_("Saves the current table to a file."))
-        #button(saveTab, label=_("Set File"), callback = self.chooseDirectory)
-        #self.fileName = widgetLabel(saveTab, label="")
-        self.separator = comboBox(saveTab, label = 'Seperator:', 
+        saveTab = redRGUI.base.groupBox(sdBox,label=_('Save Data'),orientation='horizontal')
+        #redRGUI.base.widgetLabel(saveTab, label=_("Saves the current table to a file."))
+        #redRGUI.base.button(saveTab, label=_("Set File"), callback = self.chooseDirectory)
+        #self.fileName = redRGUI.base.widgetLabel(saveTab, label="")
+        self.separator = redRGUI.base.comboBox(saveTab, label = 'Seperator:', 
         items = [_('Comma'), _('Tab'), _('Space')], orientation = 'horizontal')
-        save = button(saveTab, label=_("Save As File"), callback=self.writeFile,
+        save = redRGUI.base.button(saveTab, label=_("Save As File"), callback=self.writeFile,
         toolTip = _("Write the table to a text file."))
         saveTab.layout().setAlignment(save,Qt.AlignRight)
 
         #links:
         linkBox = self.advancedOptions.createTabPage(_('Links to Websites'), canScroll = True)
-        linksTab = groupBox(linkBox, _('Links to Websites'))        
-        self.linksListBox = listBox(linksTab,label=_('Links to Websites'),displayLabel=False)
+        linksTab = redRGUI.base.groupBox(linkBox, _('Links to Websites'))        
+        self.linksListBox = redRGUI.base.listBox(linksTab,label=_('Links to Websites'),displayLabel=False)
         self.linksListBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.customLink = lineEdit(linksTab, label = _('Add Link:'), includeInReports=False)
-        hbox = widgetBox(linksTab,orientation='horizontal')
-        b = button(hbox, label = _('Add'), toolTip = _('Adds a link to the link section for interactive data exploration.\nThe link must have a marker for the row information in the form\n{column number}\n\nFor example:http://www.google.com/#q=%s, would do a search Google(TM) for whatever was in the cell you clicked.\nYou can test this if you want using the example.'), callback=self.addCustomLink)
-        button(hbox, label = _('Clear Links'), toolTip = _('Clears the links from the links section'), 
+        self.customLink = redRGUI.base.lineEdit(linksTab, label = _('Add Link:'), includeInReports=False)
+        hbox = redRGUI.base.widgetBox(linksTab,orientation='horizontal')
+        b = redRGUI.base.button(hbox, label = _('Add'), toolTip = _('Adds a link to the link section for interactive data exploration.\nThe link must have a marker for the row information in the form\n{column number}\n\nFor example:http://www.google.com/#q=%s, would do a search Google(TM) for whatever was in the cell you clicked.\nYou can test this if you want using the example.'), callback=self.addCustomLink)
+        redRGUI.base.button(hbox, label = _('Clear Links'), toolTip = _('Clears the links from the links section'), 
         callback = self.clearLinks)
         hbox.layout().setAlignment(Qt.AlignRight)
-        widgetLabel(linksTab,label ="""
+        redRGUI.base.widgetLabel(linksTab,label ="""
 Creating new links:
 http://www.ncbi.nlm.nih.gov/gene/{gene_id}
 - Here {gene_id} is a place holder and should be 
@@ -98,11 +85,11 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
           """)
         
         #The table
-        self.tableBox = widgetBox(self.controlArea)
+        self.tableBox = redRGUI.base.widgetBox(self.controlArea)
         self.tableBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        #boxSettings = groupBox(self.advancedOptions, label = _("Settings"))
+        #boxSettings = redRGUI.base.groupBox(self.advancedOptions, label = _("Settings"))
 
-        self.table = filterTable(self.tableBox,label = _('Data Table'),displayLabel=False, sortable=True,
+        self.table = redRGUI.base.filterTable(self.tableBox,label = _('Data Table'),displayLabel=False, sortable=True,
         filterable=True,selectionBehavior = QAbstractItemView.SelectItems, callback=self.itemClicked,selectionCallback=self.cellSelection)
         # self.table = filterTable2(self.tableBox, sortable=True,
         # filterable=True,selectionBehavior = QAbstractItemView.SelectItems, callback=self.itemClicked)
@@ -147,7 +134,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         self.data = dataset.getData()
         self.dataParent = dataset
         #print type(dataset)
-        if isinstance(dataset, redRRDataFrame):
+        if isinstance(dataset, signals.base.RDataFrame):
             #self.currentData = dataset.getData()
             dim = dataset.getDims_data()#self.R('dim(' + dataset['data'] + ')')
             self.rowColCount.setText(_('# Row: %(ROWCOUNT)s \n# Columns: %(COLCOUNT)s') %  {'ROWCOUNT':unicode(dim[0]), 'COLCOUNT':unicode(dim[1])})
@@ -155,8 +142,8 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
             self.table.setRTable(self.data)
 
             self.supressTabClick = False
-        elif isinstance(dataset, StructuredDict):
-            self.table.setStructuredDictTable(dataset.getData())
+        elif isinstance(dataset, signals.base.StructuredDict):
+            self.table.setsignals.base.StructuredDictTable(dataset.getData())
     
     def cellSelection(self,selections):
         

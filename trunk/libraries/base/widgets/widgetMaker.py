@@ -4,8 +4,8 @@
 """
 
 from OWRpy import *
+import redRGUI, signals
 import redRGUI
-import libraries.base.signalClasses as signals
 from libraries.base.qtWidgets import tabWidget, lineEdit, widgetLabel, widgetBox, button, checkBox, comboBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
@@ -219,9 +219,9 @@ class widgetMaker(OWRpy):
         self.headerCode += '&lt;icon&gt;&lt;/icon&gt;\n'
         self.headerCode += '"""\n'
         self.headerCode += 'from OWRpy import * \n'
+import redRGUI, signals
         for i in ['lineEdit', 'radioButtons', 'comboBox', 'checkBox', 'textEdit']:
             self.headerCode += 'from libraries.base.qtWidgets.%s import %s as redR%s \n' % (i,i,i)
-        self.headerCode += 'import libraries.base.signalClasses as signals\n\n'
         
     def makeInitHeader(self):
         self.initCode = ''
@@ -266,9 +266,9 @@ class widgetMaker(OWRpy):
                 elif self.fieldList[element]['ipt'] == 'checkBox':
                     self.guiCode += ')\n'
                 
-        self.guiCode += '        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)\n'
+        self.guiCode += '        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)\n'
         if _('Show Output') in self.captureROutput.getChecked():
-            self.guiCode += '        self.RoutputWindow = redRtextEdit(self.controlArea, label = _("R Output Window"))\n'
+            self.guiCode += '        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = _("R Output Window"))\n'
             #self.guiCode += '        self.controlArea.layout().addWidget(self.RoutputWindow)\n'
 
     def makeProcessSignals(self):

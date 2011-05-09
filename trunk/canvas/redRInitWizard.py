@@ -1,11 +1,3 @@
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox
-from libraries.base.qtWidgets.groupBox import groupBox as redRgroupBox
-from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
-from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
-from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButtons
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit
-from libraries.base.qtWidgets.listBox import listBox as redRlistBox
-from libraries.base.qtWidgets.button import button as redRButton
 ## redR-IntroWizard.  a wizard that is shown on first load that guides the user through the setup of Red-R.  The user will be encouraged to register Red-R (e-mail address), set canvas options (error reporting, output level, showing the output on error), R options (R mirror)
 
 import os, sys
@@ -32,17 +24,17 @@ class RedRInitWizard(QWizard):
         self.registerPage.setTitle(_('Please Register Red-R'))
         self.registerPage.setSubTitle(_('Registration will help us track errors to make Red-R better.'))
         
-        self.email = redRlineEdit(self.registerPage, label = _('Email Address (Optional):'), width = -1)
-        hbox = redRwidgetBox(self.registerPage);
+        self.email = redRGUI.base.lineEdit(self.registerPage, label = _('Email Address (Optional):'), width = -1)
+        hbox = redRGUI.base.widgetBox(self.registerPage);
 
-        # self.allowContact = redRradioButtons(self.registerPage, label = _('Red-R can contact me to ask about errors:'), buttons = [_('Yes'), _('No')])
+        # self.allowContact = redRGUI.base.radioButtons(self.registerPage, label = _('Red-R can contact me to ask about errors:'), buttons = [_('Yes'), _('No')])
         # self.allowContact.setChecked(_('Yes'))
         
         # self.errorReportingPage = QWizardPage()
         # self.errorReportingPage.setLayout(QVBoxLayout())
         # self.errorReportingPage.setTitle(_('Error Reporting'))
         # self.errorReportingPage.setSubTitle(_('How would you like errors to be reported to Red-R.'))
-        self.redRExceptionHandling = redRcheckBox(self.registerPage, label='Error Handling', 
+        self.redRExceptionHandling = redRGUI.base.checkBox(self.registerPage, label='Error Handling', 
         buttons = [
         ('showErrorWindow',_('Show output window on error')), 
         ('submitError',_('Submit Error Report')), 
@@ -57,20 +49,20 @@ class RedRInitWizard(QWizard):
         self.RSetupPage.setLayout(QVBoxLayout())
         self.RSetupPage.setTitle(_('R Repository'))
         self.RSetupPage.setSubTitle(_('Please set the repository closest to you.  This will help you get R packages faster.'))
-        self.rlibrariesBox = redRwidgetBox(self.RSetupPage)
-        self.libInfo = redRwidgetLabel(self.rlibrariesBox, label=_('Repository URL: ')+ self.settings['CRANrepos'])
+        self.rlibrariesBox = redRGUI.base.widgetBox(self.RSetupPage)
+        self.libInfo = redRGUI.base.widgetLabel(self.rlibrariesBox, label=_('Repository URL: ')+ self.settings['CRANrepos'])
         
 
         # place a listBox in the widget and fill it with a list of mirrors
-        #redRButton(self.rlibrariesBox, _('Get Libraries'), callback = self.loadMirrors)
-        self.libListBox = redRlistBox(self.rlibrariesBox, label = _('Mirrors'),displayLabel=False,
+        #redRGUI.base.button(self.rlibrariesBox, _('Get Libraries'), callback = self.loadMirrors)
+        self.libListBox = redRGUI.base.listBox(self.rlibrariesBox, label = _('Mirrors'),displayLabel=False,
         callback = self.setMirror)
-        self.libMessageBox = redRwidgetLabel(self.rlibrariesBox)
+        self.libMessageBox = redRGUI.base.widgetLabel(self.rlibrariesBox)
         
         self.RLibraryPage = QWizardPage()
         self.RLibraryPage.setLayout(QVBoxLayout())
         self.RLibraryPage.setTitle(_('Load R Libraries'))
-        redRwidgetLabel(self.RLibraryPage, 
+        redRGUI.base.widgetLabel(self.RLibraryPage, 
 '''Red-R needs to install these R libraries on this machine:
     'RSvgDevice', 'reshape', 'lattice', 'hexbin', 'ggplot2', 
     'graph', 'grid', 'limma', 'gregmisc', 'MASS', 'Matrix', 
@@ -81,7 +73,7 @@ class RedRInitWizard(QWizard):
         self.runExamplePage.setLayout(QVBoxLayout())
         self.runExamplePage.setTitle(_('Finished'))
         #self.runExamplePage.setSubTitle(_('<a href="http://red-r.org"> Red-R</a>.<br>Thanks for setting up Red-R.\n\nIf you want to start an example schema to help you get started then check the "Start Example" box.'))
-        a = redRwidgetLabel(self.runExamplePage,_(
+        a = redRGUI.base.widgetLabel(self.runExamplePage,_(
 """Thanks for setting up Red-R.<br>
 <ul>
 <li>Whats new in Red-R 1.85: <a href="http://red-r.org/downloads/changelog">Change Log</a></li>
@@ -93,7 +85,7 @@ class RedRInitWizard(QWizard):
         a.setOpenExternalLinks(True)
         a.setWordWrap(True)
         a.setFixedWidth(350)
-        self.showExample = redRcheckBox(self.runExamplePage,label=_('Show Example'),displayLabel=False,
+        self.showExample = redRGUI.base.checkBox(self.runExamplePage,label=_('Show Example'),displayLabel=False,
         buttons = [('start',_('Start Example'))], setChecked=['start'])
         
         

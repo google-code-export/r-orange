@@ -7,16 +7,6 @@ from datetime import tzinfo, timedelta, datetime, time
 import traceback
 import os.path, os
 import redREnviron, redRLog, SQLiteSession
-from libraries.base.qtWidgets.button import button as redRbutton
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox
-from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
-from libraries.base.qtWidgets.dialog import dialog as redRdialog
-from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
-from libraries.base.qtWidgets.comboBox import comboBox as redRComboBox
-from libraries.base.qtWidgets.radioButtons import radioButtons as redRradiobuttons
-from libraries.base.qtWidgets.tabWidget import tabWidget as redRTabWidget
-from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRLineEdit
 
 import redRi18n
 # def _(a):
@@ -135,16 +125,16 @@ class OutputWindow(QDialog):
             if not redREnviron.settings['askToUploadError']:
                 res = redREnviron.settings['uploadError']
             else:
-                self.msg = redRdialog(parent=self,title='Red-R Error')
+                self.msg = redRGUI.base.dialog(parent=self,title='Red-R Error')
                 
-                error = redRwidgetBox(self.msg,orientation='vertical')
-                redRwidgetLabel(error, label='Do you wish to report the Error Log?')
-                buttons = redRwidgetBox(error,orientation='horizontal')
+                error = redRGUI.base.widgetBox(self.msg,orientation='vertical')
+                redRGUI.base.widgetLabel(error, label='Do you wish to report the Error Log?')
+                buttons = redRGUI.base.widgetBox(error,orientation='horizontal')
 
-                redRbutton(buttons, label = _('Yes'), callback = self.uploadYes)
-                redRbutton(buttons, label = _('No'), callback = self.uploadNo)
+                redRGUI.base.button(buttons, label = _('Yes'), callback = self.uploadYes)
+                redRGUI.base.button(buttons, label = _('No'), callback = self.uploadNo)
                 self.checked = False
-                self.remember = redRcheckBox(error,buttons=[_('Remember my Response')],callback=self.rememberResponse)
+                self.remember = redRGUI.base.checkBox(error,buttons=[_('Remember my Response')],callback=self.rememberResponse)
                 res = self.msg.exec_()
                 redREnviron.settings['uploadError'] = res
             #print res

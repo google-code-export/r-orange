@@ -7,21 +7,16 @@
 <icon></icon>
 """
 from OWRpy import * 
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 
-from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButtons 
-from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
-import libraries.base.signalClasses as signals
+import redRGUI, signals
 
 class RedRmosaicplot(OWRpy): 
     settingsList = []
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_x = ''
-        self.inputs.addInput("x", "Data Table", signals.RDataFrame.RDataFrame, self.processx)
-        self.plotArea = redRgraphicsView(self.controlArea)
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.inputs.addInput("x", "Data Table", signals.base.RDataFrame, self.processx)
+        self.plotArea = redRGUI.base.graphicsView(self.controlArea)
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
                 self.RFunctionParam_x=data.getData()

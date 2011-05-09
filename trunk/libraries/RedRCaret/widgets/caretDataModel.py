@@ -3,13 +3,7 @@
 <description>A Data container making widget to handle Caret Data Models.  In general, all this does is to accept a data-frame and optional vector of class predictors and class labels respectively.  If only a data-frame is attached, then the user can select a column from the table to represent the predictors.</description>
 """
 from OWRpy import * 
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 
-from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButtons 
-from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
-from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
-import libraries.base.signalClasses as signals
+import redRGUI, signals
 import libraries.RedRCaret.signalClasses as caret
 
 class caretDataModel(OWRpy): 
@@ -21,13 +15,13 @@ class caretDataModel(OWRpy):
         
         self.RFunctionParam_data = ''
         self.RFunctionParam_predictors = ''
-        self.inputs.addInput("x", "Data Table", signals.RDataFrame.RDataFrame, self.processx)
-        self.inputs.addInput("data", "Class Vector", signals.RVector.RVector, self.processdata)
+        self.inputs.addInput("x", "Data Table", signals.base.RDataFrame, self.processx)
+        self.inputs.addInput("data", "Class Vector", signals.base.RVector, self.processdata)
         self.outputs.addOutput('caretModel',"Reduced Data Table", caret.CaretData.CaretData)
         
-        self.classLabels = redRcomboBox(self.controlArea, label = 'Class Column')
-        self.myLable = redRwidgetLabel(self.controlArea, label = '')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.classLabels = redRGUI.base.comboBox(self.controlArea, label = 'Class Column')
+        self.myLable = redRGUI.base.widgetLabel(self.controlArea, label = '')
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         
     def processx(self, data):
         if data:

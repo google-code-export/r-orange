@@ -2,14 +2,8 @@
 <name>String Split</name>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-import libraries.base.signalClasses as signals
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.signalClasses.RList import RList as redRRList
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRDataFrame
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.radioButtons import radioButtons
-from libraries.base.qtWidgets.button import button
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class RedRstrsplit(OWRpy): 
@@ -19,29 +13,29 @@ class RedRstrsplit(OWRpy):
         self.setRvariableNames(["strsplit", "dataframe"])
         self.data = {}
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', _('Input Data'), [redRRVector, redRRList], self.processx)
+        self.inputs.addInput('id0', _('Input Data'), [signals.base.RVector, signals.base.RList], self.processx)
 
-        self.outputs.addOutput('id0', _('strsplit Output'), redRRList)
-        self.outputs.addOutput('id1', _('strsplit Vector'), redRRVector)
-        self.outputs.addOutput('dataframe', _('Data Table'), redRDataFrame)
+        self.outputs.addOutput('id0', _('strsplit Output'), signals.base.RList)
+        self.outputs.addOutput('id1', _('strsplit Vector'), signals.base.RVector)
+        self.outputs.addOutput('dataframe', _('Data Table'), signals.base.RDataFrame)
 
         
-        self.RFunctionParamsplit_lineEdit =  lineEdit(self.controlArea,  label = _("Split Text Using:"), text = '')
-        self.RFunctionParamfixed_radioButtons =  radioButtons(self.controlArea,  label = _("fixed:"), buttons = [_('Use text exactly'), _('Use text as expression (Advanced)')], setChecked = _('Use text exactly'), orientation = 'horizontal')
-        self.RFunctionParamextended_radiButtons =  radioButtons(self.controlArea,  label = _("Extend Expressions:"), buttons = [_('Yes'), _('No')], setChecked = _('No'), orientation = 'horizontal')
-        self.RFunctionParamperl_radioButtons =  radioButtons(self.controlArea,  label = _("Use Perl Expressions:"), buttons = [_('Yes'), _('No')], setChecked = _('No'), orientation = 'horizontal')
-        self.RFunctionParamunlist_radioButtons = radioButtons(self.controlArea, label = _('Convert to RVector'), buttons = [_('Send only the list'), _('Send list and vector')], setChecked = _('Send list and vector'), orientation = 'horizontal')
-        redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
+        self.RFunctionParamsplit_lineEdit =  redRGUI.base.lineEdit(self.controlArea,  label = _("Split Text Using:"), text = '')
+        self.RFunctionParamfixed_radioButtons =  redRGUI.base.radioButtons(self.controlArea,  label = _("fixed:"), buttons = [_('Use text exactly'), _('Use text as expression (Advanced)')], setChecked = _('Use text exactly'), orientation = 'horizontal')
+        self.RFunctionParamextended_radiButtons =  redRGUI.base.radioButtons(self.controlArea,  label = _("Extend Expressions:"), buttons = [_('Yes'), _('No')], setChecked = _('No'), orientation = 'horizontal')
+        self.RFunctionParamperl_radioButtons =  redRGUI.base.radioButtons(self.controlArea,  label = _("Use Perl Expressions:"), buttons = [_('Yes'), _('No')], setChecked = _('No'), orientation = 'horizontal')
+        self.RFunctionParamunlist_radioButtons = redRGUI.base.radioButtons(self.controlArea, label = _('Convert to RVector'), buttons = [_('Send only the list'), _('Send list and vector')], setChecked = _('Send list and vector'), orientation = 'horizontal')
+        redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
     def processx(self, data):
         
         if data:
             self.RFunctionParam_x=data.getData()
             #self.data = data
-            if type(data) == redRRVector:
+            if type(data) == signals.base.RVector:
                 self.dataType = 1
                 self.dataSelector.clear()
                 self.dataSelector.setEnabled(False)
-            elif type(data) == redRDataFrame:
+            elif type(data) == signals.base.RDataFrame:
                 self.dataType = 2
                 if self.R('names(%s)' % self.RFunctionParam_x, wantType = 'convert') == None:
                     self.R('names(%s)<-c(%s)' % (self.RFunctionParam_x, ','.join(['\'Item_%s\'' % str(i) for i in range(self.R('length(%s)' % self.RFunctionParam_x, wantType = 'convert'))])), wantType = 'NoConversion')
@@ -85,12 +79,12 @@ class RedRstrsplit(OWRpy):
         elif self.dataType == 2:
             thisData = '%s$%s' % (self.RFunctionParam_x, self.dataSelector.currentText())
         self.R(self.Rvariables['strsplit']+'<-strsplit(x= as.character('+unicode(thisData)+') ,'+inj+')', wantType = 'NoConversion')
-        newData = redRRList(self, data = self.Rvariables["strsplit"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.base.RList(self, data = self.Rvariables["strsplit"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
         
         if unicode(self.RFunctionParamunlist_radioButtons.getChecked()) == _('Send list and vector'):
-            newData = redRRVector(self, data = 'unlist('+self.Rvariables['strsplit']+')')
+            newData = signals.base.RVector(self, data = 'unlist('+self.Rvariables['strsplit']+')')
             self.rSend("id1", newData)
             
         ## convert to a data frame
@@ -105,6 +99,6 @@ class RedRstrsplit(OWRpy):
         wantType = 'NoConversion',
         silent = True)
         self.R(self.Rvariables['dataframe']+'<-t(data.frame('+self.Rvariables['strsplit']+'))', wantType = 'NoConversion')
-        newDataFrame = redRDataFrame(self, data = self.Rvariables['dataframe'], parent = self.Rvariables['dataframe'], checkVal = False)
+        newDataFrame = signals.base.RDataFrame(self, data = self.Rvariables['dataframe'], parent = self.Rvariables['dataframe'], checkVal = False)
         self.rSend('dataframe', newDataFrame)
         

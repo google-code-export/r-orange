@@ -4,19 +4,17 @@
 <icon>plot.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 
 class image(OWRpy): 
     globalSettingsList = ['commitButton']
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'x', redRRMatrix, self.processx)
+        self.inputs.addInput('id0', 'x', signals.base.RMatrix, self.processx)
 
-        self.commitButton = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.commitButton = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
     def processx(self, data):
         if data:

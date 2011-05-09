@@ -7,14 +7,8 @@
 <icon></icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import OWGUI 
-from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
-from libraries.base.signalClasses.RList import RList as redRRList
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRDataFrame
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.button import button
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class colMatcher(OWRpy): 
@@ -22,16 +16,16 @@ class colMatcher(OWRpy):
         OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_x = ''
         self.setRvariableNames(['newmat', 'compColumn'])
-        self.inputs.addInput('id0', _('Data Table'), redRDataFrame, self.processx)
-        self.outputs.addOutput('data', _('Data Table'), redRDataFrame)
+        self.inputs.addInput('id0', _('Data Table'), signals.base.RDataFrame, self.processx)
+        self.outputs.addOutput('data', _('Data Table'), signals.base.RDataFrame)
 
         
-        box = groupBox(self.controlArea, _("Column Selector"))
-        self.columnBox = redRListBox(box, label = _('Column Box'), toolTip = _('Select the columns to find the largest or smallest value'))
+        box = redRGUI.base.groupBox(self.controlArea, _("Column Selector"))
+        self.columnBox = redRGUI.base.listBox(box, label = _('Column Box'), toolTip = _('Select the columns to find the largest or smallest value'))
         self.columnBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.glSelector = redRRadioButtons(box, label = _('Comarison Selection'), buttons = [_('Greater Than'), _('Less Than')], setChecked = _('Greater Than'))
+        self.glSelector = redRGUI.base.radioButtons(box, label = _('Comarison Selection'), buttons = [_('Greater Than'), _('Less Than')], setChecked = _('Greater Than'))
 
-        redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
+        redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
@@ -62,7 +56,7 @@ class colMatcher(OWRpy):
                         self.R(self.Rvariables['compColumn']+'<-c('+self.Rvariables['compColumn']+', "'+names[i]+'")', wantType = 'NoConversion')
         
         self.R(self.Rvariables['newmat']+'<-cbind('+self.RFunctionParam_x+', '+self.Rvariables['compColumn']+')', wantType = 'NoConversion')
-        newData = redRDataFrame(self, data = self.Rvariables['newmat'])
+        newData = signals.base.RDataFrame(self, data = self.Rvariables['newmat'])
         self.R('rm('+self.Rvariables['compColumn']+')', wantType = 'NoConversion')
         self.rSend('data', newData)
     

@@ -4,23 +4,10 @@
 <icon>plot.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-import libraries.base.signalClasses as signals
 import libraries.plotting.signalClasses as plotSignals
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.signalClasses.RList import RList as redRList
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRDataFrame
 
-from libraries.base.qtWidgets.DynamicComboBox import DynamicComboBox
-from libraries.base.qtWidgets.DynamicSpinBox import DynamicSpinBox
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.button import button
-#from libraries.base.qtWidgets.graphicsView import graphicsView
-from libraries.plotting.qtWidgets.redRGGPlot import redRGGPlot
-from libraries.base.qtWidgets.listBox import listBox
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.spinBox import spinBox
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
 import redRi18n
 _ = redRi18n.get_(package = 'plotting')
@@ -35,36 +22,36 @@ class krcggplotcontour(OWRpy):
         #self.dataFrame = ''
         #self.plotAttributes = {}
         #self.RFunctionParam_plotatt = ''
-        self.inputs.addInput('id0', 'Data Table', redRDataFrame, self.processy)
-        #self.inputs.addInput('id1', 'x', redRRVector, self.processx)
+        self.inputs.addInput('id0', 'Data Table', signals.base.RDataFrame, self.processy)
+        #self.inputs.addInput('id1', 'x', signals.base.RVector, self.processx)
         #self.inputs.addInput('id2', 'plotatt', redRRPlotAttribute, self.processplotatt, multiple = True)
         self.colours = [('black', _('Black')), ('red', _('Red')), ('white', _('White')), ('blue', _('Blue')), ('green', _('Green')), ('brown', _('Brown')), ('grey50', _('Grey'))]
         
-        #self.RFunctionParamxlab_lineEdit = lineEdit(self.controlArea, label = "X Label:", text = 'X Label')
-        #self.RFunctionParamylab_lineEdit = lineEdit(self.controlArea, label = "Y Label:", text = 'Y Label')
-        #self.RFunctionParammain_lineEdit = lineEdit(self.controlArea, label = "Main Title:", text = 'Main Title')
-        topBox = redRWidgetBox(self.controlArea, orientation = 'horizontal')
-        plotData = redRGroupBox(topBox, label = _('Plotting Data'))
-        self.namesListX = comboBox(plotData, label = 'X Axis Data:')
+        #self.RFunctionParamxlab_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "X Label:", text = 'X Label')
+        #self.RFunctionParamylab_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "Y Label:", text = 'Y Label')
+        #self.RFunctionParammain_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "Main Title:", text = 'Main Title')
+        topBox = redRGUI.base.widgetBox(self.controlArea, orientation = 'horizontal')
+        plotData = redRGUI.base.groupBox(topBox, label = _('Plotting Data'))
+        self.namesListX = redRGUI.base.comboBox(plotData, label = 'X Axis Data:')
         #self.namesListX.setEnabled(False)
-        self.namesListY = comboBox(plotData, label = 'Y Axis Data:')
+        self.namesListY = redRGUI.base.comboBox(plotData, label = 'Y Axis Data:')
         #self.namesListY.setEnabled(False)
-        self.namesListZ = comboBox(plotData, label = 'Z Contours:')
+        self.namesListZ = redRGUI.base.comboBox(plotData, label = 'Z Contours:')
         
         
-        contoursBox = redRWidgetBox(topBox, orientation = 'horizontal')
-        buttonBox = redRWidgetBox(contoursBox)
+        contoursBox = redRGUI.base.widgetBox(topBox, orientation = 'horizontal')
+        buttonBox = redRGUI.base.widgetBox(contoursBox)
         
-        button(buttonBox, label = _('Add Contour Lines'), callback = self.addContourLines)
-        button(buttonBox, label = _('Remove Contour Lines'), callback = self.removeContourLines)
+        redRGUI.base.button(buttonBox, label = _('Add Contour Lines'), callback = self.addContourLines)
+        redRGUI.base.button(buttonBox, label = _('Remove Contour Lines'), callback = self.removeContourLines)
         
-        self.binwidth = DynamicSpinBox(contoursBox, label = 'Binsizes:', values = [(('spin1', _('Contour Set 1')), (0, None, 5, 0))])
-        self.colour = DynamicComboBox(contoursBox, label = 'Colours:', values = [(('spin1', _('Colour Set 1')), self.colours)])
-        self.size = DynamicSpinBox(contoursBox, label = _('Contour Size'), values = [(('spin1', _('Size Set 1')), (0, None, 1, 2))])
+        self.binwidth = redRGUI.base.DynamicSpinBox(contoursBox, label = 'Binsizes:', values = [(('spin1', _('Contour Set 1')), (0, None, 5, 0))])
+        self.colour = redRGUI.base.DynamicComboBox(contoursBox, label = 'Colours:', values = [(('spin1', _('Colour Set 1')), self.colours)])
+        self.size = redRGUI.base.DynamicSpinBox(contoursBox, label = _('Contour Size'), values = [(('spin1', _('Size Set 1')), (0, None, 1, 2))])
         self.spinCounter = 1
-        self.graphicsView = redRGGPlot(self.controlArea,label='Contour Plot',displayLabel=False,
+        self.graphicsView = redRGUI.plotting.redRGGPlot(self.controlArea,label='Contour Plot',displayLabel=False,
         name = self.captionTitle)
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
         
     def removeContourLines(self):

@@ -9,13 +9,6 @@ import OWGUI, sys, os
 import RSession
 import redREnviron, re, redRStyle, redRObjects
 import redRLog
-from libraries.base.qtWidgets.button import button as redRbutton
-from libraries.base.qtWidgets.webViewBox import webViewBox as redRwebViewBox
-from libraries.base.qtWidgets.listBox import listBox as redRlistBox
-from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
-from libraries.base.qtWidgets.spinBox import spinBox as redRSpinBox
-from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
-from libraries.base.qtWidgets.comboBox import comboBox as comboBox
 import redRi18n
 
 class ColorIcon(QToolButton):
@@ -139,11 +132,11 @@ class CanvasOptionsDlg(QDialog):
         # OWGUI.separator(canvasDlgSettings)
         
 
-        OWGUI.comboBox(lookFeelBox, self.settings, "style", label = "Window style:", orientation = "horizontal", 
+        OWGUI.redRGUI.base.comboBox(lookFeelBox, self.settings, "style", label = "Window style:", orientation = "horizontal", 
         items = redRStyle.QtStyles, sendSelectedValue = 1, debuggingEnabled = 0)
         OWGUI.checkBox(lookFeelBox, self.settings, "useDefaultPalette", "Use style's standard palette", debuggingEnabled = 0)
         
-        self.language = comboBox(lookFeelBox, label = 'Language', items = [u'English', u'Fran\u00E7aise', u'Deutsch'])
+        self.language = redRGUI.base.comboBox(lookFeelBox, label = 'Language', items = [u'English', u'Fran\u00E7aise', u'Deutsch'])
         # selectedWidgetBox = OWGUI.widgetBox(schemeSettings, orientation = "horizontal")
         # self.selectedWidgetIcon = ColorIcon(selectedWidgetBox, redRStyle.widgetSelectedColor)
         # selectedWidgetBox.layout().addWidget(self.selectedWidgetIcon)
@@ -173,12 +166,12 @@ class CanvasOptionsDlg(QDialog):
         # self.setDebugModeCheckBox = OWGUI.checkBox(debug, self.settings, "debugMode", "Set to debug mode") # sets the debug mode of the canvas.
         
         
-        self.verbosityCombo = OWGUI.comboBox(debug, self.settings, "outputVerbosity", label = "Set level of widget output: ", 
+        self.verbosityCombo = OWGUI.redRGUI.base.comboBox(debug, self.settings, "outputVerbosity", label = "Set level of widget output: ", 
         orientation='horizontal', items=redRLog.logLevelsName)
         self.displayTraceback = OWGUI.checkBox(debug, self.settings, "displayTraceback", 'Display Traceback')
         
-        # self.exceptionLevel = redRSpinBox(debug, label = 'Exception Print Level:', toolTip = 'Select the level of exception that will be printed to the Red-R general output', min = 0, max = 9, value = redREnviron.settings['exceptionLevel'])
-        # self.otherLevel = redRSpinBox(debug, label = 'General Print Level:', toolTip = 'Select the level of general logging that will be output to the general output', min = 0, max = 9, value = redREnviron.settings['minSeverity'])
+        # self.exceptionLevel = redRGUI.base.spinBox(debug, label = 'Exception Print Level:', toolTip = 'Select the level of exception that will be printed to the Red-R general output', min = 0, max = 9, value = redREnviron.settings['exceptionLevel'])
+        # self.otherLevel = redRGUI.base.spinBox(debug, label = 'General Print Level:', toolTip = 'Select the level of general logging that will be output to the general output', min = 0, max = 9, value = redREnviron.settings['minSeverity'])
         
         exceptions = OWGUI.widgetBox(ExceptionsTab, "Exceptions")
         #self.catchExceptionCB = QCheckBox('Catch exceptions', exceptions)
@@ -195,8 +188,8 @@ class CanvasOptionsDlg(QDialog):
         
         self.logFile = OWGUI.lineEdit(hbox, self.settings, "logFile", "Log File:", orientation = 'horizontal')
         self.okButton = OWGUI.button(hbox, self, "Browse", callback = self.browseLogFile)
-        self.showOutputLog = redRbutton(output, label = 'Show Log File', callback = self.showLogFile)
-        self.numberOfDays = redRSpinBox(output, label = 'Keep File for X days:', min = -1, value = self.settings['keepForXDays'], callback = self.numberOfDaysChanged)
+        self.showOutputLog = redRGUI.base.button(output, label = 'Show Log File', callback = self.showLogFile)
+        self.numberOfDays = redRGUI.base.spinBox(output, label = 'Keep File for X days:', min = -1, value = self.settings['keepForXDays'], callback = self.numberOfDaysChanged)
         
         # self.focusOnCatchOutputCB = OWGUI.checkBox(output, self.settings, "focusOnCatchOutput", 'Focus output window on system output')
         # self.printOutputInStatusBarCB = OWGUI.checkBox(output, self.settings, "printOutputInStatusBar", 'Print last system output in status bar')
@@ -206,7 +199,7 @@ class CanvasOptionsDlg(QDialog):
         #####################################
         # R Settings Tab
         self.rlibrariesBox = OWGUI.widgetBox(RSettings, 'R Libraries')
-        self.libInfo = redRwidgetLabel(self.rlibrariesBox, label='Repository URL: '+ self.settings['CRANrepos'])
+        self.libInfo = redRGUI.base.widgetLabel(self.rlibrariesBox, label='Repository URL: '+ self.settings['CRANrepos'])
         
         
         ################################ Global buttons  ######################
@@ -245,7 +238,7 @@ class CanvasOptionsDlg(QDialog):
             self.libs = RSession.Rcommand('getCRANmirrors()')
             # place a listBox in the widget and fill it with a list of mirrors
             
-            self.libListBox = redRlistBox(self.rlibrariesBox, label = 'Mirrors', 
+            self.libListBox = redRGUI.base.listBox(self.rlibrariesBox, label = 'Mirrors', 
             items = self.libs['Name'], callback = self.setMirror)
         
     def setMirror(self):
@@ -456,17 +449,17 @@ class AboutDlg(QDialog):
         self.setWindowFlags(Qt.Popup)
         
         logoImage = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
-        logo = redRwidgetLabel(self, "")
+        logo = redRGUI.base.widgetLabel(self, "")
         logo.setPixmap(logoImage)
         info = redREnviron.version
-        self.about = redRwebViewBox(self,label='About Info',displayLabel=False)
+        self.about = redRGUI.base.webViewBox(self,label='About Info',displayLabel=False)
         self.about.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         self.about.setMinimumHeight(150)
         self.about.setHtml('<h2>' + info['NAME'] + " " + info['REDRVERSION'] + '</h2>' + 
         'Type: ' + info['TYPE'] + '; Revision: ' + info['SVNVERSION'] +
         '; Build Time: ' + info['DATE'] + '; Copy Number:' + unicode(redREnviron.settings['id']) + '' +
         '<h3>Red-R Core Development Team (<a href="http://www.red-r.org">Red-R.org</a>)</h3>')
-        self.licenceButton = redRbutton(self, 'Licence', callback = self.showLicence)
+        self.licenceButton = redRGUI.base.button(self, 'Licence', callback = self.showLicence)
         b = QDialogButtonBox(self)
         b.setCenterButtons(1)
         self.layout().addWidget(b)

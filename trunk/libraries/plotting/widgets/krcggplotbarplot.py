@@ -4,26 +4,10 @@
 <icon>plot.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-import libraries.base.signalClasses as signals
 import libraries.plotting.signalClasses as plotSignals
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.signalClasses.RList import RList as redRList
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRDataFrame
 
-from libraries.base.qtWidgets.DynamicComboBox import DynamicComboBox
-from libraries.base.qtWidgets.DynamicSpinBox import DynamicSpinBox
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.button import button
-#from libraries.base.qtWidgets.graphicsView import graphicsView
-from libraries.plotting.qtWidgets.redRGGPlot import redRGGPlot
-from libraries.base.qtWidgets.listBox import listBox
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.spinBox import spinBox
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
-from libraries.base.qtWidgets.stackedWidget import stackedWidget
-from libraries.base.qtWidgets.colorButton import colorButton
-from libraries.base.qtWidgets.shuffleBox import shuffleBox
 
 import redRi18n
 _ = redRi18n.get_(package = 'plotting')
@@ -35,80 +19,80 @@ class krcggplotbarplot(OWRpy):
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
         self.setRvariableNames(["boxplot", "boxplotData"])
-        self.inputs.addInput('id0', 'Data Table', redRDataFrame, self.processy)
+        self.inputs.addInput('id0', 'Data Table', signals.base.RDataFrame, self.processy)
         #self.errorBarTypes = [('none', _('None')), ('se', _('Standard Error')), ('sem', _('Standard Error of Mean')), ('95per', _('95% Confidence Interval'))]
         self.colours = [(0, _('Two Color Gradient')), (1, _('Three Color Gradient')), (2, _('Sequential Brewer Colors')), (3, _('Diverging Brewer Colors')), (4, _('Qualitative Brewer Colors')), (5, _('Greyscale'))]
         self.colourScaleWidgets = []
-        mainBox = redRWidgetBox(self.controlArea, orientation = 'horizontal')
-        leftBox = redRWidgetBox(mainBox)
+        mainBox = redRGUI.base.widgetBox(self.controlArea, orientation = 'horizontal')
+        leftBox = redRGUI.base.widgetBox(mainBox)
         leftBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        topBox = redRWidgetBox(leftBox, orientation = 'horizontal')
-        aestheticsBox = redRGroupBox(topBox, label = _('Aesthetics'), orientation = 'horizontal')
+        topBox = redRGUI.base.widgetBox(leftBox, orientation = 'horizontal')
+        aestheticsBox = redRGUI.base.groupBox(topBox, label = _('Aesthetics'), orientation = 'horizontal')
         aestheticsBox.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
-        aboxLeft = redRWidgetBox(aestheticsBox, orientation = 'vertical')
-        aboxMid = redRWidgetBox(aestheticsBox, orientation = 'vertical')
-        aboxRight = redRWidgetBox(aestheticsBox, orientation = 'vertical')
-        self.xGroup = comboBox(aboxLeft, label = _('X Groupings'), callback = self.xGroupChanged)
-        self.yData = comboBox(aboxLeft, label = _('Y Values'))
-        self.fillData = comboBox(aboxMid, label = _('Fill Data'), callback = self.fillDataChanged)
-        self.colourScale = comboBox(aboxMid, label = _('Color Scale'), items = self.colours, callback = self.colourScaleChanged)
+        aboxLeft = redRGUI.base.widgetBox(aestheticsBox, orientation = 'vertical')
+        aboxMid = redRGUI.base.widgetBox(aestheticsBox, orientation = 'vertical')
+        aboxRight = redRGUI.base.widgetBox(aestheticsBox, orientation = 'vertical')
+        self.xGroup = redRGUI.base.comboBox(aboxLeft, label = _('X Groupings'), callback = self.xGroupChanged)
+        self.yData = redRGUI.base.comboBox(aboxLeft, label = _('Y Values'))
+        self.fillData = redRGUI.base.comboBox(aboxMid, label = _('Fill Data'), callback = self.fillDataChanged)
+        self.colourScale = redRGUI.base.comboBox(aboxMid, label = _('Color Scale'), items = self.colours, callback = self.colourScaleChanged)
         ## make the scale selector
-        self.colourSelectorStack = stackedWidget(aboxRight)
+        self.colourSelectorStack = redRGUI.base.stackedWidget(aboxRight)
         
         
         
         ## vlaue stack 0; gradient selector
         gradientBox = self.colourSelectorStack.createWidgetBox()
         self.colourScaleWidgets.append(gradientBox)
-        self.gradientFrom = colorButton(gradientBox, label = _('From'), startColor = '#000000')
-        self.gradientTo = colorButton(gradientBox, label = _('To'), startColor = '#FFFFFF')
+        self.gradientFrom = redRGUI.base.colorButton(gradientBox, label = _('From'), startColor = '#000000')
+        self.gradientTo = redRGUI.base.colorButton(gradientBox, label = _('To'), startColor = '#FFFFFF')
         
         ## value stack 1; gradient2 selector
         gradient2Box = self.colourSelectorStack.createWidgetBox()
         self.colourScaleWidgets.append(gradient2Box)
-        self.gradient2From = colorButton(gradient2Box, label = _('From'), startColor = '#FF0000')
-        self.gradient2To = colorButton(gradient2Box, label = _('To'), startColor = '#00FF00')
-        self.gradient2Via = colorButton(gradient2Box, label = _('Via'), startColor = '#FFFFFF')
+        self.gradient2From = redRGUI.base.colorButton(gradient2Box, label = _('From'), startColor = '#FF0000')
+        self.gradient2To = redRGUI.base.colorButton(gradient2Box, label = _('To'), startColor = '#00FF00')
+        self.gradient2Via = redRGUI.base.colorButton(gradient2Box, label = _('Via'), startColor = '#FFFFFF')
         
         ## value stack 2; sequential brewer colors
         sequentialBox = self.colourSelectorStack.createWidgetBox()
         self.colourScaleWidgets.append(sequentialBox)
-        self.sequentialPalettes = comboBox(sequentialBox, label = _('Palette'), items = [('Blues', _('Blues')), ('BuGn', _('Blue Green')), ('BuPu', _('Blue Purple')), ('GnBu', _('Green Blue')), ('Greens', _('Greens')), ('Greys', _('Greys')), ('Oranges', _('Oranges')), ('OrRd', _('Orange Red')), ('PuBu', _('Purple Blue')), ('PuBuGn', _('Purple Blue Green')), ('PuRd', _('Purple Red')), ('Purples', _('Purples')), ('RdPu', _('Red Purple')), ('Reds', _('Reds')), ('YlGn', _('Yellow Green')), ('YlGnBu', _('Yellow Green Blue')), ('YlOrBr', _('Yellow Orange Brown')), ('YlOrRd', _('Yellow Orange Red'))])
-        self.sequentialVariations = spinBox(sequentialBox, label = _('Variations'), decimals = 0, min = 3, max = 9, value = 5)
+        self.sequentialPalettes = redRGUI.base.comboBox(sequentialBox, label = _('Palette'), items = [('Blues', _('Blues')), ('BuGn', _('Blue Green')), ('BuPu', _('Blue Purple')), ('GnBu', _('Green Blue')), ('Greens', _('Greens')), ('Greys', _('Greys')), ('Oranges', _('Oranges')), ('OrRd', _('Orange Red')), ('PuBu', _('Purple Blue')), ('PuBuGn', _('Purple Blue Green')), ('PuRd', _('Purple Red')), ('Purples', _('Purples')), ('RdPu', _('Red Purple')), ('Reds', _('Reds')), ('YlGn', _('Yellow Green')), ('YlGnBu', _('Yellow Green Blue')), ('YlOrBr', _('Yellow Orange Brown')), ('YlOrRd', _('Yellow Orange Red'))])
+        self.sequentialVariations = redRGUI.base.spinBox(sequentialBox, label = _('Variations'), decimals = 0, min = 3, max = 9, value = 5)
         
         ## value stack 3; diverging brewer colors
         divergingBox = self.colourSelectorStack.createWidgetBox()
         self.colourScaleWidgets.append(divergingBox)
         paletteItems = [('BrBG', _('Brown Blue Green')), ('PiYG', _('Pink Yellow Green')), ('PRGn', _('Pink Red Green')), ('PuOr', _('Purple Orange')), ('RdBu', _('Red Blue')), ('RdGy', _('Red Grey')), ('RdYlBu', _('Red Yellow Blue')), ('RdYlGn', _('Red Yellow Green')), ('Spectral', _('Spectral'))]
-        self.divergingPalettes = comboBox(divergingBox, label = _('Palette'), items = paletteItems)
-        self.divergingVariations = spinBox(divergingBox, label = _('Variations'), decimals = 0, min = 3, max = 11, value = 5)
+        self.divergingPalettes = redRGUI.base.comboBox(divergingBox, label = _('Palette'), items = paletteItems)
+        self.divergingVariations = redRGUI.base.spinBox(divergingBox, label = _('Variations'), decimals = 0, min = 3, max = 11, value = 5)
         
         ## value stack 4; qualitative brewer colors
         qualitativeBox = self.colourSelectorStack.createWidgetBox()
         self.colourScaleWidgets.append(qualitativeBox)
-        self.qualitativePalettes = comboBox(qualitativeBox, label = _('Palette'), items = [('Accent', _('Accent')), ('Dark2', _('Dark2')), ('Paired', _('Paired')), ('Pastel1', _('Pastel1')), ('Pastel2', _('Pastel2')), ('Set1', _('Set1')), ('Set2', _('Set2')), ('Set3', _('Set3'))])
-        self.qualitativeVariations = spinBox(qualitativeBox, label = _('Variations'), decimals = 0, min = 3, max = 8, value = 5)
+        self.qualitativePalettes = redRGUI.base.comboBox(qualitativeBox, label = _('Palette'), items = [('Accent', _('Accent')), ('Dark2', _('Dark2')), ('Paired', _('Paired')), ('Pastel1', _('Pastel1')), ('Pastel2', _('Pastel2')), ('Set1', _('Set1')), ('Set2', _('Set2')), ('Set3', _('Set3'))])
+        self.qualitativeVariations = redRGUI.base.spinBox(qualitativeBox, label = _('Variations'), decimals = 0, min = 3, max = 8, value = 5)
         
         greyScaleBox = self.colourSelectorStack.createWidgetBox()
         self.colourScaleWidgets.append(greyScaleBox)
         
         ## error bars
-        errorBox = redRGroupBox(leftBox, label = _('Error Bar Options'), orientation = 'horizontal')
-        #self.errorType = comboBox(errorBox, label = _('Error Bar Type'), items = self.errorBarTypes)
-        self.errorBarData = comboBox(errorBox, label = _('Error Bar Data'))
+        errorBox = redRGUI.base.groupBox(leftBox, label = _('Error Bar Options'), orientation = 'horizontal')
+        #self.errorType = redRGUI.base.comboBox(errorBox, label = _('Error Bar Type'), items = self.errorBarTypes)
+        self.errorBarData = redRGUI.base.comboBox(errorBox, label = _('Error Bar Data'))
         
         
         self.colourSelectorStack.setCurrentIndex(0)
         
-        self.graphicsView = redRGGPlot(leftBox,label='Box Plot',displayLabel=False,
+        self.graphicsView = redRGUI.plotting.redRGGPlot(leftBox,label='Box Plot',displayLabel=False,
         name = self.captionTitle)
-        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,
         processOnInput=True)
         
-        rightBox = redRWidgetBox(mainBox)
+        rightBox = redRGUI.base.widgetBox(mainBox)
         rightBox.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Minimum)
-        self.fillShuffle = shuffleBox(rightBox, label = 'Column Order')
-        self.groupShuffle = shuffleBox(rightBox, label = 'Grouping Order')
+        self.fillShuffle = redRGUI.base.shuffleBox(rightBox, label = 'Column Order')
+        self.groupShuffle = redRGUI.base.shuffleBox(rightBox, label = 'Grouping Order')
         self.colourScaleChanged()
     def fillDataChanged(self):
         if self.R('is.factor(%s$%s)' % (self.RFunctionParam_y, self.fillData.currentText())):
@@ -135,8 +119,8 @@ class krcggplotbarplot(OWRpy):
             self.RFunctionParam_y = data.getData()
             names = self.R('names(%s)' % self.RFunctionParam_y, wantType = 'list')
             self.xGroup.update(names)
-            self.yData.update(names) # = comboBox(aestheticsBox, label = _('Y Values'))
-            self.fillData.update(['None'] + names) # = comboBox(aestheticsBox, label = _('Fill Data'), callback = self.fillDataChanged)
+            self.yData.update(names) # = redRGUI.base.comboBox(aestheticsBox, label = _('Y Values'))
+            self.fillData.update(['None'] + names) # = redRGUI.base.comboBox(aestheticsBox, label = _('Fill Data'), callback = self.fillDataChanged)
             self.errorBarData.update(['None'] + names)
             if self.commit.processOnInput():
                 self.commitFunction()
