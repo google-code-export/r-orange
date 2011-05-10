@@ -92,8 +92,8 @@ class OrangeCanvasDlg(QMainWindow):
         ###################
   
         self.widgetRegistry = redRObjects.widgetRegistry() # the widget registry has been created
-        redRGUI.registerQTWidgets()
-        signals.registerRedRSignals()
+        # redRGUI.registerQTWidgets()
+        # signals.registerRedRSignals()
         
         ###################
         #Main Cavas########
@@ -213,20 +213,11 @@ class OrangeCanvasDlg(QMainWindow):
         
         self.show()
         redRSaveLoad.setCanvasDlg(self)
-
+        redRObjects.setCanvasDlg(self)
         if splashWindow:
             splashWindow.hide()
 
-        #######################
-        #####packageManager####
-        #######################
         
-        self.packageManager = redRPackageManager.packageManager(self)
-        
-        if redREnviron.settings['checkForPackageUpdates'] and self.packageManager.updatesAvailable(auto=True):
-            self.packageManager.exec_()
-
-
         #########################
         #First Load##
         #########################
@@ -240,7 +231,18 @@ class OrangeCanvasDlg(QMainWindow):
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             pass
         
+        #######################
+        #####packageManager####
+        #######################
+        
+        self.packageManager = redRPackageManager.packageManager(self)
+        
+        if redREnviron.settings['checkForPackageUpdates'] and self.packageManager.updatesAvailable(auto=True):
+            self.packageManager.exec_()
+            
+            
         qApp.processEvents()
+        #redRInitWizard.startSetupWizard()
     
     def saveOutputToFile(self):
         self.toolbarFunctions.menuItemSaveOutputWindow()

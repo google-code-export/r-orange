@@ -1,4 +1,8 @@
-## <log Module.  This module (not a class) will contain and provide access to widget icons, lines, widget instances, and other log.  Accessor functions are provided to retrieve these objects, create new objects, and distroy objects.>
+"""redRLog
+
+Handles the standard output and error and redirects it to the various output managers. 
+
+"""
 
 import redREnviron, os, traceback, sys
 from datetime import tzinfo, timedelta, datetime
@@ -34,17 +38,21 @@ logLevelsByName = dict(zip(logLevelsName,logLevels))
 #print 'loading defs'
 
 def setLogTrigger(name,manager,level):
+    """Create a trigger for a certain level. Given a log entry of some level, execute manager."""
     global _logTriggers
     _logTriggers[name] = {'level':level,'trigger':manager}
 
 def removeOutputManager(name):
+    """Remove a log output manager"""
     if name in _outputWriter.keys():
         del _outputWriter[name]
 def setOutputManager(name,manager,level=None):
+    """Add log output manager"""
     global _outputWriter
     _outputWriter[name] = {'level':level,'writer':manager}
     
 def log(table, logLevel = INFO, comment ='', widget=None,html=True):   
+    """Create a log entry."""
     #fileLogger.defaultSysOutHandler.write('error type %s, debug mode %s\n' % (logLevel, redREnviron.settings['debugMode']))
     # fileLogger.defaultSysOutHandler.write(str(logLevelsByName.get(redREnviron.settings['outputVerbosity'],0)) + ' ' + str(redREnviron.settings['outputVerbosity']) + '\n')
     
@@ -65,12 +73,14 @@ def log(table, logLevel = INFO, comment ='', widget=None,html=True):
     logTrigger(table, logLevel)
 
 def logTrigger(table,logLevel):
+    """Execute log trigger with level > logLevel."""
     global _logTriggers
     for trigger in _logTriggers.values():
         if logLevel >= logLevels[logLevels.index(trigger['level'])]:
             trigger['trigger'](table,logLevel)
 
 def logOutput(table, logLevel, comment,html=False):
+    """Execute all log writers."""
     global _outputWriter
     # print logLevel, logLevels[redREnviron.settings['outputVerbosity']]
     for writer in _outputWriter.values():
@@ -84,6 +94,7 @@ def logOutput(table, logLevel, comment,html=False):
                 writer['writer'](table,logLevel,comment,html)
     
 def formatedLogOutput(table, logLevel, stack, comment, widget,html):
+    """Format Log entry for output."""
     # if logLevel == DEBUG:
         # comment = comment.rstrip('\n') + '<br>'
     
@@ -101,12 +112,14 @@ def formatedLogOutput(table, logLevel, stack, comment, widget,html):
     return string
     
 def getSafeString(s):
+    """Escape log strings for HTML."""
     try:
         return unicode(s).replace("<", "&lt;").replace(">", "&gt;")
     except:
         return s ## can't convert the string so we just return it and hope for the best.
 
 def formatException(type=None, value=None, tracebackInfo=None, errorMsg = None, plainText=False):
+    """Format Exception for output."""
     if not tracebackInfo:
         (type,value, tracebackInfo) =  sys.exc_info()
     
@@ -157,6 +170,10 @@ def formatException(type=None, value=None, tracebackInfo=None, errorMsg = None, 
     
     
 class LogHandler():
+    """Captures standard out and error and redirects to logging system.
+
+    Redirects the standard out and error to output writers. Also manages the default output writing to log files. Setting output log files and removing old log files.
+    """
     def __init__(self):
         ########## system specific, resetting except hook kills linux #########
         ##### if linux  #######
@@ -230,15 +247,17 @@ class LogHandler():
                 logOutput(REDRCORE, DEVEL, text = unicode(inst))
                 return
             logOutput(REDRCORE,DEVEL, text,html=False)
-            self.defaultStdout.write(text)
+            if logLevels[redREnviron.settings['outputVerbosity']] == DEVEL:
+                self.defaultStdout.write(text)
         except: pass
     def exceptionHandler(self, type, value, tracebackInfo):
         
         log(REDRCORE,CRITICAL,formatException(type,value,tracebackInfo))
-        self.defaultExceptionHandler(type, value, tracebackInfo)
+        if logLevels[redREnviron.settings['outputVerbosity']] == DEVEL:
+            self.defaultExceptionHandler(type, value, tracebackInfo)
         
-print 'setting log handler'
+# print 'setting log handler'
 fileLogger = LogHandler()
-print 'log handler set'
+# print 'log handler set'
 setOutputManager('file',fileLogger.writetoFile,level=DEVEL)
 

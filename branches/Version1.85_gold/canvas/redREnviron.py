@@ -11,13 +11,13 @@ if sys.platform=="win32":
 def _(a):
     return a
 # _ = redRi18n.Coreget_()
-def __getDirectoryNames():
+def __getDirectoryNames(rootDir):
     """Return a dictionary with Red-R directories."""
     
     dirs = {}
     createDir = {}
     
-    dirs['redRDir'] = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
+    dirs['redRDir'] = rootDir
     dirs['canvasDir'] = os.path.join(dirs['redRDir'], "canvas")
     dirs['canvasIconsDir'] = os.path.join(dirs['redRDir'], "canvas",'icons')
     dirs['widgetDir'] = os.path.join(dirs['redRDir'], "libraries")
@@ -270,7 +270,7 @@ def addOrangeDirectoriesToPath(directoryNames):
             sys.path.insert(0,path)
 #print __name__, "This is the redREnviron name"
 if __name__ =='redREnviron':   
-    directoryNames = __getDirectoryNames()
+    directoryNames = __getDirectoryNames(os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0])
     addOrangeDirectoriesToPath(directoryNames)
     version = getVersion()
     settings = loadSettings()

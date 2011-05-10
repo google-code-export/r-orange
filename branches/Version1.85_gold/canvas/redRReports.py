@@ -4,18 +4,9 @@ from docutils.core import publish_string
 from docutils.writers.odf_odt import Writer, Reader
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+import redRGUI
 import shutil, redRLog
 
-from libraries.base.qtWidgets.widgetBox import widgetBox as redRWidgetBox
-from libraries.base.qtWidgets.groupBox import groupBox as redRGroupBox
-from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
-from libraries.base.qtWidgets.listBox import listBox as redRlistBox
-from libraries.base.qtWidgets.button import button as redRbutton
-from libraries.base.qtWidgets.dialog import dialog as redRdialog
-from libraries.base.qtWidgets.treeWidgetItem import treeWidgetItem as redRtreeWidgetItem
-from libraries.base.qtWidgets.treeWidget import treeWidget as redRtreeWidget
-from libraries.base.qtWidgets.lineEdit import lineEdit
 import redRi18n
 # def _(a):
     # return a
@@ -79,20 +70,20 @@ class reports(QWizard):
         self.selectElements.setTitle(_('Create A Report'))
         self.selectElements.setSubTitle(_('Select the widgets to include in this report.'))
         
-        #mainWidgetBox = redRWidgetBox(self.selectElements)
+        #mainWidgetBox = redRGUI.base.widgetBox(self.selectElements)
 
-        self.topWidgetBox = redRWidgetBox(self.selectElements)
-        #redRwidgetLabel(topWidgetBox,label='Select the widgets to include in the report.')
+        self.topWidgetBox = redRGUI.base.widgetBox(self.selectElements)
+        #redRGUI.base.widgetLabel(topWidgetBox,label='Select the widgets to include in the report.')
         
-        self.widgetList = redRtreeWidget(self.topWidgetBox, label=_('Widget List'), displayLabel=False)
+        self.widgetList = redRGUI.base.treeWidget(self.topWidgetBox, label=_('Widget List'), displayLabel=False)
         self.widgetList.setHeaderLabels([_('Element'), _('Parameters')])
 
         self.widgetList.setSelectionMode(QAbstractItemView.NoSelection)
-        buttonWidgetBox = redRWidgetBox(self.topWidgetBox,orientation='horizontal')
+        buttonWidgetBox = redRGUI.base.widgetBox(self.topWidgetBox,orientation='horizontal')
         
-        acceptButton = redRbutton(buttonWidgetBox, _('Expand/Collapse'),callback=self.expandCollapse)
+        acceptButton = redRGUI.base.button(buttonWidgetBox, _('Expand/Collapse'),callback=self.expandCollapse)
         self.expandState=False
-        #acceptButton = redRbutton(buttonWidgetBox, _('Expand'),toggleButton=True)
+        #acceptButton = redRGUI.base.button(buttonWidgetBox, _('Expand'),toggleButton=True)
         # QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
         QObject.connect(self.widgetList, SIGNAL(" itemClicked (QTreeWidgetItem *,int)"), 
         self.widgetListItemClicked)
@@ -149,7 +140,7 @@ class reports(QWizard):
   
     def createTreeWidgetItem(self, parent, elementName, dataPointer):
         
-        n  = redRtreeWidgetItem(None, [elementName], flags=Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
+        n  = redRGUI.base.treeWidgetItem(None, [elementName], flags=Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
         n.pointer = dataPointer
         
         if dataPointer['includeInReports']:
@@ -169,14 +160,14 @@ class reports(QWizard):
         # parameterBox.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
 
         if 'numChrLimit' in dataPointer.keys():
-            a = lineEdit(None,label=_('Word Limit'), text=unicode(dataPointer['numChrLimit']), width=50,
+            a = redRGUI.base.lineEdit(None,label=_('Word Limit'), text=unicode(dataPointer['numChrLimit']), width=50,
             textChangedCallBack=lambda: self.lineEditChanged(a.text(),dataPointer,'numChrLimit') )
             a.hb.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
             # a.hb.setMaximumWidth(100)
             #a.hb.setMinimumWidth(100)
             self.widgetList.setItemWidget(n, 1, a.controlArea)
         if 'numRowLimit' in dataPointer.keys():
-            a = lineEdit(None,label=_('Table Row Limit'),text=unicode(dataPointer['numRowLimit']),width=50,
+            a = redRGUI.base.lineEdit(None,label=_('Table Row Limit'),text=unicode(dataPointer['numRowLimit']),width=50,
             textChangedCallBack=lambda: self.lineEditChanged(a.text(),dataPointer,'numRowLimit'))
             a.hb.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
             self.widgetList.setItemWidget(n, 1, a.controlArea)
@@ -209,7 +200,7 @@ class reports(QWizard):
         
     def updateWidgetList(self):
         #topWidgetBox.layout().addWidget(self.widgetList)
-        # self.widgetList = redRtreeWidget(self.topWidgetBox, label=_('Widget List'), displayLabel=False)
+        # self.widgetList = redRGUI.base.treeWidget(self.topWidgetBox, label=_('Widget List'), displayLabel=False)
         # self.widgetList.setHeaderLabels([_('Element'), _('Parameters')])
         
         #print self.widgetNames.keys()
@@ -219,7 +210,7 @@ class reports(QWizard):
         
         for name,widget in self.reportData.items():
             print _('widget name'), name
-            w = redRtreeWidgetItem(self.widgetList, [name], 
+            w = redRGUI.base.treeWidgetItem(self.widgetList, [name], 
             flags=Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
             w.pointer = self.reportData[name]
             w.setCheckState(0,Qt.Checked);
@@ -230,7 +221,7 @@ class reports(QWizard):
                 if container =='main':
                     parent = w
                 else:
-                    parent  = redRtreeWidgetItem(None, [container],
+                    parent  = redRGUI.base.treeWidgetItem(None, [container],
                     flags=Qt.ItemIsUserCheckable | Qt.ItemIsSelectable | Qt.ItemIsEnabled)
                     #parent.pointer = self.reportData[name]['reportData'][container]
                     parent.setCheckState(0,Qt.Checked)
@@ -287,12 +278,12 @@ class reports(QWizard):
             return
         if os.name =='nt':
             #os.startfile
-            doneDialog = redRdialog(self.schema,title=_("Report Generated"))
-            redRwidgetLabel(doneDialog,label=_('Your report is ready to view.'))
-            buttonBox = redRWidgetBox(doneDialog,orientation='horizontal')
-            acceptButton = redRbutton(buttonBox,_('View Report'))
+            doneDialog = redRGUI.base.dialog(self.schema,title=_("Report Generated"))
+            redRGUI.base.widgetLabel(doneDialog,label=_('Your report is ready to view.'))
+            buttonBox = redRGUI.base.widgetBox(doneDialog,orientation='horizontal')
+            acceptButton = redRGUI.base.button(buttonBox,_('View Report'))
             QObject.connect(acceptButton, SIGNAL("clicked()"), doneDialog.accept)
-            acceptButton = redRbutton(buttonBox,_('Done'))
+            acceptButton = redRGUI.base.button(buttonBox,_('Done'))
             QObject.connect(acceptButton, SIGNAL("clicked()"), doneDialog.reject)
             if doneDialog.exec_() == QDialog.Accepted:
                 try:

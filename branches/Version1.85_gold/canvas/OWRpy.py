@@ -1,15 +1,17 @@
-#
-# An Orange-Rpy class
-# 
-# Should include all the functionally need to connect Orange to R 
-#
+"""OWRpy
+
+General Documentation
+
+OWRpy is the base class for all Red-R widgets.  All widgets in the Red-R Framework must inherit from this class.
+OWRpy provides, by default, an importation of many of the standard base classes as indicated in the following...
+
+"""
 
 from redRWidgetGUI import *
 from widgetSignals import *
 from widgetSession import *
 from PyQt4.QtGui import *
 import RSession, redREnviron, os, redRReports,redRLog
-#import rpy
 from libraries.base.qtWidgets.graphicsView import graphicsView as redRgraphicsView
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 from libraries.base.qtWidgets.button import button as redRButton
@@ -34,9 +36,16 @@ uniqueWidgetNumber = 0
     # return a
 _ = redRi18n.Coreget_()
 class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):   
+    """This is the base class.
     
+    The class is a meta class of :mod:`widgetSignals`, :mod:`redRWidgetGUI`, and :mod:`widgetSession`
+    """
     globalRHistory = []
     def __init__(self,wantGUIDialog = 0, **kwargs):
+        """Initialization of the class.
+        
+        This sets the unique widget number as well as the "Don't save list", a list of variables that will not be saved for the widget, this significantly reduces the time to load and save a schema.
+        """
         global uniqueWidgetNumber
         widgetSignals.__init__(self, None, None)
         self.dontSaveList = self.__dict__.keys()
@@ -72,16 +81,26 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         
 
     def log(self, comment, level = redRLog.DEVEL):
+        """Class implemnetation of logging
+        
+        Passes parameters to the :mod:`redRLog` module.
+        """
         redRLog.log(redRLog.REDRWIDGET,level,comment,widget=self.widgetID)
         
     def resetRvariableNames(self, id = None):
+        """Sets the self.Rvariables dict with a unique string for each variable desired.
+        
+        This should be considered a private function to core but there may be the extreme case where it would be useful.  One major problem with calling this function after setting a new widgetID (using self.widgetID = float) would be that variables that are already declared would be lost to Red-R and would be a waste of memory.
+        """
         if id:
             self.widgetID = id
             self.variable_suffix = '_' + self.widgetID
         for x in self.RvariablesNames:
             self.Rvariables[x] = x + self.variable_suffix
     def setRvariableNames(self,names):
+        """Sets the self.Rvariables dict with a unicode string for each variable, this is called in __init__.
         
+        """
         #names.append('loadSavedSession')
         for x in names:
             self.Rvariables[x] = x + self.variable_suffix
@@ -97,6 +116,10 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         self.R(CM+'$'+colname+self.variable_suffix+'<-'+values, wantType = 'NoConversion') # commit to R
 
     def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = 'convert', listOfLists = True):
+        """Connection to the R session for widgets.  
+        
+        This function passes most arguments to :mod:`RSession` as Rcommand.  callType is currently depricated. processingNotice sets the widget status to processing.  silent indicates that the function call should be run in silent mode, silent calls will not be appended to the log or the history, silent should only be set when checking the value of an R object while assignment should not be slient.  Note that if silent is True, exceptions will not be raised should they occur and None will be returned silently.  showException indicates if a popup dialog should be shown when an exception occurs.
+        """
         
         self.setRIndicator(True)
         #try:
@@ -109,6 +132,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         except RuntimeError as inst:
             qApp.restoreOverrideCursor()
             self.setRIndicator(False)
+            if silent: return None
             if showException:
                 QMessageBox.information(self, _('Red-R Canvas'),_('R Error: ')+ unicode(inst),  
                 QMessageBox.Ok + QMessageBox.Default)
@@ -149,37 +173,6 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             self.ROutput.setCursorToEnd()
             self.ROutput.append('> '+ histquery)
 
-    def savePDF(self, query, dwidth= 7, dheight = 7, file = None):
-        #print unicode(redREnviron.settings)
-        if file == None and ('HomeFolder' not in redREnviron.settings.keys()):
-            file = QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(redREnviron.settings['saveSchemaDir']), "PDF (*.PDF)")
-        elif file == None: 
-            file = QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(redREnviron.settings['HomeFolder']), "PDF (*.PDF)")
-        if file.isEmpty(): return
-        file = unicode(file)
-
-        if file: redREnviron.settings['HomeFolder'] = os.path.split(file)[0]
-        self.R('pdf(file = "'+file+'", width = '+unicode(dwidth)+', height = '+unicode(dheight)+')')
-        self.R(query, 'setRData')
-        self.R('dev.off()')
-        self.status.setText('File saved as \"'+file+'\"')
-        self.notes.setCursorToEnd()
-        self.notes.insertHtml('<br> Image saved to: '+unicode(file)+'<br>')
-    
-    def Rplot(self, command, dwidth=6, dheight=6, devNumber = 0, imageType = 'svg'):
-        ## reformat the query for plotting, separate the function from the parameters.
-        function = command[:command.find('(')]
-        query = command[command.find('(')+1:command.rfind(')')]
-        if unicode(devNumber) in self.device:
-            self.device[unicode(devNumber)].plot(query = query, function = function, dwidth = dwidth, dheight = dheight)
-        else:
-            if 'plottingArea' not in dir(self):
-                self.plottingArea = redRwidgetBox(self.controlArea, orientation = 'horizontal')
-            self.device[unicode(devNumber)] = redRgraphicsView(self.plottingArea, name = self.captionTitle)
-            self.device[unicode(devNumber)].plot(query = query, function = function, dwidth = dwidth, dheight = dheight)
-            
-        return
-        
     def getReportText2(self, fileDir):
         ## move through all of the qtWidgets in self and show their report outputs, should be implimented by each widget.
         children = self.controlArea.children()
@@ -242,6 +235,10 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         # return text        
 
     def require_librarys(self, librarys, repository = None):
+        """Load R libraries using the :mod:`RSession` require_librarys function.
+        
+        Takes a list of strings as R libraries to load.  These should be valid R packages or an error will occur.  repository is an optional argument to specity a custom repository if the library is not in a standard location.
+        """
         qApp.setOverrideCursor(Qt.WaitCursor)
         if not repository and 'CRANrepos' in redREnviron.settings.keys():
             repository = redREnviron.settings['CRANrepos']
@@ -252,8 +249,10 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         qApp.restoreOverrideCursor()
         return success
     def onDeleteWidget(self):
-        #print '|#| onDeleteWidget OWRpy'
-
+        """Called when widget is deleted.
+        
+        This should be called by Red-R Core only.
+        """
         for k in self.Rvariables:
             #print self.Rvariables[k]
             self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }', wantType = 'NoConversion')
@@ -261,20 +260,31 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         self.outputs.propogateNone(ask = False)
         self.outputs.clearAll()
         self.customWidgetDelete()
-        # if self.outputs:
-            # for output in self.outputs:
-                # self.callSignalDelete(output[0])
-
+        
     def customWidgetDelete(self):
+        """Called by onDeleteWidget and can run arbitrary code to handle the deletion of a widget.
+        
+        Should be reimplemented in child classes if desired.
+        """
         pass #holder function for other widgets
 
     def reloadWidget(self):
+        """Called on widget reload.
+        
+        Should be reimplemented in child classes if desired.
+        """
         pass
     def sendRefresh(self):
+        """Indicates that all widgets should run their refresh functions.
+        """
         for i in redRObjects.instances():
             i.refresh()
             
     def refresh(self):
+        """Called by the sendRefresh command.
+        
+        Should be reimplemented in child classes if desired.
+        """
         pass # function that listens for a refresh signal.  This function should be overloaded in widgets that need to listen.
 
 
