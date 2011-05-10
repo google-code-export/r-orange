@@ -3,14 +3,10 @@
 <tags>Prototypes</tags>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
 
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
-from libraries.base.signalClasses.RList import RList as redRRList
 
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.radioButtons import radioButtons
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class RedReigen(OWRpy): 
@@ -20,15 +16,15 @@ class RedReigen(OWRpy):
         self.setRvariableNames(["eigen"])
         self.data = {}
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', _('Input Data'), redRRMatrix, self.processx)
+        self.inputs.addInput('id0', _('Input Data'), signals.base.RMatrix, self.processx)
 
-        self.outputs.addOutput('id0', _('Eigen Output'), redRRList)
+        self.outputs.addOutput('id0', _('Eigen Output'), signals.base.RList)
 
         
-        self.RFunctionParamsymmetric_radioButtons =  radioButtons(self.controlArea,  label = _("symmetric:"), buttons = [_('Yes'), _('No')], setChecked = _('Yes'))
-        self.RFunctionParamonly_values_radioButtons =  radioButtons(self.controlArea,  label = _("only_values:"), buttons = [_('Yes'), _('No')], setChecked = _('Yes'))
-        self.RFunctionParamEISPACK_radioButtons =  radioButtons(self.controlArea,  label = _("EISPACK:"), buttons = [_('Yes'), _('No')], setChecked = _('Yes'))
-        button(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
+        self.RFunctionParamsymmetric_radioButtons =  redRGUI.base.radioButtons(self.controlArea,  label = _("symmetric:"), buttons = [_('Yes'), _('No')], setChecked = _('Yes'))
+        self.RFunctionParamonly_values_radioButtons =  redRGUI.base.radioButtons(self.controlArea,  label = _("only_values:"), buttons = [_('Yes'), _('No')], setChecked = _('Yes'))
+        self.RFunctionParamEISPACK_radioButtons =  redRGUI.base.radioButtons(self.controlArea,  label = _("EISPACK:"), buttons = [_('Yes'), _('No')], setChecked = _('Yes'))
+        redRGUI.base.button(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
     def processx(self, data):
         if not self.require_librarys(["base"]):
             self.status.setText(_('R Libraries Not Loaded.'))
@@ -62,6 +58,6 @@ class RedReigen(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['eigen']+'<-eigen(x='+unicode(self.RFunctionParam_x)+','+inj+')', wantType = 'NoConversion')
-        newData = signals.redRRList(self, data = self.Rvariables["eigen"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.signals.base.RList(self, data = self.Rvariables["eigen"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

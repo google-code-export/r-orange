@@ -6,24 +6,17 @@
 #OWRpy is the parent of all widgets. 
 #Contains all the functionality for connecting the widget to the underlying R session.
 from OWRpy import *
+import redRGUI, signals
 
 
 # signalClasses classes contain the data that is passed between widgets. 
 # In this case we are using the RDataFrame and RMatrix signals
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 
 
 # our first widget. Must be a child of OWRpy class
 # The wiget class name must be the same as the file name
 
 ## these are the imports of the qt widgets that are Red-R compliant.  Feel free to make your own widgets and use them.  You can even use Qt widgets directly, though this is not recomended as they may not work with loading and saving.
-from libraries.base.qtWidgets.filterTable import filterTable as redRfilterTable
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.checkBox import checkBox
-from libraries.base.qtWidgets.radioButtons import radioButtons
-from libraries.base.qtWidgets.widgetBox import widgetBox
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
 class cor(OWRpy):
     
@@ -47,38 +40,38 @@ class cor(OWRpy):
         
         # Define the inputs that this widget will accept
         # When data is received the three element in the tuple which is a function will be executed
-        self.inputs.addInput('id0', 'x', redRRMatrix, self.processx)
-        self.inputs.addInput('id1', 'y', redRRMatrix, self.processy)
+        self.inputs.addInput('id0', 'x', signals.base.RMatrix, self.processx)
+        self.inputs.addInput('id1', 'y', signals.base.RMatrix, self.processy)
 
         # Define the outputs of this widget
-        self.outputs.addOutput('id0', 'cor Output', redRRMatrix)
+        self.outputs.addOutput('id0', 'cor Output', signals.base.RMatrix)
 
         
         #START THE GUI LAYOUT
-        area = widgetBox(self.controlArea,orientation='horizontal')       
+        area = redRGUI.base.widgetBox(self.controlArea,orientation='horizontal')       
         
-        options = widgetBox(area,orientation='vertical')
+        options = redRGUI.base.widgetBox(area,orientation='vertical')
         area.layout().setAlignment(options,Qt.AlignTop)
         
         # radioButtons are a type of qtWidget from the base package.  This widget will show radioButtons in a group.  Only one radio button may be selected at one time.  Buttons are declared using buttons = , the callback is the function that will be executed when the button selection changes.  setChecked sets a button to be checked by default.
-        self.type = radioButtons(options,  label = "Perform", 
+        self.type = redRGUI.base.radioButtons(options,  label = "Perform", 
         buttons = ['Variance', 'Correlation', 'Covariance'],setChecked='Correlation',
         orientation='vertical',callback=self.changeType)
         
-        self.methodButtons = radioButtons(options,  label = "Method", 
+        self.methodButtons = redRGUI.base.radioButtons(options,  label = "Method", 
         buttons = ['pearson', 'kendall', 'spearman'],setChecked='pearson',
         orientation='vertical')
 
-        self.useButtons =  radioButtons(options, label='Handing Missing Values', setChecked='everything',
+        self.useButtons =  redRGUI.base.radioButtons(options, label='Handing Missing Values', setChecked='everything',
         buttons = ["everything","all.obs", "complete.obs", "pairwise.complete.obs"],
         orientation='vertical')
         
         # the commit button is a special button that can be set to process on data input.  Widgets must be aware of these selections.  Clicking the commit button executes the callback which in this case executes the commitFunction.
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
         
         # this is a filter table designed to hold R data.  The name is Cor/Var for the report generation but the user will not see this label because displayLabel is set to False.
-        self.RoutputWindow = redRfilterTable(area,label='Cor/Var', displayLabel=False,
+        self.RoutputWindow = redRGUI.base.filterTable(area,label='Cor/Var', displayLabel=False,
         sortable=True,filterable=False)
     
     # execute this function when data in the X channel is received
@@ -144,7 +137,7 @@ class cor(OWRpy):
         self.RoutputWindow.setRTable(self.Rvariables['cor'])
         
         # create a new signal of type RMatrix and load the results 
-        newData = redRRMatrix(data = self.Rvariables["cor"]) 
+        newData = signals.base.RMatrix(data = self.Rvariables["cor"]) 
         # send the signal forward
         self.rSend("id0", newData)
   

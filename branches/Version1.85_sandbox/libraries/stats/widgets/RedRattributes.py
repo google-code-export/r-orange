@@ -7,13 +7,10 @@
 <icon></icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-import libraries.base.signalClasses as signals
-from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
 
 
-from libraries.base.qtWidgets.textEdit import textEdit
-from libraries.base.qtWidgets.button import button
 class RedRattributes(OWRpy): 
     settingsList = []
     def __init__(self, **kwargs):
@@ -21,11 +18,11 @@ class RedRattributes(OWRpy):
         self.setRvariableNames(["attributes"])
         self.data = {}
         self.RFunctionParam_obj = ''
-        self.inputs.addInput('id0', 'obj', redRRVariable, self.processobj)
+        self.inputs.addInput('id0', 'obj', signals.base.RVariable, self.processobj)
 
         
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = textEdit(self.controlArea, label = "R Output Window")
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "R Output Window")
     def processobj(self, data):
             if not self.require_librarys(["base"]):
                     self.status.setText('R Libraries Not Loaded.')

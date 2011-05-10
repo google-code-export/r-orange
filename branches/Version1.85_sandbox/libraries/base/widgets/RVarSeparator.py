@@ -4,6 +4,7 @@
 <icon>rexecutor.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
 import libraries.base.signalClasses.REnvironment as renv
 import libraries.base.signalClasses.RVariable as rvar
@@ -13,10 +14,6 @@ import libraries.base.signalClasses.RMatrix as rmat
 import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RArbitraryList as ral
 
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.checkBox import checkBox
-from libraries.base.qtWidgets.listBox import listBox
-from libraries.base.qtWidgets.widgetBox import widgetBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 
@@ -38,13 +35,13 @@ class RVarSeparator(OWRpy):
         # self.help.setHtml('The R Variable Separator is used to separate variables from a loaded R session.  Connecting the R Loader widget to this widget will display a list of available variables in the local environment to which the session was loaded.  Clicking on an element in the list will send that element on to downstream widgets.  One should take note of the class of the element that is sent as this will specify the output connection of the data.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')
 
         self.controlArea.setMinimumWidth(300)
-        self.varBox = listBox(self.controlArea, label = _('Variables'), callback = self.select)
+        self.varBox = redRGUI.base.listBox(self.controlArea, label = _('Variables'), callback = self.select)
         
-        box = widgetBox(self.controlArea, orientation='horizontal') 
+        box = redRGUI.base.widgetBox(self.controlArea, orientation='horizontal') 
         #self.filecombo.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         self.controlArea.layout().setAlignment(box,Qt.AlignRight)
         
-        self.commitButton = redRCommitButton(box,label=_('Commit'),callback=self.commit,
+        self.commitButton = redRGUI.base.commitButton(box,label=_('Commit'),callback=self.commit,
         processOnInput=True,processOnChange=True)
 
     def process(self, data):

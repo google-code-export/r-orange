@@ -3,11 +3,8 @@
 <tags>R</tags>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI
-from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
-from libraries.base.qtWidgets.textEdit import textEdit
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class rViewer(OWRpy): 
@@ -19,18 +16,18 @@ class rViewer(OWRpy):
         self.RFunctionParam_data = None
         self.data = None
         
-        self.inputs.addInput('id0', _('R Variable Data'), redRRVariable, self.processdata)
+        self.inputs.addInput('id0', _('R Variable Data'), signals.base.RVariable, self.processdata)
 
-        self.RoutputWindow = textEdit(self.controlArea,label=_('Output'), editable=False)
+        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea,label=_('Output'), editable=False)
         
-        self.showAll = redRCheckBox(self.bottomAreaLeft, label=_('showall'), displayLabel=False,
+        self.showAll = redRGUI.base.checkBox(self.bottomAreaLeft, label=_('showall'), displayLabel=False,
         buttons = [_('String Representation'), _('Show All')],orientation="horizontal", 
         setChecked = _('String Representation'))
 
-        self.commit = redRCommitButton(self.bottomAreaRight, label=_("Commit"), callback = self.commitFunction, 
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, label=_("Commit"), callback = self.commitFunction, 
         processOnInput=True)
         
-        #button(self.bottomAreaLeft, label=_("Print"), callback = self.printViewer)
+        #redRGUI.base.button(self.bottomAreaLeft, label=_("Print"), callback = self.printViewer)
         
     
     # def printViewer(self):

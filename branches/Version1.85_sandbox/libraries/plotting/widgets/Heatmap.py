@@ -5,19 +5,8 @@
 """
 
 from OWRpy import *
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.RList import RList as redRRList
+import redRGUI, signals
 import libraries.base.signalClasses.RModelFit as rmf
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.qtWidgets.checkBox import checkBox
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.spinBox import spinBox
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.widgetLabel import widgetLabel
-from libraries.base.qtWidgets.graphicsView import graphicsView
-from libraries.base.qtWidgets.radioButtons import radioButtons
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 import redRi18n
 _ = redRi18n.get_(package = 'plotting')
 class Heatmap(OWRpy):
@@ -32,42 +21,42 @@ class Heatmap(OWRpy):
         self.colvChoice = None
         #self.listOfColors = ['"red"', '"white"', '"blue"']  depricated with heatmap.2 limited to a list of color options.
         
-        self.inputs.addInput('id0', 'Expression Matrix', redRRDataFrame, self.processMatrix)
-        self.inputs.addInput('id1', 'Classes Data', redRRVector, self.processClasses)
+        self.inputs.addInput('id0', 'Expression Matrix', signals.base.RDataFrame, self.processMatrix)
+        self.inputs.addInput('id1', 'Classes Data', signals.base.RVector, self.processClasses)
 
-        #self.outputs.addOutput('id0', 'Cluster Subset List', redRRVector)
-        self.outputs.addOutput('id1', 'Cluster Classes', redRRVector)
-        self.outputs.addOutput('heatmapList', _('Heatmap Parameters (List)'), redRRList)
+        #self.outputs.addOutput('id0', 'Cluster Subset List', signals.base.RVector)
+        self.outputs.addOutput('id1', 'Cluster Classes', signals.base.RVector)
+        self.outputs.addOutput('heatmapList', _('Heatmap Parameters (List)'), signals.base.RList)
 
         #GUI
-        infobox = groupBox(self.controlArea, label = "Options")
+        infobox = redRGUI.base.groupBox(self.controlArea, label = "Options")
         
-        self.commit = redRCommitButton(self.bottomAreaRight, label = "Replot", 
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, label = "Replot", 
         callback=self.makePlot, width=200, processOnInput=True)
-        identifyBox = groupBox(infobox, label = _('Cluster Identification Options'), orientation = 'horizontal')
-        button(identifyBox, label = 'Identify', callback = self.identify, width=200)
-        self.groupOrHeight = radioButtons(identifyBox, label = _('Identify by:'), buttons = ['Groups' , 'Height'], setChecked = 'Groups', orientation = 'horizontal')
-        self.groupOrHeightSpin = spinBox(identifyBox, label = _('Identify Value:'), min = 1, value = 5)
-        #self.startSaturation = spinBox(infobox, label = 'Starting Saturation:', min = 0, max = 100)
-        #self.endSaturation = spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
+        identifyBox = redRGUI.base.groupBox(infobox, label = _('Cluster Identification Options'), orientation = 'horizontal')
+        redRGUI.base.button(identifyBox, label = 'Identify', callback = self.identify, width=200)
+        self.groupOrHeight = redRGUI.base.radioButtons(identifyBox, label = _('Identify by:'), buttons = ['Groups' , 'Height'], setChecked = 'Groups', orientation = 'horizontal')
+        self.groupOrHeightSpin = redRGUI.base.spinBox(identifyBox, label = _('Identify Value:'), min = 1, value = 5)
+        #self.startSaturation = redRGUI.base.spinBox(infobox, label = 'Starting Saturation:', min = 0, max = 100)
+        #self.endSaturation = redRGUI.base.spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
         #self.endSaturation.setValue(30)
-        colorbuttonbox = redRWidgetBox(self.controlArea, orientation = 'horizontal')
-        #redRButton(colorbuttonbox, label = _('Reset Colors'), callback = self.resetColors)
-        #redRButton(colorbuttonbox, label = _('Set class colors'), callback = self.setClassColors)
-        self.heatColorFunctionComboBox = comboBox(infobox, label = _('Heatmap Colors'), items = [('bluered', _('Blue to Red')), ('redblue', _('Red to Blue')), ('redgreen', _('Red to Green')), ('greenred', _('Green to Red'))])
-        #self.classesDropdown = comboBox(infobox, label = 'Classes:', toolTip = 'If classes data is connected you may select columns in the data to represent classes of your columns in the plotted data')
+        colorbuttonbox = redRGUI.base.widgetBox(self.controlArea, orientation = 'horizontal')
+        #redRGUI.base.button(colorbuttonbox, label = _('Reset Colors'), callback = self.resetColors)
+        #redRGUI.base.button(colorbuttonbox, label = _('Set class colors'), callback = self.setClassColors)
+        self.heatColorFunctionComboBox = redRGUI.base.comboBox(infobox, label = _('Heatmap Colors'), items = [('bluered', _('Blue to Red')), ('redblue', _('Red to Blue')), ('redgreen', _('Red to Green')), ('greenred', _('Green to Red'))])
+        #self.classesDropdown = redRGUI.base.comboBox(infobox, label = 'Classes:', toolTip = 'If classes data is connected you may select columns in the data to represent classes of your columns in the plotted data')
         
-        self.rowDendrogram = checkBox(infobox, label='Dendrogram Options', displayLabel=False,
+        self.rowDendrogram = redRGUI.base.checkBox(infobox, label='Dendrogram Options', displayLabel=False,
         buttons = ['Plot Row Dendrogram', 'Plot Column Dendrogram'], 
         setChecked = ['Plot Row Dendrogram', 'Plot Column Dendrogram'], orientation = 'horizontal')
         
-        self.showClasses = checkBox(infobox, label='Show Classes', displayLabel=False,
+        self.showClasses = redRGUI.base.checkBox(infobox, label='Show Classes', displayLabel=False,
         buttons = ['Show Classes'])
         self.showClasses.setEnabled(False)
-        #OWGUI.checkBox(infobox, self, )
-        self.gview1 = graphicsView(self.controlArea,label='Heatmap', displayLabel=False)
+        #OWGUI.redRGUI.base.checkBox(infobox, self, )
+        self.gview1 = redRGUI.base.graphicsView(self.controlArea,label='Heatmap', displayLabel=False)
         self.gview1.image = 'heatmap1_'+self.widgetID
-        #self.gview2 = graphicsView(self.controlArea)
+        #self.gview2 = redRGUI.base.graphicsView(self.controlArea)
         #self.gview2.image = 'heatmap2_'+self.widgetID
     def resetColors(self):
         cd = colorListDialog(self)
@@ -138,7 +127,7 @@ class Heatmap(OWRpy):
         #self.R(, wantType = 'NoConverstion') 
         self.R('%(heatmapList)s<-heatmap.2(%(plotdata)s , trace="none", scale = "row", cexRow=0.5, Rowv=%(rc)s, Colv = %(cc)s, col= %(col)s, key = TRUE %(colclasses)s)' % {'plotdata':self.plotdata, 'rc': self.rowvChoice, 'cc': self.colvChoice, 'colclasses':colClasses, 'col':self.heatColorFunctionComboBox.currentId(), 'heatmapList':self.Rvariables['heatmapList']}, wantType = 'NoConverstion')
         #self.gview1.plot(function = 'heatmap.2', query = '%(plotdata)s , trace="none", scale = "row", cexRow=0.5, Rowv=%(rc)s, Colv = %(cc)s, col= %(col)s, key = TRUE %(colclasses)s' % {'plotdata':self.plotdata, 'rc': self.rowvChoice, 'cc': self.colvChoice, 'colclasses':colClasses, 'col':self.heatColorFunctionComboBox.currentId(), 'heatmapList':self.Rvariables['heatmapList']} )
-        newData = redRRList(self, data = self.Rvariables['heatmapList'])
+        newData = signals.base.RList(self, data = self.Rvariables['heatmapList'])
         self.rSend('heatmapList', newData)
         
     def rowvChoiceprocess(self):
@@ -166,7 +155,7 @@ class Heatmap(OWRpy):
             inj = 'h = ' + unicode(self.groupOrHeightSpin.value())
         self.R(self.Rvariables['heatsubset']+'<-cutree('+self.Rvariables['hclust']+', '+inj+')')       
         self.gview1.plotMultiple(query = self.Rvariables['hclust']+',col = %s' % self.Rvariables['heatsubset'], layers = ['rect.hclust(%s, %s, cluster = %s, which = 1:%s, border = 2:(%s + 1))' % (self.Rvariables['hclust'], inj, self.Rvariables['heatsubset'], self.groupOrHeightSpin.value(), self.groupOrHeightSpin.value())])
-        newData = redRRVector(self, data = 'as.vector('+self.Rvariables['heatsubset']+')', parent = self.Rvariables['heatsubset'])
+        newData = signals.base.RVector(self, data = 'as.vector('+self.Rvariables['heatsubset']+')', parent = self.Rvariables['heatsubset'])
         self.rSend("id1", newData)
         
 
@@ -181,18 +170,18 @@ class colorListDialog(QDialog):
             self.setLayout(QVBoxLayout())
         
         self.listOfColors = []
-        self.controlArea = redRWidgetBox(self)
-        mainArea = redRWidgetBox(self.controlArea, 'horizontal')
-        leftBox = redRWidgetBox(mainArea)
-        rightBox = redRWidgetBox(mainArea)
+        self.controlArea = redRGUI.base.widgetBox(self)
+        mainArea = redRGUI.base.widgetBox(self.controlArea, 'horizontal')
+        leftBox = redRGUI.base.widgetBox(mainArea)
+        rightBox = redRGUI.base.widgetBox(mainArea)
         ## GUI
         
         # color list
-        self.colorList = redRListBox(leftBox, label = 'Color List')
-        redRButton(leftBox, label = 'Add Color', callback = self.addColor)
-        redRButton(leftBox, label = 'Remove Color', callback = self.removeColor)
-        redRButton(leftBox, label = 'Clear Colors', callback = self.colorList.clear)
-        redRButton(mainArea, label = 'Finished', callback = self.accept)
+        self.colorList = redRGUI.base.listBox(leftBox, label = 'Color List')
+        redRGUI.base.button(leftBox, label = 'Add Color', callback = self.addColor)
+        redRGUI.base.button(leftBox, label = 'Remove Color', callback = self.removeColor)
+        redRGUI.base.button(leftBox, label = 'Clear Colors', callback = self.colorList.clear)
+        redRGUI.base.button(mainArea, label = 'Finished', callback = self.accept)
         # attribute list
         
         if data:

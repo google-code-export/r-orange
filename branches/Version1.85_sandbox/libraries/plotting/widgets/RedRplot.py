@@ -4,18 +4,9 @@
 <icon>plot.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-import libraries.base.signalClasses as signals
 import libraries.plotting.signalClasses as plotSignals
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.signalClasses.RList import RList as redRList
-from libraries.plotting.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.button import button
-from libraries.plotting.qtWidgets.redRPlot import redRPlot as redRgraphicsView
-from libraries.base.qtWidgets.listBox import listBox
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
 class RedRplot(OWRpy): 
     globalSettingsList = ['commit']
@@ -27,27 +18,23 @@ class RedRplot(OWRpy):
         self.dataFrameAttached = False
         self.plotAttributes = {}
         self.RFunctionParam_plotatt = ''
-        self.inputs.addInput('id0', 'y', [redRRVector, redRList], self.processy)
-        self.inputs.addInput('id1', 'x', redRRVector, self.processx)
-        self.inputs.addInput('id2', 'plotatt', redRRPlotAttribute, self.processplotatt, multiple = True)
+        self.inputs.addInput('id0', 'y', [signals.base.RVector, signals.base.RList], self.processy)
+        self.inputs.addInput('id1', 'x', signals.base.RVector, self.processx)
+        self.inputs.addInput('id2', 'plotatt', signals.plotting.RPlotAttribute, self.processplotatt, multiple = True)
 
         
-        self.RFunctionParamxlab_lineEdit = lineEdit(self.controlArea, label = "X Label:", text = 'X Label')
-        self.RFunctionParamylab_lineEdit = lineEdit(self.controlArea, label = "Y Label:", text = 'Y Label')
-        self.RFunctionParammain_lineEdit = lineEdit(self.controlArea, label = "Main Title:", text = 'Main Title')
-        self.namesListX = comboBox(self.controlArea, label = 'X Axis Data:')
+        self.RFunctionParamxlab_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "X Label:", text = 'X Label')
+        self.RFunctionParamylab_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "Y Label:", text = 'Y Label')
+        self.RFunctionParammain_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "Main Title:", text = 'Main Title')
+        self.namesListX = redRGUI.base.comboBox(self.controlArea, label = 'X Axis Data:')
         self.namesListX.setEnabled(False)
-        self.namesListY = comboBox(self.controlArea, label = 'Y Axis Data:')
+        self.namesListY = redRGUI.base.comboBox(self.controlArea, label = 'Y Axis Data:')
         self.namesListY.setEnabled(False)
-        self.graphicsView = redRgraphicsView(self.controlArea,label='XY Plot',displayLabel=False,
+        self.graphicsView = redRGUI.plotting.redRPlot(self.controlArea,label='XY Plot',displayLabel=False,
         name = self.captionTitle)
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
     def processy(self, data):
-        
-        if not self.require_librarys(["graphics"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
         if data:
             if self.R('class('+data.getData()+')') in ['data.frame', 'list']:
                 self.namesListX.setEnabled(True)
@@ -74,9 +61,6 @@ class RedRplot(OWRpy):
             self.graphicsView.clear()
             self.RFunctionParam_y=''
     def processx(self, data):
-        if not self.require_librarys(["graphics"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
         if data:
             self.RFunctionParam_x=data.getData()
             #self.data = data
@@ -84,9 +68,6 @@ class RedRplot(OWRpy):
         else:
             self.RFunctionParam_x=''
     def processplotatt(self, data, id):
-        if not self.require_librarys(["graphics"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
         if data:
             self.plotAttributes[id] = data.getData()
             #self.data = data
@@ -112,5 +93,5 @@ class RedRplot(OWRpy):
             string = 'main=\''+unicode(self.RFunctionParammain_lineEdit.text())+'\''
             injection.append(string)
         inj = ','.join(injection)
-        self.graphicsView.plot('y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj) #, layers = [a for (k, a) in self.plotAttributes.items()])
+        self.graphicsView.plotMultiple('y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj, layers = self.plotAttributes.values())
     

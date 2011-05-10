@@ -5,16 +5,10 @@
 """
 
 from OWRpy import *
+import redRGUI, signals
 import redRGUI
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.RVector import RVector as redRRVector
 
 
-from libraries.base.qtWidgets.filterTable import filterTable
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.widgetLabel import widgetLabel
-from libraries.base.qtWidgets.widgetBox import widgetBox
-from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class rowFilter(OWRpy):
@@ -33,21 +27,21 @@ class rowFilter(OWRpy):
         
         self.setRvariableNames(['dataExplorer'])
         self.criteriaDialogList = []
-        self.inputs.addInput('id0', _('Data Table'), redRRDataFrame, self.processData)
+        self.inputs.addInput('id0', _('Data Table'), signals.base.RDataFrame, self.processData)
  
-        self.outputs.addOutput('id0', _('Data Table'), redRRDataFrame)
+        self.outputs.addOutput('id0', _('Data Table'), signals.base.RDataFrame)
 
         
         ######## GUI ############
         
-        self.tableArea = widgetBox(self.controlArea)
-        self.table = filterTable(self.controlArea, sortable=True,label=_('Data Table'),displayLabel=False,
+        self.tableArea = redRGUI.base.widgetBox(self.controlArea)
+        self.table = redRGUI.base.filterTable(self.controlArea, sortable=True,label=_('Data Table'),displayLabel=False,
         filterable=True,selectionMode = QAbstractItemView.NoSelection,onFilterCallback=self.onFilter)
         
-        self.commitOnInput = redRCheckBox(self.bottomAreaRight, label=_('Commit'), displayLabel=False,
+        self.commitOnInput = redRGUI.base.checkBox(self.bottomAreaRight, label=_('Commit'), displayLabel=False,
         buttons = [_('Commit on Filter')],
         toolTips = [_('On filter send data forward.')])
-        redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitSubset)
+        redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.commitSubset)
         
     def processData(self, data):
         if not data: 
@@ -64,7 +58,7 @@ class rowFilter(OWRpy):
 
     def commitSubset(self):
         filteredData = self.table.getFilteredData()
-        newData = redRRDataFrame(self, data = filteredData, parent = self.dataParent.getData())
+        newData = signals.base.RDataFrame(self, data = filteredData, parent = self.dataParent.getData())
 
         self.rSend('id0', newData)
    

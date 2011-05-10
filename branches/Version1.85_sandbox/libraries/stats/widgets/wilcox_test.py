@@ -4,13 +4,9 @@
 <icon>stats.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI
-from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
-from libraries.base.signalClasses.RVector import RVector as redRRVector
 
-from libraries.base.qtWidgets.textEdit import textEdit
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
 class wilcox_test(OWRpy): 
     globalSettingsList = ['commit']
@@ -20,12 +16,12 @@ class wilcox_test(OWRpy):
          
         self.RFunctionParam_x = ''
         self.RFunctionParam_y = ''
-        self.inputs.addInput('id0', 'x', redRRVector, self.processx)
-        self.inputs.addInput('id1', 'y', redRRVector, self.processy)
+        self.inputs.addInput('id0', 'x', signals.base.RVector, self.processx)
+        self.inputs.addInput('id1', 'y', signals.base.RVector, self.processy)
 
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
-        self.RoutputWindow = textEdit(self.controlArea,label='R Output', displayLabel=False)
+        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea,label='R Output', displayLabel=False)
         
     def processx(self, data):
         if data:

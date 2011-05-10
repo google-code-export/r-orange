@@ -3,14 +3,8 @@
 <tags>R</tags>
 """
 from OWRpy import * 
+import redRGUI, signals
 import OWGUI 
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.commitButton import commitButton
-from libraries.base.qtWidgets.checkBox import checkBox
-from libraries.base.qtWidgets.widgetBox import widgetBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class nameProtector(OWRpy): 
@@ -21,38 +15,38 @@ class nameProtector(OWRpy):
         self.parentData = {}
         self.data = ''
         self.setRvariableNames(['nameProtector', 'newDataFromNameProtector'])
-        self.inputs.addInput('id0', _('Data Frame'), redRRDataFrame, self.gotDF)
-        self.inputs.addInput('id1', _('Vector'), redRRVector, self.gotV)
+        self.inputs.addInput('id0', _('Data Frame'), signals.base.RDataFrame, self.gotDF)
+        self.inputs.addInput('id1', _('Vector'), signals.base.RVector, self.gotV)
 
-        self.outputs.addOutput('id0', _('Data Frame'), redRRDataFrame)
-        self.outputs.addOutput('id1', _('Vector'), redRRVector)
+        self.outputs.addOutput('id0', _('Data Frame'), signals.base.RDataFrame)
+        self.outputs.addOutput('id1', _('Vector'), signals.base.RVector)
 
         
         ### The data frame GUI
-        self.dfbox = widgetBox(self.controlArea)
-        self.nameProtectDFcheckBox = checkBox(self.dfbox, label = _('Protect the names in:'), 
+        self.dfbox = redRGUI.base.widgetBox(self.controlArea)
+        self.nameProtectDFcheckBox = redRGUI.base.checkBox(self.dfbox, label = _('Protect the names in:'), 
         buttons = [_('Rows'), _('Columns')], toolTips = [_('Use make.names to protect the names in the rows.'), 
         _('Use make.names to protect the names in the columns.')])
-        self.namesProtectDFcomboBox = comboBox(self.dfbox, label = _('Column names to protect:'))
-        self.commit =commitButton(self.dfbox, _("Commit"), callback = self.dfCommit,processOnInput=True)
+        self.namesProtectDFcomboBox = redRGUI.base.comboBox(self.dfbox, label = _('Column names to protect:'))
+        self.commit =redRGUI.base.commitButton(self.dfbox, _("Commit"), callback = self.dfCommit,processOnInput=True)
         
         
-        self.newRowNames = redRLineEdit(self.dfbox, label = _('Custom Row Names'), toolTip = _('Set new custom names for the rows.'))
-        self.newColumnNames = redRLineEdit(self.dfbox, label = _('Custom Column Names'), toolTip = _('Set new custom names for the columns'))
-        self.commitNewNames = commitButton(self.dfbox, label = _('Commit Custom'), callback = self.commitNewNames)
+        self.newRowNames = redRGUI.base.lineEdit(self.dfbox, label = _('Custom Row Names'), toolTip = _('Set new custom names for the rows.'))
+        self.newColumnNames = redRGUI.base.lineEdit(self.dfbox, label = _('Custom Column Names'), toolTip = _('Set new custom names for the columns'))
+        self.commitNewNames = redRGUI.base.commitButton(self.dfbox, label = _('Commit Custom'), callback = self.commitNewNames)
         
         
         
         ### The Vector GUI
-        self.vbox = widgetBox(self.controlArea)
+        self.vbox = redRGUI.base.widgetBox(self.controlArea)
         self.vbox.hide()
-        self.commitVbutton = button(self.vbox, _("Commit"), callback = self.vCommit,alignment=Qt.AlignRight)
+        self.commitVbutton = redRGUI.base.button(self.vbox, _("Commit"), callback = self.vCommit,alignment=Qt.AlignRight)
         
     def gotDF(self, data):
         if data:
             self.parentData = data
             self.R(self.Rvariables['newDataFromNameProtector']+'<-'+data.getData(), wantType = 'NoConversion')
-            #newData = redRRDataFrame(data = self.Rvariables['newDataFromNameProtector'])
+            #newData = signals.base.RDataFrame(data = self.Rvariables['newDataFromNameProtector'])
             self.data = self.Rvariables['newDataFromNameProtector']
             #self.data = data.getData()
             self.dfbox.show()
@@ -95,17 +89,17 @@ class nameProtector(OWRpy):
             self.R(self.data+'$'+self.Rvariables['nameProtector']+'<- make.names('+self.data+'[,\''+unicode(self.namesProtectDFcomboBox.currentText())+'\'])', wantType = 'NoConversion')
         if 'Columns' in self.nameProtectDFcheckBox.getChecked():
             self.R('colnames('+self.data+') <- make.names(colnames('+self.data+'))', wantType = 'NoConversion')
-        newData = redRRDataFrame(self, data = self.Rvariables['newDataFromNameProtector'])
+        newData = signals.base.RDataFrame(self, data = self.Rvariables['newDataFromNameProtector'])
         self.rSend("id0", newData)
     def commitNewNames(self):
         ## reset the names to those listed in the line Edits
         self.R('rownames(%s)<-c(\"%s\")' % (self.data, '\",\"'.join([i.strip() for i in unicode(self.newRowNames.text()).split(',')])), wantType = 'NoConversion')
         self.R('colnames(%s)<-c(\"%s\")' % (self.data, '\",\"'.join([i.strip() for i in unicode(self.newColumnNames.text()).split(',')])), wantType = 'NoConversion')
-        newData = redRRDataFrame(self, data = self.Rvariables['newDataFromNameProtector'])
+        newData = signals.base.RDataFrame(self, data = self.Rvariables['newDataFromNameProtector'])
         self.rSend("id0", newData)
     def vCommit(self): # make protected names for a vector
         if self.data == '': return
         
         self.R(self.Rvariables['nameProtector']+'<- make.names('+self.data+')', wantType = 'NoConversion')
-        newData = redRRVector(self, data = self.Rvariables['nameProtector'])
+        newData = signals.base.RVector(self, data = self.Rvariables['nameProtector'])
         self.rSend("id1", newData)

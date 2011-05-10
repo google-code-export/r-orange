@@ -7,12 +7,7 @@
 <icon></icon>
 """
 from OWRpy import * 
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 
-from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButtons 
-from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
-import libraries.base.signalClasses as signals
+import redRGUI, signals
 
 class RedRclusterboot(OWRpy): 
     settingsList = []
@@ -22,24 +17,24 @@ class RedRclusterboot(OWRpy):
         self.data = {}
         self.require_librarys(["fpc"])
         self.RFunctionParam_data = ''
-        self.inputs.addInput("data", "data", signals.RMatrix.RMatrix, self.processdata)
-        self.outputs.addOutput("clusterboot Output","clusterboot Output", signals.RArbitraryList.RArbitraryList)
+        self.inputs.addInput("data", "data", signals.base.RMatrix, self.processdata)
+        self.outputs.addOutput("clusterboot Output","clusterboot Output", signals.base.RArbitraryList)
         
-        self.RFunctionParamdistances_lineEdit = redRlineEdit(self.controlArea, label = "distances:", text = '')
-        self.RFunctionParamB_lineEdit = redRlineEdit(self.controlArea, label = "B:", text = '100')
-        self.RFunctionParamjittertuning_lineEdit = redRlineEdit(self.controlArea, label = "jittertuning:", text = '0.05')
-        self.RFunctionParamclustermethod_lineEdit = redRlineEdit(self.controlArea, label = "clustermethod:", text = '')
-        self.RFunctionParamdissolution_lineEdit = redRlineEdit(self.controlArea, label = "dissolution:", text = '0.5')
-        self.RFunctionParammultipleboot_lineEdit = redRlineEdit(self.controlArea, label = "multipleboot:", text = 'TRUE')
-        self.RFunctionParambscompare_lineEdit = redRlineEdit(self.controlArea, label = "bscompare:", text = 'FALSE')
-        self.RFunctionParamshowplots_lineEdit = redRlineEdit(self.controlArea, label = "showplots:", text = 'FALSE')
-        self.RFunctionParamnoisetuning_lineEdit = redRlineEdit(self.controlArea, label = "noisetuning:", text = '0.0')
-        self.RFunctionParambootmethod_lineEdit = redRlineEdit(self.controlArea, label = "bootmethod:", text = '')
-        self.RFunctionParamrecover_lineEdit = redRlineEdit(self.controlArea, label = "recover:", text = '0.75')
-        self.RFunctionParamsubtuning_lineEdit = redRlineEdit(self.controlArea, label = "subtuning:", text = '')
-        self.RFunctionParamseed_lineEdit = redRlineEdit(self.controlArea, label = "seed:", text = 'NULL')
-        self.RFunctionParamnoisemethod_lineEdit = redRlineEdit(self.controlArea, label = "noisemethod:", text = 'FALSE')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamdistances_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "distances:", text = '')
+        self.RFunctionParamB_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "B:", text = '100')
+        self.RFunctionParamjittertuning_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "jittertuning:", text = '0.05')
+        self.RFunctionParamclustermethod_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "clustermethod:", text = '')
+        self.RFunctionParamdissolution_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "dissolution:", text = '0.5')
+        self.RFunctionParammultipleboot_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "multipleboot:", text = 'TRUE')
+        self.RFunctionParambscompare_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "bscompare:", text = 'FALSE')
+        self.RFunctionParamshowplots_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "showplots:", text = 'FALSE')
+        self.RFunctionParamnoisetuning_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "noisetuning:", text = '0.0')
+        self.RFunctionParambootmethod_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "bootmethod:", text = '')
+        self.RFunctionParamrecover_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "recover:", text = '0.75')
+        self.RFunctionParamsubtuning_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "subtuning:", text = '')
+        self.RFunctionParamseed_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "seed:", text = 'NULL')
+        self.RFunctionParamnoisemethod_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "noisemethod:", text = 'FALSE')
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processdata(self, data):
 
         if data:
@@ -95,6 +90,6 @@ class RedRclusterboot(OWRpy):
             injection.append(string)
         inj = ''.join(injection)
         self.R(self.Rvariables['clusterboot']+'<-clusterboot(data='+unicode(self.RFunctionParam_data)+inj+')')
-        newData = signals.RArbitraryList.RArbitraryList(self, data = self.Rvariables["clusterboot"], checkVal = False) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.base.RArbitraryList(self, data = self.Rvariables["clusterboot"], checkVal = False) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("clusterboot Output", newData)

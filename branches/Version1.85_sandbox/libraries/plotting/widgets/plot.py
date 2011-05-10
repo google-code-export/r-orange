@@ -9,14 +9,7 @@
 
 """
 from OWRpy import * 
-from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
-from libraries.plotting.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRWidgetLabel
-from libraries.plotting.qtWidgets.redRPlot import redRPlot
-from libraries.base.qtWidgets.graphicsView import graphicsView as redRGraphicsView
-from libraries.base.qtWidgets.SearchDialog import SearchDialog
+import redRGUI, signals
 class plot(OWRpy): 
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
@@ -25,11 +18,11 @@ class plot(OWRpy):
         self.plotAttributes = {}
         self.plotLayers = []
         self.saveSettingsList = ['plotArea', 'data', 'RFunctionParam_x', 'plotAttributes']
-        self.inputs.addInput('id0', 'x', redRRVariable, self.processx)
-        self.inputs.addInput('id1', 'Plot Layer(s)', redRRPlotAttribute, self.processLayer, multiple = True)
-        self.label = redRWidgetLabel(self.bottomAreaLeft, '')
-        self.plotArea = redRPlot(self.controlArea, label = 'Plot')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.inputs.addInput('id0', 'x', signals.base.RVariable, self.processx)
+        self.inputs.addInput('id1', 'Plot Layer(s)', signals.plotting.RPlotAttribute, self.processLayer, multiple = True)
+        self.label = redRGUI.base.widgetLabel(self.bottomAreaLeft, '')
+        self.plotArea = redRGUI.plotting.redRPlot(self.controlArea, label = 'Plot')
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
 
     def processx(self, data):
         if data:
@@ -42,7 +35,7 @@ class plot(OWRpy):
             self.clearPlots()
     def processLayer(self, data, id):
         if data:
-            self.plotAttributes[id.widgetID] = data.getData()
+            self.plotAttributes[id] = data.getData()
             self.commitFunction()
         else:
             del self.plotAttributes[id.widgetID]

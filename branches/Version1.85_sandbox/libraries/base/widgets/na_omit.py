@@ -3,15 +3,9 @@
 <tags>R</tags>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
-from libraries.base.signalClasses.RList import RList as redRRList
-from libraries.base.signalClasses.RVector import RVector as redRRVector
 import libraries.base.signalClasses.RMatrix as rmat
-from libraries.base.qtWidgets.button import button as RedRButton
-from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
-from libraries.base.qtWidgets.widgetLabel import widgetLabel
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class na_omit(OWRpy): 
@@ -22,14 +16,14 @@ class na_omit(OWRpy):
         self.data = {}
          
         self.RFunctionParam_object = ''
-        self.inputs.addInput('id0', _('object'), redRRVariable, self.processobject)
+        self.inputs.addInput('id0', _('object'), signals.base.RVariable, self.processobject)
 
-        self.outputs.addOutput('id0', _('R Data Frame'), redRRDataFrame)
-        self.outputs.addOutput('id1', _('R List'), redRRList)
-        self.outputs.addOutput('id2', _('R Vector'), redRRVector)
-        self.outputs.addOutput('id3', _('R.object'), redRRVariable)
+        self.outputs.addOutput('id0', _('R Data Frame'), signals.base.RDataFrame)
+        self.outputs.addOutput('id1', _('R List'), signals.base.RList)
+        self.outputs.addOutput('id2', _('R Vector'), signals.base.RVector)
+        self.outputs.addOutput('id3', _('R.object'), signals.base.RVariable)
 
-        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,
         processOnInput=True)
         
     def processobject(self, data):
@@ -52,17 +46,17 @@ class na_omit(OWRpy):
             self.rSend("id3", self.data)
         elif type(thisdataclass) == str:
             if thisdataclass == 'numeric': # we have a numeric vector as the object
-                newData = redRRVector(self, data = self.Rvariables['na.omit'])
+                newData = signals.base.RVector(self, data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id2", newData)
                 self.status.setText(_('Data  sent through the R Vector channel'))
             elif thisdataclass == 'character': #we have a character vector as the object
-                newData = redRRVector(self, data = self.Rvariables['na.omit'])
+                newData = signals.base.RVector(self, data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id2", newData)
                 self.status.setText(_('Data  sent through the R Vector channel'))
             elif thisdataclass == 'data.frame': # the object is a data.frame
-                newData = redRRDataFrame(self, data = self.Rvariables['na.omit'])
+                newData = signals.base.RDataFrame(self, data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id0", newData)
                 self.status.setText(_('Data  sent through the R Data Frame channel'))
@@ -72,17 +66,17 @@ class na_omit(OWRpy):
                 self.rSend("id0", newData)
                 self.status.setText(_('Data  sent through the R Data Frame channel'))
             elif thisdataclass == 'list': # the object is a list
-                newData = redRRList(self, data = self.Rvariables['na.omit'])
+                newData = signals.base.RList(self, data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id1", newData)
                 self.status.setText(_('Data  sent through the R List channel'))
             else:    # the data is of a non-normal type send anyway as generic
-                newData = redRRVariable(self, data = self.Rvariables['na.omit'])
+                newData = signals.base.RVariable(self, data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id3", newData)
                 self.status.setText(_('Data  sent through the R Object channel'))
         else:
-            newData = redRRVariable(self, data = self.Rvariables['na.omit'])
+            newData = signals.base.RVariable(self, data = self.Rvariables['na.omit'])
             newData.dictAttrs = self.data.dictAttrs.copy()
             self.rSend("id3", newData)
             self.status.setText(_('Data  sent through the R Object channel'))

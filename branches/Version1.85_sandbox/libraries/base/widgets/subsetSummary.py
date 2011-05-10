@@ -5,12 +5,8 @@
 <icon>Subset.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.checkBox import checkBox
-from libraries.base.qtWidgets.textEdit import textEdit
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class subsetSummary(OWRpy): 
@@ -21,13 +17,13 @@ class subsetSummary(OWRpy):
         self.data = {}
          
         self.RFunctionParam_object = ''
-        self.inputs.addInput('id0', _('R Variable Object'), redRRDataFrame, self.processobject)
-        self.namesList = redRListBox(self.controlArea, label = _('Splitting Element:'))
+        self.inputs.addInput('id0', _('R Variable Object'), signals.base.RDataFrame, self.processobject)
+        self.namesList = redRGUI.base.listBox(self.controlArea, label = _('Splitting Element:'))
         self.namesList.setSelectionMode(QAbstractItemView.ExtendedSelection)
         
-        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), alignment=Qt.AlignLeft, 
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), alignment=Qt.AlignLeft, 
         callback = self.commitFunction, processOnInput=True)
-        self.RoutputWindow = textEdit(self.controlArea, label = _("RoutputWindow"))
+        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = _("RoutputWindow"))
     def processobject(self, data):
         if data:
             self.RFunctionParam_object=data.getData()

@@ -4,12 +4,8 @@
 <icon>plot.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.tabWidget import tabWidget
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
 class sizeplot(OWRpy): 
     globalSettingsList = ['commit']
@@ -17,17 +13,17 @@ class sizeplot(OWRpy):
         OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'y', redRRVector, self.processy)
-        self.inputs.addInput('id1', 'x', redRRVector, self.processx)
+        self.inputs.addInput('id0', 'y', signals.base.RVector, self.processy)
+        self.inputs.addInput('id1', 'x', signals.base.RVector, self.processx)
 
         
         self.standardTab = self.controlArea
-        self.RFunctionParamy_lineEdit =  lineEdit(self.standardTab,  label = "y:", text = '')
-        self.RFunctionParamx_lineEdit =  lineEdit(self.standardTab,  label = "x:", text = '')
-        self.RFunctionParamscale_lineEdit =  lineEdit(self.standardTab,  label = "scale:", text = '1')
-        self.RFunctionParamsize_lineEdit =  lineEdit(self.standardTab,  label = "size:", text = 'c(1,4)')
-        self.RFunctionParampow_lineEdit =  lineEdit(self.standardTab,  label = "pow:", text = '0.5')
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.RFunctionParamy_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "y:", text = '')
+        self.RFunctionParamx_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "x:", text = '')
+        self.RFunctionParamscale_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "scale:", text = '1')
+        self.RFunctionParamsize_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "size:", text = 'c(1,4)')
+        self.RFunctionParampow_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "pow:", text = '0.5')
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
     def processy(self, data):
         if not self.require_librarys(["plotrix"]):

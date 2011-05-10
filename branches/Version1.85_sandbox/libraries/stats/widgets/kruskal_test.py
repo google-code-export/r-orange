@@ -8,23 +8,20 @@
 <RFunctions>stats:kruskal.test</RFunctions>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
-from libraries.base.qtWidgets.RFormulaEntry import RFormulaEntry
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.textEdit import textEdit
 class kruskal_test(OWRpy): 
     settingsList = []
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
          
         self.RFunctionParam_data = ''
-        self.inputs.addInput('id0', 'data', redRRVariable, self.processdata)
+        self.inputs.addInput('id0', 'data', signals.base.RVariable, self.processdata)
 
 
-        self.RFunctionParamformula =  RFormulaEntry(self.controlArea)
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
+        self.RFunctionParamformula =  redRGUI.base.RFormulaEntry(self.controlArea)
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "RoutputWindow")
     def processdata(self, data):
         if not self.require_librarys(["stats"]):
             self.status.setText('R Libraries Not Loaded.')

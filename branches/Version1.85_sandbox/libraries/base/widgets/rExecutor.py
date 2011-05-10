@@ -5,19 +5,8 @@
 """
 
 from OWRpy import *
+import redRGUI, signals
 import redRGUI
-from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
-from libraries.base.signalClasses.RList import RList as redRRList
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.textEdit import textEdit
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.widgetLabel import widgetLabel
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.listBox import listBox
-from libraries.base.qtWidgets.widgetBox import widgetBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class rExecutor(OWRpy):
@@ -33,13 +22,13 @@ class rExecutor(OWRpy):
         self.setRvariableNames(['rExecutor', 'rExecutor_cm'])
         
         
-        self.inputs.addInput('id0', _('R.object'), redRRVariable, self.process)
+        self.inputs.addInput('id0', _('R.object'), signals.base.RVariable, self.process)
 
-        self.outputs.addOutput('id0', _('R Data Frame'), redRRDataFrame)
-        self.outputs.addOutput('id1', _('R List'), redRRList)
-        self.outputs.addOutput('id2', _('R Vector'), redRRVector)
+        self.outputs.addOutput('id0', _('R Data Frame'), signals.base.RDataFrame)
+        self.outputs.addOutput('id1', _('R List'), signals.base.RList)
+        self.outputs.addOutput('id2', _('R Vector'), signals.base.RVector)
         self.outputs.addOutput('id3', _('R.object'), 'All')
-        self.outputs.addOutput('id4', _('R Matrix'), redRRMatrix)
+        self.outputs.addOutput('id4', _('R Matrix'), signals.base.RMatrix)
 
         #self.breakme()
         
@@ -48,43 +37,43 @@ class rExecutor(OWRpy):
         #GUI
         
         #GUIDialog
-        self.box = groupBox(self.GUIDialog, _("R Executor Advanced"))
-        self.infob = widgetLabel(self.box, "")
+        self.box = redRGUI.base.groupBox(self.GUIDialog, _("R Executor Advanced"))
+        self.infob = redRGUI.base.widgetLabel(self.box, "")
         
-        self.infoa = widgetLabel(self.box, "")
+        self.infoa = redRGUI.base.widgetLabel(self.box, "")
         # grid
-        area = widgetBox(self.controlArea, orientation = 'horizontal')
+        area = redRGUI.base.widgetBox(self.controlArea, orientation = 'horizontal')
         area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        leftArea = widgetBox(self.box)
+        leftArea = redRGUI.base.widgetBox(self.box)
         leftArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
-        rightArea = widgetBox(area)
+        rightArea = redRGUI.base.widgetBox(area)
 
-        runbox = groupBox(rightArea, label = _("Command Edit:"), orientation='horizontal')
+        runbox = redRGUI.base.groupBox(rightArea, label = _("Command Edit:"), orientation='horizontal')
         runbox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-        #self.command = lineEdit(runbox, "", orientation=QHBoxLayout(), callback = self.runR, width = -1)
-        self.command = textEdit(runbox, label = _('Command Edit:'), displayLabel=False)
+        #self.command = redRGUI.base.lineEdit(runbox, "", orientation=QHBoxLayout(), callback = self.runR, width = -1)
+        self.command = redRGUI.base.textEdit(runbox, label = _('Command Edit:'), displayLabel=False)
         #self.command.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        vbox=widgetBox(runbox)
-        processbutton = button(vbox, label = _("&Run"), callback = self.runR, width=100)
-        sendbutton = button(vbox, label = _("&Send"), toolTip = _('Send the data in the command line into the Red-R schema.'), callback =self.sendThis, width=100)
+        vbox=redRGUI.base.widgetBox(runbox)
+        processbutton = redRGUI.base.button(vbox, label = _("&Run"), callback = self.runR, width=100)
+        sendbutton = redRGUI.base.button(vbox, label = _("&Send"), toolTip = _('Send the data in the command line into the Red-R schema.'), callback =self.sendThis, width=100)
 
-        statusBox = groupBox(rightArea, label = _("Status"))
-        self.sendStatus = widgetLabel(statusBox, _('Nothing Sent'))
-        self.dataBox = groupBox(leftArea, label = _("Input Infromation"))
-        self.mystatus = widgetLabel(self.dataBox, _("No Input"))
+        statusBox = redRGUI.base.groupBox(rightArea, label = _("Status"))
+        self.sendStatus = redRGUI.base.widgetLabel(statusBox, _('Nothing Sent'))
+        self.dataBox = redRGUI.base.groupBox(leftArea, label = _("Input Infromation"))
+        self.mystatus = redRGUI.base.widgetLabel(self.dataBox, _("No Input"))
         
-        # self.metadataBox = widgetBox(leftArea, _("Metadata"))
-        # self.infoM = widgetLabel(self.metadataBox, _("No Meta Data"))
-        # self.metadataLB = listBox(self.metadataBox, callback = self.insertMetaDataVar)
-        varbutton = button(leftArea, _("Recieved"), callback = self.putrecieved, width = 150)
-        history = button(leftArea, _("RHistory"), callback = self.putRHistory, width = 150)
-        button(leftArea, _("Clear Output"), callback = self.clearOutput)
+        # self.metadataBox = redRGUI.base.widgetBox(leftArea, _("Metadata"))
+        # self.infoM = redRGUI.base.widgetLabel(self.metadataBox, _("No Meta Data"))
+        # self.metadataLB = redRGUI.base.listBox(self.metadataBox, callback = self.insertMetaDataVar)
+        varbutton = redRGUI.base.button(leftArea, _("Recieved"), callback = self.putrecieved, width = 150)
+        history = redRGUI.base.button(leftArea, _("RHistory"), callback = self.putRHistory, width = 150)
+        redRGUI.base.button(leftArea, _("Clear Output"), callback = self.clearOutput)
         
-        self.lsList = listBox(self.box, label = _('Available R Items'), items = self.R('ls()', wantType = 'list'), callback = self.addlsList)
-        button(self.box, 'Refresh List', callback = self.refreshLsList)
+        self.lsList = redRGUI.base.listBox(self.box, label = _('Available R Items'), items = self.R('ls()', wantType = 'list'), callback = self.addlsList)
+        redRGUI.base.button(self.box, 'Refresh List', callback = self.refreshLsList)
 
-        self.thistext = textEdit(rightArea,label=_('Output'), displayLabel=False)
+        self.thistext = redRGUI.base.textEdit(rightArea,label=_('Output'), displayLabel=False)
 
 
     def addlsList(self):
@@ -105,19 +94,19 @@ class rExecutor(OWRpy):
         thisdata = unicode(text)
         # use upclassing to convert to signals class
         if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic     
-            newData = redRRVariable(self, data = unicode(text))
+            newData = signals.base.RVariable(self, data = unicode(text))
             self.rSend("id3", newData)
         elif thisdataclass.__class__.__name__ == 'str':
             if thisdataclass in ['numeric', 'character', 'logical']: # we have a numeric vector as the object
-                newData = redRRVector(self, data = unicode(text))
+                newData = signals.base.RVector(self, data = unicode(text))
                 self.rSend("id2", newData)
                 self.sendStatus.setText(thisdata+_(' sent through the R Vector channel'))
             elif thisdataclass in ['data.frame']:
-                newData = redRRDataFrame(self, data = unicode(text))
+                newData = signals.base.RDataFrame(self, data = unicode(text))
                 self.rSend("id0", newData)
                 self.sendStatus.setText(thisdata+_(' sent through the R Data Frame channel'))
             elif thisdataclass in ['matrix']:
-                newData = redRRMatrix(self, data = unicode(text))
+                newData = signals.base.RMatrix(self, data = unicode(text))
                 self.rSend("id4", newData)
                 self.sendStatus.setText(thisdata+_(' sent through the Matrix channel'))
             elif thisdataclass == 'list': # the object is a list
@@ -127,15 +116,15 @@ class rExecutor(OWRpy):
                         self.status.setText(_('Data sent through the R Arbitrary List channel'))
                         self.rSend('ral', newData)
                         return
-                newData = redRRList(self, data = unicode(text))
+                newData = signals.base.RList(self, data = unicode(text))
                 self.rSend("id1", newData)
                 self.sendStatus.setText(thisdata+_(' sent through the R List channel'))
             else:    # the data is of a non-normal type send anyway as generic
-                newData = redRRVariable(self, data = unicode(text))
+                newData = signals.base.RVariable(self, data = unicode(text))
                 self.rSend("id3", newData)
                 self.sendStatus.setText(thisdata+_(' sent through the R Object channel'))
         else:
-            newData = redRRVariable(self, data = unicode(text))
+            newData = signals.base.RVariable(self, data = unicode(text))
             self.rSend("id3", newData)
             self.sendStatus.setText(thisdata+' sent through the R Object channel')
     def runR(self):
@@ -145,12 +134,7 @@ class rExecutor(OWRpy):
                 text = unicode(self.command.textCursor().selectedText())
             else:
                 text = unicode(self.command.toPlainText())
-            output = self.R('capture.output(eval(parse(text = \"'+unicode(text).replace('\"', '\\\"')+'\")))', wantType = 'list')
-
-            #pasted = self.R('paste(txt, collapse = " \n")')
-            # if type(pasted) != type(''):
-                # pasted = 'Error occured with evaluation, please chech output for error.'
-            #self.thistext.insertPlainText('>>>'+unicode(text)+'##Done')
+            output = self.R('capture.output(eval(parse(text = \"'+unicode(text).replace('\"', '\\\"')+'\")))', wantType = 'list', silent = True)
             self.thistext.insertPlainText('\n'+'\n'.join(output)+'\n')
             self.thistext.setAlignment(Qt.AlignBottom)
         except Exception as inst:
@@ -208,7 +192,7 @@ class rExecutor(OWRpy):
         self.mystatus.setText(_("Data Frame Connected with %s columns") % unicode(self.R('length('+self.data+')')))
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and self.dfselected == None:
-            self.dfselected = listBox(self.dataBox, self)
+            self.dfselected = redRGUI.base.listBox(self.dataBox, self)
             for e in colnames:
                 self.dfselected.addItem(e)
         elif colnames != 'NULL' and self.dfselected != None:
@@ -219,7 +203,7 @@ class rExecutor(OWRpy):
         self.mystatus.setText(_("Matrix connected with %s elements and %s columns") % (unicode(self.R('length('+self.data+')')), unicode(self.R('length('+self.data+'[1,])'))))
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and colnames != '' and colnames != 'None' and colnames != None:
-            self.dfselected = listBox(self.dataBox, self)
+            self.dfselected = redRGUI.base.listBox(self.dataBox, self)
             try:
                 for e in colnames:
                     self.dfselected.addItem(e)

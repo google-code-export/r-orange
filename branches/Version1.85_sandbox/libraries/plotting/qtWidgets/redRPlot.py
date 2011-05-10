@@ -76,6 +76,7 @@ class redRPlot(graphicsView):
         self.graphicOptions.setFixedHeight(180)
         hbox = widgetBox(self.graphicOptionsWidget,orientation='horizontal',alignment= Qt.AlignLeft)
         self.resizeCheck = checkBox(hbox,label='resize',displayLabel=False,buttons={'true':'Resize Image'},setChecked='true')
+        self.monkey = checkBox(hbox, label='useopts', displayLabel = False, buttons={'true':'Use Custom Plot Options'}, callback = self.enablePlotOptions)
         button(hbox,label='Update Graphic', alignment=Qt.AlignLeft, callback=self.plotMultiple)
         
 
@@ -104,7 +105,7 @@ class redRPlot(graphicsView):
         imageBox = groupBox(firstTab,label='Image Properties', orientation='vertical',
         sizePolicy = QSizePolicy(QSizePolicy.Maximum ,QSizePolicy.Minimum))
         
-        self.optionWidgets['imageType'] = comboBox(imageBox,label='Image Type',items=['svg','png'])
+        self.optionWidgets['imageType'] = comboBox(imageBox,label='Image Type',items=['svg', 'cairo' ,'png'])
         self.optionWidgets['imageType'].setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
         
         hbox = widgetBox(imageBox,orientation='horizontal')
@@ -221,13 +222,20 @@ class redRPlot(graphicsView):
         self.standardImageType = 'svg'
         QObject.connect(self.dialog, SIGNAL('finished(int)'), self.dialogClosed)
 
+        
+        self.graphicOptionsWidget.hide()
 
 
 
     ################################
     #### Plot Option Widgets   #####
     ################################
-    
+    def enablePlotOptions(self):
+        if 'true' in self.monkey.getCheckedIds():
+            self.graphicOptionsButton.setChecked(True)
+            self.displayGraphicOptions()
+        else:
+            self.graphicOptionsWidget.hide()
     def displayGraphicOptions(self):
         if self.graphicOptionsButton.isChecked():
             self.graphicOptionsWidget.show()
@@ -240,38 +248,60 @@ class redRPlot(graphicsView):
         
         ## device options
         dos = self.options['device']
-        self.optionWidgets['imageType'].setCurrentId(dos['imageType'])
-        self.optionWidgets['dpi'].setCurrentId(dos['dpi'])
-        self.optionWidgets['bgColor'].setColor(dos['bgColor'])
-        self.optionWidgets['dheight'].setValue(dos['dheight'])
-        self.optionWidgets['dwidth'].setValue(dos['dwidth'])
-        self.optionWidgets['units'].setCurrentId(dos['units'])
+        if 'imageType' in dos.keys():
+            self.optionWidgets['imageType'].setCurrentId(dos['imageType'])
+        if 'dpi' in dos.keys():
+            self.optionWidgets['dpi'].setCurrentId(dos['dpi'])
+        if 'bgColor' in dos.keys():
+            self.optionWidgets['bgColor'].setColor(dos['bgColor'])
+        if 'dheight' in dos.keys():
+            self.optionWidgets['dheight'].setValue(dos['dheight'])
+        if 'dwidth' in dos.keys():
+            self.optionWidgets['dwidth'].setValue(dos['dwidth'])
+        if 'units' in dos.keys():
+            self.optionWidgets['units'].setCurrentId(dos['units'])
         
         ## main options
         mos = self.options['main']
-        self.optionWidgets['colorSeries'].setCurrentId(mos['col'])
-        self.optionWidgets['linesListBox'].setSelectedIds(mos['lty'])
-        if mos['lwd']:
+        if 'colorSeries' in mos.keys():
+            self.optionWidgets['colorSeries'].setCurrentId(mos['col'])
+        if 'lty' in mos.keys():
+            self.optionWidgets['linesListBox'].setSelectedIds(mos['lty'])
+        if 'lwd' in mos.keys() and mos['lwd']:
             self.optionWidgets['lineWidth'].setValue(mos['lwd'])
-        self.optionWidgets['pointListBox'].setSelectedIds(mos['pch'])
+        if 'pch' in mos.keys():
+            self.optionWidgets['pointListBox'].setSelectedIds(mos['pch'])
             
         ## title options
+        
         tos = self.options['title']
-        self.optionWidgets['mainTitle'].setText(tos['main'])
-        self.optionWidgets['xLab'].setText(tos['xlab'])
-        self.optionWidgets['yLab'].setText(tos['ylab'])
-        self.optionWidgets['titleColor'].setColor(tos['col.main'])
-        self.optionWidgets['subColor'].setColor(tos['col.sub'])
-        self.optionWidgets['labColor'].setColor(tos['col.lab'])
+        if 'main' in tos.keys():
+            self.optionWidgets['mainTitle'].setText(tos['main'])
+        if 'xlab' in tos.keys():
+            self.optionWidgets['xLab'].setText(tos['xlab'])
+        if 'ylab' in tos.keys():
+            self.optionWidgets['yLab'].setText(tos['ylab'])
+        if 'col.main' in tos.keys():
+            self.optionWidgets['titleColor'].setColor(tos['col.main'])
+        if 'col.sub' in tos.keys():
+            self.optionWidgets['subColor'].setColor(tos['col.sub'])
+        if 'col.lab' in tos.keys():
+            self.optionWidgets['labColor'].setColor(tos['col.lab'])
         
         ## par options
         pos = self.options['par']
-        self.optionWidgets['axisFont'].setValue(pos['cex.axis'])
-        self.optionWidgets['labFont'].setValue(pos['cex.lab'])
-        self.optionWidgets['plotFont'].setValue(pos['cex'])
-        self.optionWidgets['mainFont'].setValue(pos['cex.main'])
-        self.optionWidgets['subFont'].setValue(pos['cex.sub'])
-        self.optionWidgets['axisColor'].setColor(pos['col.axis'])
+        if 'cex.axis' in pos.keys():
+            self.optionWidgets['axisFont'].setValue(pos['cex.axis'])
+        if 'cex.lab' in pos.keys():
+            self.optionWidgets['labFont'].setValue(pos['cex.lab'])
+        if 'cex' in pos.keys():
+            self.optionWidgets['plotFont'].setValue(pos['cex'])
+        if 'cex.main' in pos.keys():
+            self.optionWidgets['mainFont'].setValue(pos['cex.main'])
+        if 'cex.sub' in pos.keys():
+            self.optionWidgets['subFont'].setValue(pos['cex.sub'])
+        if 'col.axis' in pos.keys():
+            self.optionWidgets['axisColor'].setColor(pos['col.axis'])
         
         
         
@@ -424,15 +454,25 @@ class redRPlot(graphicsView):
     def processQuery(self, query):
         if 1 in self.optionWidgets['onlyAdvanced'].getCheckedIds():
             return query
+        if 'true' not in self.monkey.getCheckedIds():
+            return query
         widgetPars = []
         if self.getLineTypes() != 'c()':
             widgetPars.append('%s = %s' % ('lty', self.getLineTypes()))
         
         widgetPars.append('%s = %s' % ('lwd', self.optionWidgets['lineWidth'].value()))
+        titleOpts = []
+        if self.optionWidgets['mainTitle'].text() != '':
+            titleOpts.append('%s = \'%s\'' % ('main', self.optionWidgets['mainTitle'].text()))
+        if self.optionWidgets['xLab'].text() != '':
+            titleOpts.append('%s = \'%s\'' % ('xlab', self.optionWidgets['xLab'].text()))
+        if self.optionWidgets['yLab'].text() != '':
+            titleOpts.append('%s = \'%s\'' % ('ylab', self.optionWidgets['yLab'].text()))
+            
         if len(self.optionWidgets['pointListBox'].selectedIds()) > 0:
             widgetPars.append('%s = c(%s)' % ('pch', ','.join([str(i) for i in self.optionWidgets['pointListBox'].selectedIds()])))
         # color series temporarily disabled...
-        return '%s, %s' % (query, ','.join(widgetPars))
+        return '%s, %s' % (query, ','.join(widgetPars + titleOpts))
     def plot(self, query, function = 'plot', parameters=None,data=None):
         ## performs a quick plot given a query and an imageType
         self.data = data
@@ -449,22 +489,17 @@ class redRPlot(graphicsView):
         
         self._dheight = self.optionWidgets['dheight'].value()
         self._startRDevice(self.optionWidgets['imageType'].currentId())
-        self.prePlottingCommands() ## reimplemented in child classes
+        if 'true' not in self.monkey.getCheckedIds():
+            self.prePlottingCommands() ## reimplemented in child classes
         self._plot(self.query, function)
-        titleOpts = [
-            '%s = \'%s\'' % ('main', self.optionWidgets['mainTitle'].text()),
-            '%s = \'%s\'' % ('xlab', self.optionWidgets['xLab'].text()),
-            '%s = \'%s\'' % ('ylab', self.optionWidgets['yLab'].text()),
-            '%s = \'%s\'' % ('col.main', self.optionWidgets['titleColor'].color),
-            '%s = \'%s\'' % ('col.sub', self.optionWidgets['subColor'].color),
-            '%s = \'%s\'' % ('col.lab', self.optionWidgets['labColor'].color)
-            ]
-        self._plotLayers(layers + ['title(%s)' % ','.join(titleOpts)])
-        self._plotLegend(legend)
+        
+        self._plotLayers(layers)
+        if 'true' not in self.monkey.getCheckedIds():
+            self._plotLegend(legend)
         self.R('dev.off()', wantType = 'NoConversion')
         self.clear()
         fileName = unicode(self.imageFileName)
-        self.addImage(fileName)
+        self.addImage(fileName, imageType = self.optionWidgets['imageType'].currentId())
         self.layers = layers
         self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
         

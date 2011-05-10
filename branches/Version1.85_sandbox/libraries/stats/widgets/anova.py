@@ -5,12 +5,8 @@
 <icon>stats.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI
-from libraries.stats.signalClasses.RLMFit import RLMFit as redRRLMFit
-from libraries.base.qtWidgets.textEdit import textEdit
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
 class anova(OWRpy): 
     globalSettingsList = ['commit']
@@ -21,10 +17,10 @@ class anova(OWRpy):
         self.inputs.addInput('id0', 'object', 'All', self.processobject)
 
         
-        box = groupBox(self.controlArea, "Output")
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        box = redRGUI.base.groupBox(self.controlArea, "Output")
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
-        self.RoutputWindow = textEdit(box,label='R Output', displayLabel=False)
+        self.RoutputWindow = redRGUI.base.textEdit(box,label='R Output', displayLabel=False)
         
     def onLoadSavedSession(self):
         self.commitFunction()

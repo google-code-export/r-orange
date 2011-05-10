@@ -5,23 +5,14 @@
 """
 
 from OWRpy import *
+import redRGUI, signals
 import OWGUI
 import redRGUI 
 import re
 import textwrap
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 
 from PyQt4.QtGui import *
 
-from libraries.base.qtWidgets.checkBox import checkBox
-from libraries.plotting.qtWidgets.redRGraph import redRGraph
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.textEdit import textEdit
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.separator import separator
-from libraries.base.qtWidgets.widgetBox import widgetBox
-from libraries.base.qtWidgets.zoomSelectToolbar import zoomSelectToolbar
 
 class RedRScatterplot(OWRpy):
     globalSettingsList = ['commitOnInput', 'plotOnInput']
@@ -29,61 +20,61 @@ class RedRScatterplot(OWRpy):
         OWRpy.__init__(self, **kwargs)
         
         self.setRvariableNames(['Plot','paint','selected'])
-        self.inputs.addInput('id0', 'x', redRRDataFrame, self.gotX)
+        self.inputs.addInput('id0', 'x', signals.base.RDataFrame, self.gotX)
 
-        self.outputs.addOutput('id0', 'Scatterplot Output', redRRDataFrame)
+        self.outputs.addOutput('id0', 'Scatterplot Output', signals.base.RDataFrame)
 
         self.data = None
         self.parent = None
         self.dataParent = None
         
         # GUI
-        area = widgetBox(self.controlArea,orientation='horizontal')
+        area = redRGUI.base.widgetBox(self.controlArea,orientation='horizontal')
         
-        options= widgetBox(area,orientation='vertical')
+        options= redRGUI.base.widgetBox(area,orientation='vertical')
         options.setMaximumWidth(250)
         # options.setMinimumWidth(250)
         options.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
-        dataSelection = groupBox(options,orientation='vertical')
-        self.xColumnSelector = comboBox(dataSelection, label = 'X data', items=[],callback=self.onSourceChange)
-        self.yColumnSelector = comboBox(dataSelection, label = 'Y data', items=[],callback=self.onSourceChange)
-        self.paintCMSelector = comboBox(dataSelection, label = 'Color Points By:', items = [''],callback=self.onSourceChange)
+        dataSelection = redRGUI.base.groupBox(options,orientation='vertical')
+        self.xColumnSelector = redRGUI.base.comboBox(dataSelection, label = 'X data', items=[],callback=self.onSourceChange)
+        self.yColumnSelector = redRGUI.base.comboBox(dataSelection, label = 'Y data', items=[],callback=self.onSourceChange)
+        self.paintCMSelector = redRGUI.base.comboBox(dataSelection, label = 'Color Points By:', items = [''],callback=self.onSourceChange)
         
         # plot area
-        plotarea = groupBox(area, label = "Graph")
+        plotarea = redRGUI.base.groupBox(area, label = "Graph")
         plotarea.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.MinimumExpanding)
         #plotarea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
-        self.graph = redRGraph(plotarea,label='Scatter Plot', displayLabel=False,
+        self.graph = redRGUI.plotting.redRGraph(plotarea,label='Scatter Plot', displayLabel=False,
         onSelectionCallback=self.onSelectionCallback)
 
         #plotarea.layout().addWidget(self.graph)
-        #self.zoomSelectToolbarBox = groupBox(self.GUIDialog, label = "Plot Tool Bar")
+        #self.zoomSelectToolbarBox = redRGUI.base.groupBox(self.GUIDialog, label = "Plot Tool Bar")
         
-        separator(options,height=8)
-        buttonBox = groupBox(options,orientation='vertical')
+        redRGUI.base.separator(options,height=8)
+        buttonBox = redRGUI.base.groupBox(options,orientation='vertical')
         
-        box1 = widgetBox(buttonBox,orientation='horizontal')
+        box1 = redRGUI.base.widgetBox(buttonBox,orientation='horizontal')
         box1.layout().setAlignment(Qt.AlignRight)
-        self.plotOnInput = checkBox(box1, label='commit', displayLabel=False,
+        self.plotOnInput = redRGUI.base.checkBox(box1, label='commit', displayLabel=False,
         buttons = ['Plot on Change'],
         toolTips = ['Whenever X, Y or color data source changes plot the results.'])
-        button(box1, label = "Plot", callback = self.plot, toolTip = 'Plot the data.')
+        redRGUI.base.button(box1, label = "Plot", callback = self.plot, toolTip = 'Plot the data.')
         
-        box2 = widgetBox(buttonBox,orientation='horizontal')  
+        box2 = redRGUI.base.widgetBox(buttonBox,orientation='horizontal')  
         box2.layout().setAlignment(Qt.AlignRight)
         
-        self.commitOnInput = checkBox(box2, label='commit', displayLabel=False,
+        self.commitOnInput = redRGUI.base.checkBox(box2, label='commit', displayLabel=False,
         buttons = ['Commit on Selection'],
         toolTips = ['Whenever this selection changes, send data forward.'])
-        button(box2, label = "Select", callback = self.sendMe, toolTip = 'Subset the data according to your selection.')
+        redRGUI.base.button(box2, label = "Select", callback = self.sendMe, toolTip = 'Subset the data according to your selection.')
 
-        separator(options,height=8)
-        self.zoomSelectToolbar = zoomSelectToolbar(self, options, self.graph)
-        self.paintLegend = textEdit(options,label='Legend')
+        redRGUI.base.separator(options,height=8)
+        self.zoomSelectToolbar = redRGUI.base.zoomSelectToolbar(self, options, self.graph)
+        self.paintLegend = redRGUI.base.textEdit(options,label='Legend')
         
         # self.R('data <- data.frame(a=rnorm(1000),b=rnorm(1000))')
-        # data = redRRDataFrame(data = 'data', parent = None) 
+        # data = signals.base.RDataFrame(data = 'data', parent = None) 
         # self.graph.resize(350, 350)
         # self.gotX(data)
         
@@ -245,10 +236,10 @@ class RedRScatterplot(OWRpy):
         index = 'c('+','.join(index) + ')'
         self.R('%s<-%s[%s,]' % (self.Rvariables['selected'],self.data,index),silent=True)
         if self.dataParent:
-            data = redRRDataFrame(self, data = self.Rvariables['selected'], parent = self.dataParent.getDataParent()) 
+            data = signals.base.RDataFrame(self, data = self.Rvariables['selected'], parent = self.dataParent.getDataParent()) 
             data.copyAllOptionalData(self.dataParent)
         else:
-            data = redRRDataFrame(self, data = self.Rvariables['selected']) 
+            data = signals.base.RDataFrame(self, data = self.Rvariables['selected']) 
         self.rSend("id0", data)
         #self.sendRefresh()
         

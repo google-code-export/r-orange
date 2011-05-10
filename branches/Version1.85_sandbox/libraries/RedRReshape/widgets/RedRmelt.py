@@ -7,13 +7,7 @@
 <icon></icon>
 """
 from OWRpy import * 
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 
-from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButtons 
-from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
-from libraries.base.qtWidgets.gridBox import gridBox
-import libraries.base.signalClasses as signals
+import redRGUI, signals
 
 class RedRmelt(OWRpy): 
     settingsList = []
@@ -23,17 +17,17 @@ class RedRmelt(OWRpy):
         self.require_librarys(["reshape"])
         self.data = {}
         self.RFunctionParam_data = ''
-        self.inputs.addInput("data", "Data Table", [signals.RDataFrame.RDataFrame, signals.RMatrix.RMatrix], self.processdata)
-        self.outputs.addOutput("melt Output","Molten Data", signals.RDataFrame.RDataFrame)
-        box = gridBox(self.controlArea)
-        self.RFunctionParamna_rm_radioButtons = redRradioButtons(self.controlArea, label = "Remove NA's:", buttons = ["TRUE","FALSE"], setChecked = "TRUE", orientation = 'horizontal')
-        self.RFunctionParammeasure_vars_listBox = redRListBox(box.cell(0,0), label = "Measure Variables (Values):")
+        self.inputs.addInput("data", "Data Table", [signals.base.RDataFrame, signals.base.RDataFrame], self.processdata)
+        self.outputs.addOutput("melt Output","Molten Data", signals.base.RDataFrame)
+        box = redRGUI.base.gridBox(self.controlArea)
+        self.RFunctionParamna_rm_radioButtons = redRGUI.base.radioButtons(self.controlArea, label = "Remove NA's:", buttons = ["TRUE","FALSE"], setChecked = "TRUE", orientation = 'horizontal')
+        self.RFunctionParammeasure_vars_listBox = redRGUI.base.listBox(box.cell(0,0), label = "Measure Variables (Values):")
         self.RFunctionParammeasure_vars_listBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        #self.RFunctionParamvariable_name_lineEdit = redRlineEdit(self.controlArea, label = "New Variable Column Name:", text = 'variable')
-        self.RFunctionParamid_vars_listBox = redRListBox(box.cell(0,1), label = "Static Variables:")
+        #self.RFunctionParamvariable_name_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "New Variable Column Name:", text = 'variable')
+        self.RFunctionParamid_vars_listBox = redRGUI.base.listBox(box.cell(0,1), label = "Static Variables:")
         self.RFunctionParamid_vars_listBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = redRtextEdit(self.controlArea, label = "R Output Window")
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "R Output Window")
     def processdata(self, data):
         if data:
             self.RFunctionParam_data=data.getData()
@@ -74,5 +68,5 @@ class RedRmelt(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText('This is your data:\n\n'+tmp)
-        newData = signals.RDataFrame.RDataFrame(self, data = self.Rvariables['melt'], parent = self.Rvariables['melt'])
+        newData = signals.base.RDataFrame(self, data = self.Rvariables['melt'], parent = self.Rvariables['melt'])
         self.rSend('melt Output', newData)

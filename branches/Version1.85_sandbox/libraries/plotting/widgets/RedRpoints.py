@@ -4,14 +4,11 @@
 <icon></icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RVector import RVector as redRRVector
 
 import libraries.plotting.signalClasses as plotsigs
 
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
 class RedRpoints(OWRpy): 
     globalSettingsList = ['commit']
@@ -22,16 +19,16 @@ class RedRpoints(OWRpy):
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
         self.RFunctionParam_col = ''
-        self.inputs.addInput('id0', 'y', redRRVector, self.processy)
-        self.inputs.addInput('id1', 'x', redRRVector, self.processx)
-        self.inputs.addInput('id2', 'col', redRRVector, self.processcol)
+        self.inputs.addInput('id0', 'y', signals.base.RVector, self.processy)
+        self.inputs.addInput('id1', 'x', signals.base.RVector, self.processx)
+        self.inputs.addInput('id2', 'col', signals.base.RVector, self.processcol)
 
         self.outputs.addOutput('id0', 'points Output', plotsigs.RPlotAttribute)
 
         
-        self.RFunctionParampch_lineEdit = lineEdit(self.controlArea, label = "pch:", text = '16')
-        self.RFunctionParamcex_lineEdit = lineEdit(self.controlArea, label = "cex:", text = '2')
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.RFunctionParampch_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "pch:", text = '16')
+        self.RFunctionParamcex_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "cex:", text = '2')
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
         
     def processy(self, data):

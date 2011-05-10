@@ -2,9 +2,9 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>predict</name>
-    <icon>Default.png</icon>
+    <icon>default.png</icon>
     <tags> 
-        <tag>Prototypes</tag> 
+        <tag priority='100'>Caret</tag> 
     </tags>
     <summary></summary>
     <details></details>

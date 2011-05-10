@@ -4,18 +4,8 @@
 <icon>readfile.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.qtWidgets.checkBox import checkBox
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.radioButtons import radioButtons
-from libraries.base.qtWidgets.widgetLabel import widgetLabel
-from libraries.base.qtWidgets.separator import separator
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.widgetBox import widgetBox
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.listBox import listBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class rownames(OWRpy): 
@@ -26,37 +16,37 @@ class rownames(OWRpy):
         self.data = {}
          
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', _('Input Data'), redRRDataFrame, self.processx)
+        self.inputs.addInput('id0', _('Input Data'), signals.base.RDataFrame, self.processx)
 
-        self.outputs.addOutput('id0', _('Row or Column Names'), redRRVector)
-        self.outputs.addOutput('renamedDF', _("Renamed Data Table"), redRRDataFrame)
+        self.outputs.addOutput('id0', _('Row or Column Names'), signals.base.RVector)
+        self.outputs.addOutput('renamedDF', _("Renamed Data Table"), signals.base.RDataFrame)
 
         
-        box = groupBox(self.controlArea, label = _("Get Row or Column Names"))
+        box = redRGUI.base.groupBox(self.controlArea, label = _("Get Row or Column Names"))
         self.controlArea.layout().setAlignment(box,Qt.AlignTop | Qt.AlignLeft)
-        widgetLabel(box,_('Get row or column names from input object.'))
-        separator(box,height=10)
-        self.function =  radioButtons(box, label=_('Row or Column'),displayLabel=False,
+        redRGUI.base.widgetLabel(box,_('Get row or column names from input object.'))
+        redRGUI.base.separator(box,height=10)
+        self.function =  redRGUI.base.radioButtons(box, label=_('Row or Column'),displayLabel=False,
         buttons=[_('Row Names'),_('Column Names')],setChecked=_('Row Names'), orientation='horizontal')
-        separator(box,height=10)
+        redRGUI.base.separator(box,height=10)
 
-        self.RFunctionParamprefix_lineEdit =  lineEdit(box,  label = _("prefix:"), 
+        self.RFunctionParamprefix_lineEdit =  redRGUI.base.lineEdit(box,  label = _("prefix:"), 
         toolTip=_('Prepend prefix to simple numbers when creating names.'))
-        separator(box,height=10)
+        redRGUI.base.separator(box,height=10)
         
-        self.doNullButton =  radioButtons(box,  label = _("do.NULL:"),
+        self.doNullButton =  redRGUI.base.radioButtons(box,  label = _("do.NULL:"),
         toolTips=[_('logical. Should this create names if they are NULL?')]*2,
         buttons=[_('TRUE'),_('FALSE')],setChecked=_('TRUE'), orientation='horizontal')
-        buttonBox = widgetBox(box,orientation='horizontal')
-        redRCommitButton(buttonBox, _("Commit"), callback = self.commitFunction)
-        self.autoCommit = checkBox(buttonBox,label=_('commit'), displayLabel=False,
+        buttonBox = redRGUI.base.widgetBox(box,orientation='horizontal')
+        redRGUI.base.commitButton(buttonBox, _("Commit"), callback = self.commitFunction)
+        self.autoCommit = redRGUI.base.checkBox(buttonBox,label=_('commit'), displayLabel=False,
         buttons=[_('Commit on Input')],setChecked=[_('Commit on Input')])
         
-        box2 = groupBox(self.controlArea, label = _("Set Row or Column Names"))
-        self.rcrename =  radioButtons(box2, label=_('Row or Column'),displayLabel=False,
+        box2 = redRGUI.base.groupBox(self.controlArea, label = _("Set Row or Column Names"))
+        self.rcrename =  redRGUI.base.radioButtons(box2, label=_('Row or Column'),displayLabel=False,
         buttons=[('row', _('Row Names')),('col', _('Column Names'))],setChecked=_('row'), orientation='horizontal', callback = self.resetrcrename)
-        self.attsList = listBox(box2, label = _("Row or Column Choices"), toolTip = _("Select the Row or Column to use for the new Column or Row names, you choose a Row name to set column names and vice versa."))
-        redRCommitButton(box2, _("Commit"), callback = self.setNames)
+        self.attsList = redRGUI.base.listBox(box2, label = _("Row or Column Choices"), toolTip = _("Select the Row or Column to use for the new Column or Row names, you choose a Row name to set column names and vice versa."))
+        redRGUI.base.commitButton(box2, _("Commit"), callback = self.setNames)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
@@ -92,7 +82,7 @@ class rownames(OWRpy):
         inj = ','.join(injection)
         self.R(self.Rvariables['rownames']+'<-'+function+'(x='+unicode(self.RFunctionParam_x)+','+inj+')', wantType = 'NoConversion')
         
-        newData = redRRVector(self, data = self.Rvariables["rownames"])
+        newData = signals.base.RVector(self, data = self.Rvariables["rownames"])
 
         self.rSend("id0", newData)
     def setNames(self):
@@ -109,7 +99,7 @@ class rownames(OWRpy):
             'RFunctionParam_x':self.RFunctionParam_x,
             'selectedColumn':self.attsList.currentSelection()[0]}
             , wantType = 'NoConversion')
-        newData = redRRDataFrame(self, data = self.Rvariables['renamedRowColData'])
+        newData = signals.base.RDataFrame(self, data = self.Rvariables['renamedRowColData'])
         self.rSend('renamedDF', newData)
     def getReportText(self, fileDir):
         text = _('%s were sent from this widget.\n\n') % unicode(self.function.getChecked())

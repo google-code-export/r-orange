@@ -4,23 +4,19 @@
 <icon>plot.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RModelFit import RModelFit as redRRModelFit
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.tabWidget import tabWidget
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
 class inspectR(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_mymodel = ''
-        self.inputs.addInput('id0', 'mymodel', redRRModelFit, self.processmymodel)
+        self.inputs.addInput('id0', 'mymodel', signals.base.RModelFit, self.processmymodel)
 
         
-        self.RFunctionParamwhich_lineEdit =  lineEdit(self.controlArea,  label = "which:", text = 'all')
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.RFunctionParamwhich_lineEdit =  redRGUI.base.lineEdit(self.controlArea,  label = "which:", text = 'all')
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
     def processmymodel(self, data):
         if not self.require_librarys(["asuR"]):

@@ -1,17 +1,9 @@
-"""@module OWRpy
-
-.. inheritance-diagram::
-    OWRpy
+"""OWRpy
 
 General Documentation
 
 OWRpy is the base class for all Red-R widgets.  All widgets in the Red-R Framework must inherit from this class.
 OWRpy provides, by default, an importation of many of the standard base classes as indicated in the following...
-
-
-.. code-block:: python
-
-
 
 """
 
@@ -20,7 +12,23 @@ from widgetSignals import *
 from widgetSession import *
 from PyQt4.QtGui import *
 import RSession, redREnviron, os, redRReports,redRLog
-#import rpy
+from libraries.base.qtWidgets.graphicsView import graphicsView as redRgraphicsView
+from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
+from libraries.base.qtWidgets.button import button as redRButton
+from libraries.base.qtWidgets.spinBox import spinBox as redRSpinBox
+from libraries.base.qtWidgets.lineEdit import lineEdit as redRLineEdit
+from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
+from libraries.base.qtWidgets.separator import separator as redRSeparator
+from libraries.base.qtWidgets.filterTable import filterTable as redRFilterTable
+from libraries.base.qtWidgets.radioButtons import radioButtons as redRRadioButtons
+from libraries.base.qtWidgets.listBox import listBox as redRListBox
+from libraries.base.qtWidgets.widgetBox import widgetBox as redRWidgetBox
+from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+from libraries.base.qtWidgets.comboBox import comboBox as redRComboBox
+from libraries.base.qtWidgets.groupBox import groupBox as redRGroupBox
+from libraries.base.qtWidgets.splitter import splitter as redRSplitter
+from libraries.base.qtWidgets.statusLabel import statusLabel as redRStatusLabel
 
 import redRi18n
 uniqueWidgetNumber = 0

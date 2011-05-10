@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
-    <name>nearZeroVar</name>
-    <icon>Default.png</icon>
+    <name>Generate sequence</name>
+    <icon>default.png</icon>
     <tags> 
         <tag>Prototypes</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary></summary>
     <details></details>
     <relatedWidgets>
@@ -24,7 +25,7 @@
     <citation>
     <!-- [REQUIRED] -->
         <author>
-            <name>Red-R Core Team</name>
+            <name>Serge-Etienne Parent</name>
             <contact>http://www.red-r.org/contact</contact>
         </author>
         <reference>http://www.red-r.org</reference>

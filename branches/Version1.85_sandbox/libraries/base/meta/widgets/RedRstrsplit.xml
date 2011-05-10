@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
-    <name>strsplit</name>
+    <name>String Split</name>
     <icon>default.png</icon>
     <tags> 
-        <tag>Prototypes</tag> 
+        <tag>Data Manipulation</tag> 
     </tags>
     <screenshots></screenshots>
-    <summary></summary>
+    <summary>Split strings by some function or string from a vector or list selection (works on data tables too).</summary>
     <details></details>
     <relatedWidgets>
         <inputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></inputWidget>

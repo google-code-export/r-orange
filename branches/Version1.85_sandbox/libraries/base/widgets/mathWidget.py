@@ -5,16 +5,8 @@
 <tags>Data Manipulation</tags>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.widgetLabel import widgetLabel
-from libraries.base.qtWidgets.dialog import dialog
-from libraries.base.qtWidgets.filterTable import filterTable as redRfilterTable
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.listBox import listBox
-from libraries.base.qtWidgets.widgetBox import widgetBox
 import redRi18n, redRLog
 _ = redRi18n.get_(package = 'base')
 class mathWidget(OWRpy): 
@@ -27,42 +19,42 @@ class mathWidget(OWRpy):
         self.counter = 1
         self.functionsList = ['log2', 'log10', 'add', 'subtract', 'multiply', 'divide', 'match', 'as.numeric', 'as.character', 'exp', 'logicAND', 'logicOR', 'toDateTime (MDY)', 'toDateTime (DMY)', 'toDateTime (YMD)']
         
-        self.inputs.addInput('id0', _('Data Frame'), redRRDataFrame, self.gotData)
+        self.inputs.addInput('id0', _('Data Frame'), signals.base.RDataFrame, self.gotData)
 
-        self.outputs.addOutput('id0', _('Data Frame'), redRRDataFrame)
+        self.outputs.addOutput('id0', _('Data Frame'), signals.base.RDataFrame)
 
         #GUI#
         
-        mainArea = widgetBox(self.controlArea, orientation = 'horizontal')
-        leftArea = groupBox(mainArea, label = _('Table View'))
-        rightArea = groupBox(mainArea, label = _('Math Box'))
+        mainArea = redRGUI.base.widgetBox(self.controlArea, orientation = 'horizontal')
+        leftArea = redRGUI.base.groupBox(mainArea, label = _('Table View'))
+        rightArea = redRGUI.base.groupBox(mainArea, label = _('Math Box'))
         
-        self.table = redRfilterTable(leftArea,label= _('Data Table'), displayLabel=False,
+        self.table = redRGUI.base.filterTable(leftArea,label= _('Data Table'), displayLabel=False,
         filterable=False,sortable=False)
         
-        self.functionLineEdit = lineEdit(rightArea, label = _('Function Search or Run'), 
+        self.functionLineEdit = redRGUI.base.lineEdit(rightArea, label = _('Function Search or Run'), 
         callback = self.functionDone)
         QObject.connect(self.functionLineEdit, SIGNAL('textChanged(const QString&)'), 
         lambda s: self.textChanged(s))
         
-        self.functionListBox = listBox(rightArea, label= _('List of Functions'),displayLabel=False,
+        self.functionListBox = redRGUI.base.listBox(rightArea, label= _('List of Functions'),displayLabel=False,
         includeInReports=False,
         items = self.functionsList, callback = self.funcionPressed)
         
-        #self.helpButton = button(rightArea, label = 'Help') #, toolTip = 'Press this then select a function from the list for help.')
-        self.dialog = dialog(self)
-        self.dialogTopArea = groupBox(self.dialog, label = _('Left Side'))
-        self.dialogTopLineEdit = lineEdit(self.dialogTopArea, label = _('Constant'), toolTip = _('Must be a number'))
-        self.dialogTopListBox = listBox(self.dialogTopArea, label = _('Columns'), toolTip = _('Select one of the columns'), callback = self.dialogTopLineEdit.clear)
+        #self.helpButton = redRGUI.base.button(rightArea, label = 'Help') #, toolTip = 'Press this then select a function from the list for help.')
+        self.dialog = redRGUI.base.dialog(self)
+        self.dialogTopArea = redRGUI.base.groupBox(self.dialog, label = _('Left Side'))
+        self.dialogTopLineEdit = redRGUI.base.lineEdit(self.dialogTopArea, label = _('Constant'), toolTip = _('Must be a number'))
+        self.dialogTopListBox = redRGUI.base.listBox(self.dialogTopArea, label = _('Columns'), toolTip = _('Select one of the columns'), callback = self.dialogTopLineEdit.clear)
         
-        self.dialogLabel = widgetLabel(self.dialog)
+        self.dialogLabel = redRGUI.base.widgetLabel(self.dialog)
         
-        self.dialogBottomArea = groupBox(self.dialog, label = _('Right Side'))
-        self.dialogBottomLineEdit = lineEdit(self.dialogBottomArea, label = _('Constant'), 
+        self.dialogBottomArea = redRGUI.base.groupBox(self.dialog, label = _('Right Side'))
+        self.dialogBottomLineEdit = redRGUI.base.lineEdit(self.dialogBottomArea, label = _('Constant'), 
         toolTip = _('Must be a number'))
-        self.dialogBottomListBox = listBox(self.dialogBottomArea, label = _('Columns'), 
+        self.dialogBottomListBox = redRGUI.base.listBox(self.dialogBottomArea, label = _('Columns'), 
         toolTip = _('Select one of the columns'), callback = self.dialogBottomLineEdit.clear)
-        redRCommitButton(self.dialog, label = _('Done'), callback = self.functionCommit)
+        redRGUI.base.commitButton(self.dialog, label = _('Done'), callback = self.functionCommit)
         self.dialog.hide()
     def gotData(self, data):
         if data:
@@ -75,9 +67,11 @@ class mathWidget(OWRpy):
             self.table.clear()
             
     def textChanged(self, s):
-        print s
-        self.functionListBox.scrollToItem(self.functionListBox.findItems(s, Qt.MatchStartsWith)[0])
-        
+        #print s
+        try:
+            self.functionListBox.scrollToItem(self.functionListBox.findItems(s, Qt.MatchStartsWith)[0])
+        except:
+            pass
     def functionDone(self):
         text = unicode(self.functionLineEdit.text())
         self.executeFunction(text)
@@ -187,7 +181,7 @@ class mathWidget(OWRpy):
                 self.counter += 1
             self.dialogBottomListBox.update(self.R('colnames('+self.data+')', wantType = 'list'))
             self.dialogTopListBox.update(self.R('colnames('+self.data+')', wantType = 'list'))
-            newData = redRRDataFrame(self, data = self.data, parent = self.data)
+            newData = signals.base.RDataFrame(self, data = self.data, parent = self.data)
             self.rSend("id0", newData)
             self.dialog.hide()
         except Exception as inst:

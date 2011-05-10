@@ -247,13 +247,13 @@ class LogHandler():
                 logOutput(REDRCORE, DEVEL, text = unicode(inst))
                 return
             logOutput(REDRCORE,DEVEL, text,html=False)
-            if sys.platform == 'linux2':
+            if logLevels[redREnviron.settings['outputVerbosity']] == DEVEL:
                 self.defaultStdout.write(text)
         except: pass
     def exceptionHandler(self, type, value, tracebackInfo):
         
         log(REDRCORE,CRITICAL,formatException(type,value,tracebackInfo))
-        if sys.platform == 'linux2':
+        if logLevels[redREnviron.settings['outputVerbosity']] == DEVEL:
             self.defaultExceptionHandler(type, value, tracebackInfo)
         
 # print 'setting log handler'

@@ -4,32 +4,24 @@
 <icon>histogram.png</icon>
 """
 from OWRpy import * 
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 
-from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButtons 
-from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
-from libraries.base.qtWidgets.spinBox import spinBox as redRSpinBox
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
-from libraries.base.qtWidgets.graphicsView import graphicsView as redRgraphicsView
-import libraries.base.signalClasses as signals
+import redRGUI, signals
 
 class RedRbarplot(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_height = ''
-        self.inputs.addInput("height", "Plotting Vector", signals.RList.RList, self.processheight)
+        self.inputs.addInput("height", "Plotting Vector", signals.base.RList, self.processheight)
         
-        self.RFunctionParammain_lineEdit = redRlineEdit(self.controlArea, label = "main:", text = '')
-        self.RFunctionParamhoriz_lineEdit = redRlineEdit(self.controlArea, label = "horiz:", text = '')
-        self.namesBox = redRcomboBox(self.controlArea, label = 'Data Element:', callback = self.commitFunction)
-        self.RFunctionParamspace_lineEdit = redRSpinBox(self.controlArea, label = "Space:", 
+        self.RFunctionParammain_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "main:", text = '')
+        self.RFunctionParamhoriz_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "horiz:", text = '')
+        self.namesBox = redRGUI.base.comboBox(self.controlArea, label = 'Data Element:', callback = self.commitFunction)
+        self.RFunctionParamspace_lineEdit = redRGUI.base.spinBox(self.controlArea, label = "Space:", 
         min = 0, max = 99, value = 5)
-        self.RFunctionParamxlab_lineEdit = redRlineEdit(self.controlArea, label = "xlab:", text = '')
-        self.plotArea = redRgraphicsView(self.controlArea,label='Bar Plot', displayLabel=False)
+        self.RFunctionParamxlab_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "xlab:", text = '')
+        self.plotArea = redRGUI.base.graphicsView(self.controlArea,label='Bar Plot', displayLabel=False)
         
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
         
     def processheight(self, data):

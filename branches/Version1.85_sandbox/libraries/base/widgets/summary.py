@@ -3,11 +3,8 @@
 <tags>R</tags>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.checkBox import checkBox
-from libraries.base.qtWidgets.textEdit import textEdit
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class summary(OWRpy): 
@@ -18,16 +15,14 @@ class summary(OWRpy):
         self.data = {}
          
         self.RFunctionParam_object = ''
-        self.inputs.addInput('id0', _('R Variable Object'), redRRVariable, self.processobject)
+        self.inputs.addInput('id0', _('R Variable Object'), signals.base.RVariable, self.processobject)
+        self.outputs.addOutput('id0', _('R Summary'), signals.base.RArbitraryList)
         
-        self.commit = redRCommitButton(self.bottomAreaRight, _('Commit'), callback = self.commitFunction,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, _('Commit'), callback = self.commitFunction,
         processOnInput=True)
         
-        self.RoutputWindow = textEdit(self.controlArea, label = _("RoutputWindow"))
+        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = _("RoutputWindow"))
     def processobject(self, data):
-        if not self.require_librarys(["base"]):
-            self.status.setText(_('R Libraries Not Loaded.'))
-            return
         if data:
             self.RFunctionParam_object=data.getData()
             self.data = data
@@ -36,9 +31,13 @@ class summary(OWRpy):
         else:
             self.RFunctionParam_object=''
     def commitFunction(self):
-        if unicode(self.RFunctionParam_object) == '': return
+        if unicode(self.RFunctionParam_object) == '': 
+            self.status.setText('No data to work with')
+            return
         self.R('txt<-capture.output(summary(object='+unicode(self.RFunctionParam_object)+'))', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
+        newData = signals.base.RArbitraryList(self, data = 'as.list(summary(%s))' % self.RFunctionParam_object)
+        self.rSend('id0', newData)
 

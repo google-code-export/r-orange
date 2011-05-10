@@ -1,3 +1,7 @@
+"""button
+
+creates a button.
+"""
 from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -5,6 +9,11 @@ import os.path
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class button(QPushButton,widgetState):
+    """Basic button and checkbutton class.
+    
+    This is the base class for buttons.  By buttons we mean pushbuttons.  The button can also act as a checkbutton.  Checkbuttons remain checked or unchecked when clicked.
+    """
+    
     def __init__(self,widget,label, callback = None, disabled=0, icon=None, 
     toolTip=None, width = None, height = None,alignment=Qt.AlignLeft, toggleButton = False, setChecked = False):
 
@@ -46,7 +55,11 @@ class button(QPushButton,widgetState):
             QObject.connect(self, SIGNAL("clicked()"), callback)
             
     def getSettings(self):
-        pass
+        """Returns settings for checked state, applicable only if this is a checkbutton"""
+        return {'checked': self.checked()}
     def loadSettings(self,data):
-        pass
+        """Sets the button to checked or not.  Only applicable if the button is a checkbutton."""
+        if self.checkable():
+            if 'chekced' in data.keys():
+                self.setChecked(data['checked'])
 

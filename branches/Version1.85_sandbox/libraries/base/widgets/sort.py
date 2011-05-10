@@ -3,16 +3,9 @@
 <tags>Data Manipulation</tags>
 """
 from OWRpy import *
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.widgetBox import widgetBox
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.radioButtons import radioButtons
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.checkBox import checkBox
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class sort(OWRpy): 
@@ -23,20 +16,20 @@ class sort(OWRpy):
         self.data = {}
          
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', _('Data Tabel'), redRRDataFrame, self.processx)
+        self.inputs.addInput('id0', _('Data Tabel'), signals.base.RDataFrame, self.processx)
 
-        self.outputs.addOutput('id0', _('Sorted Data Table'), redRRDataFrame)
+        self.outputs.addOutput('id0', _('Sorted Data Table'), signals.base.RDataFrame)
 
-        self.standardTab = widgetBox(self.controlArea)
-        self.options =  checkBox(self.standardTab,label=_('Options'),
+        self.standardTab = redRGUI.base.widgetBox(self.controlArea)
+        self.options =  redRGUI.base.checkBox(self.standardTab,label=_('Options'),
         buttons = [_("Decreasing"), _('NA Last')], orientation='horizontal')
         # self.standardTab.layout().setAlignment(self.options,Qt.AlignLeft)
         
-        self.sortingColumn1 = comboBox(self.standardTab, label = _('First Column to Sort:'))
-        self.sortingColumn2 = comboBox(self.standardTab, label = _('Second Column to Sort:'))
-        self.sortingColumn3 = comboBox(self.standardTab, label = _('Third Column to Sort:'))
+        self.sortingColumn1 = redRGUI.base.comboBox(self.standardTab, label = _('First Column to Sort:'))
+        self.sortingColumn2 = redRGUI.base.comboBox(self.standardTab, label = _('Second Column to Sort:'))
+        self.sortingColumn3 = redRGUI.base.comboBox(self.standardTab, label = _('Third Column to Sort:'))
         
-        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,
         processOnInput=True)
 
     def processx(self, data):
@@ -74,6 +67,6 @@ class sort(OWRpy):
         inj = ','.join(injection)
 
         self.R('%s<-%s[order(%s),]' % (self.Rvariables['sort'], self.RFunctionParam_x, inj), wantType = 'NoConversion')
-        newData = redRRDataFrame(self, data = self.Rvariables["sort"]) 
+        newData = signals.base.RDataFrame(self, data = self.Rvariables["sort"]) 
         
         self.rSend("id0", newData)

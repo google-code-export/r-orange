@@ -34,15 +34,17 @@ class RedRInitWizard(QWizard):
         # self.errorReportingPage.setLayout(QVBoxLayout())
         # self.errorReportingPage.setTitle(_('Error Reporting'))
         # self.errorReportingPage.setSubTitle(_('How would you like errors to be reported to Red-R.'))
-        self.redRExceptionHandling = redRGUI.base.checkBox(self.registerPage, label='Error Handling', 
+        self.redRExceptionHandling = redRGUI.base.checkBox(self.registerPage, label='General Options', 
         buttons = [
         ('showErrorWindow',_('Show output window on error')), 
         ('submitError',_('Submit Error Report')), 
-        ('askToSubmit',_('Always ask before submitting error report'))], 
+        ('askToSubmit',_('Always ask before submitting error report')),
+        ('checkUpdates', _('Check for updates to packages'))], 
         toolTips = [_('Check this if you want to see the output when an error happens.'), 
         _('Check this if you want to send errors to Red-R.\nWe will only show the errors to Red-R or package maintainers.'), 
-        _('Check this if you want to be asked before a report is sent to Red-R.\nOtherwise a report will be sent automatically to Red-R.')])
-        self.redRExceptionHandling.setChecked(['submitError','showErrorWindow'])
+        _('Check this if you want to be asked before a report is sent to Red-R.\nOtherwise a report will be sent automatically to Red-R.'),
+        _('Red-R will preiodically check the repository for package updates.')])
+        self.redRExceptionHandling.setChecked(['submitError','showErrorWindow','checkUpdates'])
         #self.REDRCORE_initWizard_ouptutVerbosity = redRGUI.base.comboBox(self.registerPage, label = _('Output Verbosity Level'), items=redRLog.logLevelsByLevel)
         
         
@@ -139,6 +141,7 @@ def startSetupWizard():
         #redREnviron.settings['outputVerbosity'] = setupWizard.REDRCORE_initWizard_ouptutVerbosity.currentId()
         redREnviron.settings['uploadError'] = 'submitError' in setupWizard.redRExceptionHandling.getCheckedIds()
         redREnviron.settings['askToUploadError'] = 'askToSubmit' in setupWizard.redRExceptionHandling.getCheckedIds()
+        redREnviron.settings['checkForPackageUpdates'] = 'checkUpdates' in setupWizard.redRExceptionHandling.getCheckedIds()
         loadBaseLibs()
         if _('Start Example') in setupWizard.showExample.getChecked():
             redRSaveLoad.loadDocument(os.path.join(redREnviron.directoryNames['examplesDir'], 'firstSchema.rrs'))
