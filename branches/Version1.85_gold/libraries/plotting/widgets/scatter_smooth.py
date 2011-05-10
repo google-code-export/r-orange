@@ -4,13 +4,8 @@
 <icon>plot.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.tabWidget import tabWidget
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
 class scatter_smooth(OWRpy): 
     globalSettingsList = ['commit']
@@ -18,19 +13,19 @@ class scatter_smooth(OWRpy):
         OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'y', redRRVector, self.processy)
-        self.inputs.addInput('id1', 'x', redRRVector, self.processx)
+        self.inputs.addInput('id0', 'y', signals.base.RVector, self.processy)
+        self.inputs.addInput('id1', 'x', signals.base.RVector, self.processx)
 
         
-        self.RFunctionParamxlab_lineEdit =  lineEdit(self.controlArea,  label = "xlab:", text = 'NULL')
-        self.RFunctionParamspan_lineEdit =  lineEdit(self.controlArea,  label = "span:", text = '2/3')
-        self.RFunctionParamdegree_lineEdit =  lineEdit(self.controlArea,  label = "degree:", text = '1')
-        self.RFunctionParamfamily_comboBox =  comboBox(self.controlArea,  label = "family:", 
+        self.RFunctionParamxlab_lineEdit =  redRGUI.base.lineEdit(self.controlArea,  label = "xlab:", text = 'NULL')
+        self.RFunctionParamspan_lineEdit =  redRGUI.base.lineEdit(self.controlArea,  label = "span:", text = '2/3')
+        self.RFunctionParamdegree_lineEdit =  redRGUI.base.lineEdit(self.controlArea,  label = "degree:", text = '1')
+        self.RFunctionParamfamily_comboBox =  redRGUI.base.comboBox(self.controlArea,  label = "family:", 
         items = ['symmetric', 'gaussian'])
-        self.RFunctionParamylab_lineEdit =  lineEdit(self.controlArea,  label = "ylab:", text = 'NULL')
-        self.RFunctionParamevaluation_lineEdit =  lineEdit(self.controlArea,  label = "evaluation:", text = '50')
-        self.RFunctionParamylim_lineEdit =  lineEdit(self.controlArea,  label = "ylim:", text = '')
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.RFunctionParamylab_lineEdit =  redRGUI.base.lineEdit(self.controlArea,  label = "ylab:", text = 'NULL')
+        self.RFunctionParamevaluation_lineEdit =  redRGUI.base.lineEdit(self.controlArea,  label = "evaluation:", text = '50')
+        self.RFunctionParamylim_lineEdit =  redRGUI.base.lineEdit(self.controlArea,  label = "ylim:", text = '')
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
     
     def processy(self, data):

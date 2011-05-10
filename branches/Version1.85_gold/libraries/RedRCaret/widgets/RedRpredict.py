@@ -7,12 +7,7 @@
 <icon></icon>
 """
 from OWRpy import * 
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 
-from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButtons 
-from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
-import libraries.base.signalClasses as signals
+import redRGUI, signals
 
 class RedRpredict(OWRpy): 
     settingsList = []
@@ -22,14 +17,14 @@ class RedRpredict(OWRpy):
         self.data = {}
         self.RFunctionParam_object = ''
         self.RFunctionParam_newData = ''
-        self.inputs.addInput("object", "object", signals.RModelFit.RModelFit, self.processobject)
-        self.inputs.addInput("newData", "newData", [signals.RArbitraryList.RArbitraryList, signals.RDataFrame.RDataFrame], self.processnewData)
-        self.outputs.addOutput("predict Output","predict Output", signals.RModelFit.RModelFit)
+        self.inputs.addInput("object", "object", signals.base.RModelFit, self.processobject)
+        self.inputs.addInput("newData", "newData", [signals.base.RArbitraryList, signals.base.RArbitraryList], self.processnewData)
+        self.outputs.addOutput("predict Output","predict Output", signals.base.RModelFit)
         
-        self.testData = redRcomboBox(self.controlArea, label = 'Test Data:')
-        self.classLabels = redRcomboBox(self.controlArea, label = 'Class Labels:')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = redRtextEdit(self.controlArea, label = "R Output Window")
+        self.testData = redRGUI.base.comboBox(self.controlArea, label = 'Test Data:')
+        self.classLabels = redRGUI.base.comboBox(self.controlArea, label = 'Class Labels:')
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "R Output Window")
     def processobject(self, data):
         
         if data:
@@ -64,5 +59,5 @@ class RedRpredict(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)
-        new = signals.RModelFit.RModelFit(self, data = self.Rvariables['predict'])
+        new = signals.base.RModelFit(self, data = self.Rvariables['predict'])
         self.rSend('predict Output', new)

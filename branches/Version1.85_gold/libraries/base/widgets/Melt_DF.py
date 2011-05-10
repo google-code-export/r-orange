@@ -3,13 +3,8 @@
 <tags>Data Manipulation</tags>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.listBox import listBox
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.widgetBox import widgetBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class Melt_DF(OWRpy): 
@@ -19,19 +14,19 @@ class Melt_DF(OWRpy):
         self.setRvariableNames(["melt.data.frame", "melt.data.frame.cm"])
         self.RFunctionParam_data = ''
         self.data = {}
-        self.inputs.addInput('id0', _('data'), redRRDataFrame, self.processdata)
+        self.inputs.addInput('id0', _('data'), signals.base.RDataFrame, self.processdata)
 
-        self.outputs.addOutput('id0', _('melt.data.frame Output'), redRRDataFrame)
+        self.outputs.addOutput('id0', _('melt.data.frame Output'), signals.base.RDataFrame)
 
         
-        box = widgetBox(self.controlArea, _("Widget Box"))
-        self.RFunctionParam_na_rm = comboBox(box, label = _("Remove NA:"), items = [_('Yes'), _('No')])
-        self.RFunctionParam_measure_var = listBox(box, label = _("Result Variable:"), toolTip = _('The column that contains the result or the measurement that the data should be melted around.'))
+        box = redRGUI.base.widgetBox(self.controlArea, _("Widget Box"))
+        self.RFunctionParam_na_rm = redRGUI.base.comboBox(box, label = _("Remove NA:"), items = [_('Yes'), _('No')])
+        self.RFunctionParam_measure_var = redRGUI.base.listBox(box, label = _("Result Variable:"), toolTip = _('The column that contains the result or the measurement that the data should be melted around.'))
         self.RFunctionParam_measure_var.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.RFunctionParam_id_var = listBox(box, label = _("Groupings:"), toolTip = _('The columns indicating the groupings of the data.'))
+        self.RFunctionParam_id_var = redRGUI.base.listBox(box, label = _("Groupings:"), toolTip = _('The columns indicating the groupings of the data.'))
         self.RFunctionParam_id_var.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.RFunctionParam_variable_name = lineEdit(box, label = _("New Group Name:"), toolTip = _('The name of the new column that the groupings will be put into.'))
-        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction, 
+        self.RFunctionParam_variable_name = redRGUI.base.lineEdit(box, label = _("New Group Name:"), toolTip = _('The name of the new column that the groupings will be put into.'))
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction, 
         processOnInput=True)
     
     def RWidgetReload(self):
@@ -81,7 +76,7 @@ class Melt_DF(OWRpy):
         self.R(self.Rvariables['melt.data.frame']+'<-melt.data.frame(data=cbind('+unicode(self.RFunctionParam_data)+', OldRownames),na.rm='+unicode(pna)+mvStr+',variable.name="'+unicode(self.RFunctionParam_variable_name.text())+'"'+ivStr+')', wantType = 'NoConversion')
         self.R('rm(OldRownames)', wantType = 'NoConversion')
         # copy the signals class and send the newData
-        newData = redRRDataFrame(self, data = self.Rvariables['melt.data.frame'])
+        newData = signals.base.RDataFrame(self, data = self.Rvariables['melt.data.frame'])
         newData.dictAttrs = self.data.dictAttrs.copy()
         self.rSend("id0", newData)
         

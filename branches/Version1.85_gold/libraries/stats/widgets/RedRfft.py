@@ -4,13 +4,9 @@
 <icon></icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.radioButtons import radioButtons
-from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
 class RedRfft(OWRpy): 
     globalSettingsList = ['commit']
@@ -20,15 +16,15 @@ class RedRfft(OWRpy):
         self.data = {}
         self.RFunctionParam_z = ''
         self.isNumeric = False
-        self.inputs.addInput('id0', 'z', redRRMatrix, self.processz)
+        self.inputs.addInput('id0', 'z', signals.base.RMatrix, self.processz)
 
-        self.outputs.addOutput('id0', 'fft Output', redRRMatrix)
+        self.outputs.addOutput('id0', 'fft Output', signals.base.RMatrix)
 
         
-        self.RFunctionParaminverse_radioBox = radioButtons(self.controlArea, 
+        self.RFunctionParaminverse_radioBox = redRGUI.base.radioButtons(self.controlArea, 
         label = "inverse:", buttons = ["Yes","No"], setChecked = "No")
         
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
 
     def processz(self, data):
@@ -54,6 +50,6 @@ class RedRfft(OWRpy):
             injection.append('inverse = FALSE')
         inj = ','.join(injection)
         self.R(self.Rvariables['fft']+'<-fft(z='+unicode(self.RFunctionParam_z)+','+inj+')')
-        newData = redRRMatrix(self, data = self.Rvariables["fft"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.base.RMatrix(self, data = self.Rvariables["fft"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

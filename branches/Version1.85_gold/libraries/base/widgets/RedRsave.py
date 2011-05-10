@@ -3,16 +3,7 @@
 <tags>View Data</tags>
 """
 from OWRpy import * 
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 
-from libraries.base.qtWidgets.radioButtons import radioButtons as radioButtons 
-from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
-from libraries.base.qtWidgets.widgetBox import widgetBox as widgetBox 
-from libraries.base.qtWidgets.groupBox import groupBox as groupBox 
-from libraries.base.qtWidgets.commitButton import commitButton as commitButton 
-import libraries.base.signalClasses as signals
+import redRGUI, signals
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class RedRsave(OWRpy): 
@@ -22,27 +13,27 @@ class RedRsave(OWRpy):
         self.path = os.path.abspath('/')
 
         self.data = None
-        self.inputs.addInput("list", _("R Data"), signals.RVariable.RVariable, self.processlist)
+        self.inputs.addInput("list", _("R Data"), signals.base.RVariable, self.processlist)
         
-        self.fileType = radioButtons(self.controlArea, label=_('Save File Type'),
+        self.fileType = redRGUI.base.radioButtons(self.controlArea, label=_('Save File Type'),
         buttons = [_('Text'), _('R Data File')], setChecked=_('Text'), orientation='horizontal',callback=self.selectFileType)
         
-        self.rDataFileOptions = widgetBox(self.controlArea, orientation='vertical')
-        self.varName = redRlineEdit(self.rDataFileOptions,label=_("Variable Name"))        
-        self.textFileOptions = widgetBox(self.controlArea, orientation='vertical')
+        self.rDataFileOptions = redRGUI.base.widgetBox(self.controlArea, orientation='vertical')
+        self.varName = redRGUI.base.lineEdit(self.rDataFileOptions,label=_("Variable Name"))        
+        self.textFileOptions = redRGUI.base.widgetBox(self.controlArea, orientation='vertical')
         self.rDataFileOptions.setDisabled(True)
-        self.delimiter = radioButtons(self.textFileOptions, label=_('Column Seperator'),
+        self.delimiter = redRGUI.base.radioButtons(self.textFileOptions, label=_('Column Seperator'),
         buttons = {'\t':_('Tab'), ' ':_('Space'), ',':_('Comma'), '?':_('Other')}, setChecked='\t', orientation='horizontal')
-        self.otherSepText = redRlineEdit(self.delimiter.box,label=_('Seperator'), displayLabel=False,
+        self.otherSepText = redRGUI.base.lineEdit(self.delimiter.box,label=_('Seperator'), displayLabel=False,
         text=';',width=20,orientation='horizontal')
         QObject.connect(self.otherSepText, SIGNAL('textChanged(const QString &)'), lambda: self.delimiter.setChecked('Other'))
         
         
-        twoColHolder = groupBox(self.textFileOptions,label=_('File Options'), orientation='horizontal')
-        colOne = widgetBox(twoColHolder)
-        colTwo = widgetBox(twoColHolder)
+        twoColHolder = redRGUI.base.groupBox(self.textFileOptions,label=_('File Options'), orientation='horizontal')
+        colOne = redRGUI.base.widgetBox(twoColHolder)
+        colTwo = redRGUI.base.widgetBox(twoColHolder)
 
-        self.fileOptions = redRcheckBox(colOne,label=_('Options'), displayLabel=False,
+        self.fileOptions = redRGUI.base.checkBox(colOne,label=_('Options'), displayLabel=False,
         buttons=[_('append'),_('quote'),_('row.names'),_('col.names')],
         setChecked = [_('quote'),_('col.names')],
         toolTips = [_('If TRUE, the output is appended to the file.'),
@@ -51,24 +42,24 @@ class RedRsave(OWRpy):
         _('a logical value indicating whether the column names of data are to be written.')],
         orientation='vertical')
 
-        self.eolChr = redRlineEdit(colTwo,label=_('End of line Chr:'),text='\\n',width=50)
-        self.naStr = redRlineEdit(colTwo,label=_('Missing Value String:'),text='NA',width=50)
-        self.decStr = redRlineEdit(colTwo,label=_('Decimel point Chr:'),text='.',width=50)
+        self.eolChr = redRGUI.base.lineEdit(colTwo,label=_('End of line Chr:'),text='\\n',width=50)
+        self.naStr = redRGUI.base.lineEdit(colTwo,label=_('Missing Value String:'),text='NA',width=50)
+        self.decStr = redRGUI.base.lineEdit(colTwo,label=_('Decimel point Chr:'),text='.',width=50)
 
-        self.qmethod = radioButtons(self.textFileOptions,label=_('Deal with embedded double quote characters '), 
+        self.qmethod = redRGUI.base.radioButtons(self.textFileOptions,label=_('Deal with embedded double quote characters '), 
         buttons=[_('escape'),_('double')],
         setChecked=_('escape'),orientation='horizontal')
         
         
-        self.browseBox = groupBox(self.controlArea, label=_("Save File"), 
+        self.browseBox = redRGUI.base.groupBox(self.controlArea, label=_("Save File"), 
         addSpace = True, orientation='vertical')
         
-        box = widgetBox(self.browseBox,orientation='horizontal')
-        self.fileLocation = redRlineEdit(box, label=_('File Location'), displayLabel=False, orientation='horizontal')
+        box = redRGUI.base.widgetBox(self.browseBox,orientation='horizontal')
+        self.fileLocation = redRGUI.base.lineEdit(box, label=_('File Location'), displayLabel=False, orientation='horizontal')
         
-        redRbutton(box, label = _('Browse'), callback = self.browseFile)
+        redRGUI.base.button(box, label = _('Browse'), callback = self.browseFile)
 
-        self.commit = commitButton(self.bottomAreaRight, _("Save"), callback = self.commitFunction,processOnInput=True)
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, _("Save"), callback = self.commitFunction,processOnInput=True)
     def selectFileType(self):
         if self.fileType.getChecked() ==_('Text'):
             self.textFileOptions.setEnabled(True)

@@ -4,15 +4,18 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4.QtWebKit import *
 from PyQt4 import QtWebKit
 import redRi18n
+QWebSettings.globalSettings().setAttribute(QWebSettings.PluginsEnabled, True)
 _ = redRi18n.get_(package = 'base')
 class webViewBox(QtWebKit.QWebView,widgetState):
     def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, 
     url=None,orientation='vertical', followHere = False):
         widgetState.__init__(self,widget,label,includeInReports)
         QtWebKit.QWebView.__init__(self,self.controlArea)
-        
+        factory = QtWebKit.QWebPluginFactory()
+        self.page().setPluginFactory(factory)
         self.controlArea.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
         self.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
         if displayLabel:

@@ -4,21 +4,11 @@
 <icon>plot.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-import libraries.base.signalClasses as signals
 import libraries.plotting.signalClasses as plotSignals
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.signalClasses.RList import RList as redRList
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRDataFrame
 
 
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.button import button
-#from libraries.base.qtWidgets.graphicsView import graphicsView
-from libraries.plotting.qtWidgets.redRGGPlot import redRGGPlot
-from libraries.base.qtWidgets.listBox import listBox
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
 class krcggplothexbin(OWRpy): 
     globalSettingsList = ['commit']
@@ -32,21 +22,21 @@ class krcggplothexbin(OWRpy):
         #self.dataFrame = ''
         #self.plotAttributes = {}
         #self.RFunctionParam_plotatt = ''
-        self.inputs.addInput('id0', 'Data Table', redRDataFrame, self.processy)
-        #self.inputs.addInput('id1', 'x', redRRVector, self.processx)
+        self.inputs.addInput('id0', 'Data Table', signals.base.RDataFrame, self.processy)
+        #self.inputs.addInput('id1', 'x', signals.base.RVector, self.processx)
         #self.inputs.addInput('id2', 'plotatt', redRRPlotAttribute, self.processplotatt, multiple = True)
 
         
-        self.RFunctionParamxlab_lineEdit = lineEdit(self.controlArea, label = "X Label:", text = 'X Label')
-        self.RFunctionParamylab_lineEdit = lineEdit(self.controlArea, label = "Y Label:", text = 'Y Label')
-        self.RFunctionParammain_lineEdit = lineEdit(self.controlArea, label = "Main Title:", text = 'Main Title')
-        self.namesListX = comboBox(self.controlArea, label = 'X Axis Data:')
+        self.RFunctionParamxlab_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "X Label:", text = 'X Label')
+        self.RFunctionParamylab_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "Y Label:", text = 'Y Label')
+        self.RFunctionParammain_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "Main Title:", text = 'Main Title')
+        self.namesListX = redRGUI.base.comboBox(self.controlArea, label = 'X Axis Data:')
         #self.namesListX.setEnabled(False)
-        self.namesListY = comboBox(self.controlArea, label = 'Y Axis Data:')
+        self.namesListY = redRGUI.base.comboBox(self.controlArea, label = 'Y Axis Data:')
         #self.namesListY.setEnabled(False)
-        self.graphicsView = redRGGPlot(self.controlArea,label='Hexbin Plot',displayLabel=False,
+        self.graphicsView = redRGUI.plotting.redRGGPlot(self.controlArea,label='Hexbin Plot',displayLabel=False,
         name = self.captionTitle)
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
         
     def processy(self, data):

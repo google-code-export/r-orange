@@ -1,4 +1,24 @@
-## commitButton (just like button but with a fancy icon)
+"""
+This button is similar to :mod:`libraries.base.qtWidgets.button`, but is reserved for executing the main
+function of a widget. Includes some helper checkboxes such as allowing the widget to run on receiving input
+or any user change.
+
+
+The commitButton is a special button used for widget commits.  This works just like a regular button but with some additional features that make it quite useful for sending data to be processed.  In addition to a button with a standard icon for users to remember, the commitButton also includes two optional checkboxes.  The state of these checkboxes cam be called using the functions processOnInput() and processOnChange().
+
+Of course the widget must be set up to use these but it is quite easy to write
+
+.. code-block:: python
+    
+    def processData(self, data):
+        if data:
+            self.RFunctionParam_data = data.getData()
+            if self.RRWidgetGUI_CommitButton.processOnInput():
+                self.commitFunction()
+        else:
+            self.RFunctionParam_data = ''
+            
+"""
 
 from redRGUI import widgetState
 from PyQt4.QtCore import *
@@ -26,7 +46,7 @@ class commitButton(button,widgetState):
             toolTips = [processOnInput['toolTip']]
             )
         elif processOnChange == True:
-            self.processOnChangeState = checkBox(box2, label=_('processOnInput'), displayLabel=False,
+            self.processOnChangeState = checkBox(box2, label=_('processOnChange'), displayLabel=False,
             buttons = [_('Process On Parameter Change')],
             toolTips = [_('Try to process as soon as a parameter is changed.')]
             )
@@ -50,6 +70,10 @@ class commitButton(button,widgetState):
         self.setIconSize(QSize(20, 20))
         
     def processOnInput(self):
+        """
+        Check if the process on input checkbox is checked. 
+        Only applicable if processOnInput is True in init.
+        """
         try:
             if len(self.processOnInputState.getChecked()):
                 return True
@@ -58,6 +82,10 @@ class commitButton(button,widgetState):
         return False
 
     def processOnChange(self):
+        """
+        Check if the process on change checkbox is checked. 
+        Only applicable if processOnChange is True in init.
+        """
         try:
             if len(self.processOnChangeState.getChecked()):
                 return True
@@ -66,11 +94,13 @@ class commitButton(button,widgetState):
         return False
 
     def getSettings(self):
+        """Save qtWidget state"""
         r = {'processOnInput':self.processOnInput(),'processOnChange':self.processOnChange()}  
         
         return r
     
     def loadSettings(self,data):
+        """Load qtWidget state"""
         if 'processOnChange' in data.keys() and data['processOnChange']:
             self.processOnChangeState.checkAll()
         if 'processOnInput' in data.keys() and data['processOnInput']:

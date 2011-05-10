@@ -4,13 +4,7 @@
 <icon>histogram2.png</icon>
 """
 from OWRpy import * 
-from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
-from libraries.base.signalClasses.RList import RList as redRRList
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+import redRGUI, signals
 
 class hist(OWRpy): 
     globalSettingsList = ['commit']
@@ -19,17 +13,17 @@ class hist(OWRpy):
         self.RFunctionParam_x = ''
         self.column = ''
         self.needsColumns = 0
-        self.inputs.addInput('id0', 'x', redRRList, self.processx)
+        self.inputs.addInput('id0', 'x', signals.base.RList, self.processx)
 
         
-        box = groupBox(self.controlArea, "Widget Box")
+        box = redRGUI.base.groupBox(self.controlArea, "Widget Box")
         #self.infoa = widgetLabel(box, "")
-        self.column = comboBox(box, label='Data Element:')
-        self.RFunctionParam_main = lineEdit(box, label = "Main Title")
-        self.RFunctionParam_xlab = lineEdit(box, label = "X Label")
-        self.bins = lineEdit(box, label = 'Bins:')
-        self.plotArea = redRgraphicsView(self.controlArea,label='Histogram',displayLabel=False)
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.column = redRGUI.base.comboBox(box, label='Data Element:')
+        self.RFunctionParam_main = redRGUI.base.lineEdit(box, label = "Main Title")
+        self.RFunctionParam_xlab = redRGUI.base.lineEdit(box, label = "X Label")
+        self.bins = redRGUI.base.lineEdit(box, label = 'Bins:')
+        self.plotArea = redRGUI.base.graphicsView(self.controlArea,label='Histogram',displayLabel=False)
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
     def processx(self, data):
         if data:

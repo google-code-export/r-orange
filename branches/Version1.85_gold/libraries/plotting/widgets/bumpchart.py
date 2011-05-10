@@ -4,29 +4,25 @@
 <icon>plot.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.tabWidget import tabWidget
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 class bumpchart(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_y = ''
-        self.inputs.addInput('id0', 'y', redRRDataFrame, self.processy)
+        self.inputs.addInput('id0', 'y', signals.base.RDataFrame, self.processy)
 
         
-        self.RFunctionParammar_lineEdit =  lineEdit(self.controlArea,  label = "mar:", text = 'c(2,8,5,8)')
-        self.RFunctionParamlty_lineEdit =  lineEdit(self.controlArea,  label = "lty:", text = '1')
-        self.RFunctionParamlabels_lineEdit =  lineEdit(self.controlArea,  label = "labels:", text = 'rownames(y)')
-        self.RFunctionParamrank_lineEdit =  lineEdit(self.controlArea,  label = "rank:", text = 'TRUE')
-        self.RFunctionParampch_lineEdit =  lineEdit(self.controlArea,  label = "pch:", text = '19')
-        self.RFunctionParamtop_labels_lineEdit =  lineEdit(self.controlArea,  label = "top_labels:", text = 'colnames(y)')
-        self.RFunctionParamcol_lineEdit =  lineEdit(self.controlArea,  label = "col:", text = 'par("fg")')
-        self.RFunctionParamlwd_lineEdit =  lineEdit(self.controlArea,  label = "lwd:", text = '1')
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.RFunctionParammar_lineEdit =  redRGUI.base.lineEdit(self.controlArea,  label = "mar:", text = 'c(2,8,5,8)')
+        self.RFunctionParamlty_lineEdit =  redRGUI.base.lineEdit(self.controlArea,  label = "lty:", text = '1')
+        self.RFunctionParamlabels_lineEdit =  redRGUI.base.lineEdit(self.controlArea,  label = "labels:", text = 'rownames(y)')
+        self.RFunctionParamrank_lineEdit =  redRGUI.base.lineEdit(self.controlArea,  label = "rank:", text = 'TRUE')
+        self.RFunctionParampch_lineEdit =  redRGUI.base.lineEdit(self.controlArea,  label = "pch:", text = '19')
+        self.RFunctionParamtop_labels_lineEdit =  redRGUI.base.lineEdit(self.controlArea,  label = "top_labels:", text = 'colnames(y)')
+        self.RFunctionParamcol_lineEdit =  redRGUI.base.lineEdit(self.controlArea,  label = "col:", text = 'par("fg")')
+        self.RFunctionParamlwd_lineEdit =  redRGUI.base.lineEdit(self.controlArea,  label = "lwd:", text = '1')
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
     def processy(self, data):
         if not self.require_librarys(["plotrix"]):

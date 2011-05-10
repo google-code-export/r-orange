@@ -5,17 +5,9 @@
 """
 
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.signalClasses.RList import RList as redRRList
 
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
-from libraries.base.qtWidgets.widgetBox import widgetBox
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.listBox import listBox
-from libraries.base.qtWidgets.radioButtons import radioButtons
-from libraries.base.qtWidgets.textEdit import textEdit
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class setOperations(OWRpy): 
@@ -26,20 +18,20 @@ class setOperations(OWRpy):
         self.dataA = None
         self.dataB = None
         
-        self.inputs.addInput('id0', _('Input Data A'), redRRList, self.processA)
-        self.inputs.addInput('id1', _('Input Data B'), redRRList, self.processB)
+        self.inputs.addInput('id0', _('Input Data A'), signals.base.RList, self.processA)
+        self.inputs.addInput('id1', _('Input Data B'), signals.base.RList, self.processB)
 
-        self.outputs.addOutput('id0', _('intersect Output'), redRRVector)
+        self.outputs.addOutput('id0', _('intersect Output'), signals.base.RVector)
         
-        box = widgetBox(self.controlArea,orientation = 'vertical')
-        dataSetBox = widgetBox(box,orientation = 'horizontal')
-        #pickA = groupBox(dataSetBox, "Dataset A:")
-        self.colA = listBox(dataSetBox, label = _('Input Data A'), callback = self.onSelect)
+        box = redRGUI.base.widgetBox(self.controlArea,orientation = 'vertical')
+        dataSetBox = redRGUI.base.widgetBox(box,orientation = 'horizontal')
+        #pickA = redRGUI.base.groupBox(dataSetBox, "Dataset A:")
+        self.colA = redRGUI.base.listBox(dataSetBox, label = _('Input Data A'), callback = self.onSelect)
         
-        #pickB = groupBox(dataSetBox, "Dataset B:")
-        self.colB = listBox(dataSetBox, label = _('Input Data B'), callback = self.onSelect)
+        #pickB = redRGUI.base.groupBox(dataSetBox, "Dataset B:")
+        self.colB = redRGUI.base.listBox(dataSetBox, label = _('Input Data B'), callback = self.onSelect)
 
-        self.resultInfo = textEdit(box,label=_('Results'), displayLabel=False,includeInReports=False,
+        self.resultInfo = redRGUI.base.textEdit(box,label=_('Results'), displayLabel=False,includeInReports=False,
         editable=False, alignment=Qt.AlignHCenter)
         self.resultInfo.setMaximumWidth(170)
         self.resultInfo.setMaximumHeight(25)
@@ -47,14 +39,14 @@ class setOperations(OWRpy):
         self.resultInfo.setMinimumHeight(25)
         #box.layout().setAlignment(self.resultInfo,Qt.AlignHCenter)
         self.resultInfo.hide()
-        self.type = radioButtons(self.bottomAreaLeft,  label = _("Perform"), 
+        self.type = redRGUI.base.radioButtons(self.bottomAreaLeft,  label = _("Perform"), 
         buttons = [_('Intersect'), _('Union'), _('Set Difference'), _('Set Equal')],setChecked=_('Intersect'),
         orientation='horizontal',callback=self.onTypeSelect)
         
-        commitBox = widgetBox(self.bottomAreaRight,orientation = 'horizontal')
+        commitBox = redRGUI.base.widgetBox(self.bottomAreaRight,orientation = 'horizontal')
         self.bottomAreaRight.layout().setAlignment(commitBox, Qt.AlignBottom)
 
-        self.commit = redRCommitButton(commitBox, _("Commit"), callback = self.commitFunction, processOnChange=True, processOnInput=True)
+        self.commit = redRGUI.base.commitButton(commitBox, _("Commit"), callback = self.commitFunction, processOnChange=True, processOnInput=True)
     
     def onSelect(self):
         if self.commit.processOnChange():
@@ -134,6 +126,6 @@ class setOperations(OWRpy):
             else:
                 self.resultInfo.setPlainText('%s is not equal to %s' % (nameA, nameB))
         else:
-            newData = redRRVector(self, data = self.Rvariables["intersect"])
+            newData = signals.base.RVector(self, data = self.Rvariables["intersect"])
             self.rSend("id0", newData)
     

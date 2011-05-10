@@ -4,16 +4,8 @@
 <icon>stats.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI
-from libraries.plotting.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
-from libraries.stats.signalClasses.RLMFit import RLMFit as redRRLMFit
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.qtWidgets.RFormulaEntry import RFormulaEntry
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.widgetBox import widgetBox
-from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
 class lm(OWRpy): 
     globalSettingsList = ['commit']
@@ -25,36 +17,36 @@ class lm(OWRpy):
         self.modelFormula = ''
         self.processingComplete = 0
         
-        self.inputs.addInput('id0', 'data', redRRDataFrame, self.processdata)
+        self.inputs.addInput('id0', 'data', signals.base.RDataFrame, self.processdata)
 
-        self.outputs.addOutput('id0', 'lm Output', redRRLMFit)
-        self.outputs.addOutput('id1', 'lm plot attribute', redRRPlotAttribute)
+        self.outputs.addOutput('id0', 'lm Output', signals.stats.RLMFit)
+        self.outputs.addOutput('id1', 'lm plot attribute', signals.plotting.RPlotAttribute)
 
         
         #GUI
         
-        box = widgetBox(self.GUIDialog, orientation = 'horizontal')
-        paramBox = groupBox(self.GUIDialog, 'Parameters')
-        formulaBox = widgetBox(self.controlArea)
-        self.RFunctionParam_subset = lineEdit(paramBox, 'NULL', label = "subset:")
-        self.RFunctionParam_qr = lineEdit(paramBox, 'TRUE', label = "qr:")
+        box = redRGUI.base.widgetBox(self.GUIDialog, orientation = 'horizontal')
+        paramBox = redRGUI.base.groupBox(self.GUIDialog, 'Parameters')
+        formulaBox = redRGUI.base.widgetBox(self.controlArea)
+        self.RFunctionParam_subset = redRGUI.base.lineEdit(paramBox, 'NULL', label = "subset:")
+        self.RFunctionParam_qr = redRGUI.base.lineEdit(paramBox, 'TRUE', label = "qr:")
 
-        self.RFunctionParam_singular_ok = lineEdit(paramBox, 'TRUE', label = "singular_ok:")
-        self.RFunctionParam_y = lineEdit(paramBox, 'FALSE', label = "y:")
-        self.RFunctionParam_weights = lineEdit(paramBox, "", label = "weights:")
-        self.RFunctionParam_offset = lineEdit(paramBox, "", label = "offset:")
-        self.RFunctionParam_contrasts = lineEdit(paramBox, "NULL", label = "contrasts:")
-        self.RFunctionParam_x = lineEdit(paramBox, "FALSE", label = "x:")
-        self.RFunctionParam_model = lineEdit(paramBox, "TRUE", label = "model:")
-        self.RFunctionParam_method = lineEdit(paramBox, "qr", label = "method:")
+        self.RFunctionParam_singular_ok = redRGUI.base.lineEdit(paramBox, 'TRUE', label = "singular_ok:")
+        self.RFunctionParam_y = redRGUI.base.lineEdit(paramBox, 'FALSE', label = "y:")
+        self.RFunctionParam_weights = redRGUI.base.lineEdit(paramBox, "", label = "weights:")
+        self.RFunctionParam_offset = redRGUI.base.lineEdit(paramBox, "", label = "offset:")
+        self.RFunctionParam_contrasts = redRGUI.base.lineEdit(paramBox, "NULL", label = "contrasts:")
+        self.RFunctionParam_x = redRGUI.base.lineEdit(paramBox, "FALSE", label = "x:")
+        self.RFunctionParam_model = redRGUI.base.lineEdit(paramBox, "TRUE", label = "model:")
+        self.RFunctionParam_method = redRGUI.base.lineEdit(paramBox, "qr", label = "method:")
         
         #start formula entry section
 
-        buttonsBox = widgetBox(formulaBox, "Commands")
-        self.formulEntry = RFormulaEntry(buttonsBox,label='Formula',displayLabel=False)
+        buttonsBox = redRGUI.base.widgetBox(formulaBox, "Commands")
+        self.formulEntry = redRGUI.base.RFormulaEntry(buttonsBox,label='Formula',displayLabel=False)
         
         
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
         #self.processButton.setEnabled(False)
         self.status.setText('Data Not Connected Yet')
@@ -81,10 +73,10 @@ class lm(OWRpy):
         self.RFunctionParam_formula = self.formulEntry.Formula()[0] + ' ~ ' + self.formulEntry.Formula()[1]
 
         
-        self.R(self.Rvariables['lm']+'<-lm(data='+unicode(self.RFunctionParam_data)+',subset='+unicode(self.RFunctionParam_subset.text())+',qr='+unicode(self.RFunctionParam_qr.text())+',formula='+unicode(self.RFunctionParam_formula)+',singular_ok='+unicode(self.RFunctionParam_singular_ok.text())+',y='+unicode(self.RFunctionParam_y.text())+',weights='+unicode(self.RFunctionParam_weights.text())+',offset='+unicode(self.RFunctionParam_offset.text())+',contrasts='+unicode(self.RFunctionParam_contrasts.text())+',x='+unicode(self.RFunctionParam_x.text())+',model='+unicode(self.RFunctionParam_model.text())+',method="'+unicode(self.RFunctionParam_method.text())+'")')
-        newData = redRRLMFit(self, data = self.Rvariables['lm'])
+        self.R(self.Rvariables['lm']+'<-lm(data='+unicode(self.RFunctionParam_data)+',subset='+unicode(self.RFunctionParam_subset.text())+',qr='+unicode(self.RFunctionParam_qr.text())+',formula='+unicode(self.RFunctionParam_formula)+',singular_ok='+unicode(self.RFunctionParam_singular_ok.text())+',y='+unicode(self.RFunctionParam_y.text())+',weights='+unicode(self.RFunctionParam_weights.text())+',offset='+unicode(self.RFunctionParam_offset.text())+',contrasts='+unicode(self.RFunctionParam_contrasts.text())+',x='+unicode(self.RFunctionParam_x.text())+',model='+unicode(self.RFunctionParam_model.text())+',method="'+unicode(self.RFunctionParam_method.text())+'")', wantType = 'NoConversion')
+        newData = signals.stats.RLMFit(self, data = self.Rvariables['lm'])
         self.rSend("id0", newData)
         
-        newPlotAtt = redRRPlotAttribute(self, data = 'abline('+self.Rvariables['lm']+')')
+        newPlotAtt = signals.plotting.RPlotAttribute(self, data = 'abline('+self.Rvariables['lm']+')')
         self.rSend("id1", newPlotAtt)
         

@@ -6,14 +6,8 @@
 <icon>stats.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.RModelFit import RModelFit as redRRModelFit
-from libraries.base.qtWidgets.RFormulaEntry import RFormulaEntry
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.tabWidget import tabWidget
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.textEdit import textEdit
 class aov(OWRpy): 
     settingsList = []
     def __init__(self, **kwargs):
@@ -22,20 +16,20 @@ class aov(OWRpy):
         self.data = {}
         self.RFunctionParam_data = ''
         self.saveSettingsList.extend(['data', 'RFunctionParam_data'])
-        self.inputs.addInput('id0', 'data', redRRDataFrame, self.processdata)
+        self.inputs.addInput('id0', 'data', signals.base.RDataFrame, self.processdata)
 
-        self.outputs.addOutput('id0', 'aov Output', redRRModelFit)
+        self.outputs.addOutput('id0', 'aov Output', signals.base.RModelFit)
 
         
-        box = tabWidget(self.controlArea)
+        box = redRGUI.base.tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
         self.advancedTab = box.createTabPage(name = "Advanced")
-        self.RFunctionParamcontrasts_lineEdit =  lineEdit(self.advancedTab,  label = "contrasts:", text = 'NULL')
-        self.RFunctionParamformula_formulaEntry =  RFormulaEntry(self.standardTab)
-        self.RFunctionParamqr_lineEdit =  lineEdit(self.advancedTab,  label = "qr:", text = 'TRUE')
-        self.RFunctionParamprojections_lineEdit =  lineEdit(self.advancedTab,  label = "projections:", text = 'FALSE')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = textEdit(self.controlArea, label = "R Output Window")
+        self.RFunctionParamcontrasts_lineEdit =  redRGUI.base.lineEdit(self.advancedTab,  label = "contrasts:", text = 'NULL')
+        self.RFunctionParamformula_formulaEntry =  redRGUI.base.RFormulaEntry(self.standardTab)
+        self.RFunctionParamqr_lineEdit =  redRGUI.base.lineEdit(self.advancedTab,  label = "qr:", text = 'TRUE')
+        self.RFunctionParamprojections_lineEdit =  redRGUI.base.lineEdit(self.advancedTab,  label = "projections:", text = 'FALSE')
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "R Output Window")
     def processdata(self, data):
         
         if data:
@@ -73,6 +67,6 @@ class aov(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)
-        newData = redRRModelFit(self, data = self.Rvariables["aov"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.base.RModelFit(self, data = self.Rvariables["aov"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

@@ -6,10 +6,8 @@
 <icon>stats.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.qtWidgets.textEdit import textEdit
-from libraries.base.qtWidgets.button import button
 class cor_test(OWRpy): 
     settingsList = []
     def __init__(self, **kwargs):
@@ -18,11 +16,11 @@ class cor_test(OWRpy):
         self.data = {}
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'y', redRRVector, self.processy)
-        self.inputs.addInput('id1', 'x', redRRVector, self.processx)
+        self.inputs.addInput('id0', 'y', signals.base.RVector, self.processy)
+        self.inputs.addInput('id1', 'x', signals.base.RVector, self.processx)
 
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "RoutputWindow")
     def processy(self, data):
         if not self.require_librarys(["stats"]):
             self.status.setText('R Libraries Not Loaded.')

@@ -1,9 +1,9 @@
 <package>
     <Name>plotting</Name>
     <Author>Red-R Development Team</Author>
-    <RLibraries>graphics, stats</RLibraries>
+    <RLibraries>graphics, stats, ggplot2</RLibraries>
     <Version>
-        <Number>1.2</Number>
+        <Number>1.21</Number>
         <Stability>Generally Good Some Experimental</Stability>
         <Date>2010-05-30</Date>
     </Version>

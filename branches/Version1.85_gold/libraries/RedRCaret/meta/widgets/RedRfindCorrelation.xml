@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
-    <name>findCorrelation</name>
-    <icon>Default.png</icon>
+    <name>PreProcess Data</name>
+    <icon>default.png</icon>
     <tags> 
-        <tag>Prototypes</tag> 
+        <tag priority='47'>Caret</tag> 
     </tags>
     <summary></summary>
     <details></details>

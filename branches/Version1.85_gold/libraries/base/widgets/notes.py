@@ -5,6 +5,7 @@
 """
 
 from OWRpy import *
+import redRGUI, signals
 
 
 class notes(OWRpy):

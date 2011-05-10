@@ -34,4 +34,7 @@
             <Description>Prototypes</Description>
         </group>        
     </menuTags>
+    <notes>
+    Icons are borrowed from a variety of sources including Oxygen, Orange, Red-R, and KDE.  All of these icon sets are licenced under either the GPL or LGPL licences as is Red-R.
+    </notes>
 </package>

@@ -5,16 +5,9 @@
 """
 
 from OWRpy import *
+import redRGUI, signals
 import redRGUI
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 
-from libraries.base.qtWidgets.listBox import listBox
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.checkBox import checkBox
-from libraries.base.qtWidgets.widgetBox import widgetBox
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.widgetLabel import widgetLabel
-from libraries.base.qtWidgets.radioButtons import radioButtons
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class mergeR(OWRpy):
@@ -29,10 +22,10 @@ class mergeR(OWRpy):
         self.dataB = ''
         
         
-        self.inputs.addInput('id0', _('Dataset A'), redRRDataFrame, self.processA)
-        self.inputs.addInput('id1', _('Dataset B'), redRRDataFrame, self.processB)
+        self.inputs.addInput('id0', _('Dataset A'), signals.base.RDataFrame, self.processA)
+        self.inputs.addInput('id1', _('Dataset B'), signals.base.RDataFrame, self.processB)
 
-        self.outputs.addOutput('id0', _('Merged'), redRRDataFrame)
+        self.outputs.addOutput('id0', _('Merged'), signals.base.RDataFrame)
 
         #default values        
         self.colAsel = None
@@ -43,25 +36,25 @@ class mergeR(OWRpy):
         self.setRvariableNames(['merged'])
                 
         #GUI
-        box = widgetBox(self.controlArea,orientation='horizontal')
+        box = redRGUI.base.widgetBox(self.controlArea,orientation='horizontal')
     
-        self.colA = listBox(box, label=_('Columns to Merge From A'), callback = self.setcolA)
-        self.colB = listBox(box, label=_('Columns to Merge From B'),  callback = self.setcolB)
+        self.colA = redRGUI.base.listBox(box, label=_('Columns to Merge From A'), callback = self.setcolA)
+        self.colB = redRGUI.base.listBox(box, label=_('Columns to Merge From B'),  callback = self.setcolB)
         
 
-        self.sortOption = checkBox(self.bottomAreaLeft, label=_('Sort by Selected Column'), displayLabel=False, 
+        self.sortOption = redRGUI.base.checkBox(self.bottomAreaLeft, label=_('Sort by Selected Column'), displayLabel=False, 
         buttons = [_('Sort by Selected Column')], 
         toolTips = [_('logical. Should the results be sorted on the by columns?')])
-        self.rownamesOption = checkBox(self.bottomAreaLeft, label = _('Include Row Names in Merge'), displayLabel = False, buttons = [_('Include Row in Merge')], toolTips = [_('This will include the row names in the data after merge.')], setChecked = [_('Include Row in Merge')])
+        self.rownamesOption = redRGUI.base.checkBox(self.bottomAreaLeft, label = _('Include Row Names in Merge'), displayLabel = False, buttons = [_('Include Row in Merge')], toolTips = [_('This will include the row names in the data after merge.')], setChecked = [_('Include Row in Merge')])
         self.sortOption.layout().setAlignment(Qt.AlignLeft)
         
-        self.mergeOptions = radioButtons(self.bottomAreaCenter,label=_('Type of merge'), displayLabel=False,
+        self.mergeOptions = redRGUI.base.radioButtons(self.bottomAreaCenter,label=_('Type of merge'), displayLabel=False,
         buttons=['A+B','B+A','AB'],setChecked='A+B',
         orientation='horizontal')
         
         self.mergeOptions.layout().setAlignment(Qt.AlignCenter) 
         
-        self.commit = redRCommitButton(self.bottomAreaRight, _('Commit'), callback = self.run, 
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, _('Commit'), callback = self.run, 
         processOnChange=True,processOnInput=True)
         
     def processA(self, data):
@@ -145,7 +138,7 @@ class mergeR(OWRpy):
             self.status.setText(_("Dataset failed to find a match!"))
 
     def sendMe(self,kill=False):
-        newDataAll = redRRDataFrame(self, data = self.Rvariables['merged'])
+        newDataAll = signals.base.RDataFrame(self, data = self.Rvariables['merged'])
         newDataAll.dictAttrs = self.dataParentB.dictAttrs.copy()
         newDataAll.dictAttrs.update(self.dataParentA.dictAttrs)
         print 'Moving to send'

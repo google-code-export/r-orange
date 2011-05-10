@@ -1,4 +1,7 @@
-### custom message dialog that is called with exex_ (a Qt funciton).  This dialog will take any redRGUI qtwidget as its child.
+"""
+custom message dialog that is called with exec_ (a Qt funciton).  
+This dialog will take any redRGUI qtwidget as its child.
+"""
 from redRGUI import widgetState
 
 from PyQt4.QtCore import *

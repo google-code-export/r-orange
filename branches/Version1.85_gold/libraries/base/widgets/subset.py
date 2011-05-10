@@ -5,17 +5,10 @@
 """
 
 from OWRpy import *
+import redRGUI, signals
 import redRGUI
 
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.RList import RList as redRRList
-from libraries.base.signalClasses.RVector import RVector as redRRVector
 
-from libraries.base.qtWidgets.listBox import listBox
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.checkBox import checkBox
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.widgetBox import widgetBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class subset(OWRpy): 
@@ -32,21 +25,21 @@ class subset(OWRpy):
         self.setRvariableNames(['subset'])
         
         
-        self.inputs.addInput('id0', _('Data Table to Subset On'), redRRDataFrame, self.processA)
-        self.inputs.addInput('id1', _('Optional List of Subsetting Attributes'), redRRList, self.processB)
+        self.inputs.addInput('id0', _('Data Table to Subset On'), signals.base.RDataFrame, self.processA)
+        self.inputs.addInput('id1', _('Optional List of Subsetting Attributes'), signals.base.RList, self.processB)
 
-        self.outputs.addOutput('id0', _('Subsetted Data Table'), redRRDataFrame)
-        self.outputs.addOutput('id1', _('Subsetted Data Vector'), redRRVector)
+        self.outputs.addOutput('id0', _('Subsetted Data Table'), signals.base.RDataFrame)
+        self.outputs.addOutput('id1', _('Subsetted Data Vector'), signals.base.RVector)
 
         #GUI
-        box = widgetBox(self.controlArea,orientation = 'horizontal')
-        #pickA = groupBox(box, "Subset on:")
-        self.colA = listBox(box,label=_('Subset On'), callback = self.setcolA)
+        box = redRGUI.base.widgetBox(self.controlArea,orientation = 'horizontal')
+        #pickA = redRGUI.base.groupBox(box, "Subset on:")
+        self.colA = redRGUI.base.listBox(box,label=_('Subset On'), callback = self.setcolA)
         
-        #pickB = groupBox(box, "Subset by:")
-        self.colB = listBox(box, label=_('Subset By'), callback = self.setcolB)
+        #pickB = redRGUI.base.groupBox(box, "Subset by:")
+        self.colB = redRGUI.base.listBox(box, label=_('Subset By'), callback = self.setcolB)
         
-        self.commit = redRCommitButton(self.bottomAreaRight, _('Commit'), callback = self.subset,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, _('Commit'), callback = self.subset,
         processOnInput=True,processOnChange=True)
 
         
@@ -115,14 +108,14 @@ class subset(OWRpy):
             return
         
         if self.R('class(%s) == "data.frame"' % self.Rvariables['subset']):
-            newData = redRRDataFrame(self, data = self.Rvariables['subset'])
+            newData = signals.base.RDataFrame(self, data = self.Rvariables['subset'])
         else:
-            newData = redRRDataFrame(self, data = 'as.data.frame(%s)' % self.Rvariables['subset'])
+            newData = signals.base.RDataFrame(self, data = 'as.data.frame(%s)' % self.Rvariables['subset'])
             
         self.rSend('id0', newData)
         
         if self.R('ncol('+self.Rvariables['subset']+')') == 1:
-            newVector = redRRVector(self, data = 'as.vector('+self.Rvariables['subset']+')')
+            newVector = signals.base.RVector(self, data = 'as.vector('+self.Rvariables['subset']+')')
             self.rSend('id1', newVector)
 
 
@@ -151,10 +144,10 @@ class subset(OWRpy):
             self.rSend('Not Reduced Vector', newVector)
             
         
-        newData = redRRDataFrame(self, data = self.Rvariables['rowcolSelector'])
+        newData = signals.base.RDataFrame(self, data = self.Rvariables['rowcolSelector'])
         self.rSend('Data Table', newData)
 
-        newDataNot = redRRDataFrame(self, data = self.Rvariables['rowcolSelectorNot'])
+        newDataNot = signals.base.RDataFrame(self, data = self.Rvariables['rowcolSelectorNot'])
         self.rSend('id0', newDataNot)
                 
         

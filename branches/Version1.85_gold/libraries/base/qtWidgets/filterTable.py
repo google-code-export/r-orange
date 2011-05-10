@@ -175,6 +175,9 @@ class filterTable(widgetState, QTableView):
         else:
             filteredCols = self.criteriaList.keys()
         total = self.R('nrow(%s)' % self.Rdata,silent=True)        
+        if total == None:
+            self.clear()
+            return
         if self.filterable:
             filtered = self.R('nrow(%s)' % data,silent=True)
             self.dataInfo.setText(_('Showing %d of %d rows.') % (filtered,total))

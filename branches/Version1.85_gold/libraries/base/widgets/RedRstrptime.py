@@ -7,12 +7,7 @@
 <icon></icon>
 """
 from OWRpy import * 
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 
-from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButtons 
-from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
-from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
-import libraries.base.signalClasses as signals
+import redRGUI, signals
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class RedRstrptime(OWRpy): 
@@ -22,12 +17,12 @@ class RedRstrptime(OWRpy):
         self.setRvariableNames(["strptime"])
         self.data = {}
         self.RFunctionParam_x = ''
-        self.inputs.addInput("x", _("Input Data"), signals.RDataFrame.RDataFrame, self.processx)
-        self.outputs.addOutput("strptime Output",_("strptime Output"), signals.RDataFrame.RDataFrame)
+        self.inputs.addInput("x", _("Input Data"), signals.base.RDataFrame, self.processx)
+        self.outputs.addOutput("strptime Output",_("strptime Output"), signals.base.RDataFrame)
         
-        self.columnSelection = redRcomboBox(self.controlArea, label = _("Data Column:"))
-        self.RFunctionParamformat_comboBox = redRcomboBox(self.controlArea, label = "format:", items = [_("yyyymmdd"), _("yymmdd"), _("ddmmyyyy"), _("ddmmyy"), _("mmddyyyy"), _("mmddyy")], toolTip = _("Select the format of the date time.  y is year m is month and d is day."))
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.columnSelection = redRGUI.base.comboBox(self.controlArea, label = _("Data Column:"))
+        self.RFunctionParamformat_comboBox = redRGUI.base.comboBox(self.controlArea, label = "format:", items = [_("yyyymmdd"), _("yymmdd"), _("ddmmyyyy"), _("ddmmyy"), _("mmddyyyy"), _("mmddyy")], toolTip = _("Select the format of the date time.  y is year m is month and d is day."))
+        redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
@@ -66,6 +61,6 @@ class RedRstrptime(OWRpy):
             injection.append(string)
         inj = ''.join(injection)
         self.R(self.Rvariables['strptime']+'$'+self.Rvariables['strptime']+'<-as.numeric(strptime(x='+unicode(self.RFunctionParam_x)+'$'+unicode(self.columnSelection.currentText())+inj+'))')
-        newData = signals.RDataFrame.RDataFrame(self, data = self.Rvariables["strptime"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.base.RDataFrame(self, data = self.Rvariables["strptime"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("strptime Output", newData)

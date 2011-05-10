@@ -3,12 +3,8 @@
 <tags>Prototypes</tags>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRDataFrame
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.radioButtons import radioButtons
-from libraries.base.qtWidgets.widgetLabel import widgetLabel
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class RedRscale(OWRpy): 
@@ -19,17 +15,17 @@ class RedRscale(OWRpy):
         self.data = {}
         self.RFunctionParam_x = ''
         self.dataType = 1
-        self.inputs.addInput('id0', _('Input Data'), [redRDataFrame, redRRMatrix], self.processx)
+        self.inputs.addInput('id0', _('Input Data'), [signals.base.RDataFrame, signals.base.RMatrix], self.processx)
 
-        self.outputs.addOutput('id0', _('scale Output'), redRDataFrame)
-        self.outputs.addOutput('id1', _('scale Output (Matrix)'), redRRMatrix)
+        self.outputs.addOutput('id0', _('scale Output'), signals.base.RDataFrame)
+        self.outputs.addOutput('id1', _('scale Output (Matrix)'), signals.base.RMatrix)
 
         
-        self.roworcol = radioButtons(self.controlArea, label = _('Apply Scaling To:'), buttons = [_('Rows'), _('Columns')], setChecked = _('Columns'), orientation = 'horizontal')
-        self.RFunctionParamscale_radioButtons =  radioButtons(self.controlArea,  label = _("Scale:"), buttons = [_('Yes'), _('No')], setChecked = _('No'), orientation = 'horizontal')
-        self.RFunctionParamcenter_radioButtons =  radioButtons(self.controlArea,  label = _("Center:"), buttons = [_('Yes'), _('No')], setChecked = _('No'), orientation = 'horizontal')
-        self.label = widgetLabel(self.controlArea)
-        redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
+        self.roworcol = redRGUI.base.radioButtons(self.controlArea, label = _('Apply Scaling To:'), buttons = [_('Rows'), _('Columns')], setChecked = _('Columns'), orientation = 'horizontal')
+        self.RFunctionParamscale_radioButtons =  redRGUI.base.radioButtons(self.controlArea,  label = _("Scale:"), buttons = [_('Yes'), _('No')], setChecked = _('No'), orientation = 'horizontal')
+        self.RFunctionParamcenter_radioButtons =  redRGUI.base.radioButtons(self.controlArea,  label = _("Center:"), buttons = [_('Yes'), _('No')], setChecked = _('No'), orientation = 'horizontal')
+        self.label = redRGUI.base.widgetLabel(self.controlArea)
+        redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
@@ -66,7 +62,7 @@ class RedRscale(OWRpy):
                 self.R(self.Rvariables['scale']+'<-t(as.data.frame(scale(x=t(data.matrix('+str(self.RFunctionParam_x)+')),'+inj+')))', wantType = 'NoConversion')
             self.R('rownames('+self.Rvariables['scale']+')<-rownames('+self.RFunctionParam_x+')', wantType = 'NoConversion')
             self.R('colnames('+self.Rvariables['scale']+')<-colnames('+self.RFunctionParam_x+')', wantType = 'NoConversion')
-            newData = redRDataFrame(self, data = 'as.data.frame(%s)' % self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+            newData = signals.base.RDataFrame(self, data = 'as.data.frame(%s)' % self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
             #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
             self.rSend("id0", newData)
         else:
@@ -77,7 +73,7 @@ class RedRscale(OWRpy):
                 self.R(self.Rvariables['scale']+'<-t(scale(x=t(data.matrix('+str(self.RFunctionParam_x)+')),'+inj+'))', wantType = 'NoConversion')
             self.R('rownames('+self.Rvariables['scale']+')<-rownames('+self.RFunctionParam_x+')', wantType = 'NoConversion')
             self.R('colnames('+self.Rvariables['scale']+')<-colnames('+self.RFunctionParam_x+')', wantType = 'NoConversion')
-            newData = redRRMatrix(self, data = self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+            newData = signals.base.RMatrix(self, data = self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
             #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
             self.rSend("id1", newData)
         

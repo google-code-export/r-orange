@@ -3,14 +3,10 @@
 <tags>Data Manipulation</tags>
 """
 from OWRpy import * 
+import redRGUI, signals
 import OWGUI 
 import redRGUI 
-from libraries.base.signalClasses.RList import RList as redRRList
-from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.listBox import listBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class rank(OWRpy): 
@@ -22,19 +18,19 @@ class rank(OWRpy):
         #self.RFunctionParam_na_last = "TRUE"
          
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', _('x'), redRRList, self.processx)
+        self.inputs.addInput('id0', _('x'), signals.base.RList, self.processx)
 
-        self.outputs.addOutput('id0', _('rank Output'), redRRMatrix)
+        self.outputs.addOutput('id0', _('rank Output'), signals.base.RMatrix)
         
         
         
         #self.help.setHtml('<small>This Widget ranks elements in a vector and returns a ranked vector.</small>')
-        self.RFunctionParamties_method_comboBox = comboBox(self.controlArea, label = _("How to handle ties:"), 
+        self.RFunctionParamties_method_comboBox = redRGUI.base.comboBox(self.controlArea, label = _("How to handle ties:"), 
         items = [_('average'), _('first'), _('random'), _('max'), _('min')])
         
-        self.columns = listBox(self.controlArea, label = _('Dataset:'), callback = self.onSelect)
+        self.columns = redRGUI.base.listBox(self.controlArea, label = _('Dataset:'), callback = self.onSelect)
         
-        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,
+        self.commit = redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,
         processOnInput=True, processOnChange=True)
     def processx(self, data):
         if not data:
@@ -69,6 +65,6 @@ class rank(OWRpy):
         inj = ','.join(injection)
         self.R(self.Rvariables['rank']+'<-rank(x=%s$%s,%s, na.last = TRUE)' % (self.RFunctionParam_x,selectCols[0],inj), 
         wantType = 'NoConversion')
-        newData = redRRMatrix(self, data = 'as.matrix('+self.Rvariables['rank']+')')
+        newData = signals.base.RMatrix(self, data = 'as.matrix('+self.Rvariables['rank']+')')
         self.rSend("id0", newData)
 

@@ -4,10 +4,8 @@
 <icon>datatable.png</icon>
 """
 from OWRpy import * 
+import redRGUI, signals
 import redRGUI 
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.qtWidgets.textEdit import textEdit
-from libraries.base.qtWidgets.button import button
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class intersect(OWRpy): 
@@ -19,14 +17,14 @@ class intersect(OWRpy):
          
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', _('y'), redRRVector, self.processy)
-        self.inputs.addInput('id1', _('x'), redRRVector, self.processx)
+        self.inputs.addInput('id0', _('y'), signals.base.RVector, self.processy)
+        self.inputs.addInput('id1', _('x'), signals.base.RVector, self.processx)
 
-        self.outputs.addOutput('id0', _('intersect Output'), redRRVector)
+        self.outputs.addOutput('id0', _('intersect Output'), signals.base.RVector)
 
         
-        redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
-        self.RoutputWindow = textEdit(self.controlArea, label = _("Intersect Output"))
+        redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
+        self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = _("Intersect Output"))
         self.resize(500, 200)
     def processy(self, data):
         if data:
@@ -55,7 +53,7 @@ class intersect(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse =" \n")')
         self.RoutputWindow.insertHtml(_('<br><br><pre>Shared elements between your inputs:\n')+unicode(tmp)+'</pre>')        
-        newData = redRRVector(self, data = self.Rvariables["intersect"])
+        newData = signals.base.RVector(self, data = self.Rvariables["intersect"])
         
         self.rSend("id0", newData)
 
