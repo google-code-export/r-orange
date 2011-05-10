@@ -2,7 +2,6 @@
 This button is similar to :mod:`libraries.base.qtWidgets.button`, but is reserved for executing the main
 function of a widget. Includes some helper checkboxes such as allowing the widget to run on receiving input
 or any user change.
-"""
 
 The commitButton is a special button used for widget commits.  This works just like a regular button but with some additional features that make it quite useful for sending data to be processed.  In addition to a button with a standard icon for users to remember, the commitButton also includes two optional checkboxes.  The state of these checkboxes cam be called using the functions processOnInput() and processOnChange().
 
