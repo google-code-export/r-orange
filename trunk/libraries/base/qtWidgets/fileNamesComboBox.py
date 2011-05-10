@@ -1,5 +1,7 @@
-#from redRGUI import widgetState
+"""
 
+"""
+from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.comboBox import comboBox
@@ -9,7 +11,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRi18n
 _ = redRi18n.get_(package = 'base')
-class fileNamesComboBox(comboBox):
+class fileNamesComboBox(comboBox,widgetState):
     def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, files=None, editable=False,
     orientation='horizontal',callback = None, **args):
 

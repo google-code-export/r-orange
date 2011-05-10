@@ -1,4 +1,8 @@
-## commitButton (just like button but with a fancy icon)
+"""
+This button is similar to :mod:`libraries.base.qtWidgets.button`, but is reserved for executing the main
+function of a widget. Includes some helper checkboxes such as allowing the widget to run on receiving input
+or any user change.
+"""
 
 from redRGUI import widgetState
 from PyQt4.QtCore import *
@@ -50,6 +54,10 @@ class commitButton(button,widgetState):
         self.setIconSize(QSize(20, 20))
         
     def processOnInput(self):
+        """
+        Check if the process on input checkbox is checked. 
+        Only applicable if processOnInput is True in init.
+        """
         try:
             if len(self.processOnInputState.getChecked()):
                 return True
@@ -58,6 +66,10 @@ class commitButton(button,widgetState):
         return False
 
     def processOnChange(self):
+        """
+        Check if the process on change checkbox is checked. 
+        Only applicable if processOnChange is True in init.
+        """
         try:
             if len(self.processOnChangeState.getChecked()):
                 return True
@@ -66,11 +78,13 @@ class commitButton(button,widgetState):
         return False
 
     def getSettings(self):
+        """Save qtWidget state"""
         r = {'processOnInput':self.processOnInput(),'processOnChange':self.processOnChange()}  
         
         return r
     
     def loadSettings(self,data):
+        """Load qtWidget state"""
         if 'processOnChange' in data.keys() and data['processOnChange']:
             self.processOnChangeState.checkAll()
         if 'processOnInput' in data.keys() and data['processOnInput']:

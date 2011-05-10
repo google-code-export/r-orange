@@ -1,17 +1,22 @@
+"""
+RTable visualizes tabular R data in a spreadsheet like table. Columns are sortable and filterable. The qtWidget uses the QT model/view architecture, so only data visible on the screen is loaded into memory, making this widget very efficient when viewing large data sets.
+"""
 from redRGUI import widgetState
 from RSession import Rcommand
-from RSession import require_librarys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import numpy,sip
 from libraries.base.qtWidgets.groupBox import groupBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class Rtable(widgetState,QTableView):
+    """
+    Rtable class handles all the QT GUI functionality like creating header with menus, 
+    and row/column/cell selection.
+    """
     def __init__(self,widget, label=None, displayLabel=True,includeInReports=True, 
     Rdata=None, editable=False, rows=None, columns=None,
     sortable=False, selectionMode = -1, addToLayout = 1,callback=None):
-        
+    
         widgetState.__init__(self,widget, widget.label,includeInReports)
         if displayLabel:
             mainBox = groupBox(self.controlArea,label=label, orientation='vertical')
@@ -57,6 +62,9 @@ class Rtable(widgetState,QTableView):
         
 
     def setRTable(self,Rdata, setRowHeaders = 1, setColHeaders = 1):
+        """
+        Set the R data set to visual. The GUI will be updated with the new data.
+        """
         #print Rdata
         self.Rdata = Rdata
         # if self.tm:
@@ -66,16 +74,21 @@ class Rtable(widgetState,QTableView):
         self.setModel(self.tm)
 
     def columnCount(self):
+        """Return the number of column."""
         if self.tm:
             return self.tm.columnCount(self)
         else:
             return 0
+    
     def addRows(self,count,headers=None):
+        """Insert a new blank row"""
         self.tm.insertRows(self.tm.rowCount(self),count,headers=headers)
     def addColumns(self,count,headers=None):
+        """Insert a new blank column"""
         self.tm.insertColumns(self.tm.columnCount(self),count,headers)
         
     def sort(self, index):
+        """Sort column by given index. If column is already sorted, reverse the order."""
         if index == self.oldSortingIndex:
             order = self.oldSortingOrder == Qt.AscendingOrder and Qt.DescendingOrder or Qt.AscendingOrder
         else:
@@ -84,10 +97,12 @@ class Rtable(widgetState,QTableView):
         self.oldSortingOrder = order
 
     def clear(self):
+        """Remove the current data set"""
         self.setRTable('matrix("")')
         
 
     def getSettings(self):
+        """Save qtWidget state"""
         r = {'Rdata': self.Rdata,
         'selection':[[i.row(),i.column()] for i in self.selectedIndexes()]}
         if self.oldSortingIndex != None:
@@ -96,7 +111,7 @@ class Rtable(widgetState,QTableView):
 
         return r
     def loadSettings(self,data):
-        # print data
+        """Load qtWidget state"""
         if not data['Rdata']: return 
         
         self.setRTable(data['Rdata'])
@@ -106,9 +121,9 @@ class Rtable(widgetState,QTableView):
         if 'selection' in data.keys() and len(data['selection']):
             for i in data['selection']:
                 self.setItemSelected(self.item(i[0],i[1]),True)
-    def delete(self):
-        sip.delete(self)
+
     def getReportText(self, fileDir):
+        """return data to :mod:`redRReports` module for creating reports."""
         if self.Rdata:
             data = self.R('as.matrix(%s)'% self.Rdata)
             colNames = self.R('colnames(%s)' % self.Rdata)
@@ -119,9 +134,15 @@ class Rtable(widgetState,QTableView):
 
 
 class MyTableModel(QAbstractTableModel): 
+    """
+    This helper class should never be accessed directly. It will maintain a link with the R data set 
+    and serve the data as the GUI is updated to view new rows and columns. It maintains only a small
+    amount of data in memory and recycles as new section of table is in view. All the sorting and filtering
+    options selected in the GUI are passed to this class, which translates the requests into R.
+    """
     def __init__(self, Rdata, parent,editable=False): 
-        """ datain: a list of lists
-            headerdata: a list of strings
+        """ Rdata: a R varible
+            parent: the parent qtWidget
         """
         self.R = Rcommand
         self.editable = editable
@@ -141,6 +162,7 @@ class MyTableModel(QAbstractTableModel):
         # print self.arraydata
         # print 'arraydata type:' ,type(self.arraydata)
     def flags(self,index):
+        """internal function. DO NOT USE OR OVERWRITE. consult QT documentation"""
         if self.editable:
             return (Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled)
         else:
@@ -148,17 +170,21 @@ class MyTableModel(QAbstractTableModel):
     
  
     def initData(self,Rdata):
+        """internal function. DO NOT USE OR OVERWRITE. consult QT documentation"""
         self.Rdata = Rdata
         self.colnames = self.R('colnames(as.data.frame(' +Rdata+ '))', wantType = 'list',silent=True)
         self.rownames = self.R('rownames(as.data.frame(' +Rdata+'))', wantType = 'list',silent=True)
         self.arraydata = self.R('as.matrix('+Rdata+')', wantType = 'listOfLists',silent=True)
-    def columnCount(self, parent): 
+    def columnCount(self, parent):
+        """internal function. DO NOT USE OR OVERWRITE. consult QT documentation"""
         if not self.arraydata or self.arraydata == None: return 0
         return len(self.arraydata[0])
-    def rowCount(self, parent): 
+    def rowCount(self, parent):
+        """internal function. DO NOT USE OR OVERWRITE. consult QT documentation"""
         if not self.arraydata or self.arraydata == None: return 0
         return len(self.arraydata)
-    def data(self, index, role): 
+    def data(self, index, role):
+        """internal function. DO NOT USE OR OVERWRITE. consult QT documentation"""
         # print _('in data')
         if not index.isValid(): 
             return QVariant() 
@@ -167,6 +193,7 @@ class MyTableModel(QAbstractTableModel):
         return QVariant(self.arraydata[index.row()][index.column()]) 
 
     def setData(self,index,data, role):
+        """internal function. DO NOT USE OR OVERWRITE. consult QT documentation"""
         print _('in setData'), data.toString(), index.row(),index.column(), role
         if not index.isValid(): 
             return False
@@ -189,6 +216,7 @@ class MyTableModel(QAbstractTableModel):
         return False
     
     def headerData(self, col, orientation, role):
+        """internal function. DO NOT USE OR OVERWRITE. consult QT documentation"""
         # print _('in headerData'), col
         try:
             if orientation == Qt.Horizontal and role == Qt.DisplayRole:
@@ -200,6 +228,7 @@ class MyTableModel(QAbstractTableModel):
             return QVariant()
     
     def setHeaderData(self,col,orientation,data,role):
+        """internal function. DO NOT USE OR OVERWRITE. consult QT documentation"""
         # print _('in setHeaderData')
         if orientation == Qt.Horizontal and role == Qt.EditRole:
             self.colnames[col] = data.toString()
@@ -209,6 +238,7 @@ class MyTableModel(QAbstractTableModel):
             return False
         ## please reimplement in a later version
     def insertRows(self,beforeRow,count,headers=None):
+        """internal function. DO NOT USE OR OVERWRITE. consult QT documentation"""
         self.emit(SIGNAL("layoutAboutToBeChanged()"))
         self.emit(SIGNAL("beginInsertRows()"))
         size= self.columnCount(self)
@@ -238,6 +268,7 @@ class MyTableModel(QAbstractTableModel):
         self.emit(SIGNAL("layoutChanged()"))
         return True
     def insertColumns(self,beforeColumn,count,headers=None):
+        """internal function. DO NOT USE OR OVERWRITE. consult QT documentation"""
         self.emit(SIGNAL("layoutAboutToBeChanged()"))
         self.emit(SIGNAL("beginInsertRows()"))
 
@@ -261,7 +292,10 @@ class MyTableModel(QAbstractTableModel):
         self.emit(SIGNAL("layoutChanged()"))
 
     def sort(self, Ncol, order):
+        
         """Sort table by given column number.
+            
+        Internal function. DO NOT USE OR OVERWRITE. consult QT documentation.
         """
         if self.editable: return
         print _('in sort')
@@ -279,8 +313,6 @@ class MyTableModel(QAbstractTableModel):
         self.rownames = [x.pop() for x in self.arraydata]
         self.emit(SIGNAL("layoutChanged()"))
 
-    def delete(self):
-        sip.delete(self)  
         
 """
 class MyTableModel(QAbstractTableModel): 

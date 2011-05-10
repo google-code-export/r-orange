@@ -1,16 +1,21 @@
 graphCmd = 'python dep.py %s | dot -T png -o %s.png'
 
 import sys,os,glob,subprocess
+import shutil
 
 redRRoot = sys.argv[1]
 docRoot = sys.argv[2]
 
-toRM = glob.glob(os.path.join(docRoot,'core','*.rst')) + glob.glob(os.path.join(docRoot,'libraries','*','*','*.rst')) + glob.glob(os.path.join(docRoot,'libraries','*','*.rst')) + glob.glob(os.path.join(docRoot,'libraries','*.rst'))
+# toRM = glob.glob(os.path.join(docRoot,'core','*.rst')) + glob.glob(os.path.join(docRoot,'libraries','*','*','*.rst')) + glob.glob(os.path.join(docRoot,'libraries','*','*.rst')) + glob.glob(os.path.join(docRoot,'libraries','*.rst'))
 
-for x in toRM: os.remove(x)
+# for x in toRM: os.remove(x)
 
+shutil.rmtree(os.path.join(docRoot,'core'),True)
+os.mkdir(os.path.join(docRoot,'core'))
+shutil.rmtree(os.path.join(docRoot,'libraries'),True)
+os.mkdir(os.path.join(docRoot,'libraries'))
 
-coreFiles = glob.glob(os.path.join(redRRoot,'canvas','*.py'))
+coreFiles = glob.glob(os.path.join(redRRoot,'canvas','*.py')) + glob.glob(os.path.join(redRRoot,'canvas','*.pyw'))
 for n in coreFiles:
     print '\n\n####################%s######################\n\n' % n
     (name,ext) = os.path.splitext(os.path.basename(n))
@@ -92,13 +97,16 @@ Signal Classes:
    :members:
    :undoc-members:
    :show-inheritance:
-""" % (name,package,name)
+   
+.. image:: %s.png
+""" % (name,package,name,name)
             
         f = open(os.path.join(docRoot,'libraries',package,'widgets',name+'.rst'),'w')
         f.write(output)
         f.close()
         
-        cmd = graphCmd % (n,os.path.join(docRoot,'libraries',package,'widgets',name))
+        cmd = graphCmd % (os.path.abspath(n),os.path.join(docRoot,'libraries',package,'widgets',name))
+        # print cmd
         os.system(cmd)
 ###############################################
     qtwidgets = glob.glob(os.path.join(redRRoot,'libraries',package,'qtWidgets','*.py'))
@@ -116,12 +124,14 @@ Signal Classes:
    :members:
    :undoc-members:
    :show-inheritance:
-""" % (name,package,name)
+   
+.. image:: %s.png
+""" % (name,package,name,name)
             
         f = open(os.path.join(docRoot,'libraries',package,'qtWidgets',name+'.rst'),'w')
         f.write(output)
         f.close()
-        cmd = graphCmd % (n,os.path.join(docRoot,'libraries',package,'qtWidgets',name))
+        cmd = graphCmd % (os.path.abspath(n),os.path.join(docRoot,'libraries',package,'qtWidgets',name))
         os.system(cmd)
 ###############################################
     signalClasses = glob.glob(os.path.join(redRRoot,'libraries',package,'signalClasses','*.py'))
@@ -138,17 +148,19 @@ Signal Classes:
    :members:
    :undoc-members:
    :show-inheritance:
-""" % (name,package,name)
+   
+.. image:: %s.png
+""" % (name,package,name,name)
             
         f = open(os.path.join(docRoot,'libraries',package,'signalClasses',name+'.rst'),'w')
         f.write(output)
         f.close()
         
-        cmd = graphCmd % (n,os.path.join(docRoot,'libraries',package,'signalClasses',name))
+        cmd = graphCmd % (os.path.abspath(n),os.path.join(docRoot,'libraries',package,'signalClasses',name))
         os.system(cmd)
 
 ##################################################        
-
+shutil.rmtree(os.path.join(os.path.abspath(docRoot),'_build'),True)
 cmd = os.path.join(os.path.abspath(docRoot),'make.bat') + ' html'
 print 'Running doc compiler: ' + cmd
 p = subprocess.Popen(cmd,stdout=subprocess.PIPE).communicate()[0]
