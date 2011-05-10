@@ -54,9 +54,15 @@ Name "${NAME}-${REDRVERSION}"
 
 Section "" ;this is the section that will install Red-R and all of it's files
     ReadRegStr $0 HKCU "${SHELLFOLDERS}" AppData
-	StrCmp $0 "" 0 +2
-	ReadRegStr $0 HKLM "${SHELLFOLDERS}" "Common AppData"
-    RmDir /r "$0\red-r\settings"
+    StrCmp $0 "" 0 +2
+      ReadRegStr $0 HKLM "${SHELLFOLDERS}" "Common AppData"
+    StrCmp $0 "" +2 0
+      
+    IfFileExists "$0\red-r" 0 not_installed_before
+      MessageBox MB_YESNOCANCEL "Another version of Red-R has been found on the computer.$\r$\nDo you want to remove the existing settings for canvas and widgets?$\r$\n$\r$\nYou can usually answer 'No', but some special sartup features might not be available to you." /SD IDNO IDYES remove_settings IDNO not_installed_before
+      
+      remove_settings:
+        RmDir /r "$0\red-r"
 
 	; StrCmp $0 "" not_installed_before 0
 
@@ -70,7 +76,7 @@ Section "" ;this is the section that will install Red-R and all of it's files
 		; remove_old_settings:
 		
     ; end removal of settings
-	; not_installed_before:
+	not_installed_before:
 
 	
     SetOutPath "$INSTDIR\${NAME}-${REDRVERSION}"
@@ -118,7 +124,9 @@ Section "" ;this is the section that will install Red-R and all of it's files
     IfFileExists $INSTDIR\R\${RVER}\README.${RVER}.* has_R
         SetOutPath $INSTDIR\R\${RVER}
         File /r /x .svn ${RDIRECTORY}\*
-        ; grant access to modify the files in this directory
+        IfFileExists "$0\red-r\settings" 0 has_R
+            MessageBox MB_OK "You are getting a new version of R (congratulations!!!).$\r$\n$\r$\nUnfortunately, this means that we have to remove your old settings directory so the new version will be able to start fresh.
+            RmDir /r "$0\red-r"
     has_R:
          ; RmDir /r $INSTDIR\R
     AccessControl::GrantOnFile "$INSTDIR\R" "(BU)" "FullAccess" 

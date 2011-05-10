@@ -4,7 +4,8 @@ import sys,os,glob,subprocess
 import shutil
 
 redRRoot = sys.argv[1]
-docRoot = sys.argv[2]
+docRoot = os.path.join(redRRoot, 'doc')
+makeDeps = int(sys.argv[2])
 
 # toRM = glob.glob(os.path.join(docRoot,'core','*.rst')) + glob.glob(os.path.join(docRoot,'libraries','*','*','*.rst')) + glob.glob(os.path.join(docRoot,'libraries','*','*.rst')) + glob.glob(os.path.join(docRoot,'libraries','*.rst'))
 
@@ -17,7 +18,7 @@ os.mkdir(os.path.join(docRoot,'libraries'))
 
 coreFiles = glob.glob(os.path.join(redRRoot,'canvas','*.py')) + glob.glob(os.path.join(redRRoot,'canvas','*.pyw'))
 for n in coreFiles:
-    print '\n\n####################%s######################\n\n' % n
+    print '%s' % n
     (name,ext) = os.path.splitext(os.path.basename(n))
     
     output = """%s
@@ -27,16 +28,21 @@ for n in coreFiles:
    :members:
    :undoc-members:
    :show-inheritance:
-   
-.. image:: %s.png
-""" % (name,name,name)
     
+""" % (name, name)
+    if makeDeps == 1:
+        output += """
+.. image:: %s.png
+""" % name
+        cmd = graphCmd % (n,os.path.join(docRoot,'core',name))
+        print cmd
+        os.system(cmd)
+    #print output
     f = open(os.path.join(docRoot,'core',name+'.rst'),'w')
     f.write(output)
     f.close()
     
-    cmd = graphCmd % (n,os.path.join(docRoot,'core',name))
-    os.system(cmd)
+    
 
     
 #########################################################################
@@ -44,6 +50,8 @@ for n in coreFiles:
 
     
 packages = glob.glob(os.path.join(redRRoot,'libraries','*','package.xml'))
+if not os.path.exists(os.path.join(docRoot, 'libraries')): os.mkdir(os.path.join(docRoot, 'libraries'))
+
 for p in packages:
     package = os.path.split(os.path.split(p)[0])[1]
     if not os.path.exists(os.path.join(docRoot,'libraries',package)):
@@ -86,7 +94,7 @@ Signal Classes:
     widgets = glob.glob(os.path.join(redRRoot,'libraries',package,'widgets','*.py'))
     
     for n in widgets:
-        print '\n\n####################%s######################\n\n' % n
+        print '%s' % n
         (name,ext) = os.path.splitext(os.path.basename(n))
         if name =='__init__': continue
         
@@ -105,14 +113,14 @@ Signal Classes:
         f.write(output)
         f.close()
         
-        cmd = graphCmd % (os.path.abspath(n),os.path.join(docRoot,'libraries',package,'widgets',name))
-        # print cmd
-        os.system(cmd)
+        if makeDeps == 1:
+            cmd = graphCmd % (n,os.path.join(docRoot,'libraries',package,'widgets',name))
+            os.system(cmd)
 ###############################################
     qtwidgets = glob.glob(os.path.join(redRRoot,'libraries',package,'qtWidgets','*.py'))
 
     for n in qtwidgets:
-        print '\n\n####################%s######################\n\n' % n
+        print '%s' % n
         (name,ext) = os.path.splitext(os.path.basename(n))
         if name =='__init__': continue
 
@@ -131,13 +139,14 @@ Signal Classes:
         f = open(os.path.join(docRoot,'libraries',package,'qtWidgets',name+'.rst'),'w')
         f.write(output)
         f.close()
-        cmd = graphCmd % (os.path.abspath(n),os.path.join(docRoot,'libraries',package,'qtWidgets',name))
-        os.system(cmd)
+        if makeDeps == 1:
+            cmd = graphCmd % (n,os.path.join(docRoot,'libraries',package,'qtWidgets',name))
+            os.system(cmd)
 ###############################################
     signalClasses = glob.glob(os.path.join(redRRoot,'libraries',package,'signalClasses','*.py'))
 
     for n in signalClasses:
-        print '\n\n####################%s######################\n\n' % n
+        print '%s' % n
         (name,ext) = os.path.splitext(os.path.basename(n))
         if name =='__init__': continue
         
@@ -155,9 +164,9 @@ Signal Classes:
         f = open(os.path.join(docRoot,'libraries',package,'signalClasses',name+'.rst'),'w')
         f.write(output)
         f.close()
-        
-        cmd = graphCmd % (os.path.abspath(n),os.path.join(docRoot,'libraries',package,'signalClasses',name))
-        os.system(cmd)
+        if makeDeps == 1:
+            cmd = graphCmd % (n,os.path.join(docRoot,'libraries',package,'signalClasses',name))
+            os.system(cmd)
 
 ##################################################        
 shutil.rmtree(os.path.join(os.path.abspath(docRoot),'_build'),True)

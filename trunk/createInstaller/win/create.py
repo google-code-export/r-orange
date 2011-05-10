@@ -3,8 +3,8 @@
 import os, subprocess, sys
 #baseDir = 'C:/Users/anup/Documents/red/develop/makeInstallers/installerCode'  # change for system specific
 #redRDir = 'C:/Python26/Lib/site-packages/RedR185_gold'  # change for system specific for kyle
-redRDir = 'C:/Python26/Lib/site-packages/RedR185_gold'  # change for system specific
-
+redRDir = 'C:/Python26/Lib/site-packages/RedR185_Sandbox'  # change for system specific for sandbox version
+#redRDir = 'C:/Python26/Lib/site-packages/RedR185_gold'  # change for system specific
 runCompile = sys.argv[1]
 runInstaller = sys.argv[2]
 # runupload = sys.argv[3]

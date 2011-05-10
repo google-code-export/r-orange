@@ -55,7 +55,7 @@ sys.path.insert(0, includesDir)
 sys.path.insert(0, base)
 sys.path.insert(0, os.path.join(base,'canvas'))
 sys.path.insert(0, os.path.join(base,'win32'))
-sys.path.insert(0, os.path.join(os.path.split(base)[0], 'PyQt4')
+sys.path.insert(0, os.path.join(os.path.split(base)[0], 'PyQt4'))
 
 print sys.path
 
