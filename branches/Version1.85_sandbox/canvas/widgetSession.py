@@ -5,7 +5,6 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRGUI 
 import signals 
-# from SQLiteSession import *
  
 
 class widgetSession():
@@ -178,17 +177,13 @@ class widgetSession():
                                 self.send(signalID, var)
                             else:
                                 #print 'Error in matching item name'
-                                from libraries.base.qtWidgets.dialog import dialog
-                                tempDialog = dialog(None)
-                                from libraries.base.qtWidgets.widgetLabel import widgetLabel
-                                from libraries.base.qtWidgets.listBox import listBox
-                                from libraries.base.qtWidgets.button import button
-                                widgetLabel(tempDialog, 'Error occured in matching the loaded signal (Name:%s, Value:%s) to the appropriate signal name.\nPlease select the signal that matches the desired output,\n or press cancel to abandon the signal.' % (sentItemName, unicode(var)))
+                                tempDialog = redRGUI.base.dialog(None)
+                                redRGUI.base.widgetLabel(tempDialog, 'Error occured in matching the loaded signal (Name:%s, Value:%s) to the appropriate signal name.\nPlease select the signal that matches the desired output,\n or press cancel to abandon the signal.' % (sentItemName, unicode(var)))
                                 
                                 #print self.outputs.outputSignals
-                                itemListBox = listBox(tempDialog, items = signalItemNames)
-                                button(tempDialog, label = 'Done', callback = tempDialog.accept)
-                                button(tempDialog, label = 'Cancel', callback = tempDialog.reject)
+                                itemListBox = redRGUI.base.listBox(tempDialog, items = signalItemNames)
+                                redRGUI.base.button(tempDialog, label = 'Done', callback = tempDialog.accept)
+                                redRGUI.base.button(tempDialog, label = 'Cancel', callback = tempDialog.reject)
                                 res = tempDialog.exec_()
                                 if res != QDialog.rejected:
                                     signalName = unicode(itemListBox.selectedItems()[0])

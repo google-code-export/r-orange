@@ -12,8 +12,6 @@ import OWGUIEx, redRSaveLoad, redRStyle
 import OWGUIEx, redRSaveLoad
 import redREnviron, redRLog
 import xml.dom.minidom
-from libraries.base.qtWidgets.SearchDialog import SearchDialog as redRSearchDialog
-from libraries.base.qtWidgets.lineEditHint import lineEditHint as redRlineEditHint
 import redRi18n
 # def _(a):
     # return a
@@ -888,7 +886,7 @@ class SearchBox(redRlineEditHint):
     def __init__(self, widget, label=_('Search'),orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
         redRlineEditHint.__init__(self, widget = widget, label = label,displayLabel=False,
         orientation = orientation, items = items, toolTip = toolTip, width = width, callback = callback, **args)
-        self.searchBox = redRSearchDialog()
+        self.searchBox = redRGUI.base.SearchDialog()
         QObject.connect(self, SIGNAL('returnPressed()'), self.searchDialog)
             
     def eventFilter(self, object, ev):

@@ -176,4 +176,4 @@ RedRSignals = []
         # setattr(current_module, signalClasses,c)
     # except Exception as inst:
         # print inst
-#registerRedRSignals()
+registerRedRSignals()

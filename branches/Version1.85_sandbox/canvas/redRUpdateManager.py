@@ -1,11 +1,3 @@
-from libraries.base.qtWidgets.dialog import dialog as redRdialog
-from libraries.base.qtWidgets.treeWidgetItem import treeWidgetItem as redRtreeWidgetItem
-from libraries.base.qtWidgets.button import button as redRbutton
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit
-from libraries.base.qtWidgets.tabWidget import tabWidget as redRtabWidget
-from libraries.base.qtWidgets.treeWidget import treeWidget as redRtreeWidget
-from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
-from libraries.base.qtWidgets.webViewBox import webViewBox as redRwebViewBox
 
 ## package manager class redRPackageManager.  Contains a dlg for the package manager which reads xml from the red-r.org website and compares it with a local package system on the computer
 
@@ -29,7 +21,7 @@ _ = redRi18n.Coreget_()
 class updateManager(QMainWindow):
     def __init__(self,app,schema=None):
         QMainWindow.__init__(self)
-        self.main = redRwidgetBox(None)
+        self.main = redRGUI.base.widgetBox(None)
         self.setCentralWidget(self.main)
         self.schema = schema
         self.app = app
@@ -89,15 +81,15 @@ class updateManager(QMainWindow):
         print 'in createDialog'
         width = 350
         height = 350
-        changeLogBox = redRwebViewBox(self.main,label=_('Update'),displayLabel=False)
+        changeLogBox = redRGUI.base.webViewBox(self.main,label=_('Update'),displayLabel=False)
         changeLogBox.setMinimumWidth(width)
         changeLogBox.setMinimumHeight(width)
         changeLogBox.setHtml(html)
         
-        buttonArea2 = redRwidgetBox(self.main,orientation = 'horizontal', alignment=Qt.AlignRight)
-        redRbutton(buttonArea2, label = _('Update'), callback = self.accept)
-        redRbutton(buttonArea2, label = _('Ignore Update'), callback = self.ignore)
-        redRbutton(buttonArea2, label = _('Cancel'), callback = self.reject)
+        buttonArea2 = redRGUI.base.widgetBox(self.main,orientation = 'horizontal', alignment=Qt.AlignRight)
+        redRGUI.base.button(buttonArea2, label = _('Update'), callback = self.accept)
+        redRGUI.base.button(buttonArea2, label = _('Ignore Update'), callback = self.ignore)
+        redRGUI.base.button(buttonArea2, label = _('Cancel'), callback = self.reject)
         
         
         desktop = self.app.desktop()

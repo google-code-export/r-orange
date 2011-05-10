@@ -1,10 +1,3 @@
-from libraries.base.qtWidgets.dialog import dialog as redRdialog
-from libraries.base.qtWidgets.treeWidgetItem import treeWidgetItem as redRtreeWidgetItem
-from libraries.base.qtWidgets.button import button as redRbutton
-from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit
-from libraries.base.qtWidgets.tabWidget import tabWidget as redRtabWidget
-from libraries.base.qtWidgets.treeWidget import treeWidget as redRtreeWidget
-from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 
 ## package manager class redRPackageManager.  Contains a dlg for the package manager which reads xml from the red-r.org website and compares it with a local package system on the computer
 
@@ -26,20 +19,20 @@ import redRi18n
 _ = redRi18n.Coreget_()
 
 ## packageManager class handles package functions such as resolving rrp's resolving dependencies, appending packages to the package xml or any function that remotely has to do with handling packages
-class packageManager(redRdialog):
+class packageManager(redRGUI.base.dialog):
     def __init__(self,canvas):
         # self.urlOpener = urllib.FancyURLopener()
         self.repository = 'http://www.red-r.org/repository/Red-R-' + redREnviron.version['REDRVERSION'] 
         self.version = redREnviron.version['REDRVERSION']
         self.availablePackages = self.getPackages()
-        redRdialog.__init__(self,canvas, title = _('Package Manager'))
+        redRGUI.base.dialog.__init__(self,canvas, title = _('Package Manager'))
         self.canvas = canvas
         self.setMinimumWidth(700)
         
         ## GUI ##
         self.controlArea = redRGUI.base.widgetBox(self)
         #### layout of the tabsArea
-        self.treeViewUpdates = redRtreeWidget(self.controlArea, label=_('Package List'), displayLabel=False, 
+        self.treeViewUpdates = redRGUI.base.treeWidget(self.controlArea, label=_('Package List'), displayLabel=False, 
         callback = self.updateItemClicked)
 
         # holds the tree view of all of the packages that need updating
@@ -56,19 +49,19 @@ class packageManager(redRdialog):
           
         #self.treeViewUpdates.setSelectionModel(QItemSelectModel.Rows)
         self.treeViewUpdates.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.infoViewUpdates = redRtextEdit(self.controlArea, label=_('Update Info'), displayLabel=False)  ## holds the         
+        self.infoViewUpdates = redRGUI.base.textEdit(self.controlArea, label=_('Update Info'), displayLabel=False)  ## holds the         
         #### buttons and the like
-        buttonArea2 = redRwidgetBox(self,orientation = 'horizontal')
-        redRbutton(buttonArea2, _('Install'), callback = self.installUpdates)
-        redRbutton(buttonArea2, _('Delete'), callback = self.uninstallPackages)
-        redRwidgetBox(buttonArea2, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
+        buttonArea2 = redRGUI.base.widgetBox(self,orientation = 'horizontal')
+        redRGUI.base.button(buttonArea2, _('Install'), callback = self.installUpdates)
+        redRGUI.base.button(buttonArea2, _('Delete'), callback = self.uninstallPackages)
+        redRGUI.base.widgetBox(buttonArea2, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
         orientation = 'horizontal')
-        redRbutton(buttonArea2, label = _('Update Repository'), callback = self.updateFromRepository)
-        redRbutton(buttonArea2, label = _('Done'), callback = self.accept)        
+        redRGUI.base.button(buttonArea2, label = _('Update Repository'), callback = self.updateFromRepository)
+        redRGUI.base.button(buttonArea2, label = _('Done'), callback = self.accept)        
     def resolveRDependencies(self, packageList):
         import RSession
         packageList = [x.strip() for x in packageList]
-        RSession.require_librarys(packageList)
+        RSession.install_libraries(packageList)
 
     def installRRP(self,packageName,filename):
 
@@ -98,10 +91,10 @@ class packageManager(redRdialog):
             redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Installing package %(PACKAGENAME)s') % {'PACKAGENAME':packageName})
         
             redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'package installation complete')
-        except:
-            redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL, _('This was an error installing %(PACKAGENAME)s.') % {'PACKAGENAME':packageName})
+        except Exception as inst:
+            redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL, _('There was an error installing %(PACKAGENAME)s. %(ERROR)s') % {'PACKAGENAME':packageName, 'ERROR':unicode(inst)})
             redRLog.log(redRLog.REDRCORE, redRLog.DEBUG,redRLog.formatException())
-            mb = QMessageBox(_("Package Installation Error"),_('This was an error installing %(PACKAGENAME)s.') % {'PACKAGENAME':packageName}, QMessageBox.Information, 
+            mb = QMessageBox(_("Package Installation Error"),_('There was an error installing %(PACKAGENAME)s. %(ERROR)s') % {'PACKAGENAME':packageName, 'ERROR':unicode(inst)}, QMessageBox.Information, 
             QMessageBox.Ok | QMessageBox.Default,
             QMessageBox.NoButton, 
             QMessageBox.NoButton, 
@@ -354,7 +347,7 @@ class packageManager(redRdialog):
         # if mb.exec_() == QMessageBox.Ok:
         self.updatePackagesFromRepository(auto=True)
         self.loadPackagesLists(force=False)
-        redRdialog.exec_(self)
+        redRGUI.base.dialog.exec_(self)
         
     def setUpdates(self, packages):
         self.treeViewUpdates.clear()
@@ -392,7 +385,7 @@ class packageManager(redRdialog):
             
             line += [new['Author'], new['Summary']]
             
-            newChild = redRtreeWidgetItem(self.treeViewUpdates, line,bgcolor=QColor(color))
+            newChild = redRGUI.base.treeWidgetItem(self.treeViewUpdates, line,bgcolor=QColor(color))
             
                     
     def installUpdates(self):

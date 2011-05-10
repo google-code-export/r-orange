@@ -164,4 +164,4 @@ def registerQTWidgets():
 # qtWidgets = []
 
 
-# registerQTWidgets()
+registerQTWidgets()
