@@ -23,6 +23,8 @@ from libraries.base.qtWidgets.spinBox import spinBox
 from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 from libraries.base.qtWidgets.stackedWidget import stackedWidget
 from libraries.base.qtWidgets.colorButton import colorButton
+from libraries.base.qtWidgets.widgetBox import widgetBox as redRWidgetBox
+from libraries.base.qtWidgets.groupBox import groupBox as redRGroupBox
 
 import redRi18n
 _ = redRi18n.get_(package = 'plotting')
@@ -35,7 +37,6 @@ class krcggplotlineplot(OWRpy):
         self.RFunctionParam_x = ''
         self.setRvariableNames(["lineplot"])
         self.inputs.addInput('id0', 'Data Table', redRDataFrame, self.processy)
-        self.errorBarTypes = [('none', _('None')), ('se', _('Standard Error')), ('sem', _('Standard Error of Mean')), ('95per', _('95% Confidence Interval'))]
         self.colours = [(0, _('Two Color Gradient')), (1, _('Three Color Gradient')), (2, _('Sequential Brewer Colors')), (3, _('Diverging Brewer Colors')), (4, _('Qualitative Brewer Colors')), (5, _('No Color'))]
         self.colourScaleWidgets = []
         topBox = redRWidgetBox(self.controlArea, orientation = 'horizontal')
@@ -90,7 +91,6 @@ class krcggplotlineplot(OWRpy):
         
         ## error bars
         errorBox = redRGroupBox(self.controlArea, label = _('Error Bar Options'), orientation = 'horizontal')
-        self.errorType = comboBox(errorBox, label = _('Error Bar Type'), items = self.errorBarTypes)
         self.errorBarData = comboBox(errorBox, label = _('Error Bar Data'))
         
         
@@ -123,27 +123,36 @@ class krcggplotlineplot(OWRpy):
             self.yData.update(names) # = comboBox(aestheticsBox, label = _('Y Values'))
             self.fillData.update(['None'] + names) # = comboBox(aestheticsBox, label = _('Fill Data'), callback = self.fillDataChanged)
             self.linetypeCombo.update(['None'] + names)
-            self.errorBarData.update(names)
+            self.errorBarData.update(['None'] + names)
             if self.commit.processOnInput():
                 self.commitFunction()
         else:
             self.graphicsView.clear()
             self.RFunctionParam_y=''
     def commitFunction(self):
+        """Commits the data to make the plot.  If no data or xGroup and yData are the same there is an immediate return. 
+        
+        See source code for how GUI elements are processed.
+        """
         if unicode(self.RFunctionParam_y) == '': return
         if self.xGroup.currentText() == self.yData.currentText(): 
             self.status.setText(_("X and Y data can't be the same"))
             return
         opts = {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['lineplot'], 'XDATA':self.xGroup.currentText(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText(), 'LINETYPE':self.linetypeCombo.currentText(), 'ERROR':self.errorBarData.currentId()}
+        
         self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = %(XDATA)s, y = %(YDATA)s))' % opts, wantType = 'NoConversion')
+        """Sets the ggplot data"""
         layers = []
         if self.linetypeCombo.currentText() != 'None':
             layers.append('geom_line(size = 1, aes(linetype = %(LINETYPE)s))' % opts)
         else:
             layers.append('geom_line(size = 1)' % opts)
-        if self.errorType.currentId() != 'none':
+        """If linetype should be specified then append a call to geom_line with aes(linetype = LINETYPE), else leave the aes out of the call"""
+        if opts['ERROR'] != 'None':
             layers.append('geom_errorbar(aes(ymax = %(YDATA)s + %(ERROR)s, ymin = %(YDATA)s - %(ERROR)s), width = 0.25)' % opts)
+        """If we need error bars then show them"""
         scale = self.colourScale.currentId()
+        
         if scale == 0:
             layers.append('geom_point(aes(shape = as.factor(%(ZDATA)s)), size = 6, colour = \'black\') + geom_point(aes(shape = as.factor(%(ZDATA)s)), size = 4, colour = \'white\')'  % opts)
             #self.R('%(VAR)s<-%(VAR)s + scale_fill_continuous(low = "%(LOW)s", high = "%(HIGH)s")' % {'VAR':self.Rvariables['lineplot'], 'LOW':self.gradientFrom.color, 'HIGH':self.gradientTo.color}, wantType = 'NoConversion')
@@ -152,15 +161,17 @@ class krcggplotlineplot(OWRpy):
             layers.append('scale_fill_gradient2(low = "%(LOW)s", high = "%(HIGH)s", mid = "%(VIA)s")' % {'VAR':self.Rvariables['lineplot'], 'LOW':self.gradient2From.color, 'HIGH':self.gradient2To.color, 'VIA':self.gradient2Via.color})
         elif scale == 2:
             layers.append('geom_point(aes(shape = as.factor(%(ZDATA)s)), size = 6, colour = \'black\') + geom_point(aes(shape = as.factor(%(ZDATA)s)), size = 4)'  % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['lineplot'], 'XDATA':self.xGroup.currentText(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()})
-            layers.append('scale_fill_brewer(palette = "%(PALETTE)s")' % {'VAR':self.Rvariables['lineplot'], 'PALETTE':self.sequentialPalettes.currentId()}, wantType = 'NoConversion')
+            layers.append('scale_fill_brewer(palette = "%(PALETTE)s")' % {'VAR':self.Rvariables['lineplot'], 'PALETTE':self.sequentialPalettes.currentId()})
         elif scale == 3:
             layers.append('geom_point(aes(shape = as.factor(%(ZDATA)s)), size = 6, colour = \'black\') + geom_point(aes(shape = as.factor(%(ZDATA)s)), size = 4)'  % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['lineplot'], 'XDATA':self.xGroup.currentText(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()})
             layers.append('scale_fill_brewer(palette = "%(PALETTE)s")' % {'VAR':self.Rvariables['lineplot'], 'PALETTE':self.divergingPalettes.currentId()})
         elif scale == 4:
-            slayers.append('geom_point(aes(shape = as.factor(%(ZDATA)s)), size = 6, colour = \'black\') + geom_point(aes(shape = as.factor(%(ZDATA)s)), size = 4)'  % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['lineplot'], 'XDATA':self.xGroup.currentText(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()})
+            layers.append('geom_point(aes(shape = as.factor(%(ZDATA)s)), size = 6, colour = \'black\') + geom_point(aes(shape = as.factor(%(ZDATA)s)), size = 4)'  % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['lineplot'], 'XDATA':self.xGroup.currentText(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()})
             layers.append('scale_fill_brewer(palette = "%(PALETTE)s")' % {'VAR':self.Rvariables['lineplot'], 'PALETTE':self.qualitativePalettes.currentId()})
         elif scale == 5:
             layers.append('geom_point(aes(shape = %(ZDATA)s), size = 6, colour = \'black\') + geom_point(aes(shape = %(ZDATA)s), size = 4, colour = \'white\')'  % opts)
+        """scales are the scale options for colors shown in the lines."""
+        
         self.R('%(VAR)s<-%(VAR)s + %(JOIN)s' % {'VAR':opts['VAR'], 'JOIN':' + '.join(layers)}, wantType = 'NoConversion')
         self.graphicsView.plot(query = self.Rvariables['lineplot'], function = '')
     
