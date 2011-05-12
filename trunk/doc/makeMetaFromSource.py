@@ -31,44 +31,54 @@ def _getRSTDirective(string):
 def _getRSTTag(string):
     """Returns a tag name and value depending on if the string contains any strings of the form :(?P<tag>.*?): (?P<value>.*)(\"\"\")|$ """
     matches = {}
-    for m in re.finditer(re.compile(':(?P<tag>.*?): (?P<value>.*?)(:.*:)|(""")'), string):
-        matches[m.groupdict()['tag']] = m.groupdict()['value']
+    for m in re.finditer(re.compile(r'\s:(?P<tag>.+?): `(?P<value>.+?)`', re.DOTALL), string):
+        #print m.groupdict()
+        if m.groupdict()['tag'] != None and m.groupdict()['value'] != None:
+            matches[m.groupdict()['tag']] = m.groupdict()['value']
+        #print 'Parsed string to return these tags %s' % matches
     return matches
+    
 def _getRvariableNames(string):
     """Matches the names of R variables in the setRvariableNames declaration.  Returns a a list of names"""
-    
-    match = re.findall('[\"\'](?P<tag>.*?)[\"\']', string)
-    print match
-    return [{'name':m, 'description':''} for m in match]
-        
+    #print 'R Var names string %s' % string
+    match = re.search(r'self\.setRvariableNames\((?P<names>.*)\)', string)
+    if match:
+        match = match.group().split(',')
+        return [{'name':m.replace('\'', '').replace('"', ''), 'description':''} for m in match]
+    else: return None
 
 def _getRRSignals(string):
-    """Parses from a call to addOutput or addInput the name and class(s) of an input or output signal, returns a tuple of signaltype [input/output], name, and signal class(s) or returns None if no match found (the end of the signals directive)"""
-    if re.search('self\.inputs\.addInput', string) != None:
-        call = re.search('\((?P<tag>.*)\)\ *$', string).group()
-        return {'type':'input', 'name':call.split(',')[1].strip('\'\"()_'), 'class':call.split(',')[2], 'description':''}
-    elif re.search('self\.outputs\.addOutput', string) != None:
-        print 'Found Output'
+    """Parses from a call to addOutput or addInput the name and class(s) of an input or output signal, returns a tuple of signaltype [input/output], name, and """
+    print string
+    match = re.search(re.compile(r"""self\.(?P<type>.*?)s\.add.*?\(['"](?P<id>.*?)['"].*?['"](?P<name>.*?)['"]""", re.DOTALL), string) # *?signals\.(?P<description>.*?)[,\)$]
+    if match:
+        dic = match.groupdict()
+        cla = re.search(re.compile(r"""signals\.(?P<class>.+?)[,\)\s]""",re.DOTALL), string)
+        if cla:
+            dic.update(cla.groupdict())
         print string
-        call = re.search('\((?P<tag>.*)\)\ *$', string).group()
-        print call
-        return {'type':'output', 'name':call.split(',')[1].strip('\'\"()_'), 'class':call.split(',')[2], 'description':''}
+        desc = _getRSTTag(string)
+        if desc:
+            dic.update(desc.groupdict())
+        else:
+            dic.update({'description':''})
+        if dic['description'] == None: dic['description'] = ''
+        #print dic
+        return dic
     else: return None
 
 def _getRRGUISettings(string):
     """Parses an rrgui setting and returns a tuple of class, label or None"""
-    match = re.search('redRGUI\.(?P<class>.*?)\(.*?label ?=[ _\( ]*(?P<label>.*?)[\),(\n)]*', string)
-    if match == None:
-        return None
+    match = re.search(re.compile('redRGUI\.(?P<class>.*?)\(.*?label *= *(_\()?[\\\'\\\"](?P<label>.*?)[\\\'\\\"](\))?', re.DOTALL), string)
+    if not match: return None
+    d = match.groupdict()
+    disc = re.search(re.compile('.*toolTip *= *(_\()?[\\\'\\\"](?P<description>.*?)[\\\'\\\"]', re.DOTALL), string)
+    if disc:
+        d.update(disc.groupdict())
     else:
-        d = match.groupdict()
-        print d
-        disc = re.search('.*?toolTip ?=[ _\(]*(?P<description>.*?)\)?,?', string)
-        if disc:
-            d['description'] = disc.groupdict()['description']
-        else:
-            d['description'] = ''
-        return {'class':d['class'], 'label':d['label'], 'description': d['description']}
+        d['description'] = ''
+    if d['description'] == None: d['description'] = ''
+    return d
      
             
 
@@ -77,25 +87,29 @@ def _parsefile(myFile, doc):
     signals = []
     rrgui = []
     optionTags = {}
-    for m in  re.finditer(re.compile(r'"""(?P<docstring>.+?)""".*(\n)+(?P<next>.*?)\n'), myFile):
-        gDict = m.groupdict()
-        print gDict
-        print '\n\n'
+    for m in  re.finditer(re.compile(r'(?P<spacestring>.*?)(\n\s*\n)', re.DOTALL | re.MULTILINE), myFile.replace('\r', '')):
+        """ m is a spacestring so m is any set separated by a whitespace line.  Data is processed in blocks of these."""
+        #print m.groupdict()
+        if not re.search(re.compile(r'""".*"""', re.DOTALL), m.group()): continue #"""There are no strings to process.  Note that the docstring must be the 
+        if not re.search(re.compile(r'\s*"""', re.DOTALL), m.group().split('\n')[0]): continue # """The docstring must be at the beginning of the block"""
+        
+        gDict = m.group()
         """if the gDict contains a directiv we should find out what the directive is and then how to handle it."""
-        if _getRSTDirective(gDict['docstring']) != None:
-            directive = _getRSTDirective(gDict['docstring'])
-            print directive
+        if _getRSTDirective(gDict) != None:
+            
+            directive = _getRSTDirective(gDict)
             if directive in ['rrvnames', 'signals', 'rrgui']:  # it's one of ours!!
                 """if there are other options in the docstring then they belong to this directive, we try to get them"""
-                tags = _getRSTTag(gDict['docstring'])
+                tags = _getRSTTag(gDict)
                 if len(tags.values()) == 0: ## there were no tags returned, we have to take the data from the 'next' tag.
+                    
                     if directive == 'rrvnames':
-                        rVarNames.append(_getRvariableNames(gDict['next']))
+                        rVarNames.append(_getRvariableNames(gDict))
                     elif directive == 'signals':
-                        for s in gDict['next'].split(r'\n'):
+                        for s in gDict.split(r'\n'):
                             signals.append(_getRRSignals(s))
                     elif directive == 'rrgui':
-                        rrgui.append(_getRRGUISettings(gDict['next']))
+                        rrgui.append(_getRRGUISettings(gDict))
                 else: # the docstring has some tags in it so we use those
                     if directive == 'rrvnames':
                         rVarNames.append(tags)
@@ -104,12 +118,9 @@ def _parsefile(myFile, doc):
                     elif directive == 'rrgui':
                         rrgui.append(tags)
                         
-        elif _getRSTTag(gDict['docstring']) != None: # at least there are some tags so perhaps we can set these things if they are accepted.
-            optionTags.update(_getRSTTag(gDict['docstring']))
+        elif _getRSTTag(gDict) != None: # at least there are some tags so perhaps we can set these things if they are accepted.
+            optionTags.update(_getRSTTag(gDict))
         else: continue
-    print 'rVarNames: %s' % str(rVarNames)
-    print 'signals: %s' % str(signals)
-    print 'rrgui: %s' % str(rrgui)
     print 'optionTags: %s' % str(optionTags)
     
     """So now we need to put all of the data into an xml file"""
@@ -182,8 +193,8 @@ def _parsefile(myFile, doc):
         description = doc.createElement('description')
         display.appendChild(description)
         description.appendChild(doc.createTextNode(g.get('description', '')))
-    print 'The document'
-    print doc.toprettyxml()
+    #print 'The document'
+    #print doc.toprettyxml()
     
 def parseFile(filename, output):
     """Reads a file and parses out the relevant widget xml settings, writes to the file output an xml document representing the parsed data.  Prints success message on success."""
@@ -196,5 +207,10 @@ def parseFile(filename, output):
     doc = xml.dom.minidom.Document()
     _parsefile(myFile, doc)
     with open(output, 'w') as f:
-        f.write(doc.toprettyxml)
+        f.write(doc.toprettyxml())
     print 'Success for %s' % filename
+    
+def test():
+    parseFile('/home/covingto/RedR/r-orange/libraries/base/widgets/readFile.py', 'output.xml')
+
+test()

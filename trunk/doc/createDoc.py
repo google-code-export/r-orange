@@ -59,9 +59,20 @@ for p in packages:
         os.mkdir(os.path.join(docRoot,'libraries',package,'widgets'))
         os.mkdir(os.path.join(docRoot,'libraries',package,'qtWidgets'))
         os.mkdir(os.path.join(docRoot,'libraries',package,'signalClasses'))
-
-    libraryOut = """%s Package
+    with open(os.path.join(redRRoot, 'libraries', package, 'package.xml'), 'r') as f:
+        xml = f.read()
+        
+    libraryOut = """%(PACKAGENAME)s Package
 =================================
+
+Package XML
+~~~~~~~~~~~
+
+%(PACKAGEXML)s
+
+Contents
+~~~~~~~~
+
 Widgets:
 
 .. toctree::
@@ -85,7 +96,7 @@ Signal Classes:
    :maxdepth: 2
    
    signalClasses/*
-""" % (package)
+""" % ('PACKANGMANE':package, 'PACKAGEXML':xml)
     f = open(os.path.join(docRoot,'libraries',package,package+'.rst'),'w')
     f.write(libraryOut)
     f.close()
@@ -97,17 +108,26 @@ Signal Classes:
         print '%s' % n
         (name,ext) = os.path.splitext(os.path.basename(n))
         if name =='__init__': continue
-        
-        output = """%s
+        with open(os.path.join(redRRoot, 'libraries', package, 'meta', 'widgets', name, '.xml'), 'r') as f:
+            xml = f.read()
+        output = """%(WIDGETNAME)s
 =================================
+
+Widget XML
+~~~~~~~~~~
+
+%(WIDGETXML)s
+
+Widget TOC
+~~~~~~~~~~
    
-.. automodule:: libraries.%s.widgets.%s
+.. automodule:: libraries.%(PACKAGENAME)s.widgets.%(WIDGETNAME)s
    :members:
    :undoc-members:
    :show-inheritance:
    
-.. image:: %s.png
-""" % (name,package,name,name)
+.. image:: %(WIDGETNAME)s.png
+""" % ('WIDGETNAME':name, 'PACKAGENAME':package, 'WIDGETXML':xml)
             
         f = open(os.path.join(docRoot,'libraries',package,'widgets',name+'.rst'),'w')
         f.write(output)
