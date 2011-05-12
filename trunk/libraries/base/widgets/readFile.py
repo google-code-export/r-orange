@@ -28,6 +28,7 @@ class readFile(OWRpy):
         
         :py:class:`signals.base.RDataFrame`
     """
+    
     globalSettingsList = ['filecombo','path']
     def __init__(self, **kwargs):
         """asdfasdfasdaaaaaaaaaaaaaaaaaaaaaaaaaa"""
@@ -38,6 +39,7 @@ class readFile(OWRpy):
         self.colNames = []
         self.dataTypes = []
         self.useheader = 1
+        
         """.. rrvnames::""" ## left blank so no description        
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         
@@ -68,7 +70,7 @@ class readFile(OWRpy):
         orientation='horizontal', callback=self.scanNewFile)
         #self.filecombo.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Preferred)
         
-        """,, rrgui::
+        """.. rrgui::
             :class: base.button
             :label: Browse
             :description: Opens a file browser to search for files.

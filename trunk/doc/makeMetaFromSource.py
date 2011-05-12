@@ -31,32 +31,44 @@ def _getRSTDirective(string):
 def _getRSTTag(string):
     """Returns a tag name and value depending on if the string contains any strings of the form :(?P<tag>.*?): (?P<value>.*)(\"\"\")|$ """
     matches = {}
-    for m in re.finditer(':(?P<tag>.*?): (?P<value>.*)', string):
+    for m in re.finditer(re.compile(':(?P<tag>.*?): (?P<value>.*?)(:.*:)|(""")'), string):
         matches[m.groupdict()['tag']] = m.groupdict()['value']
-  
+    return matches
 def _getRvariableNames(string):
     """Matches the names of R variables in the setRvariableNames declaration.  Returns a a list of names"""
+    
     match = re.findall('[\"\'](?P<tag>.*?)[\"\']', string)
-    return match
+    print match
+    return [{'name':m, 'description':''} for m in match]
+        
 
 def _getRRSignals(string):
     """Parses from a call to addOutput or addInput the name and class(s) of an input or output signal, returns a tuple of signaltype [input/output], name, and signal class(s) or returns None if no match found (the end of the signals directive)"""
     if re.search('self\.inputs\.addInput', string) != None:
         call = re.search('\((?P<tag>.*)\)\ *$', string).group()
-        return ('input', call.split(',')[1].strip('\'\"()_'), call.split(',')[2])
-    elif re.serach('self\.outputs\.addOutput', string) != None:
+        return {'type':'input', 'name':call.split(',')[1].strip('\'\"()_'), 'class':call.split(',')[2], 'description':''}
+    elif re.search('self\.outputs\.addOutput', string) != None:
+        print 'Found Output'
+        print string
         call = re.search('\((?P<tag>.*)\)\ *$', string).group()
-        return ('output', call.split(',')[1].strip('\'\"()_'), call.split(',')[2])
+        print call
+        return {'type':'output', 'name':call.split(',')[1].strip('\'\"()_'), 'class':call.split(',')[2], 'description':''}
     else: return None
 
 def _getRRGUISettings(string):
     """Parses an rrgui setting and returns a tuple of class, label or None"""
-    match = re.match('redRGUI\.(?P<class>.*?)\(.*?label\ ?=[\ _\(]*[\'\"](?P<label>.*?)[\'\"]\)?,', string)
+    match = re.search('redRGUI\.(?P<class>.*?)\(.*?label ?=[ _\( ]*(?P<label>.*?)[\),(\n)]*', string)
     if match == None:
-        reutrn None
+        return None
     else:
         d = match.groupdict()
-        return (d['class'], d['label'])
+        print d
+        disc = re.search('.*?toolTip ?=[ _\(]*(?P<description>.*?)\)?,?', string)
+        if disc:
+            d['description'] = disc.groupdict()['description']
+        else:
+            d['description'] = ''
+        return {'class':d['class'], 'label':d['label'], 'description': d['description']}
      
             
 
@@ -64,11 +76,15 @@ def _parsefile(myFile, doc):
     rVarNames = []
     signals = []
     rrgui = []
-    for m in  re.finditer(re.compile(r'"""(?P<docstring>.+?)""" *\n(?P<next>.*?)\n *\n', re.DOTALL | re.MULTILINE), myFile):
+    optionTags = {}
+    for m in  re.finditer(re.compile(r'"""(?P<docstring>.+?)""".*(\n)+(?P<next>.*?)\n'), myFile):
         gDict = m.groupdict()
+        print gDict
+        print '\n\n'
         """if the gDict contains a directiv we should find out what the directive is and then how to handle it."""
         if _getRSTDirective(gDict['docstring']) != None:
             directive = _getRSTDirective(gDict['docstring'])
+            print directive
             if directive in ['rrvnames', 'signals', 'rrgui']:  # it's one of ours!!
                 """if there are other options in the docstring then they belong to this directive, we try to get them"""
                 tags = _getRSTTag(gDict['docstring'])
@@ -82,10 +98,93 @@ def _parsefile(myFile, doc):
                         rrgui.append(_getRRGUISettings(gDict['next']))
                 else: # the docstring has some tags in it so we use those
                     if directive == 'rrvnames':
-                        rVarNames.append(tags['names']
+                        rVarNames.append(tags)
+                    elif directive == 'signals':
+                        signals.append(tags)
+                    elif directive == 'rrgui':
+                        rrgui.append(tags)
                         
-        
-
+        elif _getRSTTag(gDict['docstring']) != None: # at least there are some tags so perhaps we can set these things if they are accepted.
+            optionTags.update(_getRSTTag(gDict['docstring']))
+        else: continue
+    print 'rVarNames: %s' % str(rVarNames)
+    print 'signals: %s' % str(signals)
+    print 'rrgui: %s' % str(rrgui)
+    print 'optionTags: %s' % str(optionTags)
+    
+    """So now we need to put all of the data into an xml file"""
+    documentation = doc.createElement('documentation')
+    doc.appendChild(documentation)
+    
+    """The name tag"""
+    name = doc.createElement('name')
+    documentation.appendChild(name)
+    name.appendChild(doc.createTextNode(optionTags.get('Name', '')))
+    """The icon tag"""
+    icon = doc.createElement('icon')
+    documentation.appendChild(icon)
+    icon.appendChild(doc.createTextNode(optionTags.get('Icon', '')))
+    """The summary tag"""
+    summary = doc.createElement('summary')
+    documentation.appendChild(summary)
+    summary.appendChild(doc.createTextNode(optionTags.get('Summary', '')))
+    """The details tag"""
+    details = doc.createElement('details')
+    documentation.appendChild(details)
+    details.appendChild(doc.createTextNode(optionTags.get('Details', '')))
+    """The tags tag"""
+    tags = doc.createElement('tags')
+    documentation.appendChild(tags)
+    for t in [s.strip() for s in optionTags.get('Tags', '').split(',')]:
+        tag = doc.createElement('tag')
+        tags.appendChild(tag)
+        tag.appendChild(doc.createTextNode(t))
+    """The signals tag"""
+    sig = doc.createElement('signals')
+    documentation.appendChild(sig)
+    for s in [si for si in signals if si != None]:
+        if s.get('type', None) == 'input':
+            input = doc.createElement('input')
+            sig.appendChild(input)
+            signalClass = doc.createElement('signalClass')
+            input.appendChild(signalClass)
+            signalClass.appendChild(doc.createTextNode(s.get('class', '')))
+            name = doc.createElement('name')
+            input.appendChild(name)
+            name.appendChild(doc.createTextNode(s.get('name', '')))
+            description = doc.createElement('description')
+            input.appendChild(description)
+            description.appendChild(doc.createTextNode(s.get('description', '')))
+        elif s.get('type', None) == 'output':
+            output = doc.createElement('output')
+            sig.appendChild(output)
+            signalClass = doc.createElement('signalClass')
+            output.appendChild(signalClass)
+            signalClass.appendChild(doc.createTextNode(s.get('class', '')))
+            name = doc.createElement('name')
+            output.appendChild(name)
+            name.appendChild(doc.createTextNode(s.get('name', '')))
+            description = doc.createElement('description')
+            output.appendChild(description)
+            description.appendChild(doc.createTextNode(s.get('description', '')))
+    """The GUIElements tag"""
+    GUIElements = doc.createElement('GUIElements')
+    documentation.appendChild(GUIElements)
+    for g in [g for g in rrgui if g != None]:
+        display = doc.createElement('GUIElements')
+        GUIElements.appendChild(display)
+        name = doc.createElement('name')
+        display.appendChild(name)
+        name.appendChild(doc.createTextNode(g.get('label', '')))
+        cla = doc.createElement('class')
+        display.appendChild(cla)
+        cla.appendChild(doc.createTextNode(g.get('class', '')))
+        description = doc.createElement('description')
+        display.appendChild(description)
+        description.appendChild(doc.createTextNode(g.get('description', '')))
+    print 'The document'
+    print doc.toprettyxml()
+    
 def parseFile(filename, output):
     """Reads a file and parses out the relevant widget xml settings, writes to the file output an xml document representing the parsed data.  Prints success message on success."""
     fileStrings = []
