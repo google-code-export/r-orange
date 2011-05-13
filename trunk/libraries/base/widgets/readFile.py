@@ -1,11 +1,12 @@
 """
-:Name: Read File
-:Icon: readfile.png
-:Authors: Red-R Development Team
-:Summary: Read data files into Red-R.
-:Details: This widget will read data from tab, comma, or space delimited text files. On Microsoft Windows it will also ready Excel files. Click the browse button to search your computer for the file to read. Select how the columns are delimited. On data read or change in these options, the first few lines of the file will be scanned. R will try to automaticlly determine the type of the column. The column data types can be changed. Once the data, column and row header information is properly selected click Load Data to read the full file into Red-R and send forward.
-:Outputs: `signals.base.RDataFrame`
-"""
+ :Name: `Read File`
+ :Icon: `readfile.png`
+ :Authors: `Red-R Development Team`
+ :Summary: `Read data files into Red-R.`
+ :Details: `This widget will read data from tab, comma, or space delimited text files. On Microsoft Windows it will also ready Excel files. Click the browse button to search your computer for the file to read. Select how the columns are delimited. On data read or change in these options, the first few lines of the file will be scanned. R will try to automaticlly determine the type of the column. The column data types can be changed. Once the data, column and row header information is properly selected click Load Data to read the full file into Red-R and send forward.`
+ :Outputs: `signals.base.RDataFrame`
+ :Tags: `Data Input`
+ """
 
 from OWRpy import *
 import redRGUI, signals
@@ -23,12 +24,9 @@ import libraries.base.signalClasses.RDataFrame as rdf
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class readFile(OWRpy):
-    """
-        asdfasdfsd
-        
+    """ asdfasdfsd
         :py:class:`signals.base.RDataFrame`
     """
-    
     globalSettingsList = ['filecombo','path']
     def __init__(self, **kwargs):
         """asdfasdfasdaaaaaaaaaaaaaaaaaaaaaaaaaa"""
@@ -45,7 +43,7 @@ class readFile(OWRpy):
         
         
         """.. signals::"""  ## left blank so no description
-        self.outputs.addOutput('od1', _('Output Data'), signals.base.RDataFrame)
+        self.outputs.addOutput('od1', _('Output Data'), signals.base.RDataFrame) # :description: `A regular data table`
         
         #GUI
         area = redRGUI.base.widgetBox(self.controlArea,orientation='horizontal',alignment=Qt.AlignTop)       
@@ -62,25 +60,25 @@ class readFile(OWRpy):
         addSpace = True, orientation='vertical')
         box = redRGUI.base.widgetBox(self.browseBox,orientation='horizontal')
         """.. rrgui::
-            :class: base.fileNamesComboBox
-            :label: Files
-            :description: Sets the file that the widget is reading and immediatly scans the file.
+            :class: `base.fileNamesComboBox`
+            :label: `Files`
+            :description: `Sets the file that the widget is reading and immediatly scans the file.`
         """
         self.filecombo = redRGUI.base.fileNamesComboBox(box, label=_('Files'), displayLabel=False,
         orientation='horizontal', callback=self.scanNewFile)
         #self.filecombo.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Preferred)
         
         """.. rrgui::
-            :class: base.button
-            :label: Browse
-            :description: Opens a file browser to search for files.
+            :class: `base.button`
+            :label: `Browse`
+            :description: `Opens a file browser to search for files.`
         """
         redRGUI.base.button(box, label = _('Browse'), callback = self.browseFile)
         
         """.. rrgui::""" # this rrgui call is blank so the parser has to get the info from the .py file directly...
         self.fileType = redRGUI.base.radioButtons(options, label=_('File Type'),
         buttons = [_('Text'), _('Excel'), _('Clipboard')], setChecked=_('Text'),callback=self.scanNewFile,
-        orientation='horizontal')
+        orientation='horizontal') # """ :description: `A set of buttons to pull data from a text file, excel sheet, or clipboard.` """
         #self.fileType.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Preferred)
         self.fileType.hide()
 

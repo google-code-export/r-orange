@@ -19,9 +19,23 @@ Several new "directives" are defined as follows:
 """
 
 import re
-inDocString = False
 
-
+def countLeadingSpaces(string):
+    import re
+    count = 0
+    for s in string:
+        if re.match(r'\s', s): count += 1
+        else: break
+    return count
+    
+def indentParseStringToXML(string):
+    """Takes a string and returns a dict parsed by :tags:.  Similar to xml parsing but uses the :tag: syntax and indentation"""
+    import xml.dom.minidom
+    doc = xml.dom.minidom.Document()
+    for m in re.finditer(re.compile(r'\s*:.+?:( `.+?`)?', re.DOTALL), string):
+        """now m is a string that starts with some number of indents, a :tag: and a `description` (perhaps)"""
+        
+    
 def _getRSTDirective(string):
     """Returns an rst directive or None in the form \.\.\ (?P<directive>.*?)::"""
     match = re.search('\.\.\ (?P<directive>.*?)::', string)
@@ -44,7 +58,7 @@ def _getRvariableNames(string):
     match = re.search(r'self\.setRvariableNames\((?P<names>.*)\)', string)
     if match:
         match = match.group().split(',')
-        return [{'name':m.replace('\'', '').replace('"', ''), 'description':''} for m in match]
+        return [{'name':m.replace('\'', '').replace('"', '')} for m in match]
     else: return None
 
 def _getRRSignals(string):
@@ -59,7 +73,7 @@ def _getRRSignals(string):
         print string
         desc = _getRSTTag(string)
         if desc:
-            dic.update(desc.groupdict())
+            dic.update(desc)
         else:
             dic.update({'description':''})
         if dic['description'] == None: dic['description'] = ''
@@ -69,6 +83,7 @@ def _getRRSignals(string):
 
 def _getRRGUISettings(string):
     """Parses an rrgui setting and returns a tuple of class, label or None"""
+    print 
     match = re.search(re.compile('redRGUI\.(?P<class>.*?)\(.*?label *= *(_\()?[\\\'\\\"](?P<label>.*?)[\\\'\\\"](\))?', re.DOTALL), string)
     if not match: return None
     d = match.groupdict()
@@ -100,24 +115,30 @@ def _parsefile(myFile, doc):
             directive = _getRSTDirective(gDict)
             if directive in ['rrvnames', 'signals', 'rrgui']:  # it's one of ours!!
                 """if there are other options in the docstring then they belong to this directive, we try to get them"""
-                tags = _getRSTTag(gDict)
-                if len(tags.values()) == 0: ## there were no tags returned, we have to take the data from the 'next' tag.
+                
+                if directive == 'rrvnames':
+                    rVarNames += _getRvariableNames(gDict)
+                elif directive == 'signals':
+                    for s in gDict.split(r'\n'):
+                        signals.append(_getRRSignals(s))
+                elif directive == 'rrgui':
                     
-                    if directive == 'rrvnames':
-                        rVarNames.append(_getRvariableNames(gDict))
-                    elif directive == 'signals':
-                        for s in gDict.split(r'\n'):
-                            signals.append(_getRRSignals(s))
-                    elif directive == 'rrgui':
-                        rrgui.append(_getRRGUISettings(gDict))
-                else: # the docstring has some tags in it so we use those
-                    if directive == 'rrvnames':
-                        rVarNames.append(tags)
-                    elif directive == 'signals':
-                        signals.append(tags)
-                    elif directive == 'rrgui':
-                        rrgui.append(tags)
-                        
+                    g = _getRRGUISettings(gDict)
+                    
+                    if g:
+                        gg = _getRSTTag(gDict)
+                        if gg:
+                            print gg
+                            g.update(gg)
+                            rrgui.append(g)  # we update in case there are more specific tags in place.  The update is done after the orriginal is in place.
+                            print g
+                        else:
+                            rrgui.append(g)
+                    else:
+                        g = _getRSTTag(gDict)
+                        if g:
+                            rrgui.append(g)
+                
         elif _getRSTTag(gDict) != None: # at least there are some tags so perhaps we can set these things if they are accepted.
             optionTags.update(_getRSTTag(gDict))
         else: continue
@@ -182,7 +203,8 @@ def _parsefile(myFile, doc):
     GUIElements = doc.createElement('GUIElements')
     documentation.appendChild(GUIElements)
     for g in [g for g in rrgui if g != None]:
-        display = doc.createElement('GUIElements')
+        print g
+        display = doc.createElement('display')
         GUIElements.appendChild(display)
         name = doc.createElement('name')
         display.appendChild(name)
@@ -193,6 +215,13 @@ def _parsefile(myFile, doc):
         description = doc.createElement('description')
         display.appendChild(description)
         description.appendChild(doc.createTextNode(g.get('description', '')))
+    """The citation tag"""
+    citation = doc.createElement('citation')
+    documentation.appendChild(citation)
+    author = doc.createElement('author')
+    citation.appendChild(author)
+    author.appendChild(doc.createTextNode(optionTags.get('Author', '')))
+    
     #print 'The document'
     #print doc.toprettyxml()
     
@@ -211,6 +240,6 @@ def parseFile(filename, output):
     print 'Success for %s' % filename
     
 def test():
-    parseFile('/home/covingto/RedR/r-orange/libraries/base/widgets/readFile.py', 'output.xml')
+    parseFile('C:/Python26/lib/site-packages/RedRTrunk/libraries/base/widgets/readFile.py', 'output.xml')
 
 test()

@@ -103,7 +103,12 @@ Signal Classes:
     
 ###############################################    
     widgets = glob.glob(os.path.join(redRRoot,'libraries',package,'widgets','*.py'))
-    
+    try:
+        if '__init__.py' not in widgets:
+            f = open(os.path.join(docRoot,'libraries',package,'widgets','__init__.py'),'w')
+            f.write('')
+            f.close()
+    except: pass
     for n in widgets:
         print '%s' % n
         (name,ext) = os.path.splitext(os.path.basename(n))
@@ -138,12 +143,17 @@ Widget TOC
             os.system(cmd)
 ###############################################
     qtwidgets = glob.glob(os.path.join(redRRoot,'libraries',package,'qtWidgets','*.py'))
-
+    try:
+        if '__init__.py' not in qtwidgets:
+            f = open(os.path.join(docRoot,'libraries',package,'qtWidgets','__init__.py'),'w')
+            f.write('')
+            f.close()
+    except: pass
     for n in qtwidgets:
         print '%s' % n
         (name,ext) = os.path.splitext(os.path.basename(n))
         if name =='__init__': continue
-
+        #if ext != '.py': continue
         
         output = """%s
 =================================
@@ -164,12 +174,19 @@ Widget TOC
             os.system(cmd)
 ###############################################
     signalClasses = glob.glob(os.path.join(redRRoot,'libraries',package,'signalClasses','*.py'))
-
+    try:
+        if '__init__.py' not in signalClasses:
+            print 'Creating init for %s.widgets' % package
+            f = open(os.path.join(docRoot,'libraries',package,'signalClasses','__init__.py'),'w')
+            f.write('')
+            f.close()
+    except:
+        pass
     for n in signalClasses:
         print '%s' % n
         (name,ext) = os.path.splitext(os.path.basename(n))
         if name =='__init__': continue
-        
+        #if ext != '.py': continue
         output = """%s
 =================================
    
