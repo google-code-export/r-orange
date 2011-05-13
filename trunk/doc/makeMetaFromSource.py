@@ -19,89 +19,129 @@ Several new "directives" are defined as follows:
 """
 
 import re
-
-def countLeadingSpaces(string):
-    import re
-    count = 0
-    for s in string:
-        if re.match(r'\s', s): count += 1
-        else: break
-    return count
-    
-def indentParseStringToXML(string):
-    """Takes a string and returns a dict parsed by :tags:.  Similar to xml parsing but uses the :tag: syntax and indentation"""
-    import xml.dom.minidom
-    doc = xml.dom.minidom.Document()
-    for m in re.finditer(re.compile(r'\s*:.+?:( `.+?`)?', re.DOTALL), string):
-        """now m is a string that starts with some number of indents, a :tag: and a `description` (perhaps)"""
+import xml.dom.minidom
+doc = None
+document = None
         
     
-def _getRSTDirective(string):
+def _getXMLDirective(string):
     """Returns an rst directive or None in the form \.\.\ (?P<directive>.*?)::"""
-    match = re.search('\.\.\ (?P<directive>.*?)::', string)
+    match = re.search('<.*?/>', string)
     if not match: return None
-    else: return match.groupdict()['directive']
+    else: return match.group(0)
 
-def _getRSTTag(string):
+def _insertXMLTree(main, new):
+    for n in new.childNodes:
+        """Iterate over the child nodes"""
+        try:
+            print n.tagName
+            newMain = makeNode(main, n.tagName)
+            #print 'attributes', n.attributes
+            if n.attributes:
+                print n.attributes
+                for i in range(n.attributes.length):
+                    attNode = n.attributes.item(i)
+                    newMain.setAttribute(attNode.name, attNode.value)
+            #or att in n.
+            _insertXMLTree(newMain, n)
+        except AttributeError:
+            """We hit a text node so we insert the text node into the xml"""
+            print n.nodeValue
+            addTextNode(main, n.nodeValue)
+            
+def _getDirectiveNodes(string):
     """Returns a tag name and value depending on if the string contains any strings of the form :(?P<tag>.*?): (?P<value>.*)(\"\"\")|$ """
-    matches = {}
-    for m in re.finditer(re.compile(r'\s:(?P<tag>.+?): `(?P<value>.+?)`', re.DOTALL), string):
-        #print m.groupdict()
-        if m.groupdict()['tag'] != None and m.groupdict()['value'] != None:
-            matches[m.groupdict()['tag']] = m.groupdict()['value']
-        #print 'Parsed string to return these tags %s' % matches
-    return matches
+    global documentation
+    global doc
+    match = re.search(re.compile(r'<.+?/>\s*?(?P<xmlModel><.*>)', re.DOTALL), string)
+    if match:
+        nstring = '<header>%s</header>' % match.groupdict()['xmlModel']
+        #print nstring
+        tempdoc = xml.dom.minidom.parseString(nstring)
+        
+        first = tempdoc.firstChild
+        ## now we have to do the job of moving through the xml and making new nodes from the parent doc
+        #newMain = document
+        #doc.appendChild(newMain)
+        new = _insertXMLTree(documentation, first)
+        #print documentation.toprettyxml()
+    else: return None
     
 def _getRvariableNames(string):
     """Matches the names of R variables in the setRvariableNames declaration.  Returns a a list of names"""
     #print 'R Var names string %s' % string
-    match = re.search(r'self\.setRvariableNames\((?P<names>.*)\)', string)
-    if match:
-        match = match.group().split(',')
-        return [{'name':m.replace('\'', '').replace('"', '')} for m in match]
-    else: return None
+    rvarnames = doc.createElement('RVarNames')
+    
+    for m in re.finditer(r'''['"](?P<name>.+?)['"]''', string):
+        if m.group('name') in ['\'', '\"', '']: continue ## protect from inserting quotes
+        name = doc.createElement('Name')
+        rvarnames.appendChild(name)
+        name.appendChild(doc.createTextNode(m.group('name')))
+    #print rvarnames.toprettyxml()
+    return rvarnames
 
 def _getRRSignals(string):
     """Parses from a call to addOutput or addInput the name and class(s) of an input or output signal, returns a tuple of signaltype [input/output], name, and """
     print string
-    match = re.search(re.compile(r"""self\.(?P<type>.*?)s\.add.*?\(['"](?P<id>.*?)['"].*?['"](?P<name>.*?)['"]""", re.DOTALL), string) # *?signals\.(?P<description>.*?)[,\)$]
-    if match:
-        dic = match.groupdict()
-        cla = re.search(re.compile(r"""signals\.(?P<class>.+?)[,\)\s]""",re.DOTALL), string)
-        if cla:
-            dic.update(cla.groupdict())
-        print string
-        desc = _getRSTTag(string)
-        if desc:
-            dic.update(desc)
-        else:
-            dic.update({'description':''})
-        if dic['description'] == None: dic['description'] = ''
-        #print dic
-        return dic
-    else: return None
+    typeMatch = re.search(re.compile(r'self\.(?P<type>.*?)s.add', re.DOTALL), string)
+    if typeMatch:
+        myType = doc.createElement(typeMatch.groupdict()['type'])
+        ## now get the function call
+        call = re.search(re.compile(r'''\(['"](?P<id>.+?)['"]\s*,.*?['"](?P<name>.*?)['"].*?,'''), string)
+        print call
+        if call:
+            myid = doc.createElement('id')
+            myType.appendChild(myid)
+            myid.appendChild(doc.createTextNode(str(call.groupdict()['id'])))
+            myName = doc.createElement('name')
+            myType.appendChild(myName)
+            myName.appendChild(doc.createTextNode(str(call.groupdict()['name'])))
+            for sc in re.finditer(r'''signals\.(?P<sc>.+?)[\],\)]''', string):
+                sigclass = doc.createElement('signalClass')
+                myType.appendChild(sigclass)
+                sigclass.appendChild(doc.createTextNode(sc.group('sc')))
+            description = re.search(r'''<description>(?P<desc>.+?)</description>''', string)
+            if description:
+                desc = doc.createElement('description')
+                myType.appendChild(desc)
+                desc.appendChild(doc.createTextNode(description.groupdict()['desc']))
+    #print myType.toprettyxml()
+    return myType
+
+
 
 def _getRRGUISettings(string):
     """Parses an rrgui setting and returns a tuple of class, label or None"""
-    print 
-    match = re.search(re.compile('redRGUI\.(?P<class>.*?)\(.*?label *= *(_\()?[\\\'\\\"](?P<label>.*?)[\\\'\\\"](\))?', re.DOTALL), string)
-    if not match: return None
-    d = match.groupdict()
-    disc = re.search(re.compile('.*toolTip *= *(_\()?[\\\'\\\"](?P<description>.*?)[\\\'\\\"]', re.DOTALL), string)
-    if disc:
-        d.update(disc.groupdict())
-    else:
-        d['description'] = ''
-    if d['description'] == None: d['description'] = ''
-    return d
+    guiElement = doc.createElement('GUIElement')
+    
+    match = re.search(re.compile(r'''redRGUI\.(?P<class>.*?)\(.*?label *=.*['"](?P<label>.*?)['"]''', re.DOTALL), string)
+    if match:
+        cla = makeNode(guiElement, 'class')
+        addTextNode(cla, match.group('class'))
+        label = makeNode(guiElement, 'lable')
+        addTextNode(label, match.group('label'))
+        description = makeNode(guiElement, 'description')
+        desc = re.search(r'''<description>(?P<desc>.+?)</description>''', string)
+        if desc:
+            addTextNode(description, desc.group('desc'))
+    
+    return guiElement
      
-            
+def makeNode(parent, text):
+    newNode = doc.createElement(str(text))
+    parent.appendChild(newNode)
+    return newNode
+    
+def addTextNode(parent, text):
+    global doc
+    parent.appendChild(doc.createTextNode(str(text)))
+
 
 def _parsefile(myFile, doc):
-    rVarNames = []
-    signals = []
-    rrgui = []
-    optionTags = {}
+    global documentation
+    documentation = doc.createElement('documentation')
+    doc.appendChild(documentation)
+    guiElements = makeNode(documentation, 'GUIElements')
     for m in  re.finditer(re.compile(r'(?P<spacestring>.*?)(\n\s*\n)', re.DOTALL | re.MULTILINE), myFile.replace('\r', '')):
         """ m is a spacestring so m is any set separated by a whitespace line.  Data is processed in blocks of these."""
         #print m.groupdict()
@@ -110,123 +150,123 @@ def _parsefile(myFile, doc):
         
         gDict = m.group()
         """if the gDict contains a directiv we should find out what the directive is and then how to handle it."""
-        if _getRSTDirective(gDict) != None:
-            
-            directive = _getRSTDirective(gDict)
-            if directive in ['rrvnames', 'signals', 'rrgui']:  # it's one of ours!!
+        directive = _getXMLDirective(gDict)
+        if directive != None:
+            print directive
+            if directive in ['<rrvnames/>', '<signals/>', '<rrgui/>', '<header/>']:  # it's one of ours!!
                 """if there are other options in the docstring then they belong to this directive, we try to get them"""
-                
-                if directive == 'rrvnames':
-                    rVarNames += _getRvariableNames(gDict)
-                elif directive == 'signals':
+                if directive == '<header/>':
+                    """The header can only be xml so we just get the xml structure from the tag"""
+                    headerXML = _getDirectiveNodes(gDict)
+                    #print headerXML
+                    if headerXML:
+                        for n in headerXML.childNodes:
+                            print 'node xml', n.toprettyxml()
+                            documentation.appendChild(n)
+                    #print '##########'
+                    #print doc.toprettyxml()
+                    #print '##########'
+                elif directive == '<rrvnames/>':
+                    """rvarnames can only be a list of names so we parse that from the string"""
+                    documentation.appendChild(_getRvariableNames(gDict))
+                elif directive == '<signals/>':
+                    """Signals may contain a description after the signal these are parsed line by line."""
+                    signals = doc.createElement('signals')
+                    documentation.appendChild(signals)
                     for s in gDict.split(r'\n'):
-                        signals.append(_getRRSignals(s))
-                elif directive == 'rrgui':
-                    
-                    g = _getRRGUISettings(gDict)
-                    
-                    if g:
-                        gg = _getRSTTag(gDict)
-                        if gg:
-                            print gg
-                            g.update(gg)
-                            rrgui.append(g)  # we update in case there are more specific tags in place.  The update is done after the orriginal is in place.
-                            print g
-                        else:
-                            rrgui.append(g)
-                    else:
-                        g = _getRSTTag(gDict)
-                        if g:
-                            rrgui.append(g)
+                        signals.appendChild(_getRRSignals(s))
+                elif directive == '<rrgui/>':
+                    guiElements.appendChild(_getRRGUISettings(gDict))
                 
         elif _getRSTTag(gDict) != None: # at least there are some tags so perhaps we can set these things if they are accepted.
             optionTags.update(_getRSTTag(gDict))
         else: continue
-    print 'optionTags: %s' % str(optionTags)
+    #print 'optionTags: %s' % str(optionTags)
     
-    """So now we need to put all of the data into an xml file"""
-    documentation = doc.createElement('documentation')
-    doc.appendChild(documentation)
+    #"""So now we need to put all of the data into an xml file"""
+    #documentation = doc.createElement('documentation')
+    #doc.appendChild(documentation)
     
-    """The name tag"""
-    name = doc.createElement('name')
-    documentation.appendChild(name)
-    name.appendChild(doc.createTextNode(optionTags.get('Name', '')))
-    """The icon tag"""
-    icon = doc.createElement('icon')
-    documentation.appendChild(icon)
-    icon.appendChild(doc.createTextNode(optionTags.get('Icon', '')))
-    """The summary tag"""
-    summary = doc.createElement('summary')
-    documentation.appendChild(summary)
-    summary.appendChild(doc.createTextNode(optionTags.get('Summary', '')))
-    """The details tag"""
-    details = doc.createElement('details')
-    documentation.appendChild(details)
-    details.appendChild(doc.createTextNode(optionTags.get('Details', '')))
-    """The tags tag"""
-    tags = doc.createElement('tags')
-    documentation.appendChild(tags)
-    for t in [s.strip() for s in optionTags.get('Tags', '').split(',')]:
-        tag = doc.createElement('tag')
-        tags.appendChild(tag)
-        tag.appendChild(doc.createTextNode(t))
-    """The signals tag"""
-    sig = doc.createElement('signals')
-    documentation.appendChild(sig)
-    for s in [si for si in signals if si != None]:
-        if s.get('type', None) == 'input':
-            input = doc.createElement('input')
-            sig.appendChild(input)
-            signalClass = doc.createElement('signalClass')
-            input.appendChild(signalClass)
-            signalClass.appendChild(doc.createTextNode(s.get('class', '')))
-            name = doc.createElement('name')
-            input.appendChild(name)
-            name.appendChild(doc.createTextNode(s.get('name', '')))
-            description = doc.createElement('description')
-            input.appendChild(description)
-            description.appendChild(doc.createTextNode(s.get('description', '')))
-        elif s.get('type', None) == 'output':
-            output = doc.createElement('output')
-            sig.appendChild(output)
-            signalClass = doc.createElement('signalClass')
-            output.appendChild(signalClass)
-            signalClass.appendChild(doc.createTextNode(s.get('class', '')))
-            name = doc.createElement('name')
-            output.appendChild(name)
-            name.appendChild(doc.createTextNode(s.get('name', '')))
-            description = doc.createElement('description')
-            output.appendChild(description)
-            description.appendChild(doc.createTextNode(s.get('description', '')))
-    """The GUIElements tag"""
-    GUIElements = doc.createElement('GUIElements')
-    documentation.appendChild(GUIElements)
-    for g in [g for g in rrgui if g != None]:
-        print g
-        display = doc.createElement('display')
-        GUIElements.appendChild(display)
-        name = doc.createElement('name')
-        display.appendChild(name)
-        name.appendChild(doc.createTextNode(g.get('label', '')))
-        cla = doc.createElement('class')
-        display.appendChild(cla)
-        cla.appendChild(doc.createTextNode(g.get('class', '')))
-        description = doc.createElement('description')
-        display.appendChild(description)
-        description.appendChild(doc.createTextNode(g.get('description', '')))
-    """The citation tag"""
-    citation = doc.createElement('citation')
-    documentation.appendChild(citation)
-    author = doc.createElement('author')
-    citation.appendChild(author)
-    author.appendChild(doc.createTextNode(optionTags.get('Author', '')))
+    #"""The name tag"""
+    #name = doc.createElement('name')
+    #documentation.appendChild(name)
+    #name.appendChild(doc.createTextNode(optionTags.get('Name', '')))
+    #"""The icon tag"""
+    #icon = doc.createElement('icon')
+    #documentation.appendChild(icon)
+    #icon.appendChild(doc.createTextNode(optionTags.get('Icon', '')))
+    #"""The summary tag"""
+    #summary = doc.createElement('summary')
+    #documentation.appendChild(summary)
+    #summary.appendChild(doc.createTextNode(optionTags.get('Summary', '')))
+    #"""The details tag"""
+    #details = doc.createElement('details')
+    #documentation.appendChild(details)
+    #details.appendChild(doc.createTextNode(optionTags.get('Details', '')))
+    #"""The tags tag"""
+    #tags = doc.createElement('tags')
+    #documentation.appendChild(tags)
+    #for t in [s.strip() for s in optionTags.get('Tags', '').split(',')]:
+        #tag = doc.createElement('tag')
+        #tags.appendChild(tag)
+        #tag.appendChild(doc.createTextNode(t))
+    #"""The signals tag"""
+    #sig = doc.createElement('signals')
+    #documentation.appendChild(sig)
+    #for s in [si for si in signals if si != None]:
+        #if s.get('type', None) == 'input':
+            #input = doc.createElement('input')
+            #sig.appendChild(input)
+            #signalClass = doc.createElement('signalClass')
+            #input.appendChild(signalClass)
+            #signalClass.appendChild(doc.createTextNode(s.get('class', '')))
+            #name = doc.createElement('name')
+            #input.appendChild(name)
+            #name.appendChild(doc.createTextNode(s.get('name', '')))
+            #description = doc.createElement('description')
+            #input.appendChild(description)
+            #description.appendChild(doc.createTextNode(s.get('description', '')))
+        #elif s.get('type', None) == 'output':
+            #output = doc.createElement('output')
+            #sig.appendChild(output)
+            #signalClass = doc.createElement('signalClass')
+            #output.appendChild(signalClass)
+            #signalClass.appendChild(doc.createTextNode(s.get('class', '')))
+            #name = doc.createElement('name')
+            #output.appendChild(name)
+            #name.appendChild(doc.createTextNode(s.get('name', '')))
+            #description = doc.createElement('description')
+            #output.appendChild(description)
+            #description.appendChild(doc.createTextNode(s.get('description', '')))
+    #"""The GUIElements tag"""
+    #GUIElements = doc.createElement('GUIElements')
+    #documentation.appendChild(GUIElements)
+    #for g in [g for g in rrgui if g != None]:
+        #print g
+        #display = doc.createElement('display')
+        #GUIElements.appendChild(display)
+        #name = doc.createElement('name')
+        #display.appendChild(name)
+        #name.appendChild(doc.createTextNode(g.get('label', '')))
+        #cla = doc.createElement('class')
+        #display.appendChild(cla)
+        #cla.appendChild(doc.createTextNode(g.get('class', '')))
+        #description = doc.createElement('description')
+        #display.appendChild(description)
+        #description.appendChild(doc.createTextNode(g.get('description', '')))
+    #"""The citation tag"""
+    #citation = doc.createElement('citation')
+    #documentation.appendChild(citation)
+    #author = doc.createElement('author')
+    #citation.appendChild(author)
+    #author.appendChild(doc.createTextNode(optionTags.get('Author', '')))
     
     #print 'The document'
     #print doc.toprettyxml()
     
 def parseFile(filename, output):
     """Reads a file and parses out the relevant widget xml settings, writes to the file output an xml document representing the parsed data.  Prints success message on success."""
+    global doc
     fileStrings = []
     with open(filename, 'r') as f:
         myFile = f.read()
@@ -241,5 +281,6 @@ def parseFile(filename, output):
     
 def test(path):
     parseFile(path, 'output.xml')
+    
 import sys
 test(sys.argv[1])

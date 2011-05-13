@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Dot Chart</name>
-    <icon>plot.png</icon>
+    <icon>default.png</icon>
     <tags> 
         <tag>Prototypes</tag> 
     </tags>

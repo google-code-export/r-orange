@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Raw to Compositional Data</name>
-    <icon>raw2comp.png</icon>
+    <icon>default.png</icon>
     <tags> 
         <tag>Compositions</tag> 
     </tags>

@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Heatmap2</name>
-    <icon>heatmap.png</icon>
+    <icon>default.png</icon>
     <tags> 
         <tag>Prototypes</tag> 
     </tags>

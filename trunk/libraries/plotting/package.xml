@@ -1,11 +1,11 @@
 <package>
     <Name>plotting</Name>
     <Author>Red-R Development Team</Author>
-    <RLibraries>graphics, stats, ggplot2</RLibraries>
+    <RLibraries>graphics, stats, ggplot2, hexbin, gregmisc</RLibraries>
     <Version>
-        <Number>1.21</Number>
+        <Number>1.21001</Number>
         <Stability>Generally Good Some Experimental</Stability>
-        <Date>2010-05-30</Date>
+        <Date>2011-05-13</Date>
     </Version>
     <License>GPL (>= 2.0)</License>
     <Dependencies></Dependencies>
