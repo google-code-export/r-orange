@@ -1,0 +1,69 @@
+{#
+    sphinxdoc/layout.html
+    ~~~~~~~~~~~~~~~~~~~~~
+
+    Sphinx layout template for the sphinxdoc theme.
+
+    :copyright: Copyright 2007-2011 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+#}
+
+
+
+{% extends "basic_layout.html" %}
+
+{% block extrahead %}
+    <meta name="revisit-after" content="1 day" /> 
+    <link rel="shortcut icon" href="/sites/default/files/pixture_reloaded_favicon.ico" type="image/x-icon" /> 
+    <link type="text/css" rel="stylesheet" media="all" href="/sites/default/files/css/css_74e02214c7d1e9f603516c612a36b7ba.css" /> 
+    <link type="text/css" rel="stylesheet" media="all" href="/sites/all/themes/pixture_reloaded/sf/css/superfish.css?g" /> 
+    <!--[if IE]>
+    <link type="text/css" rel="stylesheet" media="all" href="/sites/all/themes/pixture_reloaded/ie.css" >
+    <![endif]--> 
+    <script type="text/javascript" src="/sites/default/files/js/js_d7054cd3e13e3745c9bc196686ab4752.js"></script> 
+
+{% endblock %}
+
+{% block header %} 
+    <div id="header">
+
+        <div id="logo"><a href="/" title="Home page" rel="home"><img src="/sites/default/files/pixture_reloaded_logo.png" alt=" logo"></a></div>
+
+        <div id="head-elements">
+
+        <div id="branding">
+
+        <div id="site-slogan"><em>visual programming for R </em></div>
+        </div> <!-- /#branding -->
+
+        </div> <!-- /#head-elements -->
+
+        <!-- Primary || Superfish -->
+        <div id="primary">
+            <div id="primary-inner">
+                <ul class="links primary-links"><li class="menu-218 first"><a href="/" title="">Home</a></li>
+                    <li class="menu-215"><a href="/downloads" title="Downloads">Downloads</a></li>
+                    <li class="menu-2969"><a href="/redrpackages" title="Red-R Packages">Packages</a></li>
+                    <li class="menu-212"><a href="/documentation" title="Documentation">Documentation</a></li>
+                    <li class="menu-214"><a href="/development-documentation" title="Development">Development</a></li>
+                    <li class="menu-114 active-trail active"><a href="/forum" title="" class="active">Forums</a></li>
+                    <li class="menu-225"><a href="/blogs/red-r-development-team" title="">Blog</a></li>
+                    <li class="menu-217"><a href="/contacts" title="Contacts">Contacts</a></li>
+                    <li class="menu-3004 last"><a href="/Journal" title="Journal">Journal</a></li>
+                </ul>                   
+            </div> <!-- /inner -->
+        </div> <!-- /primary || superfish -->
+        
+    </div>
+{% endblock %}
+
+{# put the sidebar before the body #}
+{% block sidebar1 %}{{ sidebar() }}{% endblock %}
+{% block sidebar2 %}{% endblock %}
+{% block relbar2 %}{% endblock %}
+
+{% block footer %}
+    <div id="footer" class="region region-footer">
+      <div id="footer-message">&copy; Copyright 2011, Anup Parikh, Kyle Covington. Created using Sphinx 1.0.7.</div> 
+    </div>
+{% endblock %}

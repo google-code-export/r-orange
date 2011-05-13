@@ -96,7 +96,7 @@ Signal Classes:
    :maxdepth: 2
    
    signalClasses/*
-""" % ('PACKANGMANE':package, 'PACKAGEXML':xml)
+""" % {'PACKAGENAME':package, 'PACKAGEXML':xml}
     f = open(os.path.join(docRoot,'libraries',package,package+'.rst'),'w')
     f.write(libraryOut)
     f.close()
@@ -113,7 +113,7 @@ Signal Classes:
         print '%s' % n
         (name,ext) = os.path.splitext(os.path.basename(n))
         if name =='__init__': continue
-        with open(os.path.join(redRRoot, 'libraries', package, 'meta', 'widgets', name, '.xml'), 'r') as f:
+        with open(os.path.join(redRRoot, 'libraries', package, 'meta', 'widgets', name + '.xml'), 'r') as f:
             xml = f.read()
         output = """%(WIDGETNAME)s
 =================================
@@ -132,7 +132,7 @@ Widget TOC
    :show-inheritance:
    
 .. image:: %(WIDGETNAME)s.png
-""" % ('WIDGETNAME':name, 'PACKAGENAME':package, 'WIDGETXML':xml)
+""" % {'WIDGETNAME':name, 'PACKAGENAME':package, 'WIDGETXML':xml}
             
         f = open(os.path.join(docRoot,'libraries',package,'widgets',name+'.rst'),'w')
         f.write(output)

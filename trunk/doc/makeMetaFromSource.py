@@ -239,7 +239,7 @@ def parseFile(filename, output):
         f.write(doc.toprettyxml())
     print 'Success for %s' % filename
     
-def test():
-    parseFile('C:/Python26/lib/site-packages/RedRTrunk/libraries/base/widgets/readFile.py', 'output.xml')
-
-test()
+def test(path):
+    parseFile(path, 'output.xml')
+import sys
+test(sys.argv[1])
