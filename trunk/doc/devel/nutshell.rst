@@ -27,3 +27,15 @@ Signals are what is transmitted between widgets.  Signals all inherit from BaseR
 When a widget connects to another the input channel receives either None or a signal type specified in the input constructor.  Core promises you that you are getting a signal of the type specified (unless a package developer lies to us).  Signals have the ability to convert their type and return a modified signal class that matches the input signal class.
 
 For example:  In *R* a data.frame is a special type of list.  Let's suppose there is a widget that can take a list and display the names for subsetting (like List Selector).  If we make a data.frame signal with Read Files, it would be really nice to be able to connect that with the list selection widget.  When a connection is made between Read Files and List Selector Core sees that List Selector wants an RList signal and that RDataFrame has a method for converting to an RList.  Core calls the method for conversion in RDataFrame and sends the returned RList to List Selector.
+
+We use this paradigm of data conversion to move data from one form into another using signals so that widgets always get data in a form that they expect.  Developers can extend this for their own packages.  Suppose that the developer wanted to execute a function that returns a Developer1Object in R.  The Developer1Object can be seen as a list of elements so the Developer1ObjectSignal can inherit from the RList signal class and should have a method for coercing to this class explicitly.  Also, by putting the Developer1Object into a Developer1ObjectSignal will make connecting to widgets that only take Developer2ObjectSignal (or any socket that doesn't list Developer1ObjectSignal or one of it's conversion classes) much more difficult.  The signal conversion system helps the user to see what data can be connected to what widgets.
+
+The other side of the signal class system is that widgets must be designed to handle a signal of the data type that they ask for.  Setting a widget to receive RVariable signal classes will work for all R enabled widgets if the user only connects "good" signals but will fail if the user connects "bad" signals.
+
+
+Conclusions
+~~~~~~~~~~~~~
+
+Now that you have a better idea of what Red-R does you can begin to think about how to build packages using widget and signals.  In general package developers will use special functions that generate data that can be understood only by their own package.  Custom signal classes should be employed to transmit this data and keep your widgets stable.
+
+Much more documentation is available in the developer documentation.
