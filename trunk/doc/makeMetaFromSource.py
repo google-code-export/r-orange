@@ -103,21 +103,27 @@ def _getRRGUISettings(string):
 
 def _parsefile(myFile):
     d = {'widgetXML':'', 'signals':[], 'rrgui':[], 'rrvarnammes':[], 'rpackages':[], 'helpdoc':[], 'name':''}
+    
     # parse the widgetXML and handle that.
     widgetXML = re.search(getWidgetXML, myFile)
-    if widgetXML:
-        d['widgetXML'] = widgetXML.group('widgetXML')
+    if not widgetXML: raise Exception('Widget does not have a widgetXML section')
+    d['widgetXML'] = widgetXML.group('widgetXML')
         
-    # get any loaded R libraries
-    for m in re.finditer(getRLibraryCall, myFile):
-        for q in re.finditer(getQuote, m.group()):
-            d['rpackages'].append(q.group('quote'))
+    # get any loaded R libraries, wrapped in a try because some widgets might not load R libraries
+    try:
+        for m in re.finditer(getRLibraryCall, myFile):
+            for q in re.finditer(getQuote, m.group()):
+                d['rpackages'].append(q.group('quote'))
+    except:pass
     
     if not re.search(getName, myFile): raise Exception('There is not a name tag.')
     d['name'] = re.search(getName, myFile).group('name')
     
-    for m in re.finditer(getHelpDoc, myFile):
-        d['helpdoc'].append(m.group('helpdoc'))
+    # get the help documentation, wrapped in a try because some widget might not have any help documentation
+    try:
+        for m in re.finditer(getHelpDoc, myFile):
+            d['helpdoc'].append(m.group('helpdoc'))
+    except: pass
     
     for m in  re.finditer(getBlock, myFile.replace('\r', '')):
         """ m is a block of code, that is a docstring followed by one block of code.  The block must start with tripple quotes."""
@@ -181,14 +187,14 @@ def makeHelp(d):
     s += '\n\n'
     s += 'Interface\n((((((((((((\n\n'
     for gui in d['rrgui']:
-        s += '%s\n%s\n\n' % (gui['label'], '{'*len(gui['label']))
+        s += '%s\n%s\n\n' % (gui['label'], '}'*len(gui['label']))
         s += 'Description\n{{{{{{{{{{{{{{{\n\n'
         s += '%s\n\n' % gui['description']
         s += '%s\n\n' % gui['rst']
         s += 'Class: %s\n\n' % gui['class']
     s += 'Signals\n((((((((((((((\n\n'
     for sig in d['signals']:
-        s += '%s\n%s\n\n' % (sig['name'], '{'*len(sig['name']))
+        s += '%s\n%s\n\n' % (sig['name'], '}'*len(sig['name']))
         s += 'Classes: %s\n\n' % ','.join(sig['signals'])
         s += 'Description\n{{{{{{{{{{{{{{{\n\n'
         s += '%s\n\n' % sig['description']

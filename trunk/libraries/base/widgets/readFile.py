@@ -1,3 +1,12 @@
+"""Read File widget
+
+This widget reads in text files from either a delimited file or the clipboard.  Clipboard files are typically space separated so values with spaces in the strings should be adjusted.
+
+.. helpdoc::
+This widget will read data from tab, comma, or space delimited text files. On Microsoft Windows it will also ready Excel files. Click the browse button to search your computer for the file to read. Select how the columns are delimited. On data read or change in these options, the first few lines of the file will be scanned. R will try to automaticlly determine the type of the column. The column data types can be changed. Once the data, column and row header information is properly selected click Load Data to read the full file into Red-R and send forward.
+"""
+
+
 """<widgetXML>
     <name>
         Read File
@@ -8,9 +17,6 @@
     <summary>
         Read data files into Red-R.
     </summary>
-    <details>
-        This widget will read data from tab, comma, or space delimited text files. On Microsoft Windows it will also ready Excel files. Click the browse button to search your computer for the file to read. Select how the columns are delimited. On data read or change in these options, the first few lines of the file will be scanned. R will try to automaticlly determine the type of the column. The column data types can be changed. Once the data, column and row header information is properly selected click Load Data to read the full file into Red-R and send forward.
-    </details>
     <tags>
         <tag priority="10">
             Data Input
@@ -75,8 +81,28 @@ class readFile(OWRpy):
         addSpace = True, orientation='vertical')
         box = redRGUI.base.widgetBox(self.browseBox,orientation='horizontal')
         
+        """.. helpdoc::
+This is a helpdoc directive in the code.  I want to point out to the user that somehting interesting might be happening in the Files comboBox.  It makes sense for me to do this here because this is where the code is for the files widget but this will actually appear in the header of the document.
+
+The files comboBox can read in data of these types.
+=======  ========
+file     .txt
+         .csv
+         .xls
+=======  ========
+        
+        """
+        
         """.. rrgui::
             :description: `Sets the file that the widget is reading and immediatly scans the file.`
+           ::rawrst::
+This is some raw restructured text that will appear with the files comboBox.  Basically the files comboBox allows the user to browse for files.
+
+=======  ========
+file     .txt
+         .csv
+         .xls
+=======  ========
         """
         self.filecombo = redRGUI.base.fileNamesComboBox(box, label=_('Files'), displayLabel=False,
         orientation='horizontal', callback=self.scanNewFile)
@@ -92,7 +118,7 @@ class readFile(OWRpy):
         buttons = [_('Text'), _('Excel'), _('Clipboard')], setChecked=_('Text'),callback=self.scanNewFile,
         orientation='horizontal')
         #self.fileType.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Preferred)
-        self.fileType.hide()
+        #self.fileType.hide()
 
         """.. rrgui::"""
         self.delimiter = redRGUI.base.radioButtons(options, label=_('Column Seperator'),
@@ -114,6 +140,14 @@ class readFile(OWRpy):
         toolTips=[_('a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.')],
         orientation='vertical',callback=self.scanNewFile)
         
+        """.. helpdoc::
+This is another helpdoc.  This doc tells the user that there is something interesting happening in Select Row Names.  This help doc should appear after the one about the files.
+
+I want to put in an image below that likely isn't there.
+
+.. image:: asdfasdf.png
+
+"""
         """.. rrgui::"""
         self.rowNamesCombo = redRGUI.base.comboBox(self.headersBox,label=_('Select Row Names'), 
         orientation='vertical',callback=self.scanFile)
@@ -279,8 +313,8 @@ class readFile(OWRpy):
         #print scan
 
         fn = self.filecombo.getCurrentFile()
-        if not fn and not scan == 'clipboard':
-            print _('No file selected')
+        if not fn and not self.fileType.getChecked() ==_('Clipboard'):
+            self.status.setText(_('No file selected'))
             return 
         if not self.fileType.getChecked() ==_('Clipboard'):
             self.R('%s <- "%s"' % (self.Rvariables['filename'] , fn)) 
