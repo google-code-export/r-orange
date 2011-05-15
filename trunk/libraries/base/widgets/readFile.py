@@ -1,4 +1,4 @@
-"""<header/>
+"""<widgetXML>
     <name>
         Read File
     </name>
@@ -16,6 +16,12 @@
             Data Input
         </tag>
     </tags>
+    </widgetXML>
+"""
+
+""".. helpdoc::
+
+Just some simple help documentation.  Nothing really special.
 """
 
 
@@ -46,12 +52,13 @@ class readFile(OWRpy):
         self.dataTypes = []
         self.useheader = 1
         
-        """<rrvnames/>""" ## left blank so no description        
+        """.. rrvnames::""" ## left blank so no description        
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         
         
-        """<signals/>"""  ## left blank so no description
-        self.outputs.addOutput('od1', _('Output Data'), signals.base.RDataFrame) #"""<description>A data table read in by the widget</description>"""
+        """.. rrsignals::
+            :description: `A data table read in by the widget`"""
+        self.outputs.addOutput('od1', _('Output Data'), signals.base.RDataFrame) #""":description:</description>"""
         
         #GUI
         area = redRGUI.base.widgetBox(self.controlArea,orientation='horizontal',alignment=Qt.AlignTop)       
@@ -68,46 +75,46 @@ class readFile(OWRpy):
         addSpace = True, orientation='vertical')
         box = redRGUI.base.widgetBox(self.browseBox,orientation='horizontal')
         
-        """<rrgui/>
-            <description>Sets the file that the widget is reading and immediatly scans the file.</description>
+        """.. rrgui::
+            :description: `Sets the file that the widget is reading and immediatly scans the file.`
         """
         self.filecombo = redRGUI.base.fileNamesComboBox(box, label=_('Files'), displayLabel=False,
         orientation='horizontal', callback=self.scanNewFile)
         #self.filecombo.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Preferred)
         
-        """<rrgui/>
-            <description>Opens a file browser to search for files.</description>
+        """.. rrgui::
+            :description:Opens a file browser to search for files.</description>
         """
         redRGUI.base.button(box, label = _('Browse'), callback = self.browseFile)
         
-        """<rrgui/>""" # this rrgui call is blank so the parser has to get the info from the .py file directly...
+        """.. rrgui::""" # this rrgui call is blank so the parser has to get the info from the .py file directly...
         self.fileType = redRGUI.base.radioButtons(options, label=_('File Type'),
         buttons = [_('Text'), _('Excel'), _('Clipboard')], setChecked=_('Text'),callback=self.scanNewFile,
         orientation='horizontal')
         #self.fileType.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Preferred)
         self.fileType.hide()
 
-        """<rrgui/>"""
+        """.. rrgui::"""
         self.delimiter = redRGUI.base.radioButtons(options, label=_('Column Seperator'),
         buttons = [_('Tab'), _('Comma'), _('Space'),_('Other')], setChecked=_('Tab'),callback=self.scanNewFile,
         orientation='horizontal')
         
-        """<rrgui/>"""
+        """.. rrgui::"""
         self.otherSepText = redRGUI.base.lineEdit(self.delimiter.box,label=_('Seperator'), displayLabel=False,
         text=';',width=20,orientation='horizontal')
         QObject.connect(self.otherSepText, SIGNAL('textChanged(const QString &)'), self.otherSep)
         
-        """<rrgui/>"""
+        """.. rrgui::"""
         self.headersBox = redRGUI.base.groupBox(options, label=_("Row and Column Names"), 
         addSpace = True, orientation ='horizontal')
         
-        """<rrgui/>"""
+        """.. rrgui::"""
         self.hasHeader = redRGUI.base.checkBox(self.headersBox,label=_('Column Header'), displayLabel=False, 
         buttons = [_('Column Headers')],setChecked=[_('Column Headers')],
         toolTips=[_('a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.')],
         orientation='vertical',callback=self.scanNewFile)
         
-        """<rrgui/>"""
+        """.. rrgui::"""
         self.rowNamesCombo = redRGUI.base.comboBox(self.headersBox,label=_('Select Row Names'), 
         orientation='vertical',callback=self.scanFile)
         #self.rowNamesCombo.setMaximumWidth(250)        
@@ -118,7 +125,7 @@ class readFile(OWRpy):
         split = redRGUI.base.widgetBox(self.otherOptionsBox,orientation='horizontal')
         # split.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
-        """<rrgui/>"""
+        """.. rrgui::"""
         self.otherOptions = redRGUI.base.checkBox(split,label=_('Options'), displayLabel=False,
         buttons=['fill','strip.white','blank.lines.skip',
         'allowEscapes','StringsAsFactors'],
@@ -134,23 +141,23 @@ class readFile(OWRpy):
         #box2.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
         split.layout().setAlignment(box2,Qt.AlignTop)
         
-        """<rrgui/>"""
+        """.. rrgui::"""
         self.quote = redRGUI.base.lineEdit(box2,text='"',label=_('Quote:'), width=50, orientation='horizontal')
         
-        """<rrgui/>"""
+        """.. rrgui::"""
         self.decimal = redRGUI.base.lineEdit(box2, text = '.', label = _('Decimal:'), width = 50, orientation = 'horizontal', toolTip = _('Decimal sign, some countries may want to use the `.`'))
         
-        """<rrgui/>"""
+        """.. rrgui::"""
         self.numLinesScan = redRGUI.base.lineEdit(box2,text='10',label=_('# Lines to Preview:'), 
         toolTip=_('The maximum number of rows to read in while previewing the file. Negative values are ignored.'), 
         width=50,orientation='horizontal')
         
-        """<rrgui/>"""
+        """.. rrgui::"""
         self.numLinesReads = redRGUI.base.lineEdit(box2,text='-1',label=_('# Lines to Read:'), 
         toolTip=_('Number of lines to read from file. Read whole file if 0 or negative values.'), 
         width=50,orientation='horizontal')
 
-        """<rrgui/>"""
+        """.. rrgui::"""
         self.numLinesSkip = redRGUI.base.lineEdit(box2,text='0',label=_('# Lines to Skip:'),
         toolTip=_("The number of lines of the data file to skip before beginning to read data."), 
         width=50,orientation='horizontal')
@@ -160,29 +167,29 @@ class readFile(OWRpy):
         # toolTip = _('Load the file from the clipboard, you can do this if\ndata has been put in the clipboard using the copy command.'), 
         # callback = self.loadClipboard)
         
-        """<rrgui/>"""
+        """.. rrgui::"""
         rescan = redRGUI.base.button(holder, label = _('Rescan File'),toolTip=_("Preview a small portion of the file"),
         callback = self.scanNewFile)
         
-        """<rrgui/>"""
+        """.. rrgui::"""
         load = redRGUI.base.button(holder, label = _('Load File'),toolTip=_("Load the file into Red-R"),
         callback = self.loadFile)
         holder.layout().setAlignment(Qt.AlignRight)
 
-        """<rrgui/>"""
+        """.. rrgui::"""
         self.FileInfoBox = redRGUI.base.groupBox(options, label = _("File Info"), addSpace = True)       
         self.infob = redRGUI.base.widgetLabel(self.FileInfoBox, label='',wordWrap=True)
         self.infoc = redRGUI.base.widgetLabel(self.FileInfoBox, label='')
         self.FileInfoBox.setHidden(True)
         
         
-        """<rrgui/>"""
+        """.. rrgui::"""
         self.tableArea = redRGUI.base.widgetBox(area)
         self.tableArea.setMinimumWidth(500)
         #self.tableArea.setHidden(True)
         self.tableArea.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.MinimumExpanding)
 
-        """<rrgui/>"""
+        """.. rrgui::"""
         self.scanarea = redRGUI.base.textEdit(self.tableArea,label= _('File Preview'),includeInReports=False)
         self.scanarea.setLineWrapMode(QTextEdit.NoWrap)
         self.scanarea.setReadOnly(True)
