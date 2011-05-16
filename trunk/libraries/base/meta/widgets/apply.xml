@@ -52,8 +52,8 @@ While applied across the columns would result in: [7, 8, 9].
     <citation>
     <!-- [REQUIRED] -->
         <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
+            <authorname>Red-R Core Team</authorname>
+            <authorcontact>http://www.red-r.org/contact</authorcontact>
         </author>
         <reference>http://www.red-r.org</reference>
     </citation>

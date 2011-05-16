@@ -22,12 +22,11 @@ This widget will read data from tab, comma, or space delimited text files. On Mi
             Data Input
         </tag>
     </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
     </widgetXML>
-"""
-
-""".. helpdoc::
-
-Just some simple help documentation.  Nothing really special.
 """
 
 
@@ -81,17 +80,6 @@ class readFile(OWRpy):
         addSpace = True, orientation='vertical')
         box = redRGUI.base.widgetBox(self.browseBox,orientation='horizontal')
         
-        """.. helpdoc::
-This is a helpdoc directive in the code.  I want to point out to the user that somehting interesting might be happening in the Files comboBox.  It makes sense for me to do this here because this is where the code is for the files widget but this will actually appear in the header of the document.
-
-The files comboBox can read in data of these types.
-=======  ========
-file     .txt
-         .csv
-         .xls
-=======  ========
-        
-        """
         
         """.. rrgui::
             :description: `Sets the file that the widget is reading and immediatly scans the file.`
@@ -109,18 +97,22 @@ file     .txt
         #self.filecombo.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Preferred)
         
         """.. rrgui::
-            :description:Opens a file browser to search for files.</description>
+            :description: `Opens a file browser to search for files.`
         """
         redRGUI.base.button(box, label = _('Browse'), callback = self.browseFile)
         
-        """.. rrgui::""" # this rrgui call is blank so the parser has to get the info from the .py file directly...
+        """.. rrgui::
+            :description: `Set the type of file that will be scanned in.  Note that the Excel option is only available on Windown machines`""" 
         self.fileType = redRGUI.base.radioButtons(options, label=_('File Type'),
         buttons = [_('Text'), _('Excel'), _('Clipboard')], setChecked=_('Text'),callback=self.scanNewFile,
         orientation='horizontal')
         #self.fileType.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Preferred)
         #self.fileType.hide()
 
-        """.. rrgui::"""
+        """.. rrgui::
+            :description: `Set the type of separation in the file.  Note that if reading from the clipboard the file will likely be Space delimited.`
+            
+        """
         self.delimiter = redRGUI.base.radioButtons(options, label=_('Column Seperator'),
         buttons = [_('Tab'), _('Comma'), _('Space'),_('Other')], setChecked=_('Tab'),callback=self.scanNewFile,
         orientation='horizontal')
