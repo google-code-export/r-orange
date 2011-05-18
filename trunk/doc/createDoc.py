@@ -52,158 +52,158 @@ for n in coreFiles:
 packages = glob.glob(os.path.join(redRRoot,'libraries','*','package.xml'))
 if not os.path.exists(os.path.join(docRoot, 'libraries')): os.mkdir(os.path.join(docRoot, 'libraries'))
 
-for p in packages:
-    package = os.path.split(os.path.split(p)[0])[1]
-    if not os.path.exists(os.path.join(docRoot,'libraries',package)):
-        os.mkdir(os.path.join(docRoot,'libraries',package))
-        os.mkdir(os.path.join(docRoot,'libraries',package,'widgets'))
-        os.mkdir(os.path.join(docRoot,'libraries',package,'qtWidgets'))
-        os.mkdir(os.path.join(docRoot,'libraries',package,'signalClasses'))
-    with open(os.path.join(redRRoot, 'libraries', package, 'package.xml'), 'r') as f:
-        xml = f.read()
+# for p in packages:
+    # package = os.path.split(os.path.split(p)[0])[1]
+    # if not os.path.exists(os.path.join(docRoot,'libraries',package)):
+        # os.mkdir(os.path.join(docRoot,'libraries',package))
+        ##os.mkdir(os.path.join(docRoot,'libraries',package,'widgets'))
+        # os.mkdir(os.path.join(docRoot,'libraries',package,'qtWidgets'))
+        # os.mkdir(os.path.join(docRoot,'libraries',package,'signalClasses'))
+    # with open(os.path.join(redRRoot, 'libraries', package, 'package.xml'), 'r') as f:
+        # xml = f.read()
         
-    libraryOut = """%(PACKAGENAME)s Package
-=================================
+    # libraryOut = """%(PACKAGENAME)s Package
+# =================================
 
-Package XML
-~~~~~~~~~~~
+# Package XML
+# ~~~~~~~~~~~
 
-%(PACKAGEXML)s
+# %(PACKAGEXML)s
 
-Contents
-~~~~~~~~
+# Contents
+# ~~~~~~~~
 
-Widgets:
+# Widgets:
 
-.. toctree::
-   :glob:
-   :maxdepth: 2
+# .. toctree::
+   # :glob:
+   # :maxdepth: 2
    
-   widgets/*
+   # widgets/*
    
-QT Widgets:
+# QT Widgets:
 
-.. toctree::
-   :glob:
-   :maxdepth: 2
+# .. toctree::
+   # :glob:
+   # :maxdepth: 2
    
-   qtWidgets/*
+   # qtWidgets/*
 
-Signal Classes:
+# Signal Classes:
 
-.. toctree::
-   :glob:
-   :maxdepth: 2
+# .. toctree::
+   # :glob:
+   # :maxdepth: 2
    
-   signalClasses/*
-""" % {'PACKAGENAME':package, 'PACKAGEXML':xml}
-    f = open(os.path.join(docRoot,'libraries',package,package+'.rst'),'w')
-    f.write(libraryOut)
-    f.close()
+   # signalClasses/*
+# """ % {'PACKAGENAME':package, 'PACKAGEXML':xml}
+    # f = open(os.path.join(docRoot,'libraries',package,package+'.rst'),'w')
+    # f.write(libraryOut)
+    # f.close()
     
-###############################################    
-    widgets = glob.glob(os.path.join(redRRoot,'libraries',package,'widgets','*.py'))
-    try:
-        if '__init__.py' not in widgets:
-            f = open(os.path.join(docRoot,'libraries',package,'widgets','__init__.py'),'w')
-            f.write('')
-            f.close()
-    except: pass
-    for n in widgets:
-        print '%s' % n
-        (name,ext) = os.path.splitext(os.path.basename(n))
-        if name =='__init__': continue
-        with open(os.path.join(redRRoot, 'libraries', package, 'meta', 'widgets', name + '.xml'), 'r') as f:
-            xml = f.read()
-        output = """%(WIDGETNAME)s
-=================================
+##############################################    
+    # widgets = glob.glob(os.path.join(redRRoot,'libraries',package,'widgets','*.py'))
+    # try:
+        # if '__init__.py' not in widgets:
+            # f = open(os.path.join(docRoot,'libraries',package,'widgets','__init__.py'),'w')
+            # f.write('')
+            # f.close()
+    # except: pass
+    # for n in widgets:
+        # print '%s' % n
+        # (name,ext) = os.path.splitext(os.path.basename(n))
+        # if name =='__init__': continue
+        # with open(os.path.join(redRRoot, 'libraries', package, 'meta', 'widgets', name + '.xml'), 'r') as f:
+            # xml = f.read()
+        # output = """%(WIDGETNAME)s
+# =================================
 
-Widget XML
-~~~~~~~~~~
+# Widget XML
+# ~~~~~~~~~~
 
-%(WIDGETXML)s
+# %(WIDGETXML)s
 
-Widget TOC
-~~~~~~~~~~
+# Widget TOC
+# ~~~~~~~~~~
    
-.. automodule:: libraries.%(PACKAGENAME)s.widgets.%(WIDGETNAME)s
-   :members:
-   :undoc-members:
-   :show-inheritance:
+# .. automodule:: libraries.%(PACKAGENAME)s.widgets.%(WIDGETNAME)s
+   # :members:
+   # :undoc-members:
+   # :show-inheritance:
    
-.. image:: %(WIDGETNAME)s.png
-""" % {'WIDGETNAME':name, 'PACKAGENAME':package, 'WIDGETXML':xml}
+# .. image:: %(WIDGETNAME)s.png
+# """ % {'WIDGETNAME':name, 'PACKAGENAME':package, 'WIDGETXML':xml}
             
-        f = open(os.path.join(docRoot,'libraries',package,'widgets',name+'.rst'),'w')
-        f.write(output)
-        f.close()
+        # f = open(os.path.join(docRoot,'libraries',package,'widgets',name+'.rst'),'w')
+        # f.write(output)
+        # f.close()
         
-        if makeDeps == 1:
-            cmd = graphCmd % (n,os.path.join(docRoot,'libraries',package,'widgets',name))
-            os.system(cmd)
-###############################################
-    qtwidgets = glob.glob(os.path.join(redRRoot,'libraries',package,'qtWidgets','*.py'))
-    try:
-        if '__init__.py' not in qtwidgets:
-            f = open(os.path.join(docRoot,'libraries',package,'qtWidgets','__init__.py'),'w')
-            f.write('')
-            f.close()
-    except: pass
-    for n in qtwidgets:
-        print '%s' % n
-        (name,ext) = os.path.splitext(os.path.basename(n))
-        if name =='__init__': continue
-        #if ext != '.py': continue
+        # if makeDeps == 1:
+            # cmd = graphCmd % (n,os.path.join(docRoot,'libraries',package,'widgets',name))
+            # os.system(cmd)
+##############################################
+    # qtwidgets = glob.glob(os.path.join(redRRoot,'libraries',package,'qtWidgets','*.py'))
+    # try:
+        # if '__init__.py' not in qtwidgets:
+            # f = open(os.path.join(docRoot,'libraries',package,'qtWidgets','__init__.py'),'w')
+            # f.write('')
+            # f.close()
+    # except: pass
+    # for n in qtwidgets:
+        # print '%s' % n
+        # (name,ext) = os.path.splitext(os.path.basename(n))
+        # if name =='__init__': continue
+        ##if ext != '.py': continue
         
-        output = """%s
-=================================
+        # output = """%s
+# =================================
    
-.. automodule:: libraries.%s.qtWidgets.%s
-   :members:
-   :undoc-members:
-   :show-inheritance:
+# .. automodule:: libraries.%s.qtWidgets.%s
+   # :members:
+   # :undoc-members:
+   # :show-inheritance:
    
-.. image:: %s.png
-""" % (name,package,name,name)
+# .. image:: %s.png
+# """ % (name,package,name,name)
             
-        f = open(os.path.join(docRoot,'libraries',package,'qtWidgets',name+'.rst'),'w')
-        f.write(output)
-        f.close()
-        if makeDeps == 1:
-            cmd = graphCmd % (n,os.path.join(docRoot,'libraries',package,'qtWidgets',name))
-            os.system(cmd)
-###############################################
-    signalClasses = glob.glob(os.path.join(redRRoot,'libraries',package,'signalClasses','*.py'))
-    try:
-        if '__init__.py' not in signalClasses:
-            print 'Creating init for %s.widgets' % package
-            f = open(os.path.join(docRoot,'libraries',package,'signalClasses','__init__.py'),'w')
-            f.write('')
-            f.close()
-    except:
-        pass
-    for n in signalClasses:
-        print '%s' % n
-        (name,ext) = os.path.splitext(os.path.basename(n))
-        if name =='__init__': continue
-        #if ext != '.py': continue
-        output = """%s
-=================================
+        # f = open(os.path.join(docRoot,'libraries',package,'qtWidgets',name+'.rst'),'w')
+        # f.write(output)
+        # f.close()
+        # if makeDeps == 1:
+            # cmd = graphCmd % (n,os.path.join(docRoot,'libraries',package,'qtWidgets',name))
+            # os.system(cmd)
+##############################################
+    # signalClasses = glob.glob(os.path.join(redRRoot,'libraries',package,'signalClasses','*.py'))
+    # try:
+        # if '__init__.py' not in signalClasses:
+            # print 'Creating init for %s.widgets' % package
+            # f = open(os.path.join(docRoot,'libraries',package,'signalClasses','__init__.py'),'w')
+            # f.write('')
+            # f.close()
+    # except:
+        # pass
+    # for n in signalClasses:
+        # print '%s' % n
+        # (name,ext) = os.path.splitext(os.path.basename(n))
+        # if name =='__init__': continue
+        ##if ext != '.py': continue
+        # output = """%s
+# =================================
    
-.. automodule:: libraries.%s.signalClasses.%s
-   :members:
-   :undoc-members:
-   :show-inheritance:
+# .. automodule:: libraries.%s.signalClasses.%s
+   # :members:
+   # :undoc-members:
+   # :show-inheritance:
    
-.. image:: %s.png
-""" % (name,package,name,name)
+# .. image:: %s.png
+# """ % (name,package,name,name)
             
-        f = open(os.path.join(docRoot,'libraries',package,'signalClasses',name+'.rst'),'w')
-        f.write(output)
-        f.close()
-        if makeDeps == 1:
-            cmd = graphCmd % (n,os.path.join(docRoot,'libraries',package,'signalClasses',name))
-            os.system(cmd)
+        # f = open(os.path.join(docRoot,'libraries',package,'signalClasses',name+'.rst'),'w')
+        # f.write(output)
+        # f.close()
+        # if makeDeps == 1:
+            # cmd = graphCmd % (n,os.path.join(docRoot,'libraries',package,'signalClasses',name))
+            # os.system(cmd)
 
 ##################################################        
 shutil.rmtree(os.path.join(os.path.abspath(docRoot),'_build'),True)

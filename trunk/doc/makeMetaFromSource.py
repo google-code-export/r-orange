@@ -1,4 +1,3 @@
-"""Parse a .py file to extract tags to generate a widget meta file.
 
 
 
@@ -26,6 +25,7 @@ getAuthor = re.compile(r'<author>(?P<authorBlock>.*?)</author>', re.DOTALL)
 getAuthorName = re.compile(r'<authorname>(?P<authorname>.*?)</authorname>', re.DOTALL)
 getAuthorContact = re.compile(r'<authorcontact>(?P<authorcontact>.*?)</authorcontact>', re.DOTALL)
         
+getSignalXML = re.compile(r'<signalXML>.*?</signalXML>', re.DOTALL)
     
 def _getXMLDirective(string):
     """Returns an rst directive or None in the form \.\.\ (?P<directive>.*?)::"""
@@ -138,7 +138,7 @@ def _parsefile(myFile):
     return d
     
     
-def parseFile(filename, outputXML, outputHelp, outputDevel):
+def parseWidgetFile(filename, outputXML, outputHelp):
     """Reads a file and parses out the relevant widget xml settings, writes to the file output an xml document representing the parsed data.  Prints success message on success."""
     global doc
     fileStrings = []
@@ -151,8 +151,6 @@ def parseFile(filename, outputXML, outputHelp, outputDevel):
         f.write(makeXML(d))
     with open(outputHelp, 'w') as f:
         f.write(makeHelp(d))
-    #with open(outputDevel, 'w') as f:
-    #    f.write(makeDevel(d)
     print 'Success for %s' % filename
     
 def makeXML(d):
@@ -203,9 +201,16 @@ def makeHelp(d):
     s += ','.join(d['rpackages'])
     return s
 
-def test(path):
+def parseSignalFile(filename, outputXML):
+    with open(filename, 'r') as f:
+        myFile = f.read()
+    x = re.search(getSignalXML, myFile)
+    if x:
+        with open(outputXML, 'w') as f:
+            f.write(x.group())
+# def test(path):
 
-    parseFile(path, 'outputXML.xml', 'outputTest.txt', 'outputDevel.txt')
+    # parseFile(path, 'outputXML.xml', 'outputTest.txt', 'outputDevel.txt')
     
-import sys
-test(sys.argv[1])
+# import sys
+# test(sys.argv[1])
