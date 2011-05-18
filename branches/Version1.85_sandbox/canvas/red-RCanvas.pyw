@@ -468,7 +468,9 @@ if __name__ == "__main__":
     # freeze_support()
     wasUpdated = 0
     #if redREnviron.settings['checkForUpdates'] and not redREnviron.settings['updateAvailable']:
-    wasUpdated = updates()
+    try:
+        wasUpdated = updates()
+    except: pass
     
     print 'updated ended with', wasUpdated
     if wasUpdated == 0:
