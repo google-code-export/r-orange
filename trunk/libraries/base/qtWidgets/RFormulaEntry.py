@@ -1,5 +1,7 @@
-## RFormula; provides a toolkit for editing R formulas where an R funciton may need a formulas
+"""R Formula Entry.
 
+Formula; provides a toolkit for editing R formulas where an R funciton may need a formulas
+"""
 from redRGUI import widgetState
 
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -41,6 +43,7 @@ class RFormulaEntry(widgetState):
         self.modelLineEdit = lineEdit(self.modelBox, label = _('model'), displayLabel=False)
         self.label = label
     def clear(self):
+        """Clears the items from the entry"""
         self.elementsListBox.clear()
         self.outcomeVariable.clear()
         self.clearFormula()
@@ -50,6 +53,7 @@ class RFormulaEntry(widgetState):
         #self.outcomeVariable.clear()
         self.updateEnabled(1)
     def addItems(self, items):
+        """Adds items to the listBox and the comboBox for outcomes and formula"""
         self.clearFormula()
         self.elementsListBox.clear()
         self.outcomeVariable.addItem('')
@@ -58,7 +62,7 @@ class RFormulaEntry(widgetState):
         self.elementsListBox.addItems(items)
         
     def updateEnabled(self, pos):
-        # 1 is the beginning state of the widget, 0 is the state after an element is selected
+        """pos can be 0 or 1.  1 is the beginning state of the widget, 0 is the state after an element is selected"""
         self.elementsListBox.setEnabled(pos)
         self.plusButton.setEnabled(not pos)
         self.colonButton.setEnabled(not pos)
@@ -80,6 +84,7 @@ class RFormulaEntry(widgetState):
         self.updateEnabled(1)
         
     def Formula(self):
+        """Returns a tuple with the first value being the value of the outcomeVariable and the second being the text in the libraries.  This can be placed directly into a structure such as '%s~%s' % RFormulaEntry_instance.Formula()"""
         return (unicode(self.outcomeVariable.currentText()), unicode(self.modelLineEdit.text())) # returns the left and right of the formula.  Users are expected to insert the ~ where appropriate.
     def getSettings(self):
         # itemsText = []

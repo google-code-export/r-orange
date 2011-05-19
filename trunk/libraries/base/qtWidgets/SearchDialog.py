@@ -1,3 +1,8 @@
+"""Search Dialog.
+
+Shows a popup dialog with a webView embedded into it.  An optional url can be supplied at construction time.
+"""
+
 from redRGUI import widgetState
 
 from libraries.base.qtWidgets.webViewBox import webViewBox

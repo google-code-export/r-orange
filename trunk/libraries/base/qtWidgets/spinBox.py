@@ -1,3 +1,10 @@
+"""Spin Box.
+
+A spin box is used to select an integer or float value.  Values can be typed directly or changed using the up and down arrows.
+
+Use the function value() to get the current value (as a float! so 2 is returned as 2.0).
+"""
+
 import redRGUI
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox

@@ -1,3 +1,9 @@
+"""Radio Buttons
+
+radioButtons are buttons that can be clicked with a click event unclicking all other buttons in the group.
+"""
+
+
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.groupBox import groupBox

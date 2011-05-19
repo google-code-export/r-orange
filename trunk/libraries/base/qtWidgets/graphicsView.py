@@ -1,5 +1,7 @@
-## redRGUI Graphics View.  A graphics view used for graphing R graphs, this should be as general as possible with an eye to some degree of automation in assignment of items.  
+"""Graphics View.  
 
+A graphics view used for graphing R graphs, this should be as general as possible with an eye to some degree of automation in assignment of items.  
+"""
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtSvg import *
@@ -197,6 +199,7 @@ class graphicsView(QGraphicsView, widgetState):
         if self._replotAfterChange:
             self.replot()
     def setExtrasLineEditEnabled(self, enabled):
+        """Shows or hides the line edit which is normally shown at the bottom of the plot.  Parameters entered into this text edit will be appended to the call to plot."""
         if enabled:
             self.extrasLineEdit.show()
         else:
@@ -268,6 +271,7 @@ class graphicsView(QGraphicsView, widgetState):
     ## Interaction Functions #
     ##########################
     def clear(self):
+        """Clears the plot"""
         if self.scene():
             self.scene().clear()
         else:
@@ -372,7 +376,7 @@ class graphicsView(QGraphicsView, widgetState):
         self.scene().update()
 
     def returnImage(self):
-        ## generate a rendering of the graphicsView and return the image
+        """generate a rendering of the graphicsView and return the image"""
         
         size = self.scene().sceneRect().size()
         image = QImage(int(self.scene().width()), int(self.scene().height()), QImage.Format_ARGB32_Premultiplied)
@@ -384,6 +388,7 @@ class graphicsView(QGraphicsView, widgetState):
         
             
     def addImage(self, image = None, imageType = None):
+        """Adds an image to the plot area"""
         if image == None:
             image = self.imageFileName
         if not self.scene():
@@ -526,6 +531,7 @@ class graphicsView(QGraphicsView, widgetState):
         #self.R('par('+inj+')')
         return inj
     def _startRDevice(self, imageType):
+        """Starts the R Device, calling outside of this will cause hellacious errors."""
         dwidth = self._dwidth
         dheight = self._dheight
         
@@ -555,13 +561,14 @@ class graphicsView(QGraphicsView, widgetState):
                 +')', wantType = 'NoConversion')
                 
     def plot(self, query, function = 'plot', dwidth=250, dheight=250, data = None, legend = False):
-        ## performs a quick plot given a query and an imageType
+        """Plots the query to the plot area."""
         self.plotMultiple(query, function = function, dwidth = dwidth, dheight = dheight, layers = [], data = data, legend = legend)
             
     def prePlottingCommands(self):
+        """Holder, to be reimplemented in child classes"""
         pass
     def plotMultiple(self, query, function = 'plot', dwidth = 250, dheight = 250, layers = [], data = None, legend = False):
-        ## performs plotting using multiple layers, each layer should be a query to be executed in RSession
+        """performs plotting using multiple layers, each layer should be a query to be executed in RSession"""
         self.data = data
         self.function = function
         self.query = query

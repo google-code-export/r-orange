@@ -1,3 +1,10 @@
+"""Web View Box
+
+The web view box allows the user to see web pages displayed in a box.  This is similar to the web views that many users will be fammiliar with.  If a url is supplied as a string that url will be loaded at construction time.  If followHere is set to True, hyperlinks will be loaded in this web view, otherwise hyperlinks will be loaded in a new tab of the default web browser on the system.
+
+"""
+
+
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel

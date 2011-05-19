@@ -1,3 +1,9 @@
+"""List Box
+
+List box shows values in a list with all values (or as many as will fit) shown.  This is useful if the developer wishes to allow the user to select several values from a list.
+"""
+
+
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -10,6 +16,7 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 
 def startProgressBar(title,text,max):
+    """Starts a progress bar.  This helps the user to know how long addition of items will take"""
     progressBar = QProgressDialog()
     progressBar.setCancelButtonText(QString())
     progressBar.setWindowTitle(title)
@@ -66,6 +73,7 @@ class listBox(QListWidget,widgetState):
 
 
     def getItems(self):
+        """Returns an OrderedDict of the items (key, value) in the listBox, this can be treated as a dict also."""
         return self.listItems
 
     def addItem(self,id,item):
@@ -99,6 +107,7 @@ class listBox(QListWidget,widgetState):
             raise Exception(_('In listBox, addItems takes a list, dict or OrderedDict'))
         progressBar.hide()
     def setSelectedIds(self,ids):
+        """Sets a list of ids (ids) to be selected."""
         if ids == None: return
         progressBar = startProgressBar('Setting Selected Items', '', len(ids))
         progress = 0
@@ -110,6 +119,7 @@ class listBox(QListWidget,widgetState):
             progress += 1
             progressBar.setValue(progress)
     def update(self, items):
+        """Clears the list, adds new items, and sets any selected items in the old list to being selected in the new list (if they exist of course)."""
         current = self.selectedIds()
         self.clear()
         self.addItems(items)
@@ -117,6 +127,7 @@ class listBox(QListWidget,widgetState):
         
 
     def clear(self):
+        """Clears the list"""
         QListWidget.clear(self)
         self.listItems = OrderedDict()
 
@@ -130,13 +141,16 @@ class listBox(QListWidget,widgetState):
     def selectionCount(self):
         return len(self.selectedIndexes())
     def currentSelection(self):
-            return self.selectedItems().values()
+        """Returns a list of selected values (the text in the list)"""
+        return self.selectedItems().values()
     def selectedItems(self):
+        """Returns a dict of selected items."""
         items = {}
         for x in self.selectedIndexes():
             items[self.listItems.keys()[x.row()]] = self.listItems.values()[x.row()]
         return items
     def selectedIds(self):
+        """Returns a list of selected ids"""
         ids = []
         for x in self.selectedIndexes():
             ids.append(self.listItems.keys()[x.row()])
@@ -246,6 +260,7 @@ class listBox(QListWidget,widgetState):
             ev.ignore()
 
     def updateRedRItems(self):
+        """Updates the items in the list to a new order."""
         ## we go through all of the items and remake the items OrderedDict
         newDict = OrderedDict()
         for r in range(self.count()):

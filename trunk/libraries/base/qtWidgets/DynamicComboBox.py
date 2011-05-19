@@ -1,5 +1,7 @@
-## DynamicComboBox, a widgetBox that dynamically generates comboBoxes, users must set a key, label, and OrderedDict of values for each comboBox.  Boxes are referenced by their key.  There are abilities to add and remove keys as well as updating keys.
+"""Dynamic Combo Box
 
+A widgetBox that dynamically generates comboBoxes, users must set a key, label, and OrderedDict of values for each comboBox.  Boxes are referenced by their key.  There are abilities to add and remove keys as well as updating keys.
+"""
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.groupBox import groupBox
 from PyQt4.QtCore import *
@@ -22,10 +24,13 @@ class DynamicComboBox(groupBox):
             for k, v in values:
                 self.addComboBox(k[0], k[1], v)
     def getComboIDs(self):
+        """Returns a list of comboBox ids"""
         return self.comboBoxes.keys()
     def getComboBox(self, id):
+        """Returns a comboBox indicated by id"""
         return self.comboBoxes[id]
     def addComboBox(self, key, name, items):
+        """Adds a comboBox to the DynamicComboBox"""
         if key in self.comboBoxes.keys():
             if items:
                 self.comboBoxes[key].update(items)

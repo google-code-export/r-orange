@@ -1,3 +1,8 @@
+"""Shuffle Box
+
+This is a Red-R specific widget.  The shuffleBox inherits from the listBox with the added ability that the order of items can be changed using the drag/drop feature (so they are shuffled).  This is useful for setting the order in which items appear.
+"""
+
 from redRGUI import widgetState
 from libraries.base.qtWidgets.listBox import listBox
 import redRReports,redRLog

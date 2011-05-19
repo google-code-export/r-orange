@@ -1,3 +1,9 @@
+"""Separator
+
+Adds a separator to the widget.
+
+"""
+
 from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *

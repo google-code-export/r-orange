@@ -1,3 +1,10 @@
+"""Line Edit Hint
+
+Like a line edit but values can be supplied to select from.  In which case the widget will search for matches to the typed text in the supplied list.
+
+Asside from addItems and setItems all other functions are internal.  text() can be used to get the text of the lineEdit.
+"""
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math, re, string, numpy
@@ -38,24 +45,13 @@ class lineEditHint(lineEdit):
         QObject.connect(self.listWidget, SIGNAL("itemClicked (QListWidgetItem *)"), self.doneCompletion)
         
     def setItems(self, items):
-        if type(items) == numpy.ndarray:
-            items = list(items) # need to correct for the case that we get a numpy object
-        
-        elif type(items) in [str, numpy.string_, numpy.float64]:
-            items = [unicode(items)]
-        
-        if items:
-            self.itemsAsItems = items
-            if (type(items[0]) in [str, unicode]) or (type(items[0]) == numpy.string_):
-                self.itemsAsStrings = items
-            elif type(items[0]) in [numpy.float64]:
-                self.itemsAsStrings = [unicode(item) for item in items]
-            elif type(items[0]) == QListWidgetItem:     self.itemsAsStrings = [unicode(item.text()) for item in items]
-            else:                                       print _("SuggestLineEdit error: unsupported type for the items: ")+unicode(type(items[0]))
-        else:
-            self.itemsAsItems = []
-            self.itemsAsStrings = [] 
+        """Sets the available items for the widget.  Items should be a list.  Setting clears the previous values."""
+        self.itemsAsItems = []
+        self.itemsAsStrings = []
+        self.addItems(items)
+             
     def addItems(self, items):
+        """Adds items to the list"""
         if type(items) == numpy.ndarray:
             items = list(items) # need to correct for the case that we get a numpy object
         

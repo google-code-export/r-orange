@@ -1,3 +1,12 @@
+"""Text Edit
+
+This is a text area into which data can be placed or entered.  Developers will generally wish to simply fill these boxes with data from a function that would be cumbersome to place into a label (like when you want to scroll).
+
+Use the functions insertHtml() or insertPlainText() to insert strings into the textEdit.  Use the function clear() to clear the textEdit and the function setCursorToEnd() to set the cursor to the end of the viewable text.
+
+"""
+
+
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -38,6 +47,7 @@ class textEdit(QTextEdit,widgetState):
     def sizeHint(self):
         return QSize(1,1)
     def setCursorToEnd(self):
+        """Places the cursor to the end of the document.  Required if you want to add text and there is the possibility that the user moved the cursor somewhere."""
         cursor = self.textCursor()
         cursor.movePosition(QTextCursor.End)
         self.setTextCursor(cursor)
@@ -58,6 +68,7 @@ class textEdit(QTextEdit,widgetState):
         'text': self.toPlainText()[0:limit], 'numChrLimit': limit}}
         
     def printMe(self):
+        """Prints the current text in the textEdit to the printer."""
         printer = QPrinter()
         printDialog = QPrintDialog(printer)
         if printDialog.exec_() == QDialog.Rejected: 

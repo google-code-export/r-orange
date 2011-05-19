@@ -1,4 +1,7 @@
-## Grid layout
+"""Grid Box
+
+A grid layout that allows the developer to set items in a grid.  Each grid cell is actually a widgetBox with it's own layout.
+"""
 
 from redRGUI import widgetState
 from PyQt4.QtCore import *
@@ -23,6 +26,7 @@ class gridBox(QWidget,widgetState):
         self.layout().setMargin(margin)
         self.widgetArray = {}
     def cell(self, row, col):
+        """Returns the widgetBox at the cell indicated.  If the cell does not exist yet, it is generated."""
         ## return the widgetbox in the specified cell
         if (row, col) not in self.widgetArray.keys():
             self.widgetArray[(row, col)] = widgetBox(None)

@@ -1,3 +1,9 @@
+"""Widget Box
+
+A box to put other widgets into.  Boxes are set up with a layout that places new widgets into the widget in either a horizontal or vertical alignment.
+
+"""
+
 from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -53,16 +59,9 @@ class widgetBox(QWidget,widgetState):
             self.setSizePolicy(sizePolicy)
     
     def layout(self):
+        """Returns the layout of the box."""
         return QWidget.layout(self)
     
     def delete(self):
-        # itemRange = self.layout().count()
-        # for i in range(0, itemRange):
-            # item = self.layout().itemAt(i)
-            # if item.widget:
-                # try:
-                    # item.widget.delete()
-                # except: pass
-            # sip.delete(item)
         sip.delete(self)
   

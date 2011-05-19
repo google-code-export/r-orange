@@ -1,5 +1,7 @@
-## splitter Widget.  This widget provides a way to resize widgets within a main area.  To keep things working we won't allow widgets to be added to the splitter but will instead return areas into which widgets can be added using the conventional methods.
+"""Splitter Widget.
 
+This widget provides a way to resize widgets within a main area.  To keep things working we won't allow widgets to be added to the splitter but will instead return areas into which widgets can be added using the conventional methods.
+"""
 from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -19,6 +21,7 @@ class splitter(QSplitter, widgetState):
             self.setOrientation(Qt.Vertical)
             
     def widgetArea(self, orientation = 'horizontal', margin = -1):
+        """Creates and returns a widgetBox with orientation orientation"""
         newWidgetBox = widgetBox(None, orientation = orientation, margin = margin)
         newWidgetBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.addWidget(newWidgetBox)

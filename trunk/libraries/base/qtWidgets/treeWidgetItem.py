@@ -1,5 +1,8 @@
-# treeWidgetItem. implementation of the QTreeWidgetItem class
+"""Tree Widget Item
 
+Implementation of QTreeWidgetItem.  This widget generates an item for a tree view.
+
+"""
 from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *

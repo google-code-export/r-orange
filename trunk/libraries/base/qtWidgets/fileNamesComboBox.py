@@ -1,4 +1,6 @@
-"""
+"""File Names Combo Box
+
+Display the names of files in a comboBox.
 
 """
 from redRGUI import widgetState
@@ -55,6 +57,7 @@ class fileNamesComboBox(comboBox,widgetState):
             print '-'*60        
 
     def setFileList(self):
+        """Sets a list of files."""
         #import copy
         if self.files == None: self.files = [_('Select File')]
         self.clear()
@@ -78,6 +81,7 @@ class fileNamesComboBox(comboBox,widgetState):
             
         
     def addFile(self,fn):
+        """Adds a file to the file list."""
         # print '@##############', type(fn), fn
         # for x in self.files:
             # print type(x),x

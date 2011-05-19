@@ -40,10 +40,13 @@ class table(widgetState,QTableWidget):
         if callback:
             QObject.connect(self, SIGNAL('cellClicked(int, int)'), callback)
     def addRows(self, rows):
+        """Adds the number of rows specified in rows to the table."""
         self.setRowCount(self.rowCount() + rows)
     def addColumns(self, cols):
+        """Same as addRows."""
         self.setColumnCount(self.columnCount() + cols)
     def setTable(self, data, keys = None):
+        """data is a dict of data.  If there is a key named 'row_names' then these are set to the row headers of the widget.  The keys are set to the column headers.  Data should be stored as a collection of columns."""
         print _('in table set')
         if data==None:
             return
@@ -80,6 +83,9 @@ class table(widgetState,QTableWidget):
         qApp.restoreOverrideCursor()
 
     def sort(self, index):
+        """
+        Sets the sorting index of the widget.
+        """
         if index == self.oldSortingIndex:
             order = self.oldSortingOrder == Qt.AscendingOrder and Qt.DescendingOrder or Qt.AscendingOrder
         else:

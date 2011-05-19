@@ -1,3 +1,8 @@
+"""Group Box
+
+A widgetBox but with a fancy label at the top.
+"""
+
 from redRGUI import widgetState
 from libraries.base.qtWidgets.separator import separator
 

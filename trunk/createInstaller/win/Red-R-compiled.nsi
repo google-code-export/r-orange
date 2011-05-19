@@ -125,7 +125,7 @@ Section "" ;this is the section that will install Red-R and all of it's files
         SetOutPath $INSTDIR\R\${RVER}
         File /r /x .svn ${RDIRECTORY}\*
         IfFileExists "$0\red-r\settings" 0 has_R
-            MessageBox MB_OK "You are getting a new version of R (congratulations!!!).$\r$\n$\r$\nUnfortunately, this means that we have to remove your old settings directory so the new version will be able to start fresh.
+            MessageBox MB_OK "You are getting a new version of R (congratulations!!!).$\r$\n$\r$\nUnfortunately, this means that we have to remove your old settings directory so the new version will be able to start fresh."
             RmDir /r "$0\red-r"
     has_R:
          ; RmDir /r $INSTDIR\R

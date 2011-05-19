@@ -1,3 +1,9 @@
+"""Scroll Area
+
+Generates an area in which the user can scroll to items that are not visible.  Useful if there are many options stacked.
+
+"""
+
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from PyQt4.QtCore import *

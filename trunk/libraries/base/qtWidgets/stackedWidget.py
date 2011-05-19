@@ -1,5 +1,7 @@
-## stackedWidget, controls a set of value stacks that show different widgets at different times.
+"""Stacked Widget
 
+Controls a set of value stacks that show different widgets at different times.
+"""
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRWidgetBox
 
@@ -16,6 +18,7 @@ class stackedWidget(QStackedWidget, widgetState):
         self.controlArea.layout().addWidget(self)
         self.stackIndex = []
     def createWidgetBox(self, orientation = 'vertical'):
+        """Creates and returns a new widgetBox in the stack with orientation orientation"""
         newBox = redRWidgetBox(self, orientation = orientation)
         print self.addWidget(newBox)
         return newBox

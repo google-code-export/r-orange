@@ -1,5 +1,7 @@
-# treeWidget.  implementation of a QTreeWidget for redRGUI
+"""Tree Widget
 
+This is an implementation of the QTreeWidget.  Places items into a tree view.
+"""
 from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -31,6 +33,7 @@ class treeWidget(QTreeWidget, widgetState):
         if callback:
             QObject.connect(self, SIGNAL('currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)'), callback)
     def setHeaderLabels(self, labels):
+        """Sets the header labels that will appear above the separated items in the tree"""
         self.labels = labels
         QTreeWidget.setHeaderLabels(self, labels)
    

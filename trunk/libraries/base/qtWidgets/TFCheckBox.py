@@ -1,5 +1,7 @@
-## TRUE FALSE button, only one checkbox and the function returns either 'TRUE' if checked or 'FALSE' if not.
+"""TRUE FALSE Button
 
+Only one checkbox and the function returns either 'TRUE' if checked or 'FALSE' if not.
+"""
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -46,6 +48,7 @@ class TFCheckBox(widgetState,QWidget):
             self.setChecked('TRUE')
 
     def addButton(self,id, text,toolTip=None):
+        """Internal function that adds the TRUE button.  Please use the checkBox widget if you want to do this"""
         self.items[id] = text
         w = QCheckBox(text)
         if toolTip:
@@ -65,6 +68,7 @@ class TFCheckBox(widgetState,QWidget):
             else: i.setChecked(False)
         
     def checked(self):
+        """Returns a string of either TRUE if checked or FALSE if not checked.  Formatted for direct addition into an R string call."""
         if 'TRUE' in self.getCheckedIds(): return 'TRUE'
         else: return 'FALSE'
 

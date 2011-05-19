@@ -1,3 +1,9 @@
+"""Filter Table
+
+Likely the main table class of Red-R this table allows data to be displayed in a table view with tabs for filtering the data.
+"""
+
+
 from redRGUI import widgetState
 import os.path, redRLog
 import redREnviron, redRReports
@@ -154,6 +160,7 @@ class filterTable(widgetState, QTableView):
         self.dataInfo.setText(self.tm.getSummary())
         
     def setTable(self, data):
+        """Sets the table to a table model returned from a signal.  data represents a Red-R signal that contains a table model function getTableModel()."""
         self.tm = data.getTableModel(self)
         self.setModel(self.tm)
         
@@ -162,7 +169,7 @@ class filterTable(widgetState, QTableView):
         self.setModel(self.tm)
         self.dataInfo.setText(self.tm.getSummary())
     def setRTable(self,data, setRowHeaders = 1, setColHeaders = 1,filtered=False):
-        # print _('in setRTable'), data
+        """Sets the R Table.  This is the most common way to place data into the table."""
         if self.R('class(%s)' %data, silent=True) != 'data.frame':
             data = 'as.data.frame(%s)' %data
         #self.Rdata = Rdata
@@ -225,6 +232,7 @@ class filterTable(widgetState, QTableView):
             return 0
     
     def copy(self):
+        """Copies data to the clipboard"""
         selection = self.selectionModel() #self.table = QAbstractItemView
         indexes = selection.selectedIndexes()
 

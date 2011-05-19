@@ -1,3 +1,8 @@
+"""Line Edit
+
+Allows user to enter text into a single line.  Really the only functions that should be called are text().
+"""
+
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
@@ -53,6 +58,7 @@ class lineEdit(QLineEdit,widgetState):
     def showToolTip(self):
         return
     def text(self):
+        """Returns the current text as unicode"""
         return unicode(QLineEdit.text(self))
     def widgetId(self):
         return self.id

@@ -1,3 +1,13 @@
+"""Widget Label
+
+This provides a standard widget label.  This can have features of wordWrap (the words wrap around when the label exceeds the horizontal size limit), and icon where an icon is displayed in the label.
+
+Labels are useful for showing the user output that the user will be unable to edit.
+
+
+"""
+
+
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRWidgetBox
 
@@ -20,6 +30,7 @@ class widgetLabel(QLabel,widgetState):
         else:
             self.setSizePolicy(sizePolicy)
     def text(self):
+        """Returns the text of the label"""
         return unicode(QLabel.text(self))
     def getSettings(self):
         # print _('in widgetLabel getSettings')

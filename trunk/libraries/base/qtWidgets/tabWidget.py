@@ -1,3 +1,10 @@
+"""Tab Widget
+
+Place a widget area that is organized by tabs.  This widget can be quite useful if the developer plans to place several pages of options or other groupings into the widget.
+
+"""
+
+
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from PyQt4.QtCore import *
@@ -14,7 +21,10 @@ class tabWidget(QTabWidget,widgetState):
         self.tabs = {}
         self.setTabPosition(position)
     def createTabPage(self, name, widgetToAdd = None, canScroll = False, orientation = 'horizontal'):
-        #print 'start: ' + name
+        """Places a new tab into the tabWidget with the name (name).  Developers can make a widget and add that to the tab directly.  Otherwise, a widgetBox is generated with the orientation indicated in orientation.  If canScroll is set to True then the tab area will allow the user to scroll to areas that aren't visible.
+        
+        This function returns either the widget submitted in widgetToAdd or the widgetBox generate (likely the more useful aspect).
+        """
         if widgetToAdd == None:
             # print _('make widgetBox')
             widgetToAdd = widgetBox(self, addToLayout = 0, margin = 4, orientation = orientation)
@@ -32,8 +42,10 @@ class tabWidget(QTabWidget,widgetState):
         
         return widgetToAdd
     def currentTab(self):
+        """Returns the name of the currently visible tab."""
         return self.tabs.keys()[self.currentIndex()]
     def removeTab(self, name):
+        """Removes a tab from the widget."""
         QTabWidget.removeTab(self, self.tabs.keys().index(name))
     def getSettings(self):
         r= {'currentIndex': self.currentIndex()}
