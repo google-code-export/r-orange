@@ -1,6 +1,6 @@
 """redRLog
 
-Handles the standard output and error and redirects it to the various output managers. 
+Handles the standard output and error and redirects it to the various output managers. Also submits errors to the repository when they occur if the user allows this.
 
 """
 
@@ -51,7 +51,7 @@ def setOutputManager(name,manager,level=None):
     global _outputWriter
     _outputWriter[name] = {'level':level,'writer':manager}
     
-def log(table, logLevel = INFO, comment ='', widget=None,html=True):   
+def log(table, logLevel = INFO, comment ='', widget=None, html=True):   
     """Create a log entry."""
     #fileLogger.defaultSysOutHandler.write('error type %s, debug mode %s\n' % (logLevel, redREnviron.settings['debugMode']))
     # fileLogger.defaultSysOutHandler.write(str(logLevelsByName.get(redREnviron.settings['outputVerbosity'],0)) + ' ' + str(redREnviron.settings['outputVerbosity']) + '\n')
@@ -71,6 +71,8 @@ def log(table, logLevel = INFO, comment ='', widget=None,html=True):
 
     logOutput(table, logLevel, formattedLog,html=True)
     logTrigger(table, logLevel)
+    if logLevel >= ERROR:
+        errorSubmitter(table, logLevel, comment)
 
 def logTrigger(table,logLevel):
     """Execute log trigger with level > logLevel."""
@@ -261,3 +263,79 @@ fileLogger = LogHandler()
 # print 'log handler set'
 setOutputManager('file',fileLogger.writetoFile,level=DEVEL)
 
+###########################
+### Error Submission ######
+###########################
+
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+import string
+import time as ti
+from datetime import tzinfo, timedelta, datetime, time
+import redRi18n
+import httplib,urllib
+import re
+
+def errorSubmitter(table, level, string):
+    global tables
+    global logLevelsByLevel
+    a = redRSubmitErrors()
+    a.uploadException({'errorType':'%s.%s' % (tables[table],logLevelsByLevel[level]),'traceback':string})
+    
+class redRSubmitErrors():
+    def __init__(self):
+        pass
+        
+    def uploadYes(self):
+        self.msg.done(1)
+
+    def uploadNo(self):
+        self.msg.done(0)
+    def rememberResponse(self):
+        if _('Remember my Response') in self.remember.getChecked():
+            self.checked = True
+            redREnviron.settings['askToUploadError'] = 0
+
+        else:
+            self.checked = False
+        
+    def uploadException(self,err):
+        """Upload an exception to the website"""
+        try:
+            """Ask if the error can be uploaded.  Unless the user doesn't want to be bothered with asking."""
+            if not redREnviron.settings['askToUploadError']:
+                res = redREnviron.settings['uploadError']
+            else:
+                self.msg = redRGUI.base.dialog(parent=qApp.canvasDlg,title='Red-R Error')
+                
+                error = redRGUI.base.widgetBox(self.msg,orientation='vertical')
+                redRGUI.base.widgetLabel(error, label='Do you wish to report the Error Log?')
+                buttons = redRGUI.base.widgetBox(error,orientation='horizontal')
+
+                redRGUI.base.button(buttons, label = _('Yes'), callback = self.uploadYes)
+                redRGUI.base.button(buttons, label = _('No'), callback = self.uploadNo)
+                self.checked = False
+                self.remember = redRGUI.base.checkBox(error,label='response', displayLabel=None,
+                buttons=[_('Remember my Response')],callback=self.rememberResponse)
+                res = self.msg.exec_()
+                redREnviron.settings['uploadError'] = res
+            
+            """If errors can be uploaded then send them"""
+            if res == 1:
+                # print 'in res'
+                err['version'] = redREnviron.version['SVNVERSION']
+                err['type'] = redREnviron.version['TYPE']
+                err['redRversion'] = redREnviron.version['REDRVERSION']
+                if os.name == 'nt':
+                    err['os'] = 'Windows'
+                if redREnviron.settings['canContact']:
+                    err['email'] = redREnviron.settings['email']
+                params = urllib.urlencode(err)
+                headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
+                conn = httplib.HTTPConnection("red-r.org",80)
+                conn.request("POST", "/errorReport.php", params,headers)
+                log(REDRCORE, INFO, '<strong>Error data posted to the server</strong>')
+            else:
+                return
+        except: 
+            pass

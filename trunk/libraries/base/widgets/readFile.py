@@ -31,8 +31,7 @@ This widget will read data from tab, comma, or space delimited text files. On Mi
 
 
 from OWRpy import *
-import redRGUI, signals
-import redRGUI, signals
+import redRGUI, signals, redR
 import re
 import textwrap
 import cPickle
@@ -302,8 +301,6 @@ I want to put in an image below that likely isn't there.
         # self.loadFile(scan = 'clipboard')
     
     def loadFile(self,scan=False):
-        #print scan
-
         fn = self.filecombo.getCurrentFile()
         if not fn and not self.fileType.getChecked() ==_('Clipboard'):
             self.status.setText(_('No file selected'))
@@ -393,8 +390,10 @@ I want to put in an image below that likely isn't there.
             self.updateScan()
             return
         
-        self.updateScan()
-        self.commit()
+        if scan:
+            self.updateScan()
+        else:
+            self.commit()
 
     def updateScan(self):
         if self.rowNamesCombo.count() == 0:

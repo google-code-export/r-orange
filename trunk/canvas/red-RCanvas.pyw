@@ -467,8 +467,10 @@ if __name__ == "__main__":
     # freeze_support()
     wasUpdated = 0
     #if redREnviron.settings['checkForUpdates'] and not redREnviron.settings['updateAvailable']:
-    wasUpdated = updates()
-    
+    try:
+        wasUpdated = updates()
+    except:
+        redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL,redRLog.formatException())
     print 'updated ended with', wasUpdated
     if wasUpdated == 0:
         sys.exit(main())

@@ -18,10 +18,11 @@ class SandBox(OWRpy):
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.lineEditText = ''
-        self.require_librarys(['BARD'])
+        #self.require_librarys(['BARD'])
         ### GUI ###
         self.shuffle = shuffleBox(self.controlArea, label = 'Shuffle', items = [(1, 'apple'), (2, 'banana'), (3, 'cranberry')])
         self.textEdit = redRTextEdit(self.controlArea, label = 'output')
+        raise Exception('test exception handling')
         #self.webBox = webViewBox(self.controlArea, label = 'Web Box')
         #self.webBox.setHtml('This is a simple test. <object type="application/x-pdf" data="file:///home/covingto/Documents/DNA%20Gel.pdf" width = "500" height = "400"></object>')
         
