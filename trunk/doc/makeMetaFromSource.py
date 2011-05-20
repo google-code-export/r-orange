@@ -1,5 +1,5 @@
-
-
+"""
+Make meta files from source files.
 
 """
 
@@ -11,7 +11,9 @@ document = None
 getDirective = re.compile(r'.. (?P<directive>.+?)::', re.DOTALL)
 getKeyValue = re.compile(r'\s:(?P<key>.+?):\s`(?P<value>.+?)`', re.DOTALL)
 getSignalType = re.compile(r'self\.(?P<type>.+?)s.add', re.DOTALL)
-getQuote = re.compile(r"""(_\()?['"](?P<quote>.+?)['"]""", re.DOTALL)
+
+getQuote = re.compile(r"""(_\()?['\"](?P<quote>.+?)['"]""", re.DOTALL)
+
 getGUIClass = re.compile(r'redRGUI\.(?P<class>[a-zA-Z\.]+)', re.DOTALL)
 getLabel = re.compile(r'label\s*=\s*(?P<label>.+?)[,\)]', re.DOTALL)
 getWidgetXML = re.compile(r'<widgetXML>(?P<widgetXML>.*?)</widgetXML>', re.DOTALL)

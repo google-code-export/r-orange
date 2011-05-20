@@ -1,10 +1,21 @@
+"""Partition/Resample/Fold
+
+.. helpDoc::
+Creates a data partition, a resample of the data or a fold depending on the selections in the function box.  Partition, partitions the data into groups, resample generates a bootstrap resampling of the data and folds generates an evenly split dataset across the number of folds.
 """
-<name>Partition/Resample/Fold (Caret)</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description>Creates a data partition, a resample of the data or a fold depending on the selections in the function box.  Partition, partitions the data into groups, resample generates a bootstrap resampling of the data and folds generates an evenly split dataset across the number of folds.</description>
-<RFunctions>caret:createDataPartition</RFunctions>
-<tags>Classification Regression, Prototypes</tags>
-<icon></icon>
+
+
+"""<widgetXML><name>Partition/Resample/Fold (Caret)</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag priority='45'>Caret</tag> 
+    </tags>
+    <summary>Creates a data partition, a resample of the data or a fold depending on the selections in the function box.  Partition, partitions the data into groups, resample generates a bootstrap resampling of the data and folds generates an evenly split dataset across the number of folds.</summary>
+    <author>
+            <authorname>Red-R Core Team</authorname>
+            <authorcontact>http://www.red-r.org/contact</authorcontact>
+        </author>
+    </widgetXML>
 """
 from OWRpy import * 
 import redRGUI, signals
@@ -17,15 +28,33 @@ class RedRcreateDataPartition(OWRpy):
         self.setRvariableNames(["createDataPartition", 'dataOutputList'])
         self.data = {}
         self.RFunctionParam_y = ''
+        
+        """.. rrsignals::
+            :description: `Caret data container.`
+        """
         self.inputs.addInput("y", "Input Caret Data", caret.CaretData.CaretData, self.processy)
+        
+        """.. rrsignals::
+            :description: `Partitioned Caret data container.`
+        """
         self.outputs.addOutput("createDataPartition Output","Partition/Resample/Fold List", signals.base.RList)
         
+        """.. rrgui::"""
         self.functionCombo = redRGUI.base.comboBox(self.controlArea, label = 'Function:', items = ['Partition', 'Resample', 'Fold'])
+        
+        """.. rrgui::"""
         self.RFunctionParamp_spinBox = redRGUI.base.spinBox(self.controlArea, label = "Percentage (Partition):", value = 50, min = 1, max = 100)
         #self.RFunctionParamlist_radioButtons = redRGUI.base.radioButtons(self.controlArea, label = "list:", buttons = ["TRUE"], setChecked = "")
+        
+        """.. rrgui::"""
         self.RFunctionParamgroups_spinBox = redRGUI.base.spinBox(self.controlArea, label = "Number of Quantiles (Partition on Numeric Data):", value = 5, min = 1)
+        
+        """.. rrgui::"""
         self.RFunctionParamtimes_spinBox = redRGUI.base.spinBox(self.controlArea, label = "Number of Partitions (Partition and Resample):", value = 1, min = 1, toolTip = 'Typically higher values are set for resampling because one wants to generate several resamples at once.')
+        
+        """.. rrgui::"""
         self.RFunctionParam_folds_spinBox = redRGUI.base.spinBox(self.controlArea, label = "Number of Folds (Folds):", value = 10, min = 1)
+        
         redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "R Output Window")
     def processy(self, data):

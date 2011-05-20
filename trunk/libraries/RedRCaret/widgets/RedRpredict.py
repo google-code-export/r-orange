@@ -1,10 +1,25 @@
+"""Predict
+
+Predic outcome from a trained model.
+
+.. helpdoc::
+This widget uses a trained data model from a Caret Train widget and a data set to predict new classes.
 """
-<name>predict</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description></description>
-<RFunctions>caret:predict</RFunctions>
-<tags>Prototypes</tags>
-<icon></icon>
+
+
+"""
+<widgetXML>
+<name>Predict</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag priority='100'>Caret</tag> 
+    </tags>
+    <summary>Predict classes or outcome based on a Caret Train model and an optional data collection.</summary>
+    <author>
+            <authorname>Red-R Core Team</authorname>
+            <authorcontact>http://www.red-r.org/contact</authorcontact>
+        </author>
+</widgetXML>
 """
 from OWRpy import * 
 import redRGUI, signals
@@ -13,17 +28,37 @@ class RedRpredict(OWRpy):
     settingsList = []
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
+        
+        """.. rrvarnames::"""
         self.setRvariableNames(["predict", 'tempData'])
         self.data = {}
         self.RFunctionParam_object = ''
         self.RFunctionParam_newData = ''
+        
+        """.. rrsignals::
+            :description: `Trained model`
+        """
         self.inputs.addInput("object", "object", signals.base.RModelFit, self.processobject)
+        
+        """.. rrsignals::
+            :description: `New data`
+        """
         self.inputs.addInput("newData", "newData", [signals.base.RArbitraryList, signals.base.RArbitraryList], self.processnewData)
+        
+        """.. rrsignals::
+            :description: `Prediction output`
+        """
         self.outputs.addOutput("predict Output","predict Output", signals.base.RModelFit)
         
+        """.. rrgui::"""
         self.testData = redRGUI.base.comboBox(self.controlArea, label = 'Test Data:')
+        
+        """.. rrgui::"""
         self.classLabels = redRGUI.base.comboBox(self.controlArea, label = 'Class Labels:')
+        
         redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        
+        """.. rrgui::"""
         self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "R Output Window")
     def processobject(self, data):
         

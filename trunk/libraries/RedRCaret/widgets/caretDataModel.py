@@ -1,6 +1,24 @@
+"""Caret Data Model
+
+Make a data model for the Caret package.
+
+.. helpdoc::
+
+This widget is the first widget to use in the Caret package.  This formats data in a form that is more condusive for the Caret package by separating predictors from class labels and keeping them in the same signal.
 """
+
+"""<widgetXML>
 <name>Caret Data Model</name>
-<description>A Data container making widget to handle Caret Data Models.  In general, all this does is to accept a data-frame and optional vector of class predictors and class labels respectively.  If only a data-frame is attached, then the user can select a column from the table to represent the predictors.</description>
+    <icon>default.png</icon>
+    <tags>
+        <tag priority='10'>Caret</tag>
+    </tags>
+    <summary>Make a data model that can be used in other Caret widgets.</summary>
+    <author>
+            <authorname>Red-R Core Development Team</authorname>
+            <authorcontact>www.red-r.org</authorcontact>
+        </author>
+    </widgetXML>
 """
 from OWRpy import * 
 import redRGUI, signals
@@ -10,16 +28,30 @@ class caretDataModel(OWRpy):
     settingsList = []
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
-        self.require_librarys(["caret", 'ada', 'affy', 'caTools', 'class', 'e1071', 'earth', 'elasticnet', 'ellipse', 'fastICA', 'foba', 'foreach', 'gam', 'GAMens', 'gbm', 'glmnet', 'gpls', 'grid', 'hda', 'HDclassif', 'ipred', 'kernlab', 'klaR', 'lars', 'LogicForest', 'logicFS', 'LogicReg', 'MASS', 'mboost', 'mda', 'mgcv', 'mlbench', 'neuralnet', 'nnet', 'nodeHarvest', 'pamr', 'partDSA', 'party', 'penalized', 'pls', 'proxy', 'quantregForest', 'randomForest', 'RANN', 'rda', 'relaxo', 'rocc', 'rpart', 'rrcov', 'RWeka', 'sda', 'SDDA', 'sparseLDA', 'spls', 'stepPlr', 'superpc', 'vbm'])
+        self.require_librarys(["caret"])
         self.setRvariableNames(["dataModel"])
         
         self.RFunctionParam_data = ''
         self.RFunctionParam_predictors = ''
+        
+        """.. rrsignals::
+            :description: `Input data table, this can have optionally, class predictors.`
+        """
         self.inputs.addInput("x", "Data Table", signals.base.RDataFrame, self.processx)
+        
+        """..rrsignals::
+            :description: `An optional vector of classes.`
+        """
         self.inputs.addInput("data", "Class Vector", signals.base.RVector, self.processdata)
+        
+        """.. rrsignals::
+            :description: `The complete Caret Data Container.`
+        """
         self.outputs.addOutput('caretModel',"Reduced Data Table", caret.CaretData.CaretData)
         
+        """.. rrgui::"""
         self.classLabels = redRGUI.base.comboBox(self.controlArea, label = 'Class Column')
+        
         self.myLable = redRGUI.base.widgetLabel(self.controlArea, label = '')
         redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         

@@ -1,10 +1,26 @@
+"""Apply Data Partition
+
+Used in conjunction with the Partition widget, this widget subsets caret data based on an established parition into two groups; in the partition and not in the partition.
+
+.. helpdoc::
+
+Used in conjunction with the Partition widget, this widget subsets caret data based on an established parition into two groups; in the partition and not in the partition.
 """
-<name>Apply Data Partition (Caret)</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description>Creates a data partition, a resample of the data or a fold depending on the selections in the function box.  Partition, partitions the data into groups, resample generates a bootstrap resampling of the data and folds generates an evenly split dataset across the number of folds.</description>
-<RFunctions>caret:createDataPartition</RFunctions>
-<tags>Classification Regression, Prototypes</tags>
-<icon></icon>
+
+
+"""
+<widgetXML>
+<name>Apply Data Partition</name>
+    <icon>default.png</icon>
+    <tags>
+        <tag priority='30'>Caret</tag>
+    </tags>
+    <summary>Used in conjunction with the Partition widget, this widget subsets caret data based on an established parition into two groups; in the partition and not in the partition.</summary>
+    <author>
+            <authorname>Red-R Core Development Team</authorname>
+            <authorcontact>www.red-r.org</authorcontact>
+        </author>
+    </widgetXML>
 """
 from OWRpy import * 
 import redRGUI, signals
@@ -14,17 +30,38 @@ class ApplyDataPartition(OWRpy):
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.require_librarys(["caret"])
+        
+        """.. rrvnames::"""
         self.setRvariableNames(["includeListData", "includeListClasses", 'excludeListData', 'excludeListClasses'])
         self.data = {}
         self.RFunctionParam_y = ''
         self.RFunctionParam_classes = ''
         self.RFunctionParam_partitionList = ''
+        
+        """.. rrsignals::
+            :description: `A Caret Data Container`
+        """
         self.inputs.addInput("y", "Input Caret Data", caret.CaretData.CaretData, self.processy)
+        
+        """.. rrsignals::
+            :description: `Partition list`
+        """
         self.inputs.addInput('partition', 'Partition List', signals.base.RList, self.processList)
+        
+        """.. rrsignals::
+            :description: `Partitioned data included in the model`
+        """
         self.outputs.addOutput("createDataPartitionOutput1","Partitioned Data Included", caret.CaretData.CaretData)
+        
+        """.. rrsignals::
+            :description: `Partitioned data excluded from the model`
+        """
         self.outputs.addOutput("createDataPartitionOutput2","Partitioned Data Excluded", caret.CaretData.CaretData)
 
+        """.. rrgui::"""
         self.ListElementCombo = redRGUI.base.comboBox(self.controlArea, label = 'List Element:')
+        
+        """.. rrgui::"""
         redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processy(self, data):
         

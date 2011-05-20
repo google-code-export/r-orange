@@ -1,32 +1,37 @@
+
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
-    <name>predict</name>
+<name>Predict</name>
     <icon>default.png</icon>
     <tags> 
         <tag priority='100'>Caret</tag> 
     </tags>
-    <summary></summary>
-    <details></details>
-    <relatedWidgets>
-        <inputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></inputWidget>
-        <outputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></outputWidget>
-    </relatedWidgets>
-    <signals>
-    <!-- [REQUIRED] List all the widget input output slots and their data type.-->
-    </signals>
-    <GUIElements>
-        <!-- [REQUIRED] A list of the parameters and how to use them.-->
-    </GUIElements>
-    <RFunctions>
-    <!-- [REQUIRED] R functions used in this widget.-->
-    </RFunctions>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
+    <summary>Predict classes or outcome based on a Caret Train model and an optional data collection.</summary>
+    <author>
+            <authorname>Red-R Core Team</authorname>
+            <authorcontact>http://www.red-r.org/contact</authorcontact>
         </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+<signals><input>
+	<name>object</name>
+	<description>
+Trained model
+	</description>
+	<signal>base.RModelFit</signal>
+</input>
+<input>
+	<name>newData</name>
+	<description>
+New data
+	</description>
+	<signal>base.RArbitraryList,base.RArbitraryList</signal>
+</input>
+<output>
+	<name>predict Output</name>
+	<description>
+Prediction output
+	</description>
+	<signal>base.RModelFit</signal>
+</output>
+</signals>
 </documentation>

@@ -1,56 +1,44 @@
+
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
-    <name>Caret Predictions and Probabilities</name>
+<name>Caret Predictions and Probabilities</name>
     <icon>default.png</icon>
     <tags>
         <tag priority = '400'>Caret</tag>
     </tags>
     <summary>Generates two data tables one for predictions and one for probabilities of the supplied samples being of a class.</summary>
-    <details></details>
-    <relatedWidgets>
-        <inputWidget><!-- <package>.<widget> ie. base.apply, plotting.heatmap --></inputWidget>
-    </relatedWidgets>
-    <signals>
-    <!-- [REQUIRED] List all the widget input output slots and their data type.-->
-        <input>
-            <signalClass><!-- base.RDataFrame --></signalClass>
-            <description><!-- signal description --></description>
-        </input>
-        <input>
-            <signalClass></signalClass>
-            <description></description>
-        </input>
-        <output>
-            <signalClass></signalClass>
-            <description></description>
-        </output>
-    </signals>
-    <GUIElements>
-        <!-- [REQUIRED] A list of the parameters and how to use them.-->
-        <parameter>
-            <name></name>
-            <description></description>
-        </parameter>
-        <!-- [REQUIRED] A list of the GUI elements that output data and a description of what they output.-->
-        <display>
-            <name></name>
-            <description></description>
-        </display>
-    </GUIElements>
-    <RFunctions>
-    <!-- [REQUIRED] R functions used in this widget.-->
-        <function><!-- In format <package>:<function>. i.e. stats:cor, base:apply--></function>
-        <function></function>
-    </RFunctions>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name></name>
-            <contact></contact>
+    <author>
+            <authorname>Red-R Core Development Team</authorname>
+            <authorcontact>www.red-r.org</authorcontact>
         </author>
-        <reference></reference>
-    </citation>
+    <signals><input>
+	<name>Fitted Prediction Model</name>
+	<description>
+Prediction model.
+	</description>
+	<signal>base.RModelFit</signal>
+</input>
+<input>
+	<name>Classification Data</name>
+	<description>
+Classification Data
+	</description>
+	<signal></signal>
+</input>
+<output>
+	<name>Caret Predictions</name>
+	<description>
+Data table of predictions, this can be output as a table.
+	</description>
+	<signal>base.RDataFrame</signal>
+</output>
+<output>
+	<name>Caret Probabilities</name>
+	<description>
+Data table of probabilities, this can be output as a table.
+	</description>
+	<signal>base.RDataFrame</signal>
+</output>
+</signals>
 </documentation>
-
-

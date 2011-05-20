@@ -1,5 +1,24 @@
+"""Apply Data PreProcessing
+
+Applys pre processing to data.
+
+.. helpdoc::
+Apply a pre-processing data model to a part of a data parition, this will make the data look like the processed data to test in a model.
 """
-<name>Apply Data PreProcessing (Caret)</name>
+
+"""
+<widgetXML>
+<name>Apply Data PreProcessing</name>
+    <icon>default.png</icon>
+    <tags>
+        <tag priorit='20'>Caret</tag>
+    </tags>
+    <summary>Apply a pre-processing data model to a part of a data parition, this will make the data look like the processed data to test in a model.</summary>
+    <author>
+            <authorname>Red-R Core Development Team</authorname>
+            <authorcontact>www.red-r.org</authorcontact>
+        </author>
+    </widgetXML>
 """
 from OWRpy import * 
 import redRGUI, signals
@@ -9,15 +28,31 @@ class ApplyDataPreProcessing(OWRpy):
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.require_librarys(["caret"])
+        
+        """.. rvnames::"""
         self.setRvariableNames(['processedData'])
         self.data = {}
         self.RFunctionParam_y = ''
         self.RFunctionParam_classes = ''
         self.RFunctionParam_preprocessModel = ''
+        
+        
+        """.. rrsignals::
+            :description: `Input Caret Data container`
+        """
         self.inputs.addInput("y", "Input Caret Data", caret.CaretData.CaretData, self.processy)
+        
+        """.. rrsignals::
+            :description: `Caret data preprocessing model`
+        """
         self.inputs.addInput('preprocess', 'PreProcessed Model', signals.base.RModelFit, self.processList)
+        
+        """.. rrsignals::
+            :description: `Processed Caret Data`
+        """
         self.outputs.addOutput("applyPreprocessData","Processed Data", caret.CaretData.CaretData)
 
+        
         redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processy(self, data):
         

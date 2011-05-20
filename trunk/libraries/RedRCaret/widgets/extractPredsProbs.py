@@ -1,10 +1,24 @@
+"""Caret Predictions and Probabilities
+
+Calculate predictions and their probabilities of being correct.
+
+.. helpdoc::
+
+Generates two data tables one for predictions and one for probabilities of the supplied samples being of a class.
 """
-<name>Extract Predictions and Probs (Caret)</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description></description>
-<RFunctions>caret:train</RFunctions>
-<tags>Prototypes</tags>
-<icon></icon>
+
+"""<widgetXML>
+<name>Caret Predictions and Probabilities</name>
+    <icon>default.png</icon>
+    <tags>
+        <tag priority = '400'>Caret</tag>
+    </tags>
+    <summary>Generates two data tables one for predictions and one for probabilities of the supplied samples being of a class.</summary>
+    <author>
+            <authorname>Red-R Core Development Team</authorname>
+            <authorcontact>www.red-r.org</authorcontact>
+        </author>
+    </widgetXML>
 """
 from OWRpy import * 
 import redRGUI, signals
@@ -19,10 +33,27 @@ class extractPredsProbs(OWRpy):
         self.data = {}
         self.RFunctionParam_predictions = ''
         self.RFunctionParam_classes = ''
+        
+        """.. rrsignals::
+            :description: `Prediction model.`
+        """
         self.inputs.addInput("data", "Fitted Prediction Model", signals.base.RModelFit, self.processdata, multiple = True)
+        
+        """.. rrsignals::
+            :description: `Classification Data`
+        """
         self.inputs.addInput('predicationData', 'Classification Data', caret.CaretData.CaretData, self.processpreds)
+        
+        """.. rrsignals::
+            :description: `Data table of predictions, this can be output as a table.`
+        """
         self.outputs.addOutput("predictions","Caret Predictions", signals.base.RDataFrame)
+        
+        """.. rrsignals::
+            :description: `Data table of probabilities, this can be output as a table.`
+        """
         self.outputs.addOutput("probabilities", "Caret Probabilities", signals.base.RDataFrame)
+        
         self.widgetLabel = redRGUI.base.widgetLabel(self.bottomAreaLeft, label = '')
         self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "R Output Window")
         redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
