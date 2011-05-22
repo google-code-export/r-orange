@@ -268,7 +268,7 @@ def readWidgets(directory, package):
         widgetMetaData['name'] = getXMLText(widgetMetaXML.getElementsByTagName('name')[0].childNodes)
         widgetMetaData['icon'] = getXMLText(widgetMetaXML.getElementsByTagName('icon')[0].childNodes)
         widgetMetaData['description'] = getXMLText(widgetMetaXML.getElementsByTagName('summary')[0].childNodes)
-        widgetMetaData['details'] = getXMLText(widgetMetaXML.getElementsByTagName('details')[0].childNodes)
+        #widgetMetaData['details'] = getXMLText(widgetMetaXML.getElementsByTagName('summary')[0].childNodes)
         
         widgetMetaData['tags'] = [] ## will be a list of tuples in the form (<tag>, <priority>); ('Data Input', 4)
         for tag in widgetMetaXML.getElementsByTagName('tags')[0].childNodes:

@@ -158,8 +158,7 @@ def parseWidgetFile(filename, outputXML, outputHelp):
 def makeXML(d):
     """Makes an xml file as plain text"""
     """make the header"""
-    s = """
-<?xml version="1.0" encoding="ISO-8859-1"?>
+    s = """<?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>"""
     s += d['widgetXML']
