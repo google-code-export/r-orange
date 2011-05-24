@@ -239,6 +239,7 @@ def install_libraries(librarys, repository = 'http://cran.r-project.org'):
                 redRLog.log(redRLog.R, redRLog.INFO, _('Installing library(s) %s.') % ','.join(newLibs))
                 Rcommand('setRepositories(ind=1:7)', wantType = 'NoConversion')
                 Rcommand('install.packages(c(%s))' % ','.join(['"%s"' % l for l in newLibs]), wantType = 'NoConversion')
+                redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Library load successful'))
             except:
                 redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL,_('Library load failed') +"<br>"+ redRLog.formatException()) 
                 return False

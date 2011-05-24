@@ -21,7 +21,8 @@ import orngView, orngCanvasItems
 from orngDlgs import *
 import RSession, globalData, redRPackageManager, redRStyle, redRHistory, redREnviron
 import redRi18n
-from orngSignalManager import SignalManager, SignalDialog
+#from orngSignalManager import SignalManager, 
+from orngDlgs import SignalDialog
 import cPickle, math, sip, redRObjects, redRSaveLoad
 import redRGUI
 #import pprint, 
@@ -39,7 +40,7 @@ class SchemaDoc(QWidget):
         self.version = 'trunk'                  # should be changed before making the installer or when moving to a new branch.
         #self.lines = []                         # list of orngCanvasItems.CanvasLine items
         #self.widgets = []                       # list of orngCanvasItems.CanvasWidget items
-        self.signalManager = SignalManager()    # signal manager to correctly process signals
+        #self.signalManager = SignalManager()    # signal manager to correctly process signals
 
         self.sessionID = 0
         self.schemaPath = redREnviron.settings["saveSchemaDir"]
@@ -255,24 +256,26 @@ class SchemaDoc(QWidget):
 
 
     # add one link (signal) from outWidget to inWidget. if line doesn't exist yet, we create it
+    
     def addLink(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1, fireSignal = 1, process = True, loading = False):
         ## addLink should move through all of the icons on all canvases and check if there are icons which are clones of the outWidget and inWidget
         ## after this lines should be created between those widgets and the lines should be set to enabled and data.
         
         if inWidget.instance().inputs.getSignal(inSignalName):
-            if not inWidget.instance().inputs.getSignal(inSignalName)['multiple']:
+            if not inWidget.instance().inputs.getSignal(inSignalName).multiple:
                 ## check existing link to the input signal
                 
                 existing = inWidget.instance().inputs.getLinks(inSignalName)
                 for l in existing:
-                    l['parent'].outputs.removeSignal(inWidget.instance().inputs.getSignal(inSignalName), l['sid'])
-                    redRObjects.removeLine(l['parent'], inWidget.instance(), l['sid'], inSignalName)
+                    l.parent.outputs.removeSignal(inWidget.instance().inputs.getSignal(inSignalName), l)
+                    redRObjects.removeLine(l.parent, inWidget.instance(), l, inSignalName)
         
         
         redRObjects.addLine(outWidget.instance(), inWidget.instance(), enabled = enabled)
         
-        
+        """Retrieve the insignal from the input widget handler and connect that to the output signal"""
         ok = outWidget.instance().outputs.connectSignal(inWidget.instance().inputs.getSignal(inSignalName), outSignalName, process = process)#    self.signalManager.addLink(outWidget, inWidget, outSignalName, inSignalName, enabled)
+        print ok
         if not ok and not loading:
             #remove the lines
             redRObjects.removeLine(outWidget.instance(), inWidget.instance(), outSignalName, inSignalName)

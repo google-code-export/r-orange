@@ -5,7 +5,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, sys, math, sip
-import orngSignalManager,redRStyle
+import redRStyle
 import signals, redREnviron, redRObjects, redRLog, redRHistory, redRi18n
 ERROR = 0
 WARNING = 1
@@ -89,12 +89,11 @@ class TempCanvasLine(QGraphicsLineItem):
 # # CANVAS LINE
 # #######################################
 class CanvasLine(QGraphicsPathItem):
-    def __init__(self, signalManager, canvasDlg, view, outWidget, inWidget, canvas, tabName, *args):
+    def __init__(self, canvasDlg, view, outWidget, inWidget, canvas, tabName, *args):
         QGraphicsPathItem.__init__(self, None, canvas)
         self.dirty = False
         self.noData = False
         self.tab = tabName
-        self.signalManager = signalManager
         self.canvasDlg = canvasDlg
         self.outWidget = outWidget
         self.inWidget = inWidget
@@ -121,24 +120,27 @@ class CanvasLine(QGraphicsPathItem):
         #redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'orngCanvasItems in refreshToolTip; setting tooltip to %s' % tip)
         self.setToolTip(tip)
     def getNoData(self):
-        return self.noData
+        import redRSignalManager
+        for l in redRSignalManager.getLinksByWidgetInstance(self.outWidget.instance(), self.inWidget.instance()):
+            if l[0].value == None: return True
+        return False
+        
     def remove(self):
         self.hide()
         self.setToolTip("")
         #self.view.repaint(QRect(min(self.startPoint().x(), self.endPoint().x())-55, min(self.startPoint().y(), self.endPoint().y())-55, abs(self.startPoint().x()-self.endPoint().x())+100,abs(self.startPoint().y()-self.endPoint().y())+100))
 
     def getEnabled(self):
+        import redRSignalManager
+        for l in redRSignalManager.getLinksByWidgetInstance(self.outWidget.instance(), self.inWidget.instance()):
+            if l[2]: return True
+        return False
         
-        return self.outWidget.instance().outputs.isSignalEnabled(self.inWidget.instance())##    int(self.signalManager.isSignalEnabled(self.outWidget.instance, self.inWidget.instance, signals[0][0], signals[0][1]))
+        #return self.outWidget.instance().outputs.isSignalEnabled(self.inWidget.instance())##    int(self.signalManager.isSignalEnabled(self.outWidget.instance, self.inWidget.instance, signals[0][0], signals[0][1]))
 
     def getSignals(self):
-        signals = []
-        for (inWidgetInstance, outName, inName, X) in self.signalManager.links.get(self.outWidget.instance(), []):
-            if inWidgetInstance == self.inWidget.instance:
-                
-                signals.append((outName, inName))
-        #print 'Signals collected, ', signals
-        return signals
+        """Return a list of outName and inName for all signals connected to the inwidget instance"""
+        return self.outWidget.instance().outputs.getLinkPairs(self.inWidget.instance())
 
     def paint(self, painter, option, widget = None):
         p1 = self.outWidget.getRightEdgePoint()
@@ -147,9 +149,7 @@ class CanvasLine(QGraphicsPathItem):
         path = QPainterPath(p1)
         path.cubicTo(p1.x()+30, p1.y(), p2.x()-30, p2.y(), p2.x(),p2.y())
         self.setPath(path)
-        if self.dirty:
-            color = redRStyle.dirtyLineColor
-        elif self.noData:
+        if self.getNoData():
             color = redRStyle.noDataLineColor
         else:
             color = redRStyle.lineColor
@@ -164,15 +164,15 @@ class CanvasLine(QGraphicsPathItem):
     def updateTooltip(self):
         self.refreshToolTip()
     def updateStatus(self):
-        ## check if the status of the data through the signal has changed and update accordingly
-        owi = self.outWidget.instance()
-        links = owi.outputs.getSignalLinks(self.inWidget.instance())
-        for l in links:
-            if owi.outputs.getSignal(l[0])['value'] == None:
-                self.setNoData(True)
-                self.view.scene().update()
-                return
-        self.setNoData(False)
+        ### check if the status of the data through the signal has changed and update accordingly
+        #owi = self.outWidget.instance()
+        #links = owi.outputs.getSignalLinks(self.inWidget.instance())
+        #for l in links:
+            #if owi.outputs.getSignal(l[0])['value'] == None:
+                #self.setNoData(True)
+                #self.view.scene().update()
+                #return
+        #self.setNoData(False)
         self.view.scene().update()
         return
         

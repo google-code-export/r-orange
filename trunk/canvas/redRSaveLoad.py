@@ -23,12 +23,10 @@ import redRi18n
 _ = redRi18n.Coreget_()
 import cPickle, math, zipfile, urllib, sip
 from xml.dom.minidom import Document, parse
-from orngSignalManager import SignalManager
 schemaPath = redREnviron.settings["saveSchemaDir"]
 _schemaName = ""
 canvasDlg = None
 schemaDoc = None
-signalManager = SignalManager()
 _tempWidgets = []
 notesTextWidget = None
 sessionID = 1
@@ -722,7 +720,7 @@ def loadLines(lineList, loadingProgressBar, freeze, tmp):
     return (loadedOk, failureText)
 def addWidgetInstanceByFileName(name, settings = None, inputs = None, outputs = None, id = None):
     widget = redRObjects.widgetRegistry()['widgets'][name]
-    return redRObjects.addInstance(signalManager, widget, settings, inputs, outputs, id)
+    return redRObjects.addInstance(widget, settings, inputs, outputs, id)
     
         
 def loadWidgets180(widgets, loadingProgressBar, loadedSettingsDict, tmp):
@@ -749,7 +747,7 @@ def loadWidgets180(widgets, loadingProgressBar, loadedSettingsDict, tmp):
                 widgetID += '_'+str(sessionID)
             #schemaDoc.addWidget(widgetInfo, x= xPos, y= yPos, caption = caption, widgetSettings = settings, forceInSignals = inputs, forceOutSignals = outputs, id = widgetID)
             
-            instanceID = redRObjects.addInstance(signalManager, widgetInfo, settings = settings, insig = inputs, outsig = outputs, id = id)
+            instanceID = redRObjects.addInstance(widgetInfo, settings = settings, insig = inputs, outsig = outputs, id = id)
             #newwidget = redRObjects.newIcon(redRObjects.activeCanvas(), redRObjects.activeTab(), widgetInfo, redRStyle.defaultWidgetIcon, canvasDlg, instanceID =  instanceID, tabName = redRObjects.activeTabName())
             
             if newwidget.instanceID not in redRObjects._widgetInstances.keys():

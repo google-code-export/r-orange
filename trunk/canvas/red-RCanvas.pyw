@@ -346,7 +346,7 @@ class OrangeCanvasDlg(QMainWindow):
         
         if res == QMessageBox.Yes:
             self.RVariableRemoveSupress = 1
-            saveComplete = self.schema.saveDocument()
+            saveComplete = redRSaveLoad.saveDocument()
             closed=True
         elif res == QMessageBox.No:
             closed=True

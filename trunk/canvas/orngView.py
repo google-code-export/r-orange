@@ -106,10 +106,7 @@ class SchemaView(QGraphicsView):
         if redREnviron.settings['askBeforeWidgetDelete']:
             res = QMessageBox.question(self.doc.canvasDlg, _('Red-R Canvas Remove Widget'), _('Are you sure you want to remove selected widget(s)?  This will remove the downstream data.'), QMessageBox.Yes | QMessageBox.No)
             if res != QMessageBox.Yes: return
-        if self.doc.signalManager.signalProcessingInProgress:
-            QMessageBox.information( self, _("Red-R Canvas"), _("Unable to remove widgets while signal processing is in progress. Please wait."))
-            return
-
+        
         selectedWidgets = self.getSelectedWidgets()
         #print selectedWidgets
         if selectedWidgets == []:
@@ -133,7 +130,7 @@ class SchemaView(QGraphicsView):
             #oldEnabled = self.doc.signalManager.getLinkEnabled(self.selectedLine.outWidget.instance, self.selectedLine.inWidget.instance)
             
             # we enable or disable all of the links simultaneously (only way to do it with this interface.
-            self.selectedLine.outWidget.instance.outputs.setSignalEnabled(self.selectedLine.inWidget.instance, not self.selectedLine.outWidget.instance.outputs.isSignalEnabled(self.selectedLine.inWidget.instance))
+            self.selectedLine.outWidget.instance().outputs.setSignalEnabled(self.selectedLine.inWidget.instance, not self.selectedLine.outWidget.instance().outputs.isSignalEnabled(self.selectedLine.inWidget.instance))
             #self.doc.signalManager.setLinkEnabled(self.selectedLine.outWidget.instance, self.selectedLine.inWidget.instance, not oldEnabled)
             self.selectedLine.updateTooltip()
             self.selectedLine.inWidget.updateTooltip()
@@ -142,9 +139,7 @@ class SchemaView(QGraphicsView):
     # popMenuAction - delete selected link
     def deleteSelectedLine(self):
         if not self.selectedLine: return
-        if self.doc.signalManager.signalProcessingInProgress:
-             QMessageBox.information( self, _("Red-R Canvas"), _("Unable to remove connection while signal processing is in progress. Please wait."))
-             return
+        
         self.deleteLine(self.selectedLine)
         self.selectedLine = None
         self.scene().update()
@@ -155,9 +150,9 @@ class SchemaView(QGraphicsView):
 
     # resend signals between two widgets. receiving widget will process the received data
     def resendSignals(self):
-        if self.selectedLine != None:
-            self.doc.signalManager.setLinkEnabled(self.selectedLine.outWidget.instance, self.selectedLine.inWidget.instance, 1, justSend = 1)
-
+        redRLog.log(redRLog.REDRCORE, redRLog.INFO, redRLog.formatException())
+        pass
+        
     def resetLineSignals(self):
         if self.selectedLine:
             self.doc.resetActiveSignals(self.selectedLine.outWidget, self.selectedLine.inWidget, enabled = True)
@@ -210,17 +205,17 @@ class SchemaView(QGraphicsView):
             widgets = [item for item in redRObjects.getIconsByTab(self.name)[self.name] if item.mouseInsideRightChannel(self.mouseDownPosition)] + [item for item in self.doc.widgets() if item.mouseInsideLeftChannel(self.mouseDownPosition)]           
             if widgets:
                 self.tempWidget = widgets[0]
-                if not self.doc.signalManager.signalProcessingInProgress:   # if we are processing some signals, don't allow to add lines
-                    self.unselectAllWidgets()
-                    self.tempLine = orngCanvasItems.TempCanvasLine(self.doc.canvasDlg, self.scene())
-                    if self.tempWidget.getDistToLeftEdgePoint(self.mouseDownPosition) < self.tempWidget.getDistToRightEdgePoint(self.mouseDownPosition):
-                        self.tempLine.setEndWidget(self.tempWidget)
-                        for widget in self.doc.widgets():
-                            widget.canConnect(widget, self.tempWidget)
-                    else:
-                        self.tempLine.setStartWidget(self.tempWidget)
-                        for widget in self.doc.widgets():
-                            widget.canConnect(self.tempWidget, widget)
+                #if not self.doc.signalManager.signalProcessingInProgress:   # if we are processing some signals, don't allow to add lines
+                self.unselectAllWidgets()
+                self.tempLine = orngCanvasItems.TempCanvasLine(self.doc.canvasDlg, self.scene())
+                if self.tempWidget.getDistToLeftEdgePoint(self.mouseDownPosition) < self.tempWidget.getDistToRightEdgePoint(self.mouseDownPosition):
+                    self.tempLine.setEndWidget(self.tempWidget)
+                    for widget in self.doc.widgets():
+                        widget.canConnect(widget, self.tempWidget)
+                else:
+                    self.tempLine.setStartWidget(self.tempWidget)
+                    for widget in self.doc.widgets():
+                        widget.canConnect(self.tempWidget, widget)
                                                         
                 self.scene().update()
                 self.doc.canvasDlg.widgetPopup.setEnabled(len(self.getSelectedWidgets()) == 1)
@@ -332,6 +327,7 @@ class SchemaView(QGraphicsView):
         # if we are drawing line
         elif self.tempLine:
             # show again the empty input/output boxes
+            redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'setting line')
             for widget in self.doc.widgets():
               widget.resetLeftRightEdges()      
             
@@ -342,11 +338,10 @@ class SchemaView(QGraphicsView):
 
             # we must check if we have really connected some output to input
             if start and end and start != end:
-                if self.doc.signalManager.signalProcessingInProgress:
-                     QMessageBox.information( self, _("Red-R Canvas"), _("Unable to connect widgets while signal processing is in progress. Please wait."))
-                else:
-                    self.doc.addLine(start, end)
+                redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'setting start and end')
+                self.doc.addLine(start, end)
             else:
+                redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'no start end')
                 state = [self.doc.widgets()[i].widgetInfo.name for i in range(min(len(self.doc.widgets()), 5))]
 
                 newCoords = QPoint(ev.globalPos())
@@ -357,10 +352,7 @@ class SchemaView(QGraphicsView):
                     newWidget = self.doc.addWidget(action.widgetInfo, point.x()+xOff, point.y()-24)
                     if newWidget != None:
                         nw = redRObjects.getWidgetByIDActiveTabOnly(newWidget)
-                        if self.doc.signalManager.signalProcessingInProgress:
-                            QMessageBox.information( self, _("Red-R Canvas"), _("Unable to connect widgets while signal processing is in progress. Please wait."))
-                        else:
-                            self.doc.addLine(start or nw, end or nw)
+                        self.doc.addLine(start or nw, end or nw)
 
         elif ev.button() == Qt.RightButton:
             activeItem = self.scene().itemAt(point)
@@ -389,9 +381,7 @@ class SchemaView(QGraphicsView):
             self.tempWidget = activeItem
             self.openActiveWidget()
         elif type(activeItem) == orngCanvasItems.CanvasLine:
-            if self.doc.signalManager.signalProcessingInProgress:
-                QMessageBox.information( self, _("Orange Canvas"), _("Please wait until Orange finishes processing signals."))
-                return
+            
             self.doc.resetActiveSignals(activeItem.outWidget, activeItem.inWidget, enabled = activeItem.outWidget.instance().outputs.isSignalEnabled(activeItem.inWidget.instance()))
             activeItem.inWidget.updateTooltip()
             activeItem.outWidget.updateTooltip()

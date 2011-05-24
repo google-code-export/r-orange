@@ -1,5 +1,5 @@
 ###############Define global data###############
-import orngSignalManager
+#import orngSignalManager
 
 globalData = {}
 globalSettings = {}
@@ -20,29 +20,17 @@ def setGlobalData(creatorWidget, name, data, description = None):
     'description':description
     }
 
-def getGlobalData(widget,name):
-    if widget != None:
-        parents = orngSignalManager.globalSignalManager.getParents(widget)
-        parentIDs = [w.widgetID for w in parents]
-        data = []
-        for key,value in globalData.items():
-            if key in parentIDs and  name in value.keys(): 
-                data.append(value[name])
-        return data
-    else:
+def getGlobalData(name):
         data = []
         for k, v in globalData.items():
             if name in v.keys():
                 data.append(v[name])
         return data
     
-def globalDataExists(widget,name):
-    parents = orngSignalManager.globalSignalManager.getParents(widget)
-    parentIDs = [w.widgetID for w in parents]
+def globalDataExists(name):
     for key,value in globalData.items():
-        if key in parentIDs and  name in value.keys(): 
+        if name in value.keys(): 
             return True
-    
     return False
     
 def removeGlobalData(creatorWidget,name = None):

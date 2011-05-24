@@ -823,7 +823,8 @@ class SearchBox2(redRGUI.base.lineEdit):
     
     def searchCallback(self,widgetInfo):
         print widgetInfo
-        qApp.canvasDlg.schema.addWidget(redRObjects.widgetRegistry()['widgets'][widgetInfo.fileName]) # add the correct widget to the schema
+        
+        redRObjects.addWidget(redRObjects.widgetRegistry()['widgets'][widgetInfo.fileName]) # add the correct widget to the schema
         self.clear()  # clear the line edit for the next widget
         return
         #text = unicode(self.widgetSuggestEdit.text())

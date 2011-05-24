@@ -26,8 +26,9 @@ import orngView, time, orngRegistry, OWRpy, math
 # print 'after orngview'
 import redRLog, redRStyle
 # print 'after log'
-from orngSignalManager import SignalManager, SignalDialog
-sm = SignalManager()
+#from orngSignalManager import SignalManager
+from orngDlgs import SignalDialog
+#sm = SignalManager()
 
 import redRi18n
 print 'after imports'
@@ -35,6 +36,7 @@ _ = redRi18n.Coreget_()
 defaultTabName = _('General')
 _widgetRegistry = {}
 _lines = {}
+_links = {}
 _widgetIcons = {defaultTabName:[]}
 _widgetInstances = {}
 _canvasTabs = {}
@@ -254,11 +256,11 @@ def addWidget(widgetInfo, x= -1, y=-1, caption = "", widgetSettings = None, save
     .. note::
         The function in :mod:`orngDoc` is still active but will soon be depricated for this function.
     """
-    global sm
+    #global sm
     global canvasDlg
     qApp.setOverrideCursor(Qt.WaitCursor)
     try:
-        instanceID = addInstance(sm, widgetInfo, widgetSettings, forceInSignals, forceOutSignals, id = id)
+        instanceID = addInstance(widgetInfo, widgetSettings, forceInSignals, forceOutSignals, id = id)
         caption = widgetInfo.name
         if getIconByIconCaption(caption):
             i = 2
@@ -279,7 +281,7 @@ def addWidget(widgetInfo, x= -1, y=-1, caption = "", widgetSettings = None, save
     activeCanvas().update()
     
     try:
-        sm.addWidget(newwidget.instance())
+        #sm.addWidget(newwidget.instance())
         newwidget.show()
         newwidget.updateTooltip()
         newwidget.setProcessing(1)
@@ -304,7 +306,7 @@ def closeAllWidgets():
 	print 'closing widget k'
         i.close()
         
-def addInstance(sm, info, settings, insig, outsig, id = None):
+def addInstance(info, settings, insig, outsig, id = None):
     global _widgetInstances
     global _widgetIcons
     global _widgetInfo
@@ -322,9 +324,8 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
         id = unicode(OWRpy.uniqueWidgetNumber) + '_' + ctime
     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('adding instance number %s name %s') % (id, info.name))
     if info.name == 'Dummy': 
-        instance.__init__(signalManager = sm,
-        forceInSignals = insig, forceOutSignals = outsig, id = id)
-    else: instance.__init__(signalManager = sm, id = id)
+        instance.__init__(forceInSignals = insig, forceOutSignals = outsig, id = id)
+    else: instance.__init__(id = id)
     
     instance.loadGlobalSettings()
     if settings:
@@ -433,12 +434,14 @@ def getLine(outIcon, inIcon):  ## lines are defined by an in icon and an out ico
 def addCanvasLine(outWidget, inWidget, enabled = -1):
     global schemaDoc
     #redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Adding canvas line'))
-    line = orngCanvasItems.CanvasLine(schemaDoc.signalManager, schemaDoc.canvasDlg, schemaDoc.activeTab(), outWidget, inWidget, schemaDoc.activeCanvas(), activeTabName())
+    line = orngCanvasItems.CanvasLine(schemaDoc.canvasDlg, schemaDoc.activeTab(), outWidget, inWidget, schemaDoc.activeCanvas(), activeTabName())
     _lines[unicode(time.time())] = line
     if enabled:
         line.setEnabled(1)
+        print 'setting line enabled'
     else:
         line.setEnabled(0)
+        print 'setting line disabled'
     line.show()
     outWidget.addOutLine(line)
     outWidget.updateTooltip()
@@ -454,21 +457,26 @@ def addLine(outWidgetInstance, inWidgetInstance, enabled = 1):
         ot = activeTabName()
         owi = outWidgetInstance
         iwi = inWidgetInstance
+        print 'owi', owi
+        print 'iwi', iwi
+        redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'instances %s, %s' % (str(owi), str(iwi)))
         for tname, icons in tabIconStructure.items():
             schemaDoc.setTabActive(tname)
             o = None
             i = None
             
             for ic in icons:
+                print 'icon', ic
+                print 'icon instance', ic.instance()
                 if ic.instance() == iwi:
                     i = ic
-                    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('found in widget %s') % ic)
+                    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('found in widget %s') % str(ic))
                 if ic.instance() == owi:
                     o = ic
-                    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('found out widget %s') % ic)
+                    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('found out widget %s') % str(ic))
             if i!= None and o != None:  # this means that there are the widget icons in question in the canvas so we should add a line between them.
                 line = getLine(o, i)
-                redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('the matching line is %s') % line)
+                redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('the matching line is %s') % str(line))
                 if not line:
                     line = addCanvasLine(o, i, enabled = enabled)
                     line.refreshToolTip()
@@ -498,12 +506,14 @@ def removeLine(outWidgetInstance, inWidgetInstance, outSignalName, inSignalName)
             
             
 def removeLineInstance(line):
-    obsoleteSignals = line.outWidget.instance().outputs.getSignalLinks(line.inWidget.instance())
-    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Removing obsolete signals %s') % obsoleteSignals)
-    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'removing the following signals %s' % obsoleteSignals)
-    for (s, id) in obsoleteSignals:
-        signal = line.inWidget.instance().inputs.getSignal(id)
-        line.outWidget.instance().outputs.removeSignal(signal, s)
+    import redRSignalManager
+    obsoleteSignals = redRSignalManager.getLinksByWidgetInstance(line.outWidget.instance(), line.inWidget.instance())
+    #obsoleteSignals = line.outWidget.instance().outputs.getSignalLinks(line.inWidget.instance())
+    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Removing obsolete signals %s') % unicode(obsoleteSignals))
+    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'removing the following signals %s' % unicode(obsoleteSignals))
+    for o,i,e,n in obsoleteSignals:
+        #signal = line.inWidget.instance().inputs.getSignal(id)
+        line.outWidget.instance().outputs.removeSignal(i, o.id)
     for k, l in _lines.items():
         if l == line:
             del _lines[k]   

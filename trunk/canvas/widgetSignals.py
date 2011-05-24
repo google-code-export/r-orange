@@ -7,7 +7,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import signals
 from string import *
-from orngSignalManager import *
+#from orngSignalManager import *
 import signals
 from redRSignalManager import *
 import orngDoc, redRLog, redRObjects, redRi18n
@@ -24,8 +24,8 @@ class widgetSignals():
         # needed by signalWrapper to know when everything was sent
         # self.parent = parent
         self.needProcessing = 0     # used by signalManager
-        if not signalManager: self.signalManager = globalSignalManager        # use the global instance of signalManager  - not advised
-        else:                 self.signalManager = signalManager              # use given instance of signal manager
+        #if not signalManager: self.signalManager = globalSignalManager        # use the global instance of signalManager  - not advised
+        #else:                 self.signalManager = signalManager              # use given instance of signal manager
 
         self.working = 0     #used to monitor when the widget is working.  Other widgets can check this to supress functions or to check on up/down stream widgets.
         self.linksOutWidgets = {}
@@ -47,19 +47,22 @@ class widgetSignals():
         if not self.outputs.hasOutputName(signalName):
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _("Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name.") % (signalName, self.captionTitle))
             raise Exception(_('Signal name mismatch'))
-        print 'setting data in output'
-        self.outputs.setOutputData(signalName, value)
+        #print 'setting data in output'
+        self.outputs.setOutputData(signalName, value) 
         self.outputs.processData(signalName)
         ## clear the warnings, info, and errors
+        #print 'removing errors'
         self.removeError()
         self.removeInformation()
         self.removeWarning()
         self.refreshToolTips()
+        #print 'writing ouptut'
         self.ROutput.setCursorToEnd()
         self.ROutput.append(_('\n##Data sent through the %s channel\n') % unicode(self.outputs.outputNames()[signalName])) #Keep track automatically of what R functions were performed.
         
+        #print 'updating lines'
         redRObjects.updateLines()
-        print 'sending complete'
+        #print 'sending complete'
     def refreshToolTips(self):
         lines = redRObjects.lines()
         for l in lines.values():
@@ -136,7 +139,7 @@ class widgetSignals():
             return
         
         
-        self.signalManager.setNeedAttention(self)  # don't know what this does exactly
+        #self.signalManager.setNeedAttention(self)  # don't know what this does exactly
         
         if self.processingHandler: self.processingHandler(self, 1)    # focus on active widget
         newSignal = 0        # did we get any new signals
@@ -226,10 +229,10 @@ class widgetSignals():
 
 
     # if we are in debug mode print the event into the file
-    def printEvent(self, text, eventVerbosity = 1):
-        self.signalManager.addEvent(self.captionTitle + ": " + text, eventVerbosity = eventVerbosity)
-        if self.eventHandler:
-            self.eventHandler(self.captionTitle + ": " + text, eventVerbosity)
+    #def printEvent(self, text, eventVerbosity = 1):
+        #self.signalManager.addEvent(self.captionTitle + ": " + text, eventVerbosity = eventVerbosity)
+        #if self.eventHandler:
+            #self.eventHandler(self.captionTitle + ": " + text, eventVerbosity)
 
 
 

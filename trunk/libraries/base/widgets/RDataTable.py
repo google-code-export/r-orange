@@ -112,7 +112,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
     def refresh(self):
         self.setLinks()
     def setLinks(self):
-        gLinks = [v['data'] for v in globalData.getGlobalData(widget = None, name = 'links')]
+        gLinks = [v['data'] for v in globalData.getGlobalData(name = 'links')]
         
         links = []
         for l in gLinks: ## l is now an ordered dict used for the 
