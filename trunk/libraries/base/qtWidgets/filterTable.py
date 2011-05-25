@@ -1,12 +1,154 @@
 """Filter Table
 
 Likely the main table class of Red-R this table allows data to be displayed in a table view with tabs for filtering the data.
+
+This widget accepts an entire signal class, not simply the data argument.  The signal class should pass a table model using the function getTableModel(self). 
+
+The table model must expose the following functions to filter table.
+    def __init__(self, parent, filtered):
+        ## takes the parent filter table and filtered to indicate if the data can be filtered.  Note that some data structures may not provide filtering.  The constructor may also take other arguments passed by the signal class.
+    def flags(self,index):
+        ## return a set of Qt flags for the data, this will generally be static.
+        if self.editable:
+            return (Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled)
+        else:
+            return (Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+    def getSummary(self):
+        ## return a summary of the data as a string.
+        return ''
+    def getRange(self,row,col):
+        ## return a dict of integers specifying row and column start and end locations, this is to read in chunks of data at a time.
+        r = {}
+        if row-self.range < 0:
+            r['rstart'] = 1
+        else:
+            r['rstart'] = row-self.range
+        
+        
+        if row+self.range > self.nrow:
+            r['rend'] = self.nrow
+        else:
+            r['rend'] = row+self.range
+        
+        
+        if col-self.range < 0:
+            r['cstart'] = 1
+        else:
+            r['cstart'] = col-self.range
+        
+        #print 'cend: ', row+self.range,  self.nrow        
+        if col+self.range > self.ncol:
+            r['cend'] = self.ncol
+        else:
+            r['cend'] = col+self.range
+        
+        return r
+        
+    def initData(self,Rdata):
+        ## this function initiates the data, should set the nrow, ncol, currentRange, and arraydata
+        ## arraydata should be a list of lists specifying the data.  colnames and rownames should also be set for the selected range.
+
+    def rowCount(self, parent): 
+        ## return the row count
+        return self.nrow
+        #return len(self.arraydata)
+    def columnCount(self, parent):
+        return the column count
+        return self.ncol
+        #return len(self.arraydata[0])
+ 
+    def data(self, index, role):
+        ### return a QVariant() for the data at index.row and index.column
+        if not index.isValid(): 
+            return QVariant() 
+        elif role != Qt.DisplayRole: 
+            return QVariant() 
+        elif not self.Rdata or self.Rdata == None:
+            return QVariant()
+        if (
+            (self.currentRange['cstart'] + 100 > index.column() and self.currentRange['cstart'] !=1) or 
+            (self.currentRange['cend'] - 100 < index.column() and self.currentRange['cend'] != self.ncol) or 
+            (self.currentRange['rstart'] + 100 > index.row() and self.currentRange['rstart'] !=1) or 
+            (self.currentRange['rend'] - 100 < index.row() and self.currentRange['rend'] != self.nrow)
+        ):
+
+            self.currentRange = self.getRange(index.row(), index.column())
+            if not self.working:
+                self.working = True
+                self.arraydata = self.R('as.matrix(%s[%d:%d,%d:%d])' % (self.Rdata,
+            self.currentRange['rstart'],
+            self.currentRange['rend'],
+            self.currentRange['cstart'],
+            self.currentRange['cend']
+            ),
+            wantType = 'list',silent=True)
+                self.working = False
+                
+            else: self.arraydata = []
+        if len(self.arraydata) == 0 or len(self.arraydata[0]) == 0:
+            return QVariant()
+        
+        rowInd = index.row() - self.currentRange['rstart'] + 1
+        colInd = index.column() - self.currentRange['cstart'] + 1
+        # self.working = False
+        return QVariant(self.arraydata[rowInd][colInd]) 
+
+
+    def headerData(self, col, orientation, role):
+        ## return a QVariant() for the header data.
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            if not col >= len(self.colnames):
+                return QVariant(self.colnames[col])
+        elif orientation == Qt.Horizontal and role == Qt.DecorationRole and (self.filterable or self.sortable):
+            if col+1 in self.filteredOn:
+                return QVariant(self.columnFiltered)
+            else:
+                return QVariant()
+        elif orientation == Qt.Vertical and role == Qt.DisplayRole: 
+            # print 'row number', col, len(self.rownames)
+            if not col >= len(self.rownames):
+                return QVariant(self.rownames[col])
+        return QVariant()
+    
+
+    def sort(self, Ncol, order):
+        ## takes a column number (Ncol) and an order.  should generate a new arraydata, rownames and colnames and emit the signal layoutChanged.
+        if self.editable: return
+        self.emit(SIGNAL("layoutAboutToBeChanged()"))
+        #print 'adfasfasdfasdfas', self.R('class(%s)' % self.orgRdata)
+        if order == Qt.DescendingOrder:
+            self.Rdata = '%s[order(%s[,%d],decreasing=TRUE),]' % (self.orgRdata,self.orgRdata,Ncol+1)
+        else:
+            self.Rdata = '%s[order(%s[,%d]),]' % (self.orgRdata,self.orgRdata,Ncol+1)
+            
+        self.colnames = self.R('colnames(as.data.frame(' +self.Rdata+ '))', wantType = 'list', silent=True)
+        self.rownames = self.R('rownames(as.data.frame(' +self.Rdata+'))', wantType = 'list', silent=True)
+        self.nrow = self.R('nrow(as.matrix(%s))' % self.Rdata, silent=True)
+        self.ncol = self.R('ncol(as.matrix(%s))' % self.Rdata, silent=True)
+        
+        self.arraydata = self.R('as.matrix(as.matrix(%s)[%d:%d,%d:%d])' % (self.Rdata,
+        self.currentRange['rstart'],
+        self.currentRange['rend'],
+        self.currentRange['cstart'],
+        self.currentRange['cend']
+        ),
+        wantType = 'listOfLists',silent=True)
+
+        self.emit(SIGNAL("layoutChanged()"))
+
+    def filteredData(self):
+        ## returns the filtered data
+        return self.Rdata
+        
+    def delete(self):
+        sip.delete(self)  
 """
 
 
 from redRGUI import widgetState
 import os.path, redRLog
 import redREnviron, redRReports
+import signals
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.button import button
@@ -110,58 +252,21 @@ class filterTable(widgetState, QTableView):
         print 'selectColumn#############################', val
 
     def cellSelection(self,newSelected,oldSelected):
-        # print 'cellSelection ################'#, newSelected, oldSelected
-        #print self.selectionModel().selectedColumns()#, self.selectionModel().selectedRows() 
-        # self.selections.merge(oldSelected,QItemSelectionModel.Deselect)
-        # self.selections.merge(newSelected,QItemSelectionModel.Select)
-        # inds = self.selections.indexes()
+        
         selections = self.selectionModel().selection()
         if self.working:
             return 
         self.working = True
-        # print 'adsfad', len(self.selections)
-        # for x in selections:
-            # print x.top(),x.bottom(),x.right(),x.left()
-        
         self.selectionCallback(selections)
         self.working = False
-        return 
-        """    
-        rows = []
-        cols = []
-        if len(self.selectionModel().selectedColumns()) > 0:
-            for x in self.selectionModel().selectedColumns():
-                cols.append(str(x.column()+1))
-            tmpData = '%s[,c(%s)]' % (self.Rdata, ','.join(cols))
-        elif len(self.selectionModel().selectedRows()) > 0:
-            for x in self.selectionModel().selectedRows():
-                cols.append(str(x.row()+1))
-            tmpData = '%s[c(%s),]' % (self.Rdata, ','.join(rows))
-        else:
-            inds = self.selections.indexes()
-            #for x in self.selections:
-
-            for ind in inds:
-                #print _('new'), ind.row(),ind.column()
-                rows.append(str(ind.row()+1))
-                cols.append(str(ind.column()+1))
-
-            self.R('rowInd <- c(' + ','.join(rows) + ')',silent=True)
-            self.R('colInd <- c(' + ','.join(cols) + ')',silent=True)
-            
-            self.R('tmpData <- apply(cbind(rowInd,colInd),1,FUN=function(x) {%s[x[1],x[2]]})' % self.Rdata, silent=True)
-            tmpData = 'tmpData'
-        self.selectionCallback(tmpData)
-        self.working = False
-        """    
-    def setDataModel(self, data):
-        self.tm = data.getTableModel()
+    def setDataModel(self, data, filtered = False):
+        self.tm = data.getTableModel(self, filtered)
         self.setModel(self.tm)
         self.dataInfo.setText(self.tm.getSummary())
         
-    def setTable(self, data):
+    def setTable(self, data, filterable = False, sortable = False):
         """Sets the table to a table model returned from a signal.  data represents a Red-R signal that contains a table model function getTableModel()."""
-        self.tm = data.getTableModel(self)
+        self.tm = data.getTableModel(self, filterable, sortable)
         self.setModel(self.tm)
         
     def setStructuredDictTable(self, data):
@@ -170,29 +275,30 @@ class filterTable(widgetState, QTableView):
         self.dataInfo.setText(self.tm.getSummary())
     def setRTable(self,data, setRowHeaders = 1, setColHeaders = 1,filtered=False):
         """Sets the R Table.  This is the most common way to place data into the table."""
-        if self.R('class(%s)' %data, silent=True) != 'data.frame':
-            data = 'as.data.frame(%s)' %data
-        #self.Rdata = Rdata
-        if not filtered:
-            self.Rdata = data
-            self.filteredData = data
-            self.criteriaList = {}
-            filteredCols = []
+        # if self.R('class(%s)' %data, silent=True) != 'data.frame':
+            # data = 'as.data.frame(%s)' %data
+        ##self.Rdata = Rdata
+        # if not filtered:
+            # self.Rdata = data
+            # self.filteredData = data
+            # self.criteriaList = {}
+            # filteredCols = []
             
-        else:
-            filteredCols = self.criteriaList.keys()
-        total = self.R('nrow(%s)' % self.Rdata,silent=True)        
-        if total == None:
-            self.clear()
-            return
-        if self.filterable:
-            filtered = self.R('nrow(%s)' % data,silent=True)
-            self.dataInfo.setText(_('Showing %d of %d rows.') % (filtered,total))
-        else:
-            self.dataInfo.setText(_('Showing %d rows.') % (total))
+        # else:
+            # filteredCols = self.criteriaList.keys()
+        # total = self.R('nrow(%s)' % self.Rdata,silent=True)        
+        # if total == None:
+            # self.clear()
+            # return
+        # if self.filterable:
+            # filtered = self.R('nrow(%s)' % data,silent=True)
+            # self.dataInfo.setText(_('Showing %d of %d rows.') % (filtered,total))
+        # else:
+            # self.dataInfo.setText(_('Showing %d rows.') % (total))
 
-        self.tm = MyTableModel(data,self,editable=self.editable, 
-            filteredOn = filteredCols, filterable=self.filterable,sortable=self.sortable)
+        self.tm = signals.base.RDataFrame(self.parent, data = data).getTableModel(self, )
+        #MyTableModel(data,self,editable=self.editable, 
+        #    filteredOn = filteredCols, filterable=self.filterable,sortable=self.sortable)
         self.setModel(self.tm)
     
     def setModel(self, model):
@@ -256,7 +362,8 @@ class filterTable(widgetState, QTableView):
     def addColumns(self,count,headers=None):
         self.tm.insertColumns(self.tm.columnCount(self),count,headers)
     def clear(self):
-        self.setRTable('matrix("")')
+        self.setTable(BlankTable())
+        #self.setRTable('matrix("")')
         self.criteriaList = {}
     def headerClicked(self,val):
         
@@ -267,234 +374,23 @@ class filterTable(widgetState, QTableView):
         if not self.tm: return False
         return self.tm.data(self.tm.createIndex(row,col),Qt.DisplayRole).toString()
     def createMenu(self, selectedCol):
-        '''
-        self.tm.createMenu(selectedCol, sortable = self.sortable, filterable = self.filterable
-        '''
-        #print selectedCol, pos
-        # print _('in createMenu'), self.criteriaList
-
-        globalPos = QCursor.pos() #self.mapToGlobal(pos)
-        self.menu = QDialog(None,Qt.Popup)
-        self.menu.setLayout(QVBoxLayout())
-        if self.sortable:
-            box = widgetBox(self.menu,orientation='horizontal')
-            box.layout().setAlignment(Qt.AlignLeft)
-            button(box,label='A->Z',callback= lambda: self.sort(selectedCol,Qt.AscendingOrder))
-            widgetLabel(box,label=_('Ascending Sort'))
-            box = widgetBox(self.menu,orientation='horizontal')
-            box.layout().setAlignment(Qt.AlignLeft)
-            button(box,label='Z->A',callback= lambda: self.sort(selectedCol,Qt.DescendingOrder))
-            widgetLabel(box,label=_('Descending Sort'))
-            
-        if not self.filterable:
-            self.menu.move(globalPos)
-            self.menu.show()
-            return
+        self.tm.createMenu(selectedCol)
         
-        if self.sortable:
-            hr = QFrame(self.menu)
-            hr.setFrameStyle( QFrame.Sunken + QFrame.HLine );
-            hr.setFixedHeight( 12 );
-            self.menu.layout().addWidget(hr)
-    
-        
-        clearButton = button(self.menu,label=_('Clear Filter'),
-        callback=lambda col=selectedCol: self.createCriteriaList(col,self.menu,action='clear'))
-        self.menu.layout().setAlignment(clearButton,Qt.AlignHCenter)
-        clearButton.hide()
-        
-        self.numericLabel = widgetLabel(self.menu,label=_('Enter a value for one of these critera:'))
-        self.numericLabel.hide()
-        
-        self.stringLabel = widgetLabel(self.menu,label=_('Enter a value for one of these critera (case sensitive):'))
-        self.stringLabel.hide()
-        
-        self.factorLabel = widgetLabel(self.menu,label=_('Select Levels:'))
-        self.factorLabel.hide()
-        
-        
-        if selectedCol in self.criteriaList.keys():
-            clearButton.show()
-        
-        self.optionsBox = widgetBox(self.menu)
-        self.optionsBox.layout().setAlignment(Qt.AlignTop)
-        
-        #### Logic if R variable ###
-        #if self.varType == 0:
-        colClass = self.R('class(%s[,%d])' % (self.Rdata,selectedCol),silent=True)
-        
-        if colClass in ['factor','logical']:
-            self.factorLabel.show()
-            
-            if selectedCol in self.criteriaList.keys():
-                checked = self.criteriaList[selectedCol]['value']
-            else:
-                checked = []
-            if colClass =='logical':
-                levels = ['TRUE','FALSE']
-            else:
-                levels = self.R('levels(%s[,%d])' % (self.Rdata,selectedCol),wantType='list', silent=True)
-                
-            if len(levels) > 1:
-                levels.insert(0,_('Check All'))
-            scroll = scrollArea(self.optionsBox,spacing=1)
-            
-            c = checkBox(scroll,label=_('Levels'),displayLabel=False, buttons=levels,setChecked = checked)
-            scroll.setWidget(c.controlArea)
-            
-            QObject.connect(c.buttons, SIGNAL('buttonClicked (int)'), lambda val : self.factorCheckBox(val,self.optionsBox))
-    
-        elif colClass in ['integer','numeric']:
-            self.numericLabel.show()
-            self.options = [_('Equals'), _('Does Not Equal'),_('Greater Than'),_('Greater Than Or Equal To'), 
-            _('Less Than'), _('Less Than or Equal To'), 'Between\n(2 numbers comma\nseparated, inclusive)', 
-            'Not Between\n(2 numbers comma\nseparated)']
-            for x in self.options:
-                if selectedCol in self.criteriaList and self.criteriaList[selectedCol]['method'] == _('Numeric ') + x:
-                    e = lineEdit(self.optionsBox,label=x,text=self.criteriaList[selectedCol]['value'])
-                else:
-                    e = lineEdit(self.optionsBox,label=x)
-                self.connect(e, SIGNAL("textEdited(QString)"),
-                lambda val, col=selectedCol,field=x : self.clearOthers(val,self.optionsBox,field))
-    
-        elif colClass in ['character']:
-            self.stringLabel.show()
-            self.options = [_('Equals'), _('Does Not Equal'),_('Begins With'),_('Ends With'), 
-            _('Contains'), _('Does Not Contain')]
-            for x in self.options:
-                if selectedCol in self.criteriaList and self.criteriaList[selectedCol]['method'] == _('String ') + x:
-                    e = lineEdit(self.optionsBox,label=x,text=self.criteriaList[selectedCol]['value'])
-                else:
-                    e = lineEdit(self.optionsBox,label=x)
-                self.connect(e, SIGNAL("textEdited(QString)"),
-                lambda val, col=selectedCol,field=x : self.clearOthers(val,self.optionsBox,field))
-        
-        buttonBox = widgetBox(self.optionsBox,orientation='horizontal')
-        buttonBox.layout().setAlignment(Qt.AlignRight)
-        okButton = button(buttonBox,label=_('OK'),
-        callback=lambda col=selectedCol: self.createCriteriaList(col,self.optionsBox,action=_('OK')))
-        okButton.setDefault (True)
-        button(buttonBox,label=_('Cancel'),
-        callback=lambda col=selectedCol: self.createCriteriaList(col,self.optionsBox,action='cancel'))
-        
-        self.menu.move(globalPos)
-        self.menu.show()
-    def factorCheckBox(self,val,menu):
-        if val != 0: return
-        checkbox = menu.findChildren(checkBox)[0]
-        if checkbox.buttonAt(0) != _('Check All'): return
-        #print checkbox.getChecked(), _('Check All') in checkbox.getChecked()
-        if _('Check All') in checkbox.getChecked():
-            checkbox.checkAll()
-        else: 
-            checkbox.uncheckAll()
-        
-    def clearOthers(self,val, menu, field):
-        # print '##############', val, field
-        for label,value in zip(menu.findChildren(QLabel),menu.findChildren(QLineEdit)):
-            if label.text() != field:
-                value.setText('')
-
     def clearFiltering(self):
-        self.criteriaList = {}
-        # self.horizontalHeader().setSortIndicator(-1,order)
-        self.filter()
+        if self.tm:
+            self.tm.clearFiltering()
         
-    def createCriteriaList(self,col,menu,action):
-        #print 'in filter@@@@@@@@@@@@@@@@@@@@@@@@@@', col,action
-        #print self.criteriaList
-        if action=='cancel':
-            self.menu.hide()
-            return
-        colClass = self.R('class(%s[,%d])' % (self.Rdata,col),silent=True)
-        if action =='clear':
-            del self.criteriaList[col]
-        elif action=='OK':
-            if colClass in ['integer','numeric']:
-                for label,value in zip(menu.findChildren(QLabel),menu.findChildren(QLineEdit)):
-                    if value.text() != '':
-                        # print label.text(),value.text()
-                        self.criteriaList[col] = {'column':col, "method": _('Numeric ') + unicode(label.text()), "value": unicode(value.text())}
-            elif colClass in ['character']:
-                for label,value in zip(menu.findChildren(QLabel),menu.findChildren(QLineEdit)):
-                    if value.text() != '':
-                        # print label.text(),value.text()
-                        self.criteriaList[col] = {'column':col, "method": _('String ') + unicode(label.text()), "value": unicode(value.text())}
-            elif colClass in ['factor','logical']:
-                checks = menu.findChildren(checkBox)[0].getChecked()
-                if _('Check All') in checks:
-                    checks.remove(_('Check All'))
-                if len(checks) != 0:
-                    self.criteriaList[col] = {'column':col, "method": colClass, "value": checks}
-                else:
-                    del self.criteriaList[col]
-            
-        #print _('criteriaList'), self.criteriaList
-        self.menu.hide()
-        self.filter()
-    
-    def filter(self):
-        filters  = []
-        for col,criteria in self.criteriaList.items():
-            #print _('in loop'), col,criteria['method']
-            if _('Numeric Equals') == criteria['method']:
-                filters.append('%s[,%s] == %s' % (self.Rdata,col,criteria['value']))
-            elif _('Numeric Does Not Equal') == criteria['method']:
-                filters.append('%s[,%s] != %s' % (self.Rdata,col,criteria['value']))
-            elif _('Numeric Greater Than') == criteria['method']:
-                filters.append('%s[,%s] > %s' % (self.Rdata,col,criteria['value']))
-            elif _('Numeric Greater Than Or Equal To') == criteria['method']:
-                filters.append('%s[,%s] >= %s' % (self.Rdata,col,criteria['value']))
-            elif _('Numeric Less Than') == criteria['method']:
-                filters.append('%s[,%s] < %s' % (self.Rdata,col,criteria['value']))
-            elif _('Numeric Less Than or Equal To') == criteria['method']:
-                filters.append('%s[,%s] <= %s' % (self.Rdata,col,criteria['value']))
-            elif 'Numeric Between\n(2 numbers comma\nseparated, inclusive)' == criteria['method']:
-                (start,comma,stop) = criteria['value'].partition(',')
-                if start !='' and stop !='' or comma == ',':
-                    filters.append('%s[,%s] >= %s & %s[,%s] <= %s' % (self.Rdata,col,start,self.Rdata,col,stop))
-            elif 'Numeric Not Between\n(2 numbers comma\nseparated)' == criteria['method']:
-                (start,comma, stop) = criteria['value'].partition(',')
-                if start !='' and stop !='' or comma == ',':
-                    filters.append('%s[,%s] < %s | %s[,%s] > %s' % (self.Rdata,col,start,self.Rdata,col,stop))
-
-            elif _('String Equals') == criteria['method']:
-                filters.append('%s[,%s] == "%s"' % (self.Rdata,col,criteria['value']))
-            elif _('String Does Not Equal') == criteria['method']:
-                filters.append('%s[,%s] != "%s"' % (self.Rdata,col,criteria['value']))
-            elif _('String Begins With') == criteria['method']:
-                filters.append('grepl("^%s",%s[,%s])' % (criteria['value'],self.Rdata,col))
-            elif _('String Ends With') == criteria['method']:
-                filters.append('grepl("%s$",%s[,%s])' % (criteria['value'],self.Rdata,col))
-            elif _('String Contains') == criteria['method']:
-                filters.append('grepl("%s",%s[,%s])' % (criteria['value'],self.Rdata,col))
-            elif _('String Does Not Contain') == criteria['method']:
-                filters.append('!grepl("%s",%s[,%s])' % (criteria['value'],self.Rdata,col))
-            
-            
-            elif criteria['method'] in ['logical','factor']:
-                f= '","'.join([unicode(x) for x in criteria['value']])
-                filters.append(self.Rdata+'[,'+unicode(col)+'] %in% as.factor(c("'+f+'"))')
-            #elif 'logical' == critera['method']:
-            
-       # print 'filters:', filters
-        self.filteredData = '%s[%s,,drop = F]' % (self.Rdata,' & '.join(filters))
-        #print 'string:', self.filteredData
-        self.setRTable(self.filteredData,filtered=True)
-        if self.onFilterCallback:
-            self.onFilterCallback()
-             
     def getFilteredData(self):
         try:
-            return self.tm.Rdata
+            return self.tm.filteredData()
         except:
             return None
-    def sort(self,col,order):
-        #self.tm.sort(col-1,order)
-        self.sortByColumn(col-1, order)
-        self.horizontalHeader().setSortIndicator(col-1,order)
-        self.menu.hide()
-        self.sortIndex = [col-1,order]
+    # def sort(self,col,order):
+        ##self.tm.sort(col-1,order)
+        # self.sortByColumn(col-1, order)
+        # self.horizontalHeader().setSortIndicator(col-1,order)
+        # self.menu.hide()
+        # self.sortIndex = [col-1,order]
         
         
     def getSettings(self):

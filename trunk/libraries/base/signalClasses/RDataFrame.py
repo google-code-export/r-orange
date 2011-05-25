@@ -4,8 +4,16 @@ from libraries.base.signalClasses.RList import *
 from libraries.base.signalClasses.StructuredDict import *
 from libraries.base.signalClasses.UnstructuredDict import *
 
-import time
-
+import time, sys, os, redREnviron
+from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
+from libraries.base.qtWidgets.scrollArea import scrollArea
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.checkBox import checkBox
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class RDataFrame(RList, StructuredDict):
     
     convertFromList = [StructuredDict]
@@ -144,8 +152,8 @@ class RDataFrame(RList, StructuredDict):
         output = self.R(self.getRowData_call(item), wantType = 'list', silent = True)
         return output
     
-    def getTableModel(self, widget, filterable = True, filteredOn = [], sortable = True):
-        return MyTableModel(self.getData(), widget, filteredOn = filteredOn, filterable = filterable, sortable = sortable)
+    def getTableModel(self, widget, filtered = True, sortable = True):
+        return MyTableModel(self.getData(), widget, filteredOn = [], filterable = filtered, sortable = sortable)
         
 class MyTableModel(QAbstractTableModel): 
     def __init__(self,Rdata,parent, filteredOn = [], editable=False,
@@ -160,6 +168,7 @@ class MyTableModel(QAbstractTableModel):
         self.editable = editable
         self.filterable = filterable
         self.filteredOn = filteredOn
+        self.criteriaList = {}
         # self.filter_delete = os.path.join(redREnviron.directoryNames['picsDir'],'filterAdd.png')
         self.columnFiltered = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'columnFilter.png'))
         
@@ -173,38 +182,53 @@ class MyTableModel(QAbstractTableModel):
         filtered = self.R('nrow(%s)' % self.Rdata, silent = True)
         return 'Displaying %d of %s rows' % (filtered, total) 
         
-    
+    def startProgressBar(self, title,text,max):
+        progressBar = QProgressDialog()
+        progressBar.setCancelButtonText(QString())
+        progressBar.setWindowTitle(title)
+        progressBar.setLabelText(text)
+        progressBar.setMaximum(max)
+        progressBar.setValue(0)
+        progressBar.show()
+        return progressBar
+        
     def sort(self,col,order):
         #self.tm.sort(col-1,order)
         self.parent.sortByColumn(col-1, order)
         self.parent.horizontalHeader().setSortIndicator(col-1,order)
         self.menu.hide()
         self.parent.sortIndex = [col-1,order]
-    def createMenu(self, selectedCol, sortable = True, filterable = True):
+    def createMenu(self, selectedCol):
+        '''
+        self.tm.createMenu(selectedCol, sortable = self.sortable, filterable = self.filterable
+        '''
         #print selectedCol, pos
         # print _('in createMenu'), self.criteriaList
 
         globalPos = QCursor.pos() #self.mapToGlobal(pos)
         self.menu = QDialog(None,Qt.Popup)
         self.menu.setLayout(QVBoxLayout())
-        if sortable:
+        if self.sortable:
             box = widgetBox(self.menu,orientation='horizontal')
             box.layout().setAlignment(Qt.AlignLeft)
-            button(box,label='A->Z',callback= lambda: self.sort(selectedCol,Qt.AscendingOrder))  # must have the function self.sort
+            button(box,label='A->Z',callback= lambda: self.sort(selectedCol,Qt.AscendingOrder))
             widgetLabel(box,label=_('Ascending Sort'))
             box = widgetBox(self.menu,orientation='horizontal')
             box.layout().setAlignment(Qt.AlignLeft)
             button(box,label='Z->A',callback= lambda: self.sort(selectedCol,Qt.DescendingOrder))
             widgetLabel(box,label=_('Descending Sort'))
-        if not filterable:
+            
+        if not self.filterable:
             self.menu.move(globalPos)
             self.menu.show()
             return
-        if sortable:
+        
+        if self.sortable:
             hr = QFrame(self.menu)
             hr.setFrameStyle( QFrame.Sunken + QFrame.HLine );
             hr.setFixedHeight( 12 );
             self.menu.layout().addWidget(hr)
+    
         
         clearButton = button(self.menu,label=_('Clear Filter'),
         callback=lambda col=selectedCol: self.createCriteriaList(col,self.menu,action='clear'))
@@ -287,13 +311,62 @@ class MyTableModel(QAbstractTableModel):
         
         self.menu.move(globalPos)
         self.menu.show()
+    def factorCheckBox(self,val,menu):
+        if val != 0: return
+        checkbox = menu.findChildren(checkBox)[0]
+        if checkbox.buttonAt(0) != _('Check All'): return
+        #print checkbox.getChecked(), _('Check All') in checkbox.getChecked()
+        if _('Check All') in checkbox.getChecked():
+            checkbox.checkAll()
+        else: 
+            checkbox.uncheckAll()
+        
+    def clearOthers(self,val, menu, field):
+        # print '##############', val, field
+        for label,value in zip(menu.findChildren(QLabel),menu.findChildren(QLineEdit)):
+            if label.text() != field:
+                value.setText('')
+
     def clearFiltering(self):
         self.criteriaList = {}
+        self.Rdata = self.orgRdata
         # self.horizontalHeader().setSortIndicator(-1,order)
         self.filter()
+        
+    def createCriteriaList(self,col,menu,action):
+        #print 'in filter@@@@@@@@@@@@@@@@@@@@@@@@@@', col,action
+        #print self.criteriaList
+        if action=='cancel':
+            self.menu.hide()
+            return
+        colClass = self.R('class(%s[,%d])' % (self.Rdata,col),silent=True)
+        if action =='clear':
+            del self.criteriaList[col]
+        elif action=='OK':
+            if colClass in ['integer','numeric']:
+                for label,value in zip(menu.findChildren(QLabel),menu.findChildren(QLineEdit)):
+                    if value.text() != '':
+                        # print label.text(),value.text()
+                        self.criteriaList[col] = {'column':col, "method": _('Numeric ') + unicode(label.text()), "value": unicode(value.text())}
+            elif colClass in ['character']:
+                for label,value in zip(menu.findChildren(QLabel),menu.findChildren(QLineEdit)):
+                    if value.text() != '':
+                        # print label.text(),value.text()
+                        self.criteriaList[col] = {'column':col, "method": _('String ') + unicode(label.text()), "value": unicode(value.text())}
+            elif colClass in ['factor','logical']:
+                checks = menu.findChildren(checkBox)[0].getChecked()
+                if _('Check All') in checks:
+                    checks.remove(_('Check All'))
+                if len(checks) != 0:
+                    self.criteriaList[col] = {'column':col, "method": colClass, "value": checks}
+                else:
+                    del self.criteriaList[col]
+            
+        #print _('criteriaList'), self.criteriaList
+        self.menu.hide()
+        self.filter()
     
-    
-    def filter(self):  # filters data and resets the self.Rdata variable
+    def filter(self):
         filters  = []
         for col,criteria in self.criteriaList.items():
             #print _('in loop'), col,criteria['method']
@@ -338,46 +411,12 @@ class MyTableModel(QAbstractTableModel):
             #elif 'logical' == critera['method']:
             
        # print 'filters:', filters
-        self.Rdata = '%s[%s,,drop = F]' % (self.orgRdata,' & '.join(filters))
-        self.parent.update()
+        self.filteredData = '%s[%s,,drop = F]' % (self.Rdata,' & '.join(filters))
         #print 'string:', self.filteredData
-        #self.setRTable(self.filteredData,filtered=True)
-        #if self.onFilterCallback:
-        #    self.onFilterCallback()
+        self.initData(self.filteredData)
+        if self.parent.onFilterCallback:
+            self.parent.onFilterCallback()
     
-    def createCriteriaList(self,col,menu,action):
-        #print 'in filter@@@@@@@@@@@@@@@@@@@@@@@@@@', col,action
-        #print self.criteriaList
-        if action=='cancel':
-            self.menu.hide()
-            return
-        colClass = self.R('class(%s[,%d])' % (self.Rdata,col),silent=True)
-        if action =='clear':
-            del self.criteriaList[col]
-        elif action=='OK':
-            if colClass in ['integer','numeric']:
-                for label,value in zip(menu.findChildren(QLabel),menu.findChildren(QLineEdit)):
-                    if value.text() != '':
-                        # print label.text(),value.text()
-                        self.criteriaList[col] = {'column':col, "method": _('Numeric ') + unicode(label.text()), "value": unicode(value.text())}
-            elif colClass in ['character']:
-                for label,value in zip(menu.findChildren(QLabel),menu.findChildren(QLineEdit)):
-                    if value.text() != '':
-                        # print label.text(),value.text()
-                        self.criteriaList[col] = {'column':col, "method": _('String ') + unicode(label.text()), "value": unicode(value.text())}
-            elif colClass in ['factor','logical']:
-                checks = menu.findChildren(checkBox)[0].getChecked()
-                if _('Check All') in checks:
-                    checks.remove(_('Check All'))
-                if len(checks) != 0:
-                    self.criteriaList[col] = {'column':col, "method": colClass, "value": checks}
-                else:
-                    del self.criteriaList[col]
-            
-        #print _('criteriaList'), self.criteriaList
-        self.menu.hide()
-        self.filter()
-        
     def flags(self,index):
         if self.editable:
             return (Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled)
@@ -414,8 +453,9 @@ class MyTableModel(QAbstractTableModel):
     def initData(self,Rdata):
         self.Rdata = Rdata
         self.nrow = self.R('nrow(%s)' % self.Rdata,silent=True)
+        #print self.nrow
         self.ncol = self.R('ncol(%s)' % self.Rdata,silent=True)
-        
+        #print self.ncol
         self.currentRange = self.getRange(0,0)
         
         self.arraydata = self.R('as.matrix(%s[%d:%d,%d:%d])' % (self.Rdata,
@@ -438,6 +478,8 @@ class MyTableModel(QAbstractTableModel):
             toAppend= ['' for i in xrange(self.columnCount(self))]
             self.arraydata = [toAppend]
         # print 'self.arraydata' , self.arraydata
+        QTableView.setModel(self.parent, self)
+        #self.parent.setModel(self)
         
     def rowCount(self, parent): 
         return self.nrow
@@ -447,19 +489,12 @@ class MyTableModel(QAbstractTableModel):
         #return len(self.arraydata[0])
  
     def data(self, index, role): 
-        # print _('in data')
-        # if self.working == True:
-            # return QVariant()
-        # self.working = True
         if not index.isValid(): 
             return QVariant() 
         elif role != Qt.DisplayRole: 
             return QVariant() 
         elif not self.Rdata or self.Rdata == None:
             return QVariant()
-        # print self.currentRange['rstart'], index.row(), self.currentRange['rend'], self.currentRange['cstart'], index.column(), self.currentRange['cend']
-        # return QVariant(QIcon(self.filter_add))
-
         if (
             (self.currentRange['cstart'] + 100 > index.column() and self.currentRange['cstart'] !=1) or 
             (self.currentRange['cend'] - 100 < index.column() and self.currentRange['cend'] != self.ncol) or 
@@ -486,13 +521,10 @@ class MyTableModel(QAbstractTableModel):
         rowInd = index.row() - self.currentRange['rstart'] + 1
         colInd = index.column() - self.currentRange['cstart'] + 1
         # self.working = False
+        print self.arraydata[rowInd][colInd], rowInd, colInd
         return QVariant(self.arraydata[rowInd][colInd]) 
 
     def headerData(self, col, orientation, role):
-        # print col,orientation,role
-        # return QVariant(QIcon(self.filter_add))
-        # print _('in headerData'), col, orientation, role
-
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             if not col >= len(self.colnames):
                 return QVariant(self.colnames[col])
@@ -513,9 +545,9 @@ class MyTableModel(QAbstractTableModel):
         self.emit(SIGNAL("layoutAboutToBeChanged()"))
         #print 'adfasfasdfasdfas', self.R('class(%s)' % self.orgRdata)
         if order == Qt.DescendingOrder:
-            self.Rdata = '%s[order(%s[,%d],decreasing=TRUE),]' % (self.orgRdata,self.orgRdata,Ncol+1)
+            self.Rdata = '%s[order(%s[,%d],decreasing=TRUE),]' % (self.orgRdata,self.orgRdata,Ncol)
         else:
-            self.Rdata = '%s[order(%s[,%d]),]' % (self.orgRdata,self.orgRdata,Ncol+1)
+            self.Rdata = '%s[order(%s[,%d]),]' % (self.orgRdata,self.orgRdata,Ncol)
             
         self.colnames = self.R('colnames(as.data.frame(' +self.Rdata+ '))', wantType = 'list', silent=True)
         self.rownames = self.R('rownames(as.data.frame(' +self.Rdata+'))', wantType = 'list', silent=True)

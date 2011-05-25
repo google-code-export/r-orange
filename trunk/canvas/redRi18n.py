@@ -32,7 +32,8 @@ def Coreget_(domain = 'messages', locale = os.path.join(redREnviron.directoryNam
             print 'Exception occured in setting the Coreget_ function, %s' % unicode(inst)
             return superfallback
         
-def get_(domain = 'messages', package = 'base', languages = None, fallback = False, locale = None):
+def get_(domain = 'messages', package = 'base', languages = None, fallback = False):
+    """Return a function to convert strings into translated strings."""
     #if locale: print locale
     try:
         if languages == None:

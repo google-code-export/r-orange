@@ -19,13 +19,9 @@ from redRWidgetGUI import *
 from widgetSignals import *
 from widgetSession import *
 from PyQt4.QtGui import *
-import RSession, redREnviron, os, redRReports,redRLog, redR
-#import rpy
-
+import RSession, redREnviron, os, redRReports,redRLog, redR, globalData
 import redRi18n
 uniqueWidgetNumber = 0
-# def _(a):
-    # return a
 _ = redRi18n.Coreget_()
 class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):   
     """This is the base class.
@@ -249,6 +245,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             #print self.Rvariables[k]
             self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }', wantType = 'NoConversion')
         # send none through the signals
+        globalData.removeGlobalData(self)
         self.outputs.propogateNone(ask = False)
         self.outputs.clearAll()
         self.customWidgetDelete()

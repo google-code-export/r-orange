@@ -64,7 +64,7 @@ def log(table, logLevel = INFO, comment ='', widget=None, html=True):
     else:
         stack = None
 
-    formattedLog = formatedLogOutput(table, logLevel, stack, comment,widget,html)    
+    formattedLog = formatedLogOutput(table, logLevel, stack, comment, html)    
 
     # if redREnviron.settings["writeLogFile"]:
         # fileLogger.logFile.write(unicode(formattedLog).encode('Latin-1'))
@@ -95,7 +95,7 @@ def logOutput(table, logLevel, comment,html=False):
             if logLevel >= logLevels[redREnviron.settings['outputVerbosity']]:
                 writer['writer'](table,logLevel,comment,html)
     
-def formatedLogOutput(table, logLevel, stack, comment, widget,html):
+def formatedLogOutput(table, logLevel, stack, comment, html):
     """Format Log entry for output."""
     # if logLevel == DEBUG:
         # comment = comment.rstrip('\n') + '<br>'

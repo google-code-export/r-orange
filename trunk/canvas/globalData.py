@@ -2,7 +2,6 @@
 #import orngSignalManager
 
 globalData = {}
-globalSettings = {}
 def _(a):
     return a
 def setGlobalData(creatorWidget, name, data, description = None):
@@ -40,14 +39,3 @@ def removeGlobalData(creatorWidget,name = None):
     else:
         if creatorWidget.widgetID in globalData.keys():
             del globalData[creatorWidget.widgetID]
-        
-def setGlobalSettings(name, data):
-    if name not in globalSettings.keys():
-        globalSettings[name] = []
-    globalSettings[name].append(data)
-    
-def getGlobalSettings(name):
-    if name in globalSettings:
-        return globalSettings[name]
-    else:
-        return []
