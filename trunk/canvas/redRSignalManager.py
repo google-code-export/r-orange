@@ -347,6 +347,8 @@ class InputHandler:
     def getAllInputs(self):
         return self.inputs
     def addInput(self, id, name, signalClass, handler, multiple = False):
+        if type(signalClass) != list:
+            signalClass = [signalClass]
         self.inputs[id] = InputSocket(id, name, signalClass, handler, parent = self.parent, multiple = multiple)
     def signalIDs(self):
         return self.inputs.keys()

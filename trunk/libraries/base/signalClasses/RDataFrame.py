@@ -3,6 +3,7 @@ from PyQt4.QtGui import *
 from libraries.base.signalClasses.RList import *
 from libraries.base.signalClasses.StructuredDict import *
 from libraries.base.signalClasses.UnstructuredDict import *
+from libraries.base.signalClasses.TableView import *
 
 import time, sys, os, redREnviron
 from libraries.base.qtWidgets.widgetBox import widgetBox
@@ -14,13 +15,14 @@ from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.checkBox import checkBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
-class RDataFrame(RList, StructuredDict):
+class RDataFrame(RList, StructuredDict, TableView):
     
     convertFromList = [StructuredDict]
-    convertToList = [RList, RVariable, StructuredDict, UnstructuredDict]
+    convertToList = [RList, RVariable, StructuredDict, UnstructuredDict, TableView]
     def __init__(self, widget, data, parent = None, checkVal = True):
         StructuredDict.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
         RList.__init__(self, widget, data = data, parent = parent, checkVal = False)
+        TableView.__init__(self)
         if checkVal and not self.R('is.data.frame(%s)' % self.data, silent = True, wantType = 'convert'):
             raise Exception('not a dataframe') # there this isn't the right kind of data for me to get !!!!!
         self.newDataID = unicode(time.time()).replace('.', '_')
@@ -46,6 +48,8 @@ class RDataFrame(RList, StructuredDict):
             return self
         elif varClass == StructuredDict or varClass == UnstructuredDict:
             return self._convertToStructuredDict()
+        elif varClass == TableView:
+            return self
         else:
             raise Exception
 
@@ -153,9 +157,9 @@ class RDataFrame(RList, StructuredDict):
         return output
     
     def getTableModel(self, widget, filtered = True, sortable = True):
-        return MyTableModel(self.getData(), widget, filteredOn = [], filterable = filtered, sortable = sortable)
+        return RDataFrameModel(self.getData(), widget, filteredOn = [], filterable = filtered, sortable = sortable)
         
-class MyTableModel(QAbstractTableModel): 
+class RDataFrameModel(QAbstractTableModel): 
     def __init__(self,Rdata,parent, filteredOn = [], editable=False,
     filterable=False,sortable=False): 
         QAbstractTableModel.__init__(self,parent) 
@@ -413,7 +417,9 @@ class MyTableModel(QAbstractTableModel):
        # print 'filters:', filters
         self.filteredData = '%s[%s,,drop = F]' % (self.Rdata,' & '.join(filters))
         #print 'string:', self.filteredData
+        self.emit(SIGNAL("layoutAboutToBeChanged()"))
         self.initData(self.filteredData)
+        self.emit(SIGNAL("layoutChanged()"))
         if self.parent.onFilterCallback:
             self.parent.onFilterCallback()
     
@@ -478,7 +484,7 @@ class MyTableModel(QAbstractTableModel):
             toAppend= ['' for i in xrange(self.columnCount(self))]
             self.arraydata = [toAppend]
         # print 'self.arraydata' , self.arraydata
-        QTableView.setModel(self.parent, self)
+        self.parent.setModel(self)
         #self.parent.setModel(self)
         
     def rowCount(self, parent): 
@@ -521,7 +527,7 @@ class MyTableModel(QAbstractTableModel):
         rowInd = index.row() - self.currentRange['rstart'] + 1
         colInd = index.column() - self.currentRange['cstart'] + 1
         # self.working = False
-        print self.arraydata[rowInd][colInd], rowInd, colInd
+        #print self.arraydata[rowInd][colInd], rowInd, colInd
         return QVariant(self.arraydata[rowInd][colInd]) 
 
     def headerData(self, col, orientation, role):

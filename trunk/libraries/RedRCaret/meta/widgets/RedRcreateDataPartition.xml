@@ -15,14 +15,14 @@
 	<description>
 Caret data container.
 	</description>
-	<signal></signal>
+	<signalClass></signalClass>
 </input>
 <output>
 	<name>Partition/Resample/Fold List</name>
 	<description>
 Partitioned Caret data container.
 	</description>
-	<signal>base.RList</signal>
+	<signalClass>base.RList</signalClass>
 </output>
 </signals>
 </documentation>

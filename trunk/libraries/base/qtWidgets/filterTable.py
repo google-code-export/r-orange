@@ -296,7 +296,7 @@ class filterTable(widgetState, QTableView):
         # else:
             # self.dataInfo.setText(_('Showing %d rows.') % (total))
 
-        self.tm = signals.base.RDataFrame(self.parent, data = data).getTableModel(self, )
+        self.tm = signals.base.RDataFrame(self.parent, data = data).getTableModel(self)
         #MyTableModel(data,self,editable=self.editable, 
         #    filteredOn = filteredCols, filterable=self.filterable,sortable=self.sortable)
         self.setModel(self.tm)
@@ -587,6 +587,7 @@ class StructuredDictTableModel(QAbstractTableModel):
             if not col >= len(self.rownames):
                 return QVariant(self.rownames[col])
         return QVariant()
+    
     def get_sorted(self, vector):
         return sorted(range(len(vector)), key = vector.__getitem__)
     def sort(self, Ncol, order):
@@ -615,6 +616,7 @@ class StructuredDictTableModel(QAbstractTableModel):
         for k, v in data.items():
             newDict[k] = [v[i] for i in indecies]
         return newDict
+
 class MyTableModel(QAbstractTableModel): 
     def __init__(self,Rdata,parent, filteredOn = [], editable=False,
     filterable=False,sortable=False): 

@@ -16,21 +16,21 @@
 	<description>
 A Caret data model on which to train
 	</description>
-	<signal>RedRCaret.CaretData</signal>
+	<signalClass>RedRCaret.CaretData</signalClass>
 </input>
 <output>
 	<name>Caret Train Output</name>
 	<description>
 A trained Caret model.  This can be used for predictions later.
 	</description>
-	<signal>base.RModelFit</signal>
+	<signalClass>base.RModelFit</signalClass>
 </output>
 <output>
 	<name>Final Fitted Model (For Prediction)</name>
 	<description>
 The final fitted model of the training.
 	</description>
-	<signal></signal>
+	<signalClass></signalClass>
 </output>
 </signals>
 </documentation>

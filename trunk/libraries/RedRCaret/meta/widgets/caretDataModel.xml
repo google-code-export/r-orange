@@ -16,14 +16,14 @@
 	<description>
 Input data table, this can have optionally, class predictors.
 	</description>
-	<signal>base.RDataFrame</signal>
+	<signalClass>base.RDataFrame</signalClass>
 </input>
 <output>
 	<name>Reduced Data Table</name>
 	<description>
 The complete Caret Data Container.
 	</description>
-	<signal></signal>
+	<signalClass></signalClass>
 </output>
 </signals>
 </documentation>

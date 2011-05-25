@@ -16,21 +16,21 @@
 	<description>
 A Caret data signal or data container
 	</description>
-	<signal></signal>
+	<signalClass></signalClass>
 </input>
 <output>
 	<name>Reduced Data Table</name>
 	<description>
 A processed Caret data signal
 	</description>
-	<signal></signal>
+	<signalClass></signalClass>
 </output>
 <output>
 	<name>PreProcess Model (To Calibrate Test Data)</name>
 	<description>
 A special Caret model for use in applying preprocessing to other data sets.  This is a consequence of Caret's configuration and, confusing as it is, one can use Predict to apply these predictions to a new data container.
 	</description>
-	<signal></signal>
+	<signalClass></signalClass>
 </output>
 </signals>
 </documentation>

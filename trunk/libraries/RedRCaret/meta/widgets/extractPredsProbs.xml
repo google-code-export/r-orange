@@ -16,28 +16,28 @@
 	<description>
 Prediction model.
 	</description>
-	<signal>base.RModelFit</signal>
+	<signalClass>base.RModelFit</signalClass>
 </input>
 <input>
 	<name>Classification Data</name>
 	<description>
 Classification Data
 	</description>
-	<signal></signal>
+	<signalClass></signalClass>
 </input>
 <output>
 	<name>Caret Predictions</name>
 	<description>
 Data table of predictions, this can be output as a table.
 	</description>
-	<signal>base.RDataFrame</signal>
+	<signalClass>base.RDataFrame</signalClass>
 </output>
 <output>
 	<name>Caret Probabilities</name>
 	<description>
 Data table of probabilities, this can be output as a table.
 	</description>
-	<signal>base.RDataFrame</signal>
+	<signalClass>base.RDataFrame</signalClass>
 </output>
 </signals>
 </documentation>

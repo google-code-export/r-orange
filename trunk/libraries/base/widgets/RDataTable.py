@@ -18,7 +18,7 @@ class RDataTable(OWRpy):
         
         self.setRvariableNames(['summaryData'])
 
-        self.inputs.addInput('id1', _('Input Data Table'), [signals.base.RDataFrame, signals.base.StructuredDict], self.dataset) 
+        self.inputs.addInput('id1', _('Input Data Table'), [signals.base.TableView, signals.base.RDataFrame, signals.base.StructuredDict], self.dataset) 
 
         self.data = {}          # dict containing the table infromation
         self.dataParent = None
@@ -134,16 +134,16 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         self.data = dataset.getData()
         self.dataParent = dataset
         #print type(dataset)
-        if isinstance(dataset, signals.base.RDataFrame):
+        #if isinstance(dataset, signals.base.RDataFrame):
             #self.currentData = dataset.getData()
-            dim = dataset.getDims_data()#self.R('dim(' + dataset['data'] + ')')
-            self.rowColCount.setText(_('# Row: %(ROWCOUNT)s \n# Columns: %(COLCOUNT)s') %  {'ROWCOUNT':unicode(dim[0]), 'COLCOUNT':unicode(dim[1])})
-            self.infoBox.setHidden(False)
-            self.table.setRTable(self.data)
+            #dim = dataset.getDims_data()#self.R('dim(' + dataset['data'] + ')')
+            #self.rowColCount.setText(_('# Row: %(ROWCOUNT)s \n# Columns: %(COLCOUNT)s') %  {'ROWCOUNT':unicode(dim[0]), 'COLCOUNT':unicode(dim[1])})
+            #self.infoBox.setHidden(False)
+        self.table.setTable(dataset)
 
-            self.supressTabClick = False
-        elif isinstance(dataset, signals.base.StructuredDict):
-            self.table.setsignals.base.StructuredDictTable(dataset.getData())
+        self.supressTabClick = False
+        #elif isinstance(dataset, signals.base.StructuredDict):
+            #self.table.setsignals.base.StructuredDictTable(dataset.getData())
     
     def cellSelection(self,selections):
         

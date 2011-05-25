@@ -168,7 +168,7 @@ def makeXML(d):
         s += '<%(type)s>\n' % rs
         s += '\t<name>%(name)s</name>\n' % rs
         s += '\t<description>\n%(description)s\n\t</description>\n' % rs
-        s += '\t<signal>%s</signal>\n' % ','.join(rs['signals'])
+        s += '\t<signalClass>%s</signalClass>\n' % ','.join(rs['signals'])
         s += '</%(type)s>\n' % rs
     s += '</signals>\n'
     s += '</documentation>'

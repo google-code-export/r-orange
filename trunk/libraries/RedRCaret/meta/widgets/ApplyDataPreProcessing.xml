@@ -16,21 +16,21 @@
 	<description>
 Input Caret Data container
 	</description>
-	<signal></signal>
+	<signalClass></signalClass>
 </input>
 <input>
 	<name>PreProcessed Model</name>
 	<description>
 Caret data preprocessing model
 	</description>
-	<signal>base.RModelFit</signal>
+	<signalClass>base.RModelFit</signalClass>
 </input>
 <output>
 	<name>Processed Data</name>
 	<description>
 Processed Caret Data
 	</description>
-	<signal></signal>
+	<signalClass></signalClass>
 </output>
 </signals>
 </documentation>

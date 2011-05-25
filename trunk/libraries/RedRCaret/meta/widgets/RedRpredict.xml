@@ -16,21 +16,21 @@
 	<description>
 Trained model
 	</description>
-	<signal>base.RModelFit</signal>
+	<signalClass>base.RModelFit</signalClass>
 </input>
 <input>
 	<name>newData</name>
 	<description>
 New data
 	</description>
-	<signal>base.RArbitraryList,base.RArbitraryList</signal>
+	<signalClass>base.RArbitraryList,base.RArbitraryList</signalClass>
 </input>
 <output>
 	<name>predict Output</name>
 	<description>
 Prediction output
 	</description>
-	<signal>base.RModelFit</signal>
+	<signalClass>base.RModelFit</signalClass>
 </output>
 </signals>
 </documentation>

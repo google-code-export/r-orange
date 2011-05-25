@@ -281,17 +281,21 @@ def readWidgets(directory, package):
         widgetMetaData['inputs'] = []
         if len(widgetMetaXML.getElementsByTagName('input')):
             for input in widgetMetaXML.getElementsByTagName('input'):
-                widgetMetaData['inputs'].append((
-                getXMLText(input.getElementsByTagName('signalClass')[0].childNodes),
-                getXMLText(input.getElementsByTagName('description')[0].childNodes)))
-        
+                try:
+                    widgetMetaData['inputs'].append((
+                    getXMLText(input.getElementsByTagName('signalClass')[0].childNodes),
+                    getXMLText(input.getElementsByTagName('description')[0].childNodes)))
+                except Exception as inst:
+                    redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'Error in loading signals for %s, %s' % (widgetMetaData['name'], unicode(inst)))
         widgetMetaData['outputs'] = []
         if len(widgetMetaXML.getElementsByTagName('output')):
             for outputs in widgetMetaXML.getElementsByTagName('output'):
-                widgetMetaData['outputs'].append(
-                (getXMLText(outputs.getElementsByTagName('signalClass')[0].childNodes),
-                getXMLText(outputs.getElementsByTagName('description')[0].childNodes)))
-        
+                try:
+                    widgetMetaData['outputs'].append(
+                    (getXMLText(outputs.getElementsByTagName('signalClass')[0].childNodes),
+                    getXMLText(outputs.getElementsByTagName('description')[0].childNodes)))
+                except Exception as inst:
+                    redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'Error in loading signals for %s, %s' % (widgetMetaData['name'], unicode(inst)))
         # print widgetMetaData
 
         if splashWindow:

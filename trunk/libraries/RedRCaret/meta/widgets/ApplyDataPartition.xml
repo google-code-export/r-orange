@@ -16,28 +16,28 @@
 	<description>
 A Caret Data Container
 	</description>
-	<signal></signal>
+	<signalClass></signalClass>
 </input>
 <input>
 	<name>Partition List</name>
 	<description>
 Partition list
 	</description>
-	<signal>base.RList</signal>
+	<signalClass>base.RList</signalClass>
 </input>
 <output>
 	<name>Partitioned Data Included</name>
 	<description>
 Partitioned data included in the model
 	</description>
-	<signal></signal>
+	<signalClass></signalClass>
 </output>
 <output>
 	<name>Partitioned Data Excluded</name>
 	<description>
 Partitioned data excluded from the model
 	</description>
-	<signal></signal>
+	<signalClass></signalClass>
 </output>
 </signals>
 </documentation>
