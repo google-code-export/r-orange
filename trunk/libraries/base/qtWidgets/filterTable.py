@@ -273,32 +273,11 @@ class filterTable(widgetState, QTableView):
         self.tm = StructuredDictTableModel(data, self, [], False, False, True)
         self.setModel(self.tm)
         self.dataInfo.setText(self.tm.getSummary())
+    
     def setRTable(self,data, setRowHeaders = 1, setColHeaders = 1,filtered=False):
-        """Sets the R Table.  This is the most common way to place data into the table."""
-        # if self.R('class(%s)' %data, silent=True) != 'data.frame':
-            # data = 'as.data.frame(%s)' %data
-        ##self.Rdata = Rdata
-        # if not filtered:
-            # self.Rdata = data
-            # self.filteredData = data
-            # self.criteriaList = {}
-            # filteredCols = []
-            
-        # else:
-            # filteredCols = self.criteriaList.keys()
-        # total = self.R('nrow(%s)' % self.Rdata,silent=True)        
-        # if total == None:
-            # self.clear()
-            # return
-        # if self.filterable:
-            # filtered = self.R('nrow(%s)' % data,silent=True)
-            # self.dataInfo.setText(_('Showing %d of %d rows.') % (filtered,total))
-        # else:
-            # self.dataInfo.setText(_('Showing %d rows.') % (total))
-
+        """Conveinience function for setting an R table."""
+        redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'setRTable method depricated, use setTable instead.')
         self.tm = signals.base.RDataFrame(self.parent, data = data).getTableModel(self)
-        #MyTableModel(data,self,editable=self.editable, 
-        #    filteredOn = filteredCols, filterable=self.filterable,sortable=self.sortable)
         self.setModel(self.tm)
     
     def setModel(self, model):

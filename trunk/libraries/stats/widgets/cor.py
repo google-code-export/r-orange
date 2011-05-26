@@ -40,8 +40,8 @@ class cor(OWRpy):
         
         # Define the inputs that this widget will accept
         # When data is received the three element in the tuple which is a function will be executed
-        self.inputs.addInput('id0', 'x', signals.base.RMatrix, self.processx)
-        self.inputs.addInput('id1', 'y', signals.base.RMatrix, self.processy)
+        self.inputs.addInput('id0', 'x', [signals.base.RMatrix, signals.base.RDataFrame], self.processx)
+        self.inputs.addInput('id1', 'y', [signals.base.RMatrix, signals.base.RDataFrame], self.processy)
 
         # Define the outputs of this widget
         self.outputs.addOutput('id0', 'cor Output', signals.base.RMatrix)
@@ -79,7 +79,11 @@ class cor(OWRpy):
     def processx(self, signal):
         if signal:
             #if the signal exists get the data from it
-            self.RFunctionParam_x=signal.getData()
+            if isinstance(signal, signals.base.RDataFrame):
+                self.RFunctionParam_x = 'data.matrix(%s)' % signal.getData()
+            else:
+                self.RFunctionParam_x=signal.getData()
+            #self.RFunctionParam_x=signal.getData()
             # if the checkbox is checked, immediately process the data
             if self.commit.processOnInput():
                 self.commitFunction()
@@ -88,7 +92,10 @@ class cor(OWRpy):
     # does the same things as processX
     def processy(self, signal):
         if signal:
-            self.RFunctionParam_y=signal.getData()
+            if isinstance(signal, signals.base.RDataFrame):
+                self.RFunctionParam_y = 'data.matrix(%s)' % signal.getData()
+            else:
+                self.RFunctionParam_y=signal.getData()
             if self.commit.processOnInput():
                 self.commitFunction()
             
@@ -119,7 +126,7 @@ class cor(OWRpy):
             string = 'na.rm=TRUE'
             injection.append(string)
         
-        if self.methodButtons.getChecked():
+        if self.methodButtons.getChecked() and test != 'var':
             string = 'method=\''+unicode(self.methodButtons.getChecked())+'\''
             injection.append(string)
             

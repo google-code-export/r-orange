@@ -128,20 +128,25 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         if not dataset:
             self.table.clear()
             return
+        #print dataset
         self.supressTabClick = True
+        #self.table.show()
         self.data = dataset.getData()
         self.dataParent = dataset
-        self.table.setTable(dataset)
+        #print type(dataset)
+        #if isinstance(dataset, signals.base.RDataFrame):
+            #self.currentData = dataset.getData()
+            #dim = dataset.getDims_data()#self.R('dim(' + dataset['data'] + ')')
+            #self.rowColCount.setText(_('# Row: %(ROWCOUNT)s \n# Columns: %(COLCOUNT)s') %  {'ROWCOUNT':unicode(dim[0]), 'COLCOUNT':unicode(dim[1])})
+            #self.infoBox.setHidden(False)
+        self.table.setTable(dataset, filterable = True, sortable = True)
 
         self.supressTabClick = False
+        #elif isinstance(dataset, signals.base.StructuredDict):
+            #self.table.setsignals.base.StructuredDictTable(dataset.getData())
     
     def cellSelection(self,selections):
-        """Sets the summary based on the selections.  In the future signal classes other than the RDataFrame class will be able to return summaries.  Signal classes should implement a function getTableSummary which accepts selections returned by the QTableView and should return a summary as html."""
-        if not isinstance(self.dataParent, signals.base.RDataFrame): 
-            try:
-                self.summaryLabel.setHtml(self.dataParent.getTableSummary(selections))
-            except: pass
-            return  ## should implement a function to return data at some point.
+        
         if len(selections) > 1:
             self.R('%s <- NULL' % self.Rvariables['summaryData'],silent=True)
             rows = []
@@ -202,14 +207,39 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         self.working = False
         
     def itemClicked(self, val):
-        """This function is called when an item is clicked.  The data table attempts to follow the item in the urls that are selected."""
+        # print 'item clicked'
+        # print self.data
+        
+        ######## if R data #########
+        clickedRow = int(val.row())+1
+        clickedCol = int(val.column())+1
         self.log('%s was clicked at row: %s and column %s' % (str(val.data().toString()), int(val.row()), int(val.column())))
         for k, v in self.linksListBox.selectedItems().items():
+            #print item.text()
+            #print unicode(self.currentLinks)
             url = k % str(val.data().toString())
             import webbrowser
             self.log(url)
             webbrowser.open_new_tab(url)
+        return
+        ## make the summary of the data.
+        type = self.R('class('+self.data+'[,'+str(clickedCol)+'])', wantType = 'Convert', silent = True)
+        if type in ['integer', 'complex', 'float', 'numeric']:
+            summaryText = _('<strong>Mean</strong>: %(MEAN)s<br/> <strong>Median</strong>: %(MEDIAN)s<br/> <strong>Range</strong>: %(RANGE)s<br/> <strong>Standard Deviation</strong>: %(SD)s<br/> <strong>Count</strong>: %(COUNT)s<br/> <strong>Min</strong>: %(MIN)s<br/> <strong>Max</strong>: %(MAX)s<br/>') % {
+                'MEAN':str(self.R('mean(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
+                'MEDIAN':str(self.R('median(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
+                'RANGE':str(self.R('range(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
+                'SD':str(self.R('sd(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
+                'COUNT':str(self.R('length(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
+                'MIN':str(self.R('min(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
+                'MAX':str(self.R('max(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True))}
+        else:
+            summaryText = unicode(self.R('summary('+self.data+'[,'+str(val.column()+1)+'])', wantType = 'Convert', silent = True)).replace('\n', '<br/>')        
+        if unicode(self.customSummary.text()) != '':
+            summaryText += _('Custom: %s') % unicode(self.R(unicode(self.customSummary.text()).replace('{Col}', '%s[,%s]' % (self.data, val.column()+1)), wantType = 'Convert', silent = True))
         
+        self.summaryLabel.setHtml(unicode(summaryText))
+        #print summaryText
     
     def clearLinks(self):
         self.linksListBox.clear()
@@ -222,7 +252,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         self.saveGlobalSettings()
         
     def writeFile(self):
-        """Writes the data to a text file.  This is done by calling a function writeToFile in the attached data container.  Signal classes should provide this to allow saving."""
+        
         if not self.data: 
             self.status.setText('Data does not exist.')
             return
@@ -241,12 +271,20 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
             self.R('write.table('+self.data+',file="'+unicode(name)+'", quote = FALSE, sep="'+sep+'")', wantType = 'NoConversion')
         else:  # We write the file ourselves
             if self.dataParent:
-                try:
-                    self.dataParent.writeToFile(name, sep)
-                except:
-                    self.status.setText(_('Can\'t write to a file'))
-                    return
-        self.status.setText(_('File Written'))
+                string = ''
+                for key in self.dataParent.getData().keys():
+                    string += unicode(key)+sep
+                string += '\n'
+                for i in range(self.dataParent.getItem('length')):
+                    for key in self.dataParent.getData().keys():
+                        string += self.dataParent.getData()[key][i]+sep
+                    string += '\n'
+                
+                f = open(unicode(name), 'w')
+                f.write(string)
+                f.close()
+            else:
+                self.status.setText(_('Can\'t write to a file'))
             
     def changeColor(self):
         color = QColorDialog.getColor(self.distColor, self)
