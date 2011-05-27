@@ -140,11 +140,13 @@ class cor(OWRpy):
         self.R('%s<-%s(x=data.matrix(%s),%s)' % (self.Rvariables['cor'], test, unicode(self.RFunctionParam_x), inj), wantType = 'NoConversion')
         
         # visualize the data in a table
+        tableData = signals.base.RDataFrame(self, data = 'as.data.frame(%s)' % self.Rvariables["cor"])
         self.RoutputWindow.clear()
-        self.RoutputWindow.setRTable(self.Rvariables['cor'])
+        
+        self.RoutputWindow.setTable(tableData)
         
         # create a new signal of type RMatrix and load the results 
-        newData = signals.base.RMatrix(data = self.Rvariables["cor"]) 
+        newData = signals.base.RMatrix(self, data = self.Rvariables["cor"]) 
         # send the signal forward
         self.rSend("id0", newData)
   

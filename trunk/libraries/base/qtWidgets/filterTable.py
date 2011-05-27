@@ -341,7 +341,8 @@ class filterTable(widgetState, QTableView):
     def addColumns(self,count,headers=None):
         self.tm.insertColumns(self.tm.columnCount(self),count,headers)
     def clear(self):
-        self.setTable(BlankTable())
+        self.tm = BlankTable()
+        self.setModel(self.tm)
         #self.setRTable('matrix("")')
         self.criteriaList = {}
     def headerClicked(self,val):
@@ -361,15 +362,9 @@ class filterTable(widgetState, QTableView):
         
     def getFilteredData(self):
         try:
-            return self.tm.filteredData()
+            return self.tm.getFilteredData()
         except:
             return None
-    # def sort(self,col,order):
-        ##self.tm.sort(col-1,order)
-        # self.sortByColumn(col-1, order)
-        # self.horizontalHeader().setSortIndicator(col-1,order)
-        # self.menu.hide()
-        # self.sortIndex = [col-1,order]
         
         
     def getSettings(self):
@@ -380,8 +375,9 @@ class filterTable(widgetState, QTableView):
         else:
             selections = None
         r = {
-        'modelSettings':self.tm.getSettings(),
+        'modelSettings': self.tm.getSettings(),
         'class':unicode(self.tm.__class__),
+        'criteriaList': self.criteriaList,
         'selection2':selections
         }
         
@@ -400,20 +396,26 @@ class filterTable(widgetState, QTableView):
         progressBar.show()
         return progressBar
     def loadSettings(self,data):
-        if 'Rdata' not in data: ## these are the settings for 1.90.  Old settings are retained for compatibility with 1.85.  This will be removed in 2.0.  
-            print 'loading filter table with 1.90 settings', unicode(data)
+        # print _('loadSettings for a filter table')
+        # print data
+        if 'Rdata' not in data:
+            print 'loading with 1.90 settings'
             import imp
             fp, pathname, description = imp.find_module('libraries', [redREnviron.directoryNames['redRDir']])
-            #print 'loading module'
             varc = imp.load_module('libraries', fp, pathname, description)
-            #print varc
-            
-            for mod in data['class'].replace("<'", '').replace("'>", "").split('.')[1:]:
-                print mod
+            for mod in data['class'].replace("<'", '').replace("'>", '').split('.')[1:]:
                 varc = getattr(varc, mod)
             var = varc(self, **data['modelSettings'])
+            
+            selModel = self.selectionModel()
+            # print selModel
+            
+            if 'selection2' in data.keys() and len(data['selection2']):
+                for x in data['selection2']:
+                    selModel.select( QItemSelection(self.tm.createIndex(x[0],x[1]),self.tm.createIndex(x[2],x[3])),QItemSelectionModel.Select)
+                    
         else:
-            redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'Deprication warning, these 1.85 schemas should be resaved with 1.90 settings to update filter tables.  1.85 filter table settings will be removed in 2.0')
+            redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'DEPRICATION WARNING. Filter table loading of 1.85 settings will not be available in 2.0.  Please resave your old files using these settings before upgrading to 2.0')
             self.Rdata = data['Rdata']
             self.criteriaList = data['criteriaList']
             # print 'filtering data on the following criteria %s' % unicode(self.criteriaList)
@@ -466,6 +468,25 @@ class filterTable(widgetState, QTableView):
         else:
             return {self.widgetName:{'includeInReports': self.includeInReports, 'text':''}}
         
+
+class BlankTable(QAbstractTableModel):
+    def __init__(self):
+        QAbstractTableModel.__init__(self)
+        
+    def rowCount(self, parent):
+        return 1
+        
+    def columnCount(self, parent):
+        return 1
+        
+    def data(self, index, role):
+        if not index.isValid(): 
+            return QVariant() 
+        elif role != Qt.DisplayRole: 
+            return QVariant() 
+        return QVariant('Blank Table')
+    def getSettings(self):
+        return None
 
 class StructuredDictTableModel(QAbstractTableModel):
     def __init__(self, data, parent, filteredOn = [], editable = False, filterable=False, sortable=False):

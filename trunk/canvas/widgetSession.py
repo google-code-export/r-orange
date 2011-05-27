@@ -43,8 +43,11 @@ class widgetSession():
                 settings[att] = self.returnSettings(var)
             except:
                 redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
+        print 'saving custom settings'
         settings['_customSettings'] = self.saveCustomSettings()
+        print 'processing sent items'
         tempSentItems = self.processSentItems()
+        print 'appending sent items'
         settings['sentItems'] = {'sentItemsList':tempSentItems}
         
         # import pprint
@@ -59,12 +62,12 @@ class widgetSession():
     def saveCustomSettings(self): # dummy function that should be overwritten in child classes if they want the function
         pass
         
-    def getInputs(self):
+    #def getInputs(self):
         
-        return self.inputs.returnInputs()
+        #return self.inputs.returnInputs()
         
-    def getOutputs(self):
-        return self.outputs.returnOutputs()
+    #def getOutputs(self):
+        #return self.outputs.returnOutputs()
 
     def isPickleable(self,d):  # check to see if the object can be included in the pickle file
         import re
@@ -133,8 +136,8 @@ class widgetSession():
         ## make a list of the signal keys and the values of all of the sent items, shouldn't be hard
         items = []
         for (key, item) in self.outputs.getAllOutputs().items():
-            if item['value']:
-                items.append((key, item['value'].saveSettings()))
+            if item.value != None:
+                items.append((key, item.value.saveSettings()))
 
         return items
         

@@ -53,6 +53,10 @@ class rowcolPicker(OWRpy):
         self.subsetColumn = redRGUI.base.comboBox(self.subsetBox,label=_("Column:"), orientation='vertical',items=[_('Select')])
         self.subOnAttachedButton = redRGUI.base.button(self.subsetBox, _("Subset by column"), callback=self.subOnAttached)
         self.subsetBox.setDisabled(True)
+        grepArea = redRGUI.base.groupBox(options, label = _('Selection Functions'))
+        self.selectContains = redRGUI.base.lineEdit(grepArea, label = _('Contains'))
+        redRGUI.base.button(grepArea, label = _('Select'), callback = self.applySelections)
+        
         
         redRGUI.base.separator(options,height=20)
 
@@ -68,6 +72,13 @@ class rowcolPicker(OWRpy):
         self.subsetButton = redRGUI.base.commitButton(mainArea, _("Subset on Selection"), callback=self.subset,
         processOnChange=True, processOnInput=True,alignment=Qt.AlignRight)
         
+    def applySelections(self):
+        selectionIds = []
+        for i in self.attributes.getItems().keys():
+            if self.selectContains.text() in i:
+                selectionIds.append(i)
+                
+        self.attributes.setSelectedIds(selectionIds)
     def onSelect(self):
         count = self.attributes.selectionCount()
         self.selectionInfoBox.setText(_('# %(ITEMTYPE)ss selected: %(NUMBERSELECTED)s') % {'ITEMTYPE':self.rowcolBox.getChecked(), 'NUMBERSELECTED':unicode(count)})
@@ -184,11 +195,6 @@ class rowcolPicker(OWRpy):
                 self.rSend('id1', None)
         self.SubsetByAttached = 0
     def loadCustomSettings(self,settings):
-        # print '######################\n'*5
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(settings)
-        
         selected = []
         print settings['sendSection']['redRGUIObject']['checked']
         if 'True' in settings['sendSection']['redRGUIObject']['checked']:

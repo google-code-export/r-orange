@@ -161,7 +161,7 @@ class RDataFrame(RList, StructuredDict, TableView):
         
 class RDataFrameModel(QAbstractTableModel): 
     def __init__(self,Rdata,parent, filteredOn = [], editable=False,
-    filterable=False,sortable=False, criteraList = {}, reload = False, workingRData = None, **kwargs): 
+    filterable=False,sortable=False, orgRdata = None, reload = False, criteriaList = {}): 
         QAbstractTableModel.__init__(self,parent) 
 
         self.working = False
@@ -172,34 +172,29 @@ class RDataFrameModel(QAbstractTableModel):
         self.editable = editable
         self.filterable = filterable
         self.filteredOn = filteredOn
-        self.criteriaList = criteraList
+        self.criteriaList = criteriaList
         # self.filter_delete = os.path.join(redREnviron.directoryNames['picsDir'],'filterAdd.png')
         self.columnFiltered = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'columnFilter.png'))
         
         # print self.filter_add,os.path.exists(self.filter_add),os.path.exists(self.filter_delete)
         self.orgRdata = Rdata
-        if reload:
-            self.initData(workingRData)
-        else:
-            self.initData(Rdata)
-    
-    def getSettings(self):
-        r = {}
-        r['reload'] = True
-        r['sortable'] = self.sortable
-        r['filterable'] = self.filterable
-        r['editable'] = self.editable
-        r['filteredOn'] = self.filteredOn
-        r['criteraList'] = self.criteraList
-        r['Rdata'] = self.orgRdata
-        r['workingRData'] = self.Rdata
-        return r
+        self.initData(Rdata)
+        
     ##########  functions accessed by filter table  #########
     def getSummary(self):
         total = self.R('nrow(%s)' % self.orgRdata,silent=True)
         filtered = self.R('nrow(%s)' % self.Rdata, silent = True)
         return 'Displaying %d of %s rows' % (filtered, total) 
-        
+    def getSettings(self):
+        r = {}
+        r['orgRdata'] = self.orgRdata
+        r['reload'] = True
+        r['Rdata'] = self.Rdata
+        r['filteredOn'] = self.filteredOn
+        r['editable'] = self.editable
+        r['filterable'] = self.filterable
+        r['criteriaList'] = self.criteriaList
+        return r
     def startProgressBar(self, title,text,max):
         progressBar = QProgressDialog()
         progressBar.setCancelButtonText(QString())
@@ -436,7 +431,8 @@ class RDataFrameModel(QAbstractTableModel):
         self.emit(SIGNAL("layoutChanged()"))
         if self.parent.onFilterCallback:
             self.parent.onFilterCallback()
-    
+    def getFilteredData(self):
+        return self.filteredData
     def flags(self,index):
         if self.editable:
             return (Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled)

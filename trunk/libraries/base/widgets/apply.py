@@ -28,14 +28,14 @@ class apply(OWRpy):
         area.layout().setAlignment(box,Qt.AlignLeft)
         
         self.functions =  redRGUI.base.listBox(box,  label = _("Select Function"),
-        items=['mean','median','max','min','sum','log2', 'log10'],callback=self.functionSelect)
+        items=['mean','median','max','min','sum','log2', 'log10', 'var'],callback=self.functionSelect)
         self.functions.setSelectionMode(QAbstractItemView.SingleSelection)
         
-        redRGUI.base.separator(box,height=10)
+        #redRGUI.base.separator(box,height=10)
         self.functionText = redRGUI.base.textEdit(box,label=_('Function:'), orientation='vertical')
         self.parameters = redRGUI.base.lineEdit(box,label=_('Additional Parameters:'), orientation='vertical')
         
-        self.demension =  redRGUI.base.radioButtons(box, label = _("To:"), buttons = [_('Rows'), _('Columns'),_('')],
+        self.demension =  redRGUI.base.radioButtons(box, label = _("To:"), buttons = [_('All'), _('Rows'), _('Columns'),_('Other')],
         setChecked=_('Rows'), orientation='horizontal',callback= lambda: self.dimensionChange(1))
         self.indexSpinBox = redRGUI.base.spinBox(self.demension.box, label=_('Demension'), displayLabel=False,
         min = 1, value = 1, callback= lambda: self.dimensionChange(2))
@@ -59,12 +59,12 @@ class apply(OWRpy):
             elif self.indexSpinBox.value() == 2:
                 self.demension.setChecked(_('Columns'))
             else:
-                self.demension.setChecked(_(''))
+                self.demension.setChecked(_('Other'))
             
     def processX(self, data):
         if data:
             self.data=data.getData()
-            self.numDims = self.R('length(dim(%s))' % self.data, silent=True)
+            self.numDims = self.R('length(dim(%s))' % self.data)
             self.indexSpinBox.setMaximum(self.numDims)
             if self.commit.processOnInput():
                 self.commitFunction()
@@ -93,24 +93,28 @@ class apply(OWRpy):
             saveAs += '\n--' + '\n--'.join(params)
         
         if not self.functions.findItems(saveAs,Qt.MatchExactly):
-            self.functions.addItem(saveAs)
+            self.functions.addItem(saveAs, saveAs)
             self.saveGlobalSettings()
-
-        injection = []
-        string = 'MARGIN = %s' % unicode(self.indexSpinBox.value())
-        injection.append(string)
+        
+        if self.demension.getChecked() != _('All'):
+            injection = []
+            string = 'MARGIN = %s' % unicode(self.indexSpinBox.value())
+            injection.append(string)
+                
+            string = 'FUN='+unicode(self.functionText.toPlainText())
+            injection.append(string)
             
-        string = 'FUN='+unicode(self.functionText.toPlainText())
-        injection.append(string)
-        
-        injection.extend(params)
-        
-        inj = ','.join(injection)
-        
-        # try:
-        self.R(self.Rvariables['apply']+'<- as.data.frame(apply(X='+unicode(self.data)+','+inj+'))', wantType = 'NoConversion')
-        self.outputTable.setRTable(self.Rvariables['apply'])
+            injection.extend(params)
+            
+            inj = ','.join(injection)
+            
+            # try:
+            self.R(self.Rvariables['apply']+'<- as.data.frame(apply(X='+unicode(self.data)+','+inj+'))', wantType = 'NoConversion')
+        else:
+            self.R('%s<-as.data.frame(%s(%s))' % (self.Rvariables['apply'], unicode(self.functionText.toPlainText()), self.data), wantType = redR.NOCONVERSION)
+            
         newData = signals.base.RDataFrame(self, data = self.Rvariables['apply'])
+        self.outputTable.setTable(newData)
         self.rSend("id0", newData)
         # except: 
             # self.R('%s <- NULL'%self.Rvariables['apply'],silent=True)

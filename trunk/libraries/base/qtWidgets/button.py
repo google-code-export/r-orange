@@ -56,10 +56,11 @@ class button(QPushButton,widgetState):
             
     def getSettings(self):
         """Returns settings for checked state, applicable only if this is a checkbutton"""
-        return {'checked': self.checked()}
+        if self.checkable()
+        return {'checked': self.isChecked()}
     def loadSettings(self,data):
         """Sets the button to checked or not.  Only applicable if the button is a checkbutton."""
         if self.checkable():
-            if 'chekced' in data.keys():
+            if 'checked' in data.keys():
                 self.setChecked(data['checked'])
 

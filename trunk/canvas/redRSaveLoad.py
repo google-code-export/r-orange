@@ -69,15 +69,26 @@ def saveIcon(widgetIconsXML, wi, doc):
     widgetIconsXML.appendChild(witemp)
 
 def saveInstances(instances, widgets, doc, progressBar):
+    """Makes a dict of widget instances and appends that to the settings dict.  instances are saved by instance ID.  The value is another dict of values including settings, inputs, and outputs.
+    
+    The settings are set by the function getSettings in each widget.  The widget will receive this variable back for the set settings function.
+    
+    Inputs, outputs, and connections are handled by the signal manager using the functions getInputs and getOutputs on the inputs and outputs values of the widget.
+    
+    """
+    
     settingsDict = {}
     requireRedRLibraries = {}
     progress = 0
     if type(instances) == dict:
         instances = instances.values()
+    print 'Saving instances %s' % ','.join([w.widgetID for w in instances])
     for widget in instances:
         try:
+            print 'Create doc elemtent'
             temp = doc.createElement("widget")
             
+            print 'set element nodes'
             temp.setAttribute("widgetName", widget.widgetInfo.fileName)
             temp.setAttribute("packageName", widget.widgetInfo.package['Name'])
             temp.setAttribute("packageVersion", widget.widgetInfo.package['Version']['Number'])
@@ -88,28 +99,25 @@ def saveInstances(instances, widgets, doc, progressBar):
             progress += 1
             progressBar.setValue(progress)
             
+            print 'get settings'
             s = widget.getSettings()
-            i = widget.getInputs()
-            o = widget.getOutputs()
-            # print '#############', s 
-            # print '#############', i 
-            # print '#############', o 
-            # print widget.widgetID
-            # if not i:
-                # i = {}
-            # if not s:
-            # s = {'id':None}
-            c = widget.outputs.returnOutputs()
+            print 'get inputs'
+            i = widget.inputs.returnInputs()
+            print 'get outputs'
+            o = widget.outputs.returnOutputs()
+            #print 'return outputs'
+            #c = widget.outputs.returnOutputs()
             settingsDict[widget.widgetID] = {}
+            print 'dump settings'
             settingsDict[widget.widgetID]['settings'] = cPickle.dumps(s,2)
             settingsDict[widget.widgetID]['inputs'] = cPickle.dumps(i,2)
             settingsDict[widget.widgetID]['outputs'] = cPickle.dumps(o,2)
-            settingsDict[widget.widgetID]['connections'] = cPickle.dumps(c, 2)
+            #settingsDict[widget.widgetID]['connections'] = cPickle.dumps(o, 2)
             
             if widget.widgetInfo.package['Name'] != 'base' and widget.widgetInfo.package['Name'] not in requireRedRLibraries.keys():
                 requireRedRLibraries[widget.widgetInfo.package['Name']] = widget.widgetInfo.package
         except Exception as inst:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('redRSaveLoad error saving widget %s-%s,  %s') % (widget.widgetInfo.package['Name'], str(widget), unicode(inst)))
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('redRSaveLoad error saving widget %s-%s,  %s') % (widget.widgetInfo.package['Name'], str(widget.widgetID), unicode(inst)))
         widgets.appendChild(temp)
     return (widgets, settingsDict, requireRedRLibraries)
 
@@ -231,11 +239,15 @@ def save(filename = None, template = False, copy = False, pipe = False):
 
     # create xml document
     (doc, schema, header, widgets, lines, settings, required, tabs, saveTagsList, saveDescription) = makeXMLDoc()
+    
+    """!@#$ Is this still required?  If packages request R libraries then we don't really need to install them again, we just need to resolve the packages."""
     requiredRLibraries = {}
     
     
     #save widgets
     tempWidgets = redRObjects.instances(wantType = 'dict') ## all of the widget instances, these are not the widget icons
+    
+    """This is where we save the instances to the file."""
     print 'Saving widget instances ', tempWidgets
     (widgets, settingsDict, requireRedRLibraries) = saveInstances(tempWidgets, widgets, doc, progressBar)
     
@@ -250,12 +262,7 @@ def save(filename = None, template = False, copy = False, pipe = False):
             widgetIcons = doc.createElement('widgetIcons')
             for wi in redRObjects.getIconsByTab(t)[t]:  ## extract only the list for this tab thus the [t] syntax
                 saveIcon(widgetIcons, wi, doc)
-            # tabLines = doc.createElement('tabLines')
-            # for line in self.widgetLines(t)[t]:
-                # saveLine(tabLines, line)
-                
             temp.appendChild(widgetIcons)       ## append the widgetIcons XML to the global XML
-            #temp.appendChild(tabLines)          ## append the tabLines XML to the global XML
             tabs.appendChild(temp)
     
     
@@ -368,12 +375,16 @@ def loadTemplate(filename, caption = None, freeze = 0):
     loadDocument(filename = filename, caption = caption, freeze = freeze)
 
 def loadDocument(filename, caption = None, freeze = 0, importing = 0):
+    # declare globals
     global _schemaName
     global schemaPath
     global globalNotes
     global canvasDlg
+    # inform user of document load
     redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Loading Document %s') % filename)
     import redREnviron
+    
+    ## set settings for pipeline, template, or schema
     if filename.split('.')[-1] in ['rrts']:
         tmp=True
         pipe = False
@@ -389,6 +400,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
         QMessageBox.Ok + QMessageBox.Default)
         return
     
+    ## set the progress bar
     loadingProgressBar = startProgressBar(_('Loading %s') % unicode(os.path.basename(filename)),
     _('Loading %s') % unicode(filename), 2)
     
@@ -396,6 +408,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     # set cursor
     qApp.setOverrideCursor(Qt.WaitCursor)
     
+    ## set the caption
     if os.path.splitext(filename)[1].lower() == ".rrs":
         schemaPath, _schemaName = os.path.split(filename)
         canvasDlg.setCaption(caption or _schemaName)
@@ -431,12 +444,21 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
         loadingProgressBar.hide()
         loadingProgressBar.close()
         return
+        
+    ## extract the widgets and the tab settings
     widgets = schema.getElementsByTagName("widgets")[0]
     tabs = schema.getElementsByTagName("tabs")[0]
+    
+    
     #settings = schema.getElementsByTagName("settings")
     f = open(os.path.join(redREnviron.directoryNames['tempDir'],'settings.pickle'))
     settingsDict = eval(unicode(f.read()))
     f.close()
+    
+    ## print the settings dict
+    #for k, v in settingsDict.items():
+        #print '$$$$$$$$$ Settings Dict $$$$$$$$$$$$'
+        #print k, v
     
     ## load the required packages
     loadRequiredPackages(settingsDict['_requiredPackages'], loadingProgressBar = loadingProgressBar)
@@ -448,16 +470,23 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
             QMessageBox.information(canvasDlg, _('Schema Loading Failed'), _('Duplicated widgets were detected between this schema and the active one.  Loading is not possible.'),  QMessageBox.Ok + QMessageBox.Default)
     
             return
+        ## load the R session
+        print 'Loading R session'
         RSession.Rcommand('load("' + os.path.join(redREnviron.directoryNames['tempDir'], "tmp.RData").replace('\\','/') +'")')
+    
     
     loadingProgressBar.setLabelText(_('Loading Widgets'))
     loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
     loadingProgressBar.setValue(0)
+    
+    """!@#$ Why are widgets only loaded for non tmp files.  This whould also include an else statement to load if this is a tmp file."""
     if not tmp:
+        ## load the global data.
         globalData.globalData = cPickle.loads(settingsDict['_globalData'])
         if notesTextWidget and ('none' in globalData.globalData.keys()) and ('globalNotes' in globalData.globalData['none'].keys()):
             notesTextWidget.setHtml(globalData.globalData['none']['globalNotes']['data'])
-        (loadedOkW, tempFailureTextW) = loadWidgets(widgets = widgets, loadingProgressBar = loadingProgressBar, loadedSettingsDict = settingsDict, tmp = tmp)
+    
+    (loadedOkW, tempFailureTextW) = loadWidgets(widgets = widgets, loadingProgressBar = loadingProgressBar, loadedSettingsDict = settingsDict, tmp = tmp)
     
     ## LOAD tabs
     #####  move through all of the tabs and load them.
@@ -468,14 +497,14 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
             redRLog.log(10, 9, 9, _('Setting Signals for %s') % widget)
             try:
                 if widget.widgetID not in settingsDict.keys(): continue
-                widget.outputs.setOutputs(cPickle.loads(settingsDict[widget.widgetID]['connections']), tmp)
+                widget.outputs.setOutputs(cPickle.loads(settingsDict[widget.widgetID]['outputs']), tmp)
             except Exception as inst:
                 redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                 redRLog.log(1, 9, 1, _('Error setting signals %s, Settings are %s') % (inst, settingsDict[widget.widgetID].keys()))
     else:
         for widget in redRObjects.instances():
             if widget.tempID and widget.tempID in settingsDict.keys():
-                widget.outputs.setOutputs(cPickle.loads(settingsDict[widget.tempID]['connections']), tmp)
+                widget.outputs.setOutputs(cPickle.loads(settingsDict[widget.tempID]['outputs']), tmp)
     if pipe:        ## send none through all of the data.
         for w in redRObjects.instances():
             w.outputs.propogateNone(ask = False)
@@ -493,12 +522,15 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
             except: 
                 redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                 pass
+            
+    """Clean Up"""
     qApp.restoreOverrideCursor() 
     qApp.restoreOverrideCursor()
     qApp.restoreOverrideCursor()
     loadingProgressBar.hide()
     loadingProgressBar.close()
     redRObjects.updateLines()
+    
 def loadDocument180(filename, caption = None, freeze = 0, importing = 0):
     global sessionID
     import redREnviron
