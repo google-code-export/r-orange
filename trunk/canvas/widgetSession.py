@@ -234,7 +234,7 @@ class widgetSession():
             for mod in d['class'].split('.')[1:]:
                 #print varc
                 varc = getattr(varc, mod)
-            var = varc(widget = self, data = d['data']) 
+            var = varc(widget = self, **d) 
             var.loadSettings(d)
             
         except: # if it doesn't exist we need to set the class something so we look to the outputs. 

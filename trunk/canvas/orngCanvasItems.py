@@ -227,17 +227,18 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.shownLeftEdge, self.shownRightEdge = self.imageLeftEdge, self.imageRightEdge
         self.imageFrame = QIcon(QPixmap(os.path.join(canvasPicsDir, "frame.png")))
         self.edgeSize = QSizeF(self.imageLeftEdge.size())
-        self.resetWidgetSize()
-        
-        self.oldPos = self.pos()
-        
-        
         self.infoIcon = QGraphicsPixmapItem(QPixmap(redRStyle.widgetIcons["Info"]), None, canvas)
         self.warningIcon = QGraphicsPixmapItem(QPixmap(redRStyle.widgetIcons["Warning"]), None, canvas)
         self.errorIcon = QGraphicsPixmapItem(QPixmap(redRStyle.widgetIcons["Error"]), None, canvas)
         self.infoIcon.hide()
         self.warningIcon.hide()
         self.errorIcon.hide()
+        self.resetWidgetSize()
+        
+        self.oldPos = self.pos()
+        
+        
+        
 
     def instance(self):
         return redRObjects.getWidgetInstanceByID(self.instanceID)
@@ -282,7 +283,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.updateTooltip()
 
     def updateWidgetState(self):
-        if not self.ghost:
+        #if not self.ghost:
+        try:
             widgetState = self.instance().widgetState
 
             self.infoIcon.hide()
@@ -301,7 +303,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                     off += self.updateWidgetStateIcon(self.warningIcon, startX+off, yPos, widgetState["Warning"])
                 if len(widgetState.get("Error", {}).values()) > 0 and redREnviron.settings["ocError"]:
                     off += self.updateWidgetStateIcon(self.errorIcon, startX+off, yPos, widgetState["Error"])
-
+        except Exception as inst:
+            print unicode(inst)
 
     def updateWidgetStateIcon(self, icon, x, y, stateDict):
         icon.setPos(x,y)

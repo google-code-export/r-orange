@@ -169,7 +169,8 @@ def loadSettings():
     
     settings.setdefault("exceptionLevel", 5)
     settings.setdefault("WidgetTabs", [])
-
+    
+    settings.setdefault("workingDir", directoryNames['documentsDir'])
     settings.setdefault("saveSchemaDir", directoryNames['documentsDir'])
     settings.setdefault("saveApplicationDir", directoryNames['canvasSettingsDir'])
     settings.setdefault("showSignalNames", 1)

@@ -4,7 +4,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class TableView():
-    def __init__(self):
+    def __init__(self, **kwargs):
         pass
 
     def getTableModel(self, widget, filterable = True, sortable = True):

@@ -380,10 +380,9 @@ class filterTable(widgetState, QTableView):
         else:
             selections = None
         r = {
-        'Rdata': self.Rdata,
-        'filteredData':self.filteredData,
-        'criteriaList': self.criteriaList
-        ,'selection2':selections
+        'modelSettings':self.tm.getSettings(),
+        'class':unicode(self.tm.__class__),
+        'selection2':selections
         }
         
         if self.sortIndex:
@@ -401,41 +400,52 @@ class filterTable(widgetState, QTableView):
         progressBar.show()
         return progressBar
     def loadSettings(self,data):
-        # print _('loadSettings for a filter table')
-        # print data
-        if not data['Rdata']: return 
-        self.Rdata = data['Rdata']
-        self.criteriaList = data['criteriaList']
-        # print 'filtering data on the following criteria %s' % unicode(self.criteriaList)
-        self.filter()
+        if 'Rdata' not in data: ## these are the settings for 1.90.  Old settings are retained for compatibility with 1.85.  This will be removed in 2.0.  
+            print 'loading filter table with 1.90 settings', unicode(data)
+            import imp
+            fp, pathname, description = imp.find_module('libraries', [redREnviron.directoryNames['redRDir']])
+            #print 'loading module'
+            varc = imp.load_module('libraries', fp, pathname, description)
+            #print varc
+            
+            for mod in data['class'].replace("<'", '').replace("'>", "").split('.')[1:]:
+                print mod
+                varc = getattr(varc, mod)
+            var = varc(self, **data['modelSettings'])
+        else:
+            redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'Deprication warning, these 1.85 schemas should be resaved with 1.90 settings to update filter tables.  1.85 filter table settings will be removed in 2.0')
+            self.Rdata = data['Rdata']
+            self.criteriaList = data['criteriaList']
+            # print 'filtering data on the following criteria %s' % unicode(self.criteriaList)
+            self.filter()
 
-        if 'sortIndex' in data.keys():
-            self.sortByColumn(data['sortIndex'][0],data['sortIndex'][1])
-        selModel = self.selectionModel()
-        # print selModel
-        
-        if 'selection2' in data.keys() and len(data['selection2']):
-            for x in data['selection2']:
-                selModel.select( QItemSelection(self.tm.createIndex(x[0],x[1]),self.tm.createIndex(x[2],x[3])),QItemSelectionModel.Select)
-        
-        
-        if 'selection' in data.keys() and selection and len(data['selection']):
-            progressBar = self.startProgressBar(_('Filter Table Loading'), _('Loading Fiter Table'), 50)
+            if 'sortIndex' in data.keys():
+                self.sortByColumn(data['sortIndex'][0],data['sortIndex'][1])
+            selModel = self.selectionModel()
+            # print selModel
+            
+            if 'selection2' in data.keys() and len(data['selection2']):
+                for x in data['selection2']:
+                    selModel.select( QItemSelection(self.tm.createIndex(x[0],x[1]),self.tm.createIndex(x[2],x[3])),QItemSelectionModel.Select)
+            
+            
+            if 'selection' in data.keys() and selection and len(data['selection']):
+                progressBar = self.startProgressBar(_('Filter Table Loading'), _('Loading Fiter Table'), 50)
 
-            if len(data['selection']) > 1000:
-                mb = QMessageBox.question(None, _('Setting Selection'), _('There are more than 1000 selections to set for %s,\ndo you want to discard them?\nSetting may take a very long time.') % self.label, QMessageBox.Yes, QMessageBox.No)
-                if mb.exec_() == QMessageBox.No:
-                
-                    progressBar.setLabelText(_('Loading Selections'))
-                    progressBar.setMaximum(len(data['selection']))
-                    progressBar.setValue(0)
-                    val = 0
-                    for i in data['selection']:
-                        selModel.select(self.tm.createIndex(i[0],i[1]),QItemSelectionModel.Select)
-                        val += 1
-                        progressBar.setValue(val)
-            progressBar.hide()
-            progressBar.close()
+                if len(data['selection']) > 1000:
+                    mb = QMessageBox.question(None, _('Setting Selection'), _('There are more than 1000 selections to set for %s,\ndo you want to discard them?\nSetting may take a very long time.') % self.label, QMessageBox.Yes, QMessageBox.No)
+                    if mb.exec_() == QMessageBox.No:
+                    
+                        progressBar.setLabelText(_('Loading Selections'))
+                        progressBar.setMaximum(len(data['selection']))
+                        progressBar.setValue(0)
+                        val = 0
+                        for i in data['selection']:
+                            selModel.select(self.tm.createIndex(i[0],i[1]),QItemSelectionModel.Select)
+                            val += 1
+                            progressBar.setValue(val)
+                progressBar.hide()
+                progressBar.close()
      
     def delete(self):
         sip.delete(self)

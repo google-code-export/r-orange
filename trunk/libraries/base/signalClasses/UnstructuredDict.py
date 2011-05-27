@@ -5,7 +5,7 @@ from signals import BaseRedRVariable
 class UnstructuredDict(BaseRedRVariable):
     convertToList = [BaseRedRVariable]
     convertFromList = []
-    def __init__(self, widget, data, parent = None, keys = None, checkVal = True):
+    def __init__(self, widget, data, parent = None, keys = None, checkVal = True, **kwargs):
         BaseRedRVariable.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
         
         if checkVal:

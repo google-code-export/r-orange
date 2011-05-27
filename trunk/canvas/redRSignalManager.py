@@ -148,7 +148,10 @@ class OutputHandler:
                     redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                     pass
     def setOutputData(self, signalName, value):
-        """Called by widgetSignals to set the output data of a socket."""
+        """Called by widgetSignals to set the output data of a socket.  The old vlaue is deleted and then the new value is put in place."""
+        # delete the old value
+        if self.outputs[signalName].value:
+            self.outputs[signalName].value.deleteSignal()
         self.outputs[signalName].setValue(value)
         
     def signalLinkExists(self, widget):

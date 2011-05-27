@@ -105,7 +105,6 @@ class BaseRedRVariable:
     
     ## deletes the signal, reimplement if your signal if you need consequences.
     def deleteSignal(self):
-        pass
         print _('Deleting signal')
         
     ## generates a progress bar and returns it

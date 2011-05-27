@@ -6,7 +6,7 @@ import time
 class RList(RArbitraryList, UnstructuredDict):
     convertFromList = [UnstructuredDict, StructuredDict]
     convertToList = [RVariable, UnstructuredDict, RArbitraryList]
-    def __init__(self, widget, data, parent = None, checkVal = True):
+    def __init__(self, widget, data, parent = None, checkVal = True, **kwargs):
         RArbitraryList.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() != 'list':
             raise Exception

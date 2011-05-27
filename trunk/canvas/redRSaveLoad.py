@@ -108,8 +108,8 @@ def saveInstances(instances, widgets, doc, progressBar):
             
             if widget.widgetInfo.package['Name'] != 'base' and widget.widgetInfo.package['Name'] not in requireRedRLibraries.keys():
                 requireRedRLibraries[widget.widgetInfo.package['Name']] = widget.widgetInfo.package
-        except:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('redRSaveLoad error saving widget %s-%s,  %s') % (widget.widgetInfo.package['Name'], str(widget), inst))
+        except Exception as inst:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('redRSaveLoad error saving widget %s-%s,  %s') % (widget.widgetInfo.package['Name'], str(widget), unicode(inst)))
         widgets.appendChild(temp)
     return (widgets, settingsDict, requireRedRLibraries)
 
@@ -236,6 +236,7 @@ def save(filename = None, template = False, copy = False, pipe = False):
     
     #save widgets
     tempWidgets = redRObjects.instances(wantType = 'dict') ## all of the widget instances, these are not the widget icons
+    print 'Saving widget instances ', tempWidgets
     (widgets, settingsDict, requireRedRLibraries) = saveInstances(tempWidgets, widgets, doc, progressBar)
     
     
@@ -645,10 +646,10 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
     for widget in widgets.getElementsByTagName("widget"):
         try:
             name = widget.getAttribute("widgetName")
-            #print name
+            
             widgetID = widget.getAttribute('widgetID')
             caption = widget.getAttribute('captionTitle')
-            #print widgetID
+            print 'Loading widget', name, caption, widgetID
             settings = cPickle.loads(loadedSettingsDict[widgetID]['settings'])
             inputs = cPickle.loads(loadedSettingsDict[widgetID]['inputs'])
             outputs = cPickle.loads(loadedSettingsDict[widgetID]['outputs'])
@@ -672,6 +673,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
         except Exception as inst:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, unicode(inst))
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Loaded Settings Dict Is: %s' % unicode(loadedSettingsDict))
     ## now the widgets are loaded so we can move on to setting the connections
     
     return (loadedOk, failureText)

@@ -10,7 +10,7 @@ class RVector(RMatrix):
     convertToList = [RDataFrame, StructuredDict, UnstructuredDict, RMatrix, RVariable, RList]
     convertFromList = []
     def __init__(self, widget, data, parent = None, checkVal = True):
-        RMatrix.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
+        RMatrix.__init__(self, widget = widget, data = data, parent = parent, checkVal = False, **kwargs)
         if checkVal:
             if self.R('class('+self.data+')', wantType = 'list')[0] not in ['complex', 'raw', 'numeric', 'factor', 'character', 'logical', 'integer', 'POSIXt', 'POSIXct']:
                 raise Exception, 'Not vector data'

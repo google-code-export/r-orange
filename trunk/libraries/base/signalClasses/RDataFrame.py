@@ -19,7 +19,7 @@ class RDataFrame(RList, StructuredDict, TableView):
     
     convertFromList = [StructuredDict]
     convertToList = [RList, RVariable, StructuredDict, UnstructuredDict, TableView]
-    def __init__(self, widget, data, parent = None, checkVal = True):
+    def __init__(self, widget, data, parent = None, checkVal = True, **kwargs):
         StructuredDict.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
         RList.__init__(self, widget, data = data, parent = parent, checkVal = False)
         TableView.__init__(self)
@@ -161,7 +161,7 @@ class RDataFrame(RList, StructuredDict, TableView):
         
 class RDataFrameModel(QAbstractTableModel): 
     def __init__(self,Rdata,parent, filteredOn = [], editable=False,
-    filterable=False,sortable=False): 
+    filterable=False,sortable=False, criteraList = {}, reload = False, workingRData = None, **kwargs): 
         QAbstractTableModel.__init__(self,parent) 
 
         self.working = False
@@ -172,14 +172,28 @@ class RDataFrameModel(QAbstractTableModel):
         self.editable = editable
         self.filterable = filterable
         self.filteredOn = filteredOn
-        self.criteriaList = {}
+        self.criteriaList = criteraList
         # self.filter_delete = os.path.join(redREnviron.directoryNames['picsDir'],'filterAdd.png')
         self.columnFiltered = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'columnFilter.png'))
         
         # print self.filter_add,os.path.exists(self.filter_add),os.path.exists(self.filter_delete)
         self.orgRdata = Rdata
-        self.initData(Rdata)
-        
+        if reload:
+            self.initData(workingRData)
+        else:
+            self.initData(Rdata)
+    
+    def getSettings(self):
+        r = {}
+        r['reload'] = True
+        r['sortable'] = self.sortable
+        r['filterable'] = self.filterable
+        r['editable'] = self.editable
+        r['filteredOn'] = self.filteredOn
+        r['criteraList'] = self.criteraList
+        r['Rdata'] = self.orgRdata
+        r['workingRData'] = self.Rdata
+        return r
     ##########  functions accessed by filter table  #########
     def getSummary(self):
         total = self.R('nrow(%s)' % self.orgRdata,silent=True)
