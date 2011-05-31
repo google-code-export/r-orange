@@ -773,7 +773,10 @@ class SignalCanvasView(QGraphicsView):
         for i in outputs.keys():
             y = yWidgetOffTop + ((j+1)*signalSpace)/float(len(outputs)+1)
             box = QGraphicsRectItem(xWidgetOff + width, y - ySignalSize/2.0, xSignalSize, ySignalSize, None, self.dlg.canvas)
-            box.setBrush(QBrush(QColor(0,0,255)))
+            if outputs[i].value == None:
+                box.setBrush(QBrush(QColor(255,0,0)))
+            else:
+                box.setBrush(QBrush(QColor(0,0,255)))
             box.setZValue(200)
             self.outBoxes.append((outputs[i].name, box, i))
 

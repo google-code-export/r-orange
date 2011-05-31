@@ -1,3 +1,24 @@
+
+.. sidebar:: Navigation
+
+    .. image:: ../../../../canvas/icons/CanvasIcon.png
+        :target: http://www.red-r.org
+
+    - Red-R_
+    - Packages_
+    - `Parent Package`_
+    
+    .. _Red-R: http://www.red-r.org/Documentation
+    
+    .. _Packages: ../../../index.html
+    
+    .. _`Parent Package`: ../index.html
+    
+    .. contents:: :depth: 3
+    
+    
+.. class:: main
+
 PreProcess Data
 )))))))))))))))
 
@@ -5,6 +26,7 @@ Authors
 ((((((((((((
 
 Red-R Core Team, http://www.red-r.org/contact
+
 
 Documentation
 ((((((((((((((((((

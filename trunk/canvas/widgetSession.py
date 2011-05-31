@@ -317,7 +317,6 @@ class widgetSession():
     
     # save global settings
     def saveGlobalSettings(self):
-        #print '|#| owrpy global save settings'
         settings = {}
         
         if hasattr(self, "globalSettingsList"):
@@ -326,16 +325,9 @@ class widgetSession():
             self.globalSettingsList =  self.defaultGlobalSettingsList
         print self.globalSettingsList
         for name in self.globalSettingsList:
-            #try:
             settings[name] = self.returnSettings(getattr(self,name),checkIfPickleable=False)
-            #except:
-            #   print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self._widgetInfo.widgetName)
-        #print '%s' % unicode(settings)
         if settings:
-            #settingsID = self.sqlite.saveObject(settings)
             file = self.getGlobalSettingsFile()
             f = open(file, "w")
             cPickle.dump(settings, f)
-        
-        #print '|#| owrpy global save settings done'
 

@@ -246,19 +246,15 @@ class OutputHandler:
     def returnOutputs(self):
         ## move through the outputs and return a list of outputs and connections.  these connections should be reconnected on reloading of the widget, ideally we will only put atomics into this outputHandler
         data = {}
-        print 'isolation 0'
-        print self.outputs
         for (key, outSig) in self.outputs.items():
             print 'isolation 1'
-            data[key] = {'name':outSig.name, 'signalClass':unicode(outSig.signalClass), 'connections':{}}
-            print 'isolation 2'
+            data[key] = {'name':outSig.name, 'signalClass':unicode(outSig.signalClass), 'connections':[]}
             if outSig.value != None:
                 data[key]['value'] = outSig.value.saveSettings()
             else:
                 data[key]['value'] = None
-            print 'isolation 3'
             for inSig in getInputConnectionsFromOutput(outSig):
-                data[key]['connections'][inSig.id] = {'id':inSig.id, 'parentID':inSig.parent.widgetID, 'enabled':getLinkPairBySignal(outSig, inSig)[2]}
+                data[key]['connections'].append({'id':inSig.id, 'parentID':inSig.parent.widgetID, 'enabled':getLinkPairBySignal(outSig, inSig)[2]})
             #for (vKey, vValue) in value['connections'].items():
                 #data[key]['connections'][vKey] = {'id':vValue['signal']['sid'], 'parentID':vValue['signal']['parent'].widgetID, 'enabled':vValue['enabled']} ## now we know the widgetId and the signalID (sid) used for connecting widgets in the future.
                 
@@ -279,7 +275,7 @@ class OutputHandler:
                 #print _('Signal does not exist')
                 continue
             ## find the signal from the widget and connect it
-            for (vKey, vValue) in value['connections'].items():
+            for vValue in value['connections']:
                 ### find the widget
                 if not tmp:
                     widget = redRObjects.getWidgetInstanceByID(vValue['parentID'])

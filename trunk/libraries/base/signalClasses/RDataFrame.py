@@ -157,10 +157,10 @@ class RDataFrame(RList, StructuredDict, TableView):
         return output
     
     def getTableModel(self, widget, filtered = True, sortable = True):
-        return RDataFrameModel(self.getData(), widget, filteredOn = [], filterable = filtered, sortable = sortable)
+        return RDataFrameModel(widget, self.getData(), filteredOn = [], filterable = filtered, sortable = sortable)
         
 class RDataFrameModel(QAbstractTableModel): 
-    def __init__(self,Rdata,parent, filteredOn = [], editable=False,
+    def __init__(self, parent, Rdata, filteredOn = [], editable=False,
     filterable=False,sortable=False, orgRdata = None, reload = False, criteriaList = {}): 
         QAbstractTableModel.__init__(self,parent) 
 

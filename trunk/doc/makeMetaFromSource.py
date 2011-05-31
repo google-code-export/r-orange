@@ -3,10 +3,33 @@ Make meta files from source files.
 
 """
 
-import re
+import re, os
 import xml.dom.minidom
 doc = None
 document = None
+
+header = """
+"""
+
+sidebar = """.. sidebar:: Navigation
+
+    .. image:: ../../../../canvas/icons/CanvasIcon.png
+        :target: http://www.red-r.org
+
+    - Red-R_
+    - Packages_
+    - `Parent Package`_
+    
+    .. _Red-R: http://www.red-r.org/Documentation
+    
+    .. _Packages: ../../../index.html
+    
+    .. _`Parent Package`: ../index.html
+    
+    .. contents:: :depth: 3
+    
+    
+"""
 
 getDirective = re.compile(r'.. (?P<directive>.+?)::', re.DOTALL)
 getKeyValue = re.compile(r'\s:(?P<key>.+?):\s`(?P<value>.+?)`', re.DOTALL)
@@ -28,6 +51,10 @@ getAuthorName = re.compile(r'<authorname>(?P<authorname>.*?)</authorname>', re.D
 getAuthorContact = re.compile(r'<authorcontact>(?P<authorcontact>.*?)</authorcontact>', re.DOTALL)
         
 getSignalXML = re.compile(r'<signalXML>.*?</signalXML>', re.DOTALL)
+getSignalParent = re.compile(r'.. signalClass:: *(?P<signalClass>.+?)[ "]')
+
+getQTClass = re.compile(r'class .+?\((<?P<parent>.+?)\)')
+
     
 def _getXMLDirective(string):
     """Returns an rst directive or None in the form \.\.\ (?P<directive>.*?)::"""
@@ -154,6 +181,7 @@ def parseWidgetFile(filename, outputXML, outputHelp):
     with open(outputHelp, 'w') as f:
         f.write(makeHelp(d))
     print 'Success for %s' % filename
+    return d['name']
     
 def makeXML(d):
     """Makes an xml file as plain text"""
@@ -176,12 +204,21 @@ def makeXML(d):
     
 def makeHelp(d):
     """Makes a help document from the source as a .rst document"""
-    s = '%s\n%s\n\n' % (d['name'], ')'*len(d['name']))
+    s = header
+    s += sidebar
+    s += '.. class:: main\n\n'
+    s += '%s\n%s\n\n' % (d['name'], ')'*len(d['name']))
+    #s += 'Contents\n$$$$$$$$$$$$$\n\n'
+    
+    #s += '.. container: main\n\n'
     s += 'Authors\n((((((((((((\n\n'
     for n, c in d['author']:
-        s += '%s, %s\n' % (n, c)
+        s += '%s, %s\n\n' % (n, c)
     s += '\nDocumentation\n((((((((((((((((((\n\n'
-    s += '\n'.join(d['helpdoc'])
+    if len(d['helpdoc']) == 0:
+        s += 'No help documentation entered for this widget'
+    else:
+        s += '\n'.join(d['helpdoc'])
     s += '\n\n'
     s += 'Interface\n((((((((((((\n\n'
     for gui in d['rrgui']:
@@ -202,13 +239,106 @@ def makeHelp(d):
     s += ','.join(d['rpackages'])
     return s
 
-def parseSignalFile(filename, outputXML):
+def parseSignalFile(filename, outputHelp, outputXML):
     with open(filename, 'r') as f:
         myFile = f.read()
-    x = re.search(getSignalXML, myFile)
-    if x:
-        with open(outputXML, 'w') as f:
-            f.write(x.group())
+    
+    d = {'helpdoc':[], 'signalClass':[], 'name':os.path.split(filename)[1]}
+    
+    try:
+        for m in re.finditer(getHelpDoc, myFile):
+            d['helpdoc'].append(m.group('helpdoc'))
+    except: pass
+    try:
+        for m in re.finditer(getSignalParent, myFile):
+            d['signalClass'].append(m.group('signalClass').strip())
+    except: pass
+    
+    with open(outputHelp, 'w') as f:
+        f.write(makeSignalHelp(d))
+    with open(outputXML, 'w') as f:
+        f.write(makeSignalXML(d))
+    return d['name']
+def parseQTWidgetFile(filename, outputHelp, outputXML):
+    with open(filename, 'r') as f:
+        myFile = f.read()
+    d = {'helpdoc':[], 'name':os.path.split(filename)[1], 'parent':''}
+    try:
+        for m in re.finditer(getHelpDoc, myFile):
+            d['helpdoc'].append(m.group('helpdoc'))
+    except: pass
+    try:
+        d['parent'] = re.search(getQTClass, myFile).group('parent')[0]
+    except: pass
+    
+    with open(outputHelp, 'w') as f:
+        f.write(makeQTHelp(d))
+    with open(outputXML, 'w') as f:
+        f.write(makeQTXML(d))
+    return d['name']
+def makeQTHelp(d):
+    """Takes a dict of helpdoc, name, and parent and makes an rst file for documentation."""
+    s = header
+    s += '%s\n%s\n\n' % (d['name'], ')'*len(d['name']))
+    s += '.. contents::\n\n'
+    
+    if d['parent'] == '':
+        s += 'Non standard parent as parent class.\n\n'
+    else:
+        s += 'Inherits from `%s`_.\n\n' % d['parent']
+        s += '.. _`%s`: http://www.riverbankcomputing.co.uk/static/Docs/PyQt4/html/%s.html\n\n' % (d['parent'], d['parent'].lower())
+        
+    
+    s += '\nDocumentation\n((((((((((((((((((\n\n'
+    if len(d['helpdoc']) == 0:
+        s += 'No help documentation entered for this onject'
+    else:
+        s += '\n'.join(d['helpdoc'])
+    s += '\n\n'
+    return s
+
+def makeQTXML(d):
+    """Makes an xml file as plain text"""
+    """make the header"""
+    s = """<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation>"""
+    s += '</documentation>'
+    return s
+    
+def makeSignalHelp(d):
+    """Makes a signal help file using a dict containing two lists, helpdoc and signalClass"""
+    s = header
+    s += '%s\n%s\n\n' % (d['name'], ')'*len(d['name']))
+    s += '.. contents::\n\n'
+    s += 'Dependent signals\n(((((((((((((((((((((((\n\n'
+    for sig in d['signalClass']:
+        s += '%s\n%s\n\n' % (sig+'_', '}'*(len(sig['name'])+5))
+    
+    s += '\nDocumentation\n((((((((((((((((((\n\n'
+    if len(d['helpdoc']) == 0:
+        s += 'No help documentation entered for this signal class'
+    else:
+        s += '\n'.join(d['helpdoc'])
+    s += '\n\n'
+    for sig in d['signalClass']:
+        s += '.. _%s: ../../../%s/help/signalClasses/%s.html\n\n' % (sig, sig.split('.')[0], sig.split('.')[1])
+        
+    return s
+    
+def makeSignalXML(d):
+    """Makes an xml file as plain text"""
+    """make the header"""
+    s = """<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation>"""
+    """put in the signal classes"""
+    s += '<signals>'
+    for rs in d['signalClass']:
+        s += '<signal>%s</signal>\n' % rs
+    s += '</signals>\n'
+    s += '</documentation>'
+    return s
 # def test(path):
 
     # parseFile(path, 'outputXML.xml', 'outputTest.txt', 'outputDevel.txt')

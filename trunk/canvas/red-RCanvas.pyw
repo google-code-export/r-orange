@@ -2,21 +2,31 @@
 # Author: Kyle R Covington and Anup Parikh, adapted from orangeCanvas
 # Description:
 #    main file, that creates the MDI environment
+
+import sys, os, cPickle, time
+print time.time()
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-import sys, os, cPickle, time
+
 # for x in sys.path:
    # print x
    
    
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
+print time.time(), 'loaded PyQt'
 import redREnviron
+print time.time(), 'loaded redREnviron'
 import redRLog
+print time.time(), 'loaded redRLog'
 import redRStyle
+print time.time(), 'loaded redRStyle'
 import redRReports
+print time.time(), 'loaded redRReports'
 import RSession
+print time.time(), 'loaded RSession'
 import redRHistory
 import redRi18n
 import redROutput, redRSaveLoad
@@ -446,6 +456,7 @@ def main(argv = None):
     app.closeAllWindows()
 
 def updates():
+    print time.time(), 'Starting updates'
     app = RedRQApplication(sys.argv)
     QCoreApplication.setOrganizationName("Red-R");
     QCoreApplication.setOrganizationDomain("red-r.com");
