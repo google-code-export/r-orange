@@ -2,9 +2,9 @@
     <Name>base</Name>
     <Author>Red-R Development Team</Author>
     <Version>
-        <Number>1.4</Number>
+        <Number>1.4001</Number>
         <Stability>Good</Stability>
-        <Date>2011-04-04</Date>
+        <Date>2011-05-18</Date>
     </Version>
     <License>GPL (>= 2.0)</License>
     <Dependencies></Dependencies>

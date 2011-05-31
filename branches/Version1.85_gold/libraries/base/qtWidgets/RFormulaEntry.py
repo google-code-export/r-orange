@@ -87,20 +87,30 @@ class RFormulaEntry(widgetState):
            # itemsText.append(unicode(item.text()))
                 
         r = {'current':self.outcomeVariable.currentIndex(), 
-        'buttonState': self.elementsListBox.isEnabled(), 'listBoxItems':self.elementsListBox.getSettings()}
+        'buttonState': self.elementsListBox.isEnabled(), 
+        'listBoxItems':self.elementsListBox.getSettings(),
+        'comboBoxSettings': self.outcomeVariable.getSettings(),
+        'lineEdit':self.modelLineEdit.getSettings()}
+        
+        print r
         
         return r
         #items = []
         #for item in self.elementsListBox.items():
     def loadSettings(self, data):
+        print data
         try:
+            print 'loading elements List Box'
             self.elementsListBox.loadSettings(data['listBoxItems'])
             # self.elementsListBox.addItems(data['listBoxItems'])
-            self.outcomeVariable.addItems(data['listBoxItems'])
+            print 'loading outcome variable'
+            self.outcomeVariable.loadSettings(data['comboBoxSettings'])
+            print 'loading updateEnabled'
             self.updateEnabled(data['buttonState'])
-            self.outcomeVariable.setCurrentIndex(data['current'])
-        except:
-            print _("Loading of RFormulaEntry encountered an error.")
+            print 'setting line edit'
+            self.modelLineEdit.loadSettings(data.get('lineEdit', {}))
+        except Exception as inst:
+            print _("Loading of RFormulaEntry encountered an error. %s") % unicode(inst)
         
     def update(self, items):
         

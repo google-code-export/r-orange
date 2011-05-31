@@ -60,7 +60,6 @@ class mergeR(OWRpy):
     def processA(self, data):
         #print 'processA'
         if not data:
-            self.colA.clear()
             return 
         self.dataA = unicode(data.getData())
         self.dataParentA = data
@@ -77,7 +76,6 @@ class mergeR(OWRpy):
     def processB(self, data):
         #print 'processB'
         if not data:
-            self.colB.clear()
             return 
         self.dataB = unicode(data.getData())
         self.dataParentB = data
