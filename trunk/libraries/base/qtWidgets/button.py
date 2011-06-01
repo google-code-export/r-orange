@@ -54,6 +54,7 @@ class button(QPushButton,widgetState):
         if callback:
             QObject.connect(self, SIGNAL("clicked()"), callback)
             
+            
     def getSettings(self):
         """Returns settings for checked state, applicable only if this is a checkbutton"""
         return {'checked': self.isChecked()}
@@ -62,4 +63,4 @@ class button(QPushButton,widgetState):
         if self.checkable():
             if 'checked' in data.keys():
                 self.setChecked(data['checked'])
-
+            

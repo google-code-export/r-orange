@@ -24,11 +24,12 @@ class widgetLabel(QLabel,widgetState):
             label = "<img style='margin-left:5px' src=\"%s\" /> %s" % (icon, label)
         self.setText(label)
         self.setWordWrap(wordWrap)
-        self.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.setTextInteractionFlags(Qt.TextBrowserInteraction)
         if not sizePolicy:
             self.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
         else:
             self.setSizePolicy(sizePolicy)
+        #self.connect(self, SIGNAL('linkActivated (const QString&)'), self.followLink)
     def text(self):
         """Returns the text of the label"""
         return unicode(QLabel.text(self))
@@ -42,4 +43,7 @@ class widgetLabel(QLabel,widgetState):
         # print data
         self.setText(data['text'])
         
+    #def followLink(self, link):
+        #import webbrowser
+        #webbrowser.open_new(unicode(link))
 
