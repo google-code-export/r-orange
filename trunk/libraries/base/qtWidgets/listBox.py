@@ -279,11 +279,8 @@ class listBox(QListWidget,widgetState):
         return r
     def loadSettings(self,data):
         self.clear()
-        print 'adding items'
-        self.addItems(self.safeLoad(data, 'items', []))
-        print 'setting selected ids'
-        self.setSelectedIds(self.safeLoad(data, 'selected', None))
-        print 'done loading list box'
+        self.addItems(data.get('items', []))
+        self.setSelectedIds(data.get('selected', None))
     def getReportText(self, fileDir):
         items = self.getItems()
         selected = self.currentSelection()

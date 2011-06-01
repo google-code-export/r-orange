@@ -2,10 +2,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="Docutils 0.8: http://docutils.sourceforge.net/" />
-<title></title>
-<style type="text/css">
+
+        <title>Predict</title>
+        <style type="text/css">
 
 /*
 Including the parent stylesheet so that it will be included when documents are generated.
@@ -337,116 +339,99 @@ body {background: ../../../../canvas/icons/splash.png;
     padding-left: 3px;
     }
     
-.main {
+.mainText {
     width: 70%;
     float:left
     }
 </style>
-</head>
-<body>
-<div class="document">
 
+        </head>
+        <body>
+        <div class="sidebar" id="navSidebar">
+        
 
-<div class="sidebar">
-<p class="first sidebar-title">Navigation</p>
-<a class="reference external image-reference" href="http://www.red-r.org"><img alt="../../../../canvas/icons/CanvasIcon.png" src="../../../../canvas/icons/CanvasIcon.png" /></a>
+    <a href="http://www.red-r.org"><img src="../../../../canvas/icons/CanvasIcon.png" alt="Red-R.org"/></a></br>
+    
+    <a href="http://www.red-r.org/Documentation">Red-R Documentation</a></br>
+    <a href="../../../index.html">Packages</a></br>
+    <a href="../index.html">Parent Package</a>
+    
 <ul class="simple">
-<li><a class="reference external" href="http://www.red-r.org/Documentation">Red-R</a></li>
-<li><a class="reference external" href="../../../index.html">Packages</a></li>
-<li><a class="reference external" href="../index.html">Parent Package</a></li>
-</ul>
-<div class="contents last topic" id="contents">
-<p class="topic-title first">Contents</p>
-<ul class="simple">
-<li><a class="reference internal" href="#predict" id="id6">Predict</a><ul>
-<li><a class="reference internal" href="#authors" id="id7">Authors</a></li>
-<li><a class="reference internal" href="#documentation" id="id8">Documentation</a></li>
-<li><a class="reference internal" href="#interface" id="id9">Interface</a><ul>
-<li><a class="reference internal" href="#test-data" id="id10">Test Data:</a></li>
-<li><a class="reference internal" href="#class-labels" id="id11">Class Labels:</a></li>
-<li><a class="reference internal" href="#r-output-window" id="id12">R Output Window</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#signals" id="id13">Signals</a><ul>
-<li><a class="reference internal" href="#object" id="id14">object</a></li>
-<li><a class="reference internal" href="#newdata" id="id15">newData</a></li>
-<li><a class="reference internal" href="#predict-output" id="id16">predict Output</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#r-packages" id="id17">R Packages</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
-<div class="main section" id="predict">
-<h1><a class="toc-backref" href="#id6">Predict</a></h1>
-<div class="section" id="authors">
-<h2><a class="toc-backref" href="#id7">Authors</a></h2>
+<li><a class="reference internal" href="#authors">Authors</a></li>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+<li><a class="reference internal" href="#interface">Interface</a></li>
+<li><a class="reference internal" href="#signals">Signals</a></li>
+<li><a class="reference internal" href="#r-packages">R Packages</a></li>
+
+        </div>
+        <div class="mainText" id="mainText">
+        <div class="section" id="authors">
+<h1>Authors</h1>
 <p>Red-R Core Team, <a class="reference external" href="http://www.red-r.org/contact">http://www.red-r.org/contact</a></p>
 </div>
 <div class="section" id="documentation">
-<h2><a class="toc-backref" href="#id8">Documentation</a></h2>
+<h1>Documentation</h1>
 <p>This widget uses a trained data model from a Caret Train widget and a data set to predict new classes.</p>
 </div>
 <div class="section" id="interface">
-<h2><a class="toc-backref" href="#id9">Interface</a></h2>
+<h1>Interface</h1>
 <div class="section" id="test-data">
-<h3><a class="toc-backref" href="#id10">Test Data:</a></h3>
+<h2>Test Data:</h2>
 <div class="section" id="description">
-<h4>Description</h4>
+<h3>Description</h3>
 <p>No description entered for this GUI parameter</p>
 <p>Class: base.comboBox</p>
 </div>
 </div>
 <div class="section" id="class-labels">
-<h3><a class="toc-backref" href="#id11">Class Labels:</a></h3>
+<h2>Class Labels:</h2>
 <div class="section" id="id1">
-<h4>Description</h4>
+<h3>Description</h3>
 <p>No description entered for this GUI parameter</p>
 <p>Class: base.comboBox</p>
 </div>
 </div>
 <div class="section" id="r-output-window">
-<h3><a class="toc-backref" href="#id12">R Output Window</a></h3>
+<h2>R Output Window</h2>
 <div class="section" id="id2">
-<h4>Description</h4>
+<h3>Description</h3>
 <p>No description entered for this GUI parameter</p>
 <p>Class: base.textEdit</p>
 </div>
 </div>
 </div>
 <div class="section" id="signals">
-<h2><a class="toc-backref" href="#id13">Signals</a></h2>
+<h1>Signals</h1>
 <div class="section" id="object">
-<h3><a class="toc-backref" href="#id14">object</a></h3>
+<h2>object</h2>
 <p>Classes: base.RModelFit</p>
 <div class="section" id="id3">
-<h4>Description</h4>
+<h3>Description</h3>
 <p>Trained model</p>
 </div>
 </div>
 <div class="section" id="newdata">
-<h3><a class="toc-backref" href="#id15">newData</a></h3>
+<h2>newData</h2>
 <p>Classes: base.RArbitraryList,base.RArbitraryList</p>
 <div class="section" id="id4">
-<h4>Description</h4>
+<h3>Description</h3>
 <p>New data</p>
 </div>
 </div>
 <div class="section" id="predict-output">
-<h3><a class="toc-backref" href="#id16">predict Output</a></h3>
+<h2>predict Output</h2>
 <p>Classes: base.RModelFit</p>
 <div class="section" id="id5">
-<h4>Description</h4>
+<h3>Description</h3>
 <p>Prediction output</p>
 </div>
 </div>
 </div>
 <div class="section" id="r-packages">
-<h2><a class="toc-backref" href="#id17">R Packages</a></h2>
+<h1>R Packages</h1>
 </div>
-</div>
-</div>
-</body>
-</html>
+
+        </div>
+        </body>
+        </html>
+        

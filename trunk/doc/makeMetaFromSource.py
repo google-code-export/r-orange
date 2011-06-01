@@ -5,29 +5,22 @@ Make meta files from source files.
 
 import re, os
 import xml.dom.minidom
+from docutils.core import publish_string, publish_parts
 doc = None
 document = None
+
+overrides = {}#{'stylesheet_path': ','.join([os.path.join(os.path.split(os.path.split(root)[0])[0], 'doc', 'userHelpStyles', 'userHelpCSS.css')])}
 
 header = """
 """
 
-sidebar = """.. sidebar:: Navigation
+sidebar = """
 
-    .. image:: ../../../../canvas/icons/CanvasIcon.png
-        :target: http://www.red-r.org
-
-    - Red-R_
-    - Packages_
-    - `Parent Package`_
+    <a href="http://www.red-r.org"><img src="../../../../canvas/icons/CanvasIcon.png" alt="Red-R.org"/></a></br>
     
-    .. _Red-R: http://www.red-r.org/Documentation
-    
-    .. _Packages: ../../../index.html
-    
-    .. _`Parent Package`: ../index.html
-    
-    .. contents:: :depth: 3
-    
+    <a href="http://www.red-r.org/Documentation">Red-R Documentation</a></br>
+    <a href="../../../index.html">Packages</a></br>
+    <a href="../index.html">Parent Package</a>
     
 """
 
@@ -179,7 +172,25 @@ def parseWidgetFile(filename, outputXML, outputHelp):
     with open(outputXML, 'w') as f:
         f.write(makeXML(d))
     with open(outputHelp, 'w') as f:
-        f.write(makeHelp(d))
+        helprst = makeHelp(d)
+        output = publish_parts(helprst, writer_name='html', settings_overrides = overrides)
+        output.update({'sidebar': makeWidgetSidebar(d)})
+        finalhtml = """%(head_prefix)s
+        %(meta)s
+        <title>%(title)s</title>
+        %(stylesheet)s
+        </head>
+        <body>
+        <div class="sidebar" id="navSidebar">
+        %(sidebar)s
+        </div>
+        <div class="mainText" id="mainText">
+        %(body)s
+        </div>
+        </body>
+        </html>
+        """ % output
+        f.write(finalhtml)
     print 'Success for %s' % filename
     return d['name']
     
@@ -202,15 +213,21 @@ def makeXML(d):
     s += '</documentation>'
     return s
     
+def makeWidgetSidebar(d):
+    """Returns a string for the widget sidebar."""
+    s = sidebar
+    s += '<ul class="simple">\n'
+    s += '<li><a class="reference internal" href="#authors">Authors</a></li>\n'
+    s += '<li><a class="reference internal" href="#documentation">Documentation</a></li>\n'
+    s += '<li><a class="reference internal" href="#interface">Interface</a></li>\n'
+    s += '<li><a class="reference internal" href="#signals">Signals</a></li>\n'
+    s += '<li><a class="reference internal" href="#r-packages">R Packages</a></li>\n'
+    return s
+    
 def makeHelp(d):
     """Makes a help document from the source as a .rst document"""
     s = header
-    s += sidebar
-    s += '.. class:: main\n\n'
     s += '%s\n%s\n\n' % (d['name'], ')'*len(d['name']))
-    #s += 'Contents\n$$$$$$$$$$$$$\n\n'
-    
-    #s += '.. container: main\n\n'
     s += 'Authors\n((((((((((((\n\n'
     for n, c in d['author']:
         s += '%s, %s\n\n' % (n, c)
@@ -272,10 +289,32 @@ def parseQTWidgetFile(filename, outputHelp, outputXML):
     except: pass
     
     with open(outputHelp, 'w') as f:
-        f.write(makeQTHelp(d))
+        helprst = makeQTHelp(d)
+        output = publish_parts(helprst, writer_name='html', settings_overrides = overrides)
+        output.update({'sidebar': makeQTSidebar(d)})
+        finalhtml = """%(head_prefix)s
+        %(meta)s
+        <title>%(title)s</title>
+        %(stylesheet)s
+        </head>
+        <body>
+        <div class="sidebar" id="navSidebar">
+        %(sidebar)s
+        </div>
+        <div class="mainText" id="mainText">
+        %(body)s
+        </div>
+        </body>
+        </html>
+        """ % output
+        f.write(finalhtml)
     with open(outputXML, 'w') as f:
         f.write(makeQTXML(d))
     return d['name']
+def makeQTSidebar(d):
+    """Returns a string formatted to make the sidebar of QTWidgets."""
+    s = sidebar
+    return s
 def makeQTHelp(d):
     """Takes a dict of helpdoc, name, and parent and makes an rst file for documentation."""
     s = header

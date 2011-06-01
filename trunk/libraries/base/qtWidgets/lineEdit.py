@@ -72,10 +72,8 @@ class lineEdit(QLineEdit,widgetState):
     def loadSettings(self,data):
         try:
             #print 'called load' + unicode(value)     
-            self.setText(data['text'])
-            if 'id' in data.keys():
-                self.id = data['id']
-            #self.setEnabled(data['enabled'])
+            self.setText(data.get('text', ''))
+            self.id = data.get('id', self.id)
         except:
             print _('Loading of lineEdit encountered an error.')
             

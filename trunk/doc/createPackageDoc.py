@@ -24,7 +24,7 @@ print 'Root dir = ', os.path.abspath(root)
 
 #overrides = {'stylesheet_path':','.join([os.path.join(os.path.split(os.path.split(root)[0])[0], 'doc', 'userHelpStyles')]), 'stylesheet': ','.join(['helpDocStyle.css'])}
 
-overrides = {'stylesheet_path': ','.join([os.path.join(os.path.split(os.path.split(root)[0])[0], 'doc', 'userHelpStyles', 'userHelpCSS.css')])}
+makeMetaFromSource.overrides = {'stylesheet_path': ','.join([os.path.join(os.path.split(os.path.split(root)[0])[0], 'doc', 'userHelpStyles', 'userHelpCSS.css')])}
 
 
 header = """.. image:: ../../../canvas/icons/CanvasIcon.png
@@ -123,26 +123,26 @@ def makeFiles():
     for w in d['widgets']:
         wn = makeMetaFromSource.parseWidgetFile(os.path.abspath(os.path.join(root, 'widgets', '%s.py' % w)), 
             os.path.abspath(os.path.join(widgetMeta, '%s.xml' % w)), 
-            os.path.abspath(os.path.join(widgetHelp, '%s.rst' % w)))
+            os.path.abspath(os.path.join(widgetHelp, '%s.html' % w)))
         nd['W'].append((w, wn))
     for s in d['signalClasses']:
         sn = makeMetaFromSource.parseSignalFile(os.path.join(root, 'signalClasses', '%s.py' % s), 
-            os.path.join(signalHelp, '%s.rst' % s),
+            os.path.join(signalHelp, '%s.html' % s),
             os.path.join(signalMeta, '%s.xml' % s))
         nd['S'].append((s, sn))
     for q in d['qtWidgets']:
         qn = makeMetaFromSource.parseQTWidgetFile(os.path.join(root, 'qtWidgets', '%s.py' % s), 
-            os.path.join(qtHelp, '%s.rst' % q),
+            os.path.join(qtHelp, '%s.html' % q),
             os.path.join(qtMeta, '%s.xml' % q))
         nd['Q'].append((q, qn))
     ## now make the html by converting .rst to html
-    for w in d['widgets']:
-        print 'Publishing %s' % w
-        with open(os.path.join(widgetHelp, '%s.rst' % w), 'r') as f:
-            thisFile = f.read()
-            output = publish_string(thisFile, writer_name='html', settings_overrides = overrides)
-            with open(os.path.join(widgetHelp, '%s.html' % w), 'w') as h:
-                h.write(output)
+    # for w in d['widgets']:
+        # print 'Publishing %s' % w
+        # with open(os.path.join(widgetHelp, '%s.rst' % w), 'r') as f:
+            # thisFile = f.read()
+            # output = publish_string(thisFile, writer_name='html', settings_overrides = overrides)
+            # with open(os.path.join(widgetHelp, '%s.html' % w), 'w') as h:
+                # h.write(output)
                 
     for s in d['signalClasses']:
         print 'Publishing signal %s' % s
@@ -152,13 +152,13 @@ def makeFiles():
             with open(os.path.join(signalHelp, '%s.html' % s), 'w') as h:
                 h.write(output)
             
-    for s in d['qtWidgets']:
-        print 'Publishing qtWidget %s' % s
-        with open(os.path.join(qtHelp, '%s.rst' % s), 'r') as f:
-            thisFile = f.read()
-            output = publish_string(thisFile, writer_name='html', settings_overrides = overrides)
-            with open(os.path.join(qtHelp, '%s.html' % s), 'w') as h:
-                h.write(output)
+    # for s in d['qtWidgets']:
+        # print 'Publishing qtWidget %s' % s
+        # with open(os.path.join(qtHelp, '%s.rst' % s), 'r') as f:
+            # thisFile = f.read()
+            # output = publish_string(thisFile, writer_name='html', settings_overrides = overrides)
+            # with open(os.path.join(qtHelp, '%s.html' % s), 'w') as h:
+                # h.write(output)
     
     ## make the index files
     makeIndex(nd)

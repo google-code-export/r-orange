@@ -54,8 +54,9 @@ class comboBox(QComboBox,widgetState):
         # print _('in comboBox load')
         # print data
 
-        self.update(data['items'])
-        self.setCurrentIndex(data['current'])
+        self.update(data.get('items', []))
+        if data.get('current', None) != None:
+            self.setCurrentIndex(data['current'])
     
     def currentId(self):
         """Returns the current ID"""
