@@ -154,6 +154,7 @@ class filterTable(widgetState, QTableView):
         self.dataInfo.setText(self.tm.getSummary())
         
     def setTable(self, data):
+        print 'setting table %s' % str(data)
         self.tm = data.getTableModel(self)
         self.setModel(self.tm)
         
