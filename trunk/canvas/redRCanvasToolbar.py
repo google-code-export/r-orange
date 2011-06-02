@@ -189,10 +189,14 @@ class redRCanvasToolbarandMenu():
         if name.isEmpty(): return
         name = unicode(name)
         
-        redREnviron.settings['saveSchemaDir'] = os.path.split(unicode(name))[0]
-        self.canvas.schema.clear()
-        redRSaveLoad.loadDocument(unicode(name), freeze = 0, importing = False)
-        self.addToRecentMenu(unicode(name))
+        if os.path.splitext(name)[1] == 'rrts':
+            redRSaveLoad.loadDocument(unicode(name), freeze = 0, importing = False)
+        else:
+            redREnviron.settings['saveSchemaDir'] = os.path.split(unicode(name))[0]
+            
+            self.canvas.schema.clear()
+            redRSaveLoad.loadDocument(unicode(name), freeze = 0, importing = False)
+            self.addToRecentMenu(unicode(name))
 
 
     def menuItemOpenFreeze(self):
