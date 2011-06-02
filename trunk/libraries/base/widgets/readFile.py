@@ -32,6 +32,7 @@ This widget will read data from tab, comma, or space delimited text files. On Mi
 
 from OWRpy import *
 import redRGUI, signals, redR
+import redRGUI, signals
 import re
 import textwrap
 import cPickle
@@ -45,6 +46,11 @@ import libraries.base.signalClasses.RDataFrame as rdf
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class readFile(OWRpy):
+    """
+        asdfasdfsd
+        
+        :py:class:`signals.base.RDataFrame`
+    """
     globalSettingsList = ['filecombo','path']
     def __init__(self, **kwargs):
         """asdfasdfasdaaaaaaaaaaaaaaaaaaaaaaaaaa"""
@@ -229,8 +235,8 @@ I want to put in an image below that likely isn't there.
             self.require_librarys(['RODBC'])
             self.setForExcel()
 
-    def setForExcel(self):
-        self.fileType.show()
+    #def setForExcel(self):
+        #self.fileType.show()
     def otherSep(self,text):
         self.delimiter.setChecked('other')
         
@@ -390,10 +396,8 @@ I want to put in an image below that likely isn't there.
             self.updateScan()
             return
         
-        if scan:
-            self.updateScan()
-        else:
-            self.commit()
+        self.updateScan()
+        self.commit()
 
     def updateScan(self):
         if self.rowNamesCombo.count() == 0:

@@ -56,6 +56,12 @@ def readCategories(force = False):
     _widgetRegistry = orngRegistry.readCategories(force)
 
 def widgetRegistry():
+    """Returns the widget registry.  This is imported by orngRegistry and is a dict with the structure:
+    
+    {'widgets':[],  # widgets are a list tuple in the form [(widgetID, widgetInfo), ...]
+    'templates':[], # templates are a list tuple in the form [(filename, templateInfo), ...]
+    'tags': None}   # tags is the tag structure that is used for the widget tree view.
+    """
     global _widgetRegistry
     if _widgetRegistry == {} or len(_widgetRegistry.keys()) == 0:
         readCategories()

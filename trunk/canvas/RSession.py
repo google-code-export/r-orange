@@ -116,9 +116,9 @@ def Rcommand(query, silent = False, wantType = redR.CONVERT, listOfLists = False
         output = rpy.r(unicode(query).encode('Latin-1'))
         
     except Exception as inst:
-        redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br>The original query:<br> <b>%s</b><br>##################################<br>" % (inst,redRLog.getSafeString(query)))
+        redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br><br>The original query:<br> <b>%s</b><br>##################################<br>" % (inst,redRLog.getSafeString(query)))
         mutex.unlock()
-        raise RuntimeError(unicode(inst) + '  Original Query was:  ' + unicode(query))
+        raise RuntimeError(unicode(inst) + '<br>Original Query was:  ' + unicode(query))
         return None # now processes can catch potential errors
     if wantType == redR.NOCONVERSION: 
         mutex.unlock()
@@ -203,7 +203,8 @@ def setLibPaths(libLoc):
     Rcommand('.libPaths(\''+unicode(libLoc)+'\')', wantType = 'NoConversion') 
     print 'library location is ', libLoc
 def require_librarys(librarys, repository = 'http://cran.r-project.org'):
-        
+        setLibPaths(redREnviron.directoryNames['RlibPath'])
+        print redREnviron.directoryNames['RlibPath']
         loadedOK = True
         installedRPackages = getInstalledLibraries()
         Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + repository + '"; options(repos=r)})', wantType = 'NoConversion')
@@ -215,7 +216,7 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         installedRPackages = getInstalledLibraries() ## remake the installedRPackages list
         for library in [l for l in librarys if l not in loadedLibraries]:
             if installedRPackages and library and (library in installedRPackages):
-                redRLog.log(redRLog.R, redRLog.DEBUG, 'Loading library %s.' % library)
+                redRLog.log(redRLog.R, redRLog.INFO, 'Loading library %s.' % library)
                 Rcommand('require(' + library + ')') #, lib.loc=' + libPath + ')')
                 
                 loadedLibraries.append(library)
@@ -239,7 +240,6 @@ def install_libraries(librarys, repository = 'http://cran.r-project.org'):
                 redRLog.log(redRLog.R, redRLog.INFO, _('Installing library(s) %s.') % ','.join(newLibs))
                 Rcommand('setRepositories(ind=1:7)', wantType = 'NoConversion')
                 Rcommand('install.packages(c(%s))' % ','.join(['"%s"' % l for l in newLibs]), wantType = 'NoConversion')
-                redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Library load successful'))
             except:
                 redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL,_('Library load failed') +"<br>"+ redRLog.formatException()) 
                 return False

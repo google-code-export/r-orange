@@ -1,6 +1,6 @@
 """redRLog
 
-Handles the standard output and error and redirects it to the various output managers. Also submits errors to the repository when they occur if the user allows this.
+Handles the standard output and error and redirects it to the various output managers. 
 
 """
 
@@ -53,6 +53,7 @@ def setOutputManager(name,manager,level=None):
     
 def log(table, logLevel = INFO, comment ='', widget=None, html=True):   
     """Create a log entry."""
+    """Create a log entry."""
     #fileLogger.defaultSysOutHandler.write('error type %s, debug mode %s\n' % (logLevel, redREnviron.settings['debugMode']))
     # fileLogger.defaultSysOutHandler.write(str(logLevelsByName.get(redREnviron.settings['outputVerbosity'],0)) + ' ' + str(redREnviron.settings['outputVerbosity']) + '\n')
     
@@ -96,6 +97,7 @@ def logOutput(table, logLevel, comment,html=False):
                 writer['writer'](table,logLevel,comment,html)
     
 def formatedLogOutput(table, logLevel, stack, comment, html):
+    """Format Log entry for output."""
     """Format Log entry for output."""
     # if logLevel == DEBUG:
         # comment = comment.rstrip('\n') + '<br>'
@@ -249,13 +251,13 @@ class LogHandler():
                 logOutput(REDRCORE, DEVEL, text = unicode(inst))
                 return
             logOutput(REDRCORE,DEVEL, text,html=False)
-            if sys.platform == 'linux2':
+            if logLevels[redREnviron.settings['outputVerbosity']] == DEVEL:
                 self.defaultStdout.write(text)
         except: pass
     def exceptionHandler(self, type, value, tracebackInfo):
         
         log(REDRCORE,CRITICAL,formatException(type,value,tracebackInfo))
-        if sys.platform == 'linux2':
+        if logLevels[redREnviron.settings['outputVerbosity']] == DEVEL:
             self.defaultExceptionHandler(type, value, tracebackInfo)
         
 # print 'setting log handler'

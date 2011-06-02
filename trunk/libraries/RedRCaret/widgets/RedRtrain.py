@@ -33,7 +33,7 @@ class RedRtrain(OWRpy):
     settingsList = []
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
-        self.require_librarys(["caret"])
+        self.require_librarys(["caret"]) #, "ada", "affy", "caTools", "class", "e1071", "earth", "elasticnet", "ellipse", "fastICA", "foba", "foreach", "gam", "GAMens", "gbm", "glmnet", "gpls", "grid", "hda", "HDclassif", "ipred", "kernlab", "klaR", "lars", "LogicForest", "logicFS", "LogicReg", "MASS", "mboost", "mda", "mgcv", "mlbench", "neuralnet", "nnet", "nodeHarvest", "pamr", "partDSA", "party", "penalized", "pls", "proxy", "quantregForest","randomForest", "RANN", "rda", "relaxo", "rocc", "rpart", "rrcov", "RWeka", "sda", "SDDA", "sparseLDA", "spls", "stepPlr", "superpc", "vbm"])
         
         """.. rrvnames::"""
         self.setRvariableNames(["train", 'tempData'])

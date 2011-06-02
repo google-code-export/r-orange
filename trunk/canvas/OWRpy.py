@@ -1,17 +1,9 @@
-"""@module OWRpy
-
-.. inheritance-diagram::
-    OWRpy
+"""OWRpy
 
 General Documentation
 
 OWRpy is the base class for all Red-R widgets.  All widgets in the Red-R Framework must inherit from this class.
 OWRpy provides, by default, an importation of many of the standard base classes as indicated in the following...
-
-
-.. code-block:: python
-
-
 
 """
 

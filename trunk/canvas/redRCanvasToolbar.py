@@ -1,7 +1,11 @@
-import redREnviron,redRStyle, redRObjects, redRSaveLoad, redRGUI,signals, orngDlgs, orngRegistry
+import redREnviron,redRStyle, redRObjects, redRSaveLoad, redRGUI, signals, orngDlgs, orngRegistry
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, sys
+from redRQTCore import SearchDialog as redRSearchDialog
+from redRQTCore import lineEditHint as redRlineEditHint
+from redRQTCore import lineEdit as redRlineEdit
+from redRQTCore import widgetBox as redRwidgetBox
 import redRi18n, redRLog
 # def _(a):
     # return a
@@ -21,6 +25,7 @@ class redRCanvasToolbarandMenu():
         
         
     def initToolbar(self):
+        """Constructs the top bar above the schema"""
         self.toolbar.setObjectName('canvasToolbar')
         self.toolbar.setOrientation(Qt.Horizontal)
         if not redREnviron.settings.get("showToolbar", True): self.toolbar.hide()
@@ -65,6 +70,7 @@ class redRCanvasToolbarandMenu():
         
         
     def initMenu(self):
+        """Constructs the uppen menu where file, and help are"""
         self.menuRecent = QMenu(_("Recent Pipelines"), self.canvas)
 
         self.menuFile = QMenu(_("&File"), self.canvas)
@@ -172,6 +178,7 @@ class redRCanvasToolbarandMenu():
                     self.widgetShortcuts[key] = self.widgetRegistry[cat][widgetName]
 
     def importSchema(self):
+        """Imports a schema without clearing the schema"""
         name = QFileDialog.getOpenFileName(self.canvas, _("Import File"), redREnviron.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs *.rrts)")
         if name.isEmpty(): return
         name = unicode(name)
@@ -183,17 +190,17 @@ class redRCanvasToolbarandMenu():
         self.addToRecentMenu(unicode(name))
         
     def menuItemOpen(self):
+        """Opens a schema, clearing the current canvas unless the schema is a template."""
         name = QFileDialog.getOpenFileName(self.canvas, _("Open File"), 
         redREnviron.settings["saveSchemaDir"], "Schema or Template (*.rrs *.rrts)")
         
         if name.isEmpty(): return
         name = unicode(name)
         
-        if os.path.splitext(name)[1] == 'rrts':
-            redRSaveLoad.loadDocument(unicode(name), freeze = 0, importing = False)
+        if os.path.splitext(name)[1] == '.rrts':
+            redRSaveLoad.loadTemplate(name)
         else:
             redREnviron.settings['saveSchemaDir'] = os.path.split(unicode(name))[0]
-            
             self.canvas.schema.clear()
             redRSaveLoad.loadDocument(unicode(name), freeze = 0, importing = False)
             self.addToRecentMenu(unicode(name))
@@ -225,7 +232,7 @@ class redRCanvasToolbarandMenu():
         redRGUI.registerQTWidgets()
         
         self.canvas.createWidgetsToolbar(redRObjects.widgetRegistry())
-        self.searchBox2.setItems(redRObjects.widgetRegistry()['widgets'])
+        self.searchBox2.setItems(redRObjects.widgetRegistry()['widgets'], redRObjects.widgetRegistry()['templates'])
 
         
     def menuItemSaveAs(self):
@@ -452,11 +459,6 @@ class redRCanvasToolbarandMenu():
         #webbrowser.open("http://www.ailab.si/orange/orangeCanvas") # to be added on the web
         webbrowser.open("http://www.red-r.org")
 
-    # def menuCheckForUpdates(self):
-        # import updateOrange
-        # self.updateDlg = updateOrange.updateOrangeDlg(None, "", Qt.WDestructiveClose)
-        #redREnviron.settings['svnSettings'], redREnviron.settings['versionNumber'] = updateRedR.start(redREnviron.settings['svnSettings'], redREnviron.settings['versionNumber'], silent = False)
-        pass
     def menuItemAboutOrange(self):
         dlg = orngDlgs.AboutDlg()
         dlg.exec_()
@@ -485,87 +487,106 @@ class redRCanvasToolbarandMenu():
         else:
             QApplication.setPalette(self.originalPalette)
 
-      
-class SearchBox(redRGUI.base.lineEditHint):
-    def __init__(self, widget, label=_('Search'),orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
-        redRGUI.base.lineEditHint.__init__(self, widget = widget, label = label,displayLabel=True,
-        orientation = orientation, items = items, toolTip = toolTip, width = width, callback = self.searchCallback,
-        **args)
-        self.setStyleSheet("QLineEdit {border: 2px solid grey; border-radius: 10px; padding: 0 8px;margin-right:60px; selection-background-color: darkgray;}")
- 
-        self.searchBox = redRGUI.base.SearchDialog()
-        QObject.connect(self, SIGNAL('returnPressed()'), self.searchDialog)
-        self.caseSensitive = 0
-        self.matchAnywhere = 1
-        self.autoSizeListWidget = 1
+
+#class SearchBox(redRlineEditHint):
+    #"""Searchbox that appears at the top right of the canvas, this is where widgets and templates are searched for.
+    
+    #Searches can be for widget names or summaries taken from the registry.  Users can also search for templates.  The search bar is the primary place to load templates into the session."""
+    #def __init__(self, widget, label=_('Search'),orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
+        #redRlineEditHint.__init__(self, widget = widget, label = label,displayLabel=True,
+        #orientation = orientation, items = items, toolTip = toolTip, width = width, callback = self.searchCallback,
+        #**args)
+        #self.setStyleSheet("QLineEdit {border: 2px solid grey; border-radius: 10px; padding: 0 8px;margin-right:60px; selection-background-color: darkgray;}")
+
+        #self.searchBox = redRSearchDialog()
+        #QObject.connect(self, SIGNAL('returnPressed()'), self.searchDialog)
+        #self.caseSensitive = 0
+        #self.matchAnywhere = 1
+        #self.autoSizeListWidget = 1
         
-        widgetList = []
-        for wName, widgetInfo in redRObjects.widgetRegistry()['widgets'].items():
-            x = QListWidgetItem(QIcon(widgetInfo.icon), unicode(wName))
-            widgetList.append(x)
+        #widgetList = []
+        #for wName, widgetInfo in redRObjects.widgetRegistry()['widgets'].items():
+            #x = QListWidgetItem(QIcon(widgetInfo.icon), unicode(wName))
+            #widgetList.append(x)
             
-        self.setItems(widgetList)
+        #self.setItems(widgetList)
+        #self.setToolTip(_('Search for widgets and templates by typing directly, type !@ in the beginning to query the Red-R website.'))
             
-    def eventFilter(self, object, ev):
-        try: # a wrapper that prevents problems for the listbox debigging should remove this
-            if object != self.listWidget and object != self:
-                return 0
-            if ev.type() == QEvent.MouseButtonPress:
-                self.listWidget.hide()
-                return 1
+    #def eventFilter(self, object, ev):
+        ##try: # a wrapper that prevents problems for the listbox debigging should remove this
+            #if object != self.listWidget and object != self:
+                #return 0
+            #if ev.type() == QEvent.MouseButtonPress:
+                #self.listWidget.hide()
+                #return 1
                     
-            consumed = 0
-            if ev.type() == QEvent.KeyPress:
-                consumed = 1
-                if ev.key() in [Qt.Key_Enter, Qt.Key_Return]:
-                    # print _('Return pressed')
-                    self.doneCompletion()
-                elif ev.key() == Qt.Key_Escape:
-                    self.listWidget.hide()
-                    # self.setFocus()
-                elif ev.key() in [Qt.Key_Up, Qt.Key_Down, Qt.Key_Home, Qt.Key_End, Qt.Key_PageUp, Qt.Key_PageDown]:
+            #consumed = 0
+            #if ev.type() == QEvent.KeyPress:
+                #consumed = 1
+                #if ev.key() in [Qt.Key_Enter, Qt.Key_Return]:
+                    ## print _('Return pressed')
+                    #self.doneCompletion()
+                #elif ev.key() == Qt.Key_Escape:
+                    #self.listWidget.hide()
+                    ## self.setFocus()
+                #elif ev.key() in [Qt.Key_Up, Qt.Key_Down, Qt.Key_Home, Qt.Key_End, Qt.Key_PageUp, Qt.Key_PageDown]:
                     
-                    self.listWidget.setFocus()
-                    self.listWidget.event(ev)
-                else:
-                    # self.setFocus()
-                    self.event(ev)
-            return consumed
-        except: 
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-            return 0
+                    #self.listWidget.setFocus()
+                    #self.listWidget.event(ev)
+                #else:
+                    ## self.setFocus()
+                    #self.event(ev)
+            #return consumed
+        ##except: 
+            ##redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            ##return 0
     
         
-    def searchDialog(self):
-        if unicode(self.text()) in self.itemsAsStrings:
-            return
-        else:
-            itemText = unicode(self.text())
-            #print _('Searching ')+itemText+' on Red-R.org'
-            self.searchBox.show()
-            url = 'http://www.red-r.org/?s='+itemText
-            self.searchBox.updateUrl(url)
+    #def searchDialog(self):
+        #if '!@' in unicode(self.text())[0:2]:
+            #itemText = unicode(self.text())
+            #itemText.replace('!@', '')
+            ##print _('Searching ')+itemText+' on Red-R.org'
+            #self.searchBox.show()
+            #url = 'http://www.red-r.org/?s='+itemText
+            #self.searchBox.updateUrl(url)
+        #else:
+            #return
+        ##if unicode(self.text()) in self.itemsAsStrings:
+            ##return
+        ##else:
+            ##itemText = unicode(self.text())
+            ###print _('Searching ')+itemText+' on Red-R.org'
+            ##self.searchBox.show()
+            ##url = 'http://www.red-r.org/?s='+itemText
+            ##self.searchBox.updateUrl(url)
     
-    def searchCallback(self):
+    #def searchCallback(self):
         
-        qApp.canvasDlg.schema.addWidget(redRObjects.widgetRegistry()['widgets'][unicode(self.text())]) # add the correct widget to the schema
-        self.clear()  # clear the line edit for the next widget
-        #text = unicode(self.widgetSuggestEdit.text())
+        #if '.rrts' in unicode(self.text()):
+            #redRSaveLoad.loadTemplate(redRObjects.templateRegistry()[unicode(self.text())])
+        #else:
+            #qApp.canvasDlg.schema.addWidget(redRObjects.widgetRegistry()['widgets'][unicode(self.text())]) # add the correct widget to the schema
         
-        # if '.rrts' in text: ## this is a template, we should load this and not add the widget
-            # for action in self.templateActions:
-                # if action.templateInfo.name == text:
-                    # redRSaveLoad.loadTemplate(action.templateInfo.file)
-                    # return
-        # else: ## if there isn't a .rrts in the filename then we should proceed as normal
-            # for action in self.actions: # move through all of the actions in the actions list
-                # if action.widgetInfo.name == text: # find the widget (action) that has the correct name, note this finds the first instance.  Widget names must be unique   ??? should we allow multiple widgets with the same name ??? probably not.
-                    # self.widgetInfo = action.widgetInfo
-                    # self.canvas.schema.addWidget(action.widgetInfo) # add the correct widget to the schema
+        
+        #self.clear()  # clear the line edit for the next widget
+        ##text = unicode(self.widgetSuggestEdit.text())
+        
+        ## if '.rrts' in text: ## this is a template, we should load this and not add the widget
+            ## for action in self.templateActions:
+                ## if action.templateInfo.name == text:
+                    ## redRSaveLoad.loadTemplate(action.templateInfo.file)
+                    ## return
+        ## else: ## if there isn't a .rrts in the filename then we should proceed as normal
+            ## for action in self.actions: # move through all of the actions in the actions list
+                ## if action.widgetInfo.name == text: # find the widget (action) that has the correct name, note this finds the first instance.  Widget names must be unique   ??? should we allow multiple widgets with the same name ??? probably not.
+                    ## self.widgetInfo = action.widgetInfo
+                    ## self.canvas.schema.addWidget(action.widgetInfo) # add the correct widget to the schema
                     
-                    # self.widgetSuggestEdit.clear()  # clear the line edit for the next widget
-                    # return
-        return
+                    ## self.widgetSuggestEdit.clear()  # clear the line edit for the next widget
+                    ## return
+        #return
+        
 import re
 class myQListView(QListView):
     def __init__(self, parent=None, *args):
@@ -632,12 +653,11 @@ class HTMLDelegate(QItemDelegate):
     def flags(self, index):
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable 
 
-class SearchBox2(redRGUI.base.lineEdit):
+class SearchBox2(redRlineEdit):
     def __init__(self, widget, label=_('Search'),orientation='horizontal', items = {}, toolTip = None,  width = -1, callback = None, **args):
-        redRGUI.base.lineEdit.__init__(self, widget = widget, label = label, displayLabel=False,
+        redRlineEdit.__init__(self, widget = widget, label = label, displayLabel=False,
         orientation = orientation, toolTip = toolTip, width = width, **args)
-        QObject.connect(self, SIGNAL("textEdited(const QString &)"), self.textEdited)
-
+        
         self.setStyleSheet("QLineEdit {border: 2px solid grey; border-radius: 10px; padding: 0 8px;margin-right:60px; selection-background-color: darkgray;}")
  
         self.listWidget = myQListView()
@@ -659,7 +679,7 @@ class SearchBox2(redRGUI.base.lineEdit):
         # QObject.connect(self.listWidget, SIGNAL("itemClicked (QListWidgetItem *)"), self.doneCompletion)
         QObject.connect(self.listWidget, SIGNAL("activated ( QModelIndex )"), self.doneCompletion)
         QObject.connect(self.listWidget, SIGNAL("selectionChanged ( QItemSelection , QItemSelection ) "), self.doneCompletion)
-
+        QObject.connect(self, SIGNAL('returnPressed()'), self.doneCompletion)
         QObject.connect(self, SIGNAL("textEdited(const QString &)"), self.textEdited)
         self.enteredText = ""
         self.itemList = []
@@ -680,29 +700,49 @@ class SearchBox2(redRGUI.base.lineEdit):
         self.itemsAsStrings = []        # a list of strings that appear in the list widget
         self.itemsAsItems = {}          # can be a list of QListWidgetItems or a list of strings (the same as self.itemsAsStrings)
         
-            
-        self.setItems(redRObjects.widgetRegistry()['widgets'])
-    def setItems(self, items):
-        # print items
-        self.itemsAsItems = items
-        # print '################', type(items), items
-        # if type(items) == dict:
-        self.itemsAsStrings = [unicode('%s\n%s' %  (item.name,item.description[:self.descriptionSize])) 
-        for name,item in items.items()]
+        self.setToolTip(_('Search for widgets and templates by typing directly.\nType !@ in the beginning to query the Red-R website.'))
+        self.setItems(redRObjects.widgetRegistry()['widgets'], redRObjects.widgetRegistry()['templates'])
+    def setItems(self, widgetitems, templateitems):
+        
+        print 'templates', templateitems
+        try:
+            self.itemsAsItems = widgetitems
+            self.templateItemsAsItems = [temp[1] for temp in templateitems]
+            # print '################', type(items), items
+            # if type(items) == dict:
+            self.itemsAsStrings = [unicode('%s\n%s' %  (item.name,item.description[:self.descriptionSize])) 
+                for name,item in widgetitems.items()]
+            self.templateItemsAsStrings = [unicode('%s\n%s' %  (item[1].name,item[1].description[:self.descriptionSize])) 
+                for item in templateitems]
+        except Exception as inst:
+            print unicode(inst)
+            mb = QMessageBox(QMessageBox.Information, _("Registry Error"), _("Your registry does not conform to Red-R registry settings.\n\nThis is compleatly normal if you have recently updated Red-R.\n\nThe system will now refresh your registry which should fix this problem.  You may need to restart Red-R for these changes to take effect.\n\nThanks, The Red-R Core Development Team."), 
+                 buttons = QMessageBox.Ok | QMessageBox.Default)
+            mb.exec_()
+            orngRegistry.readCategories(force = True)
     def updateSuggestedItems(self):
+        """Updates the items dropdown to show widgets and templates that match the search."""
         self.listWidget.setUpdatesEnabled(0)
         self.model.clear()
         last = self.getLastTextItem()
-        
-        tuples = zip(self.itemsAsStrings, self.itemsAsItems.values())
-        
+        """There is a hook  to ignore the processing and clear the model if the text begins with the search modifier !@"""
+        if '!@' in last[0]:
+            return
+            
+        tuples = zip(self.itemsAsStrings, self.itemsAsItems.values(), ['w']*len(self.itemsAsStrings))
+        tuples += zip(self.templateItemsAsStrings, self.templateItemsAsItems, ['t']*len(self.templateItemsAsStrings))
+        #print zip(self.templateItemsAsStrings, self.templateItemsAsItems, ['t']*len(self.templateItemsAsStrings))
         if not self.caseSensitive:
-            tuples = [(text.lower(), item) for (text, item) in tuples]
+            tuples = [(text.lower(), item, c) for (text, item, c) in tuples]
             last = [l.lower() for l in last]
         
         for i in last:
+            """Search each of the tuples for the presence of i in the text.  
+            
+            Because this is a restrictive list (effectively each term is joined by AND we recursively remove items if each search term is not in the text)."""
             if len(i) == 0: continue
-            tuples = [(text, item) for (text, item) in tuples if i in text]
+            tuples = [(text, item, c) for (text, item, c) in tuples if i in text]
+            
         ################### old block ###################
         # self.listWidget.setUpdatesEnabled(0)
         # self.model.clear()
@@ -715,6 +755,8 @@ class SearchBox2(redRGUI.base.lineEdit):
             
         # tuples = [(text, item) for (text, item) in tuples if last in text]
         ################## end old block ########################
+        
+        """Once the tuples are formatted for searching we populate the listbox."""
         if tuples:
             if len(tuples) > self.maxResults:       # collect only the max results number of records.
                 tuples = tuples[0:self.maxResults]
@@ -723,15 +765,23 @@ class SearchBox2(redRGUI.base.lineEdit):
             p =  '(%s)' % '|'.join(last)
             pattern = re.compile(p, re.IGNORECASE)
             
-            for (text, widgetInfo) in tuples:
-                
-                name = pattern.sub(r'<b>\1</b>', widgetInfo.name)
-                description = pattern.sub(r'<b>\1</b>', widgetInfo.description[:self.descriptionSize])
-                theText = unicode('%s (%s)<br>%s' % (name,widgetInfo.packageName,description))
-                self.model.listdata.append((theText,widgetInfo))
-                x = QStandardItem(QIcon(widgetInfo.icon), theText)
-                x.widgetInfo = widgetInfo
-                self.model.appendRow(x)
+            for (text, info, c) in tuples:
+                if c == 'w':
+                    name = pattern.sub(r'<b>\1</b>', info.name)
+                    description = pattern.sub(r'<b>\1</b>', info.description[:self.descriptionSize])
+                    theText = unicode('%s (%s)<br>%s' % (name,info.packageName,description))
+                    self.model.listdata.append((theText,info, c))
+                    x = QStandardItem(QIcon(info.icon), theText)
+                    #x.info = (info, c)
+                    self.model.appendRow(x)
+                elif c == 't':
+                    name = pattern.sub(r'<b>\1</b>', info.name)
+                    description = pattern.sub(r'<b>\1</b>', info.description[:self.descriptionSize])
+                    theText = unicode('%s <br>%s' % (name,description))
+                    self.model.listdata.append((theText,info, c))
+                    x = QStandardItem(QIcon(info.icon), theText)
+                    #x.info = (info, c)
+                    self.model.appendRow(x)
             selectionModel = self.listWidget.selectionModel()
             selectionModel.setCurrentIndex(self.model.index(0,0),QItemSelectionModel.ClearAndSelect)
             
@@ -750,44 +800,22 @@ class SearchBox2(redRGUI.base.lineEdit):
         
         if self.listUpdateCallback:
             self.listUpdateCallback()
-    def doneCompletion(self, *args):
-        if self.listWidget.isVisible():
-            widgetInfo = self.model.listdata[self.listWidget.selectedIndexes()[0].row()][1]
-            self.setText(unicode(widgetInfo.name))
-            self.listWidget.hide()
-            self.setFocus()
-            
-        if self.callbackOnComplete:
-            QTimer.singleShot(0, lambda:self.callbackOnComplete(widgetInfo))
+    
               
     def textEdited(self):
         if len(self.getLastTextItem()) == 0:
             self.listWidget.hide()
         else:
             self.updateSuggestedItems()
-        ###########################  old code  #########################
-        # if we haven't typed anything yet we hide the list widget
-        # if self.getLastTextItem() == "" or len(unicode(self.text())) < self.minTextLength:
-            # self.listWidget.hide()
-        # else:
-            # self.updateSuggestedItems()
     
     def getLastTextItem(self):  ## returns a string of the entered text.
         text = unicode(self.text())
         if len(text) == 0: return []
         if not self.delimiters: return [unicode(self.text())]     # if no delimiters, return full text
         return text.split(self.delimiters)
-        # if text[-1] in self.delimiters: return ""
-        # return text.translate(self.translation).split(self.delimiters[0])[-1]       # last word that we want to help to complete
-        ###########################  old code  #########################
-        # text = unicode(self.text())
-        # if len(text) == 0: return ""
-        # if not self.delimiters: return unicode(self.text())     # if no delimiters, return full text
-        # if text[-1] in self.delimiters: return ""
-        # return text.translate(self.translation).split(self.delimiters[0])[-1]       # last word that we want to help to complete
    
     def eventFilter(self, object, ev):
-        try: # a wrapper that prevents problems for the listbox debigging should remove this           
+        try: # a wrapper that prevents problems for the listbox debigging should remove this 
             if object != self.listWidget and object != self:
                 return 0
             if ev.type() == QEvent.MouseButtonPress:
@@ -798,7 +826,6 @@ class SearchBox2(redRGUI.base.lineEdit):
             if ev.type() == QEvent.KeyPress:
                 consumed = 1
                 if ev.key() in [Qt.Key_Enter, Qt.Key_Return]:
-                    # print _('Return pressed')
                     self.doneCompletion()
                 elif ev.key() == Qt.Key_Escape:
                     self.listWidget.hide()
@@ -815,20 +842,47 @@ class SearchBox2(redRGUI.base.lineEdit):
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             return 0
         
-    def searchDialog(self):
-        if unicode(self.text()) in self.itemsAsStrings:
-            return
-        else:
-            itemText = unicode(self.text())
-            #print _('Searching ')+itemText+' on Red-R.org'
-            self.searchBox.show()
-            url = 'http://www.red-r.org/?s='+itemText
-            self.searchBox.updateUrl(url)
-    
-    def searchCallback(self,widgetInfo):
-        print widgetInfo
+    def doneCompletion(self, *args):
+        """Sets the search bar when the return or enter key is pressed.
         
-        redRObjects.addWidget(redRObjects.widgetRegistry()['widgets'][widgetInfo.fileName]) # add the correct widget to the schema
+        This function gets the widgetInfo from the model and, hides the listWidget and calls the callbackOnComplete (searchCallback by default)"""
+        
+        if self.listWidget.isVisible():
+            widgetInfo, c = self.model.listdata[self.listWidget.selectedIndexes()[0].row()][1:]
+            self.setText(unicode(widgetInfo.name))
+            self.listWidget.hide()
+            self.setFocus()
+            
+            if self.callbackOnComplete:
+                QTimer.singleShot(0, lambda:self.callbackOnComplete(widgetInfo, c))
+                
+        elif '!@' in unicode(self.text()):
+            import webbrowser
+            itemText = unicode(self.text())
+            itemText = itemText.replace('!@', '').strip()
+            #print _('Searching ')+itemText+' on Red-R.org'
+            #self.searchBox.show()
+            url = 'http://www.red-r.org/search/node/%s' % itemText
+            #self.searchBox.updateUrl(url)
+            webbrowser.open(url)
+        self.listWidget.hide()
+        
+    #def searchDialog(self):
+        #if unicode(self.text()) in self.itemsAsStrings:
+            #return
+        #else:
+            #itemText = unicode(self.text())
+            ##print _('Searching ')+itemText+' on Red-R.org'
+            #self.searchBox.show()
+            #url = 'http://www.red-r.org/?s='+itemText
+            #self.searchBox.updateUrl(url)
+    
+    def searchCallback(self,info, c):
+        """The default search callback, this is run when the return or enter key is pressed after passing through the doneCompletion argument"""
+        if c == 't':
+            redRSaveLoad.loadTemplate(info.file)
+        elif c == 'w':
+            redRObjects.addWidget(redRObjects.widgetRegistry()['widgets'][widgetInfo.fileName]) # add the correct widget to the schema
         self.clear()  # clear the line edit for the next widget
         return
         #text = unicode(self.widgetSuggestEdit.text())

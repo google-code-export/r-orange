@@ -126,6 +126,20 @@ def makeTemplate(filename, copy = False):
     if not copy:
         tempDialog = TemplateDialog()
         tempDialog.exec_()
+        tempdoc = Document() ## generates the main document type.
+        tempXML = tempdoc.createElement("TemplateXML")
+        saveTagsList = tempdoc.createElement("TagsList")
+        saveDescription = tempdoc.createElement("saveDescription")
+        tempXML.appendChild(saveTagsList)
+        tempXML.appendChild(saveDescription)
+        
+        taglist = unicode(tempDialog.tagsList.text())
+        tempDescription = unicode(tempDialog.descriptionEdit.toPlainText())
+        
+        saveTagsList.setAttribute("tagsList", taglist)
+        saveDescription.setAttribute("tempDescription", tempDescription)
+        tempdoc.appendChild(tempXML)
+        print tempdoc.toprettyxml()
     activeIcons = collectIcons()
     
     progressBar = startProgressBar(
@@ -162,13 +176,7 @@ def makeTemplate(filename, copy = False):
     file = open(os.path.join(redREnviron.directoryNames['tempDir'], 'settings.pickle'), "wt")
     file.write(unicode(settingsDict))
     file.close()
-    
-    if not copy:
-        taglist = unicode(tempDialog.tagsList.text())
-        tempDescription = unicode(tempDialog.descriptionEdit.toPlainText())
-        saveTagsList.setAttribute("tagsList", taglist)
-        saveDescription.setAttribute("tempDescription", tempDescription)
-        
+  
     xmlText = doc.toprettyxml()
     progress += 1
     progressBar.setValue(progress)
@@ -181,8 +189,13 @@ def makeTemplate(filename, copy = False):
     zout = zipfile.ZipFile(filename, "w")
     zout.write(tempschema,"tempSchema.tmp")
     zout.write(os.path.join(redREnviron.directoryNames['tempDir'], 'settings.pickle'),'settings.pickle')
+    if not copy:
+        with open(os.path.join(redREnviron.directoryNames['tempDir'], 'template.xml'), 'w') as f:
+            f.write(tempdoc.toprettyxml())
+        zout.write(os.path.join(redREnviron.directoryNames['tempDir'], 'template.xml'), 'template.xml')
     zout.close()
     doc.unlink()
+    
     if copy:
         loadTemplate(filename)
         
