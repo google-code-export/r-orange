@@ -160,6 +160,7 @@ def makeFiles():
             # with open(os.path.join(qtHelp, '%s.html' % s), 'w') as h:
                 # h.write(output)
     
+    
     ## make the index files
     makeIndex(nd)
     

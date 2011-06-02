@@ -194,6 +194,7 @@ def parseWidgetFile(filename, outputXML, outputHelp):
     print 'Success for %s' % filename
     return d['name']
     
+    
 def makeXML(d):
     """Makes an xml file as plain text"""
     """make the header"""
