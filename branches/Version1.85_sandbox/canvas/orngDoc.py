@@ -64,7 +64,7 @@ class SchemaDoc(QWidget):
         #self.canvas = QGraphicsScene(0,0,2000,2000)
         
         
-        self.widgetPopupMenu = CanvasPopup(self)
+        #self.widgetPopupMenu = CanvasPopup(self)
         
         
         self.instances = {}
@@ -732,6 +732,7 @@ class NewTabDialog(QDialog):
         buttonWidgetBox.layout().addWidget(cancelButton)
         QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
         QObject.connect(cancelButton, SIGNAL("clicked()"), self.reject)
+        
 class TemplateDialog(QDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
@@ -895,7 +896,7 @@ class CanvasPopup(QMenu):
         for template in redRObjects.widgetRegistry()['templates']:
             try:
                 icon = QIcon(os.path.join(redREnviron.directoryNames['picsDir'], 'Default.png'))
-                act = catmenu.addAction(icon, template.name)
+                act = catmenu.addAction(icon, template[1].name)
                 act.templateInfo = template
                 self.templateActions.append(act)
             except Exception as inst:

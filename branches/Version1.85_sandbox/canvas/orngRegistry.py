@@ -118,8 +118,8 @@ def readCategories(force = True):
 
     allTemplates = []
     for dirName, directory, plugin in directories:
-        templates = readTemplates(os.path.join(directory,'templates')) # a function to read in the templates that are in the directories
-        allTemplates += templates
+        allTemplates += readTemplates(os.path.join(directory,'templates')) # a function to read in the templates that are in the directories
+         #+= templates
         #print templates
         
     allTemplates += readTemplates(redREnviron.directoryNames['templatesDir'])
@@ -210,9 +210,9 @@ def getXMLText(nodelist):
     return rc
 
 def readWidgets(directory, package):
-    """Read widgets from a package.
+    """This function makes the widgets categories in the categories dict.  All .py files in the widgets dir of the package are cataloged into the registry.
     
-    All .py files are compiled in the directory and then registered using the meta tags.  Developers should make a valid meta file for each widget.  If the meta file does not exist there is an opportunity to add one if the exception output level is set to devel.  In not then the widget will not appear on the tree and you will be really confused!!!    
+    All widgets are compiled at this time.
     """
     import sys, imp
     global hasErrors, splashWindow, widgetsWithError
@@ -232,7 +232,7 @@ def readWidgets(directory, package):
         
         dirname, fname = os.path.split(filename)
         widgetName = os.path.splitext(fname)[0]
-        widgetID = unicode(package['Name']+'_'+os.path.split(filename)[1].split('.')[0])
+        widgetID = unicode(package['Name']+'_'+widgetName)
         
         widgetMetaData = {}
         metaFile = os.path.join(directory,'meta','widgets',widgetName+'.xml')
@@ -306,16 +306,11 @@ def readWidgets(directory, package):
             sys.path.append(dirname)
         # print widgetName, 'redREnviron' in sys.modules.keys()
         try:
-            wmod = imp.load_source(package['Name'] + '_' + widgetName, filename)
+            wmod = imp.load_source(widgetID, filename)
         except Exception, msg:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('Exception occurred in <b>%s: %s<b>') % (filename, msg))
             redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, redRLog.formatException())
             continue
-        
-        # __import__('libraries.' + package['Name'] + '.widgets.' + widgetName)
-        #wmod.__dict__['widgetFilename'] = filename
-        # if not dirnameInPath and dirname in sys.path: # I have no idea, why we need this, but it seems to disappear sometimes?!
-            # sys.path.remove(dirname)
         
         widgetInfo = WidgetDescription(
                      name = widgetMetaData['name'],
@@ -332,25 +327,26 @@ def readWidgets(directory, package):
      
         widgetInfo.tooltipText = "<b>%s</b><br />%s" % (widgetInfo.name, widgetInfo.description)
 
-        if len(widgetInfo.inputs):
-            widgetInfo.tooltipText +='<hr><b>Inputs</b><dl>'
-            for x in widgetInfo.inputs:
-                widgetInfo.tooltipText +='<dt>%s</dt><dd>%s</dd>' % x
-            widgetInfo.tooltipText +='</dl>'
-        else:
-            widgetInfo.tooltipText +='<hr><b>Inputs</b><dl>'
-            widgetInfo.tooltipText +='<dt>None</dt><dd></dd>' 
-            widgetInfo.tooltipText +='</dl>'
+        ### inputs not yet working with the widet xml will include at a later time.
+        #if len(widgetInfo.inputs):
+            #widgetInfo.tooltipText +='<hr><b>Inputs</b><dl>'
+            #for x in widgetInfo.inputs:
+                #widgetInfo.tooltipText +='<dt>%s</dt><dd>%s</dd>' % x
+            #widgetInfo.tooltipText +='</dl>'
+        #else:
+            #widgetInfo.tooltipText +='<hr><b>Inputs</b><dl>'
+            #widgetInfo.tooltipText +='<dt>None</dt><dd></dd>' 
+            #widgetInfo.tooltipText +='</dl>'
 
-        if len(widgetInfo.outputs):
-            widgetInfo.tooltipText +='<hr><b>Outputs</b><dl>'
-            for x in widgetInfo.outputs:
-                widgetInfo.tooltipText +='<dt>%s</dt><dd>%s</dd>' % x
-            widgetInfo.tooltipText +='</dl>'
-        else:
-            widgetInfo.tooltipText +='<hr><b>Inputs</b><dl>'
-            widgetInfo.tooltipText +='<dt>None</dt><dd></dd>' 
-            widgetInfo.tooltipText +='</dl>'
+        #if len(widgetInfo.outputs):
+            #widgetInfo.tooltipText +='<hr><b>Outputs</b><dl>'
+            #for x in widgetInfo.outputs:
+                #widgetInfo.tooltipText +='<dt>%s</dt><dd>%s</dd>' % x
+            #widgetInfo.tooltipText +='</dl>'
+        #else:
+            #widgetInfo.tooltipText +='<hr><b>Inputs</b><dl>'
+            #widgetInfo.tooltipText +='<dt>None</dt><dd></dd>' 
+            #widgetInfo.tooltipText +='</dl>'
 
             
         widgetInfo.icon = os.path.join(redREnviron.directoryNames['libraryDir'], widgetInfo.packageName,'icons', widgetInfo.icon)
@@ -368,6 +364,7 @@ def readTemplates(directory):
     """Reads the templates that are availabel in the package specified by directory."""
     
     import sys, imp
+    import zipfile
     global hasErrors, splashWindow, widgetsWithError
     
     # print '################readWidgets', directory, package
@@ -375,26 +372,37 @@ def readTemplates(directory):
     for filename in glob.iglob(os.path.join(directory, "*.rrts")):
         if os.path.isdir(filename) or os.path.islink(filename):
             continue  # protects from a direcoty that has .rrs in it I guess
-
+        print filename
         dirname, fname = os.path.split(filename)
         # dirname, package = os.path.split(dirname)
         templateName = fname
         #widgetName = package + '_' + widget
         try:
-            if not splashWindow:
-                import redREnviron
-                logo = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
-                splashWindow = QSplashScreen(logo, Qt.WindowStaysOnTopHint)
-                splashWindow.setMask(logo.mask())
-                splashWindow.show()
-                
-            splashWindow.showMessage("Registering template %s" % templateName, Qt.AlignHCenter + Qt.AlignBottom)
+            # make a zipfile and then extract the template xml from it, then we can parse the template xml and set up the registry.
+            tempZip = zipfile.ZipFile(filename)
+            if 'template.xml' not in tempZip.namelist():
+                print 'no template.xml in %s, atts are %s' % (filename, unicode(tempZip.namelist()))
+                continue # these templates will not work with the current settings.
+            
+            tempXML = xml.dom.minidom.parseString(tempZip.read('template.xml'))
+            description = tempXML.getElementsByTagName('saveDescription')[0].getAttribute('tempDescription')
+            #if not splashWindow:
+                #import redREnviron
+                #logo = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
+                #splashWindow = QSplashScreen(logo, Qt.WindowStaysOnTopHint)
+                #splashWindow.setMask(logo.mask())
+                #splashWindow.show()
             qApp.processEvents()
-            templateInfo = TemplateDescription(name = templateName, file = filename) 
-            templates.append(templateInfo)
+            templateInfo = TemplateDescription(name = templateName, file = filename, description = description, icon = os.path.join(redREnviron.directoryNames['canvasIconsDir'],'dialog-information.png'))
+            
+            templates.append((filename, templateInfo))
+            
+            if splashWindow:    
+                splashWindow.showMessage("Registering template %s" % templateName, Qt.AlignHCenter + Qt.AlignBottom)
+            
         except Exception, msg:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
-        
+    print 'templates are ', templates
     return templates
 def loadPackage(package):
     """Loads a Red-R package.  This will also ensure that dependencies are fulfilled for each package."""

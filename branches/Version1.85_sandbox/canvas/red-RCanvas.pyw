@@ -330,53 +330,56 @@ class OrangeCanvasDlg(QMainWindow):
 #         qtsettings.setValue("geometry", saveGeometry())
 #         qtsettings.setValue("windowState", saveState())
         
-        
-        redREnviron.settings["geometry"] = self.saveGeometry()
-        redREnviron.settings["windowState"] = self.saveState()
-        redREnviron.settings['pos'] = self.pos()
-        redREnviron.settings['size'] = self.size()
+        try:
+            #ce.accept()
+            redREnviron.settings["geometry"] = self.saveGeometry()
+            redREnviron.settings["windowState"] = self.saveState()
+            redREnviron.settings['pos'] = self.pos()
+            redREnviron.settings['size'] = self.size()
 
-        
-        
-        redREnviron.saveSettings()
-        # closed = self.schema.close()
-        if redREnviron.settings['dontAskBeforeClose']:
-            res = QMessageBox.No
-        else:
-            res = QMessageBox.question(self, _('Red-R Canvas'),_('Do you wish to save the schema?'), QMessageBox.Yes, QMessageBox.No, QMessageBox.Cancel)
-        
-        if res == QMessageBox.Yes:
-            self.RVariableRemoveSupress = 1
-            saveComplete = self.schema.saveDocument()
-            closed=True
-        elif res == QMessageBox.No:
-            closed=True
-        else:
-            closed=False
-    
-        if closed:
-            if postCloseFun:
-                print 'asdfasdfasfd'
-                r = postCloseFun()
-                print 'a', r
-            self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
-            redRObjects.closeAllWidgets() # close all the widget first so their global data is saved
-            import shutil
-            shutil.rmtree(redREnviron.directoryNames['tempDir'], True) # remove the tempdir, better hope we saved everything we wanted.
-            # close the entire session dropping anything that was open in case it was left by something else, 
-            # makes the closing much cleaner than just loosing the session.
             
-            redRHistory.saveConnectionHistory()
-            redRLog.fileLogger.closeLogFile()
-            #redRLog.closeLogger()
-            ce.accept()
-            QMainWindow.closeEvent(self,ce)
             
+            redREnviron.saveSettings()
+            # closed = self.schema.close()
+            if redREnviron.settings['dontAskBeforeClose']:
+                res = QMessageBox.No
+            else:
+                res = QMessageBox.question(self, _('Red-R Canvas'),_('Do you wish to save the schema?'), QMessageBox.Yes, QMessageBox.No, QMessageBox.Cancel)
+            
+            if res == QMessageBox.Yes:
+                self.RVariableRemoveSupress = 1
+                #saveComplete = 
+                closed=redRSaveLoad.saveDocument()
+            elif res == QMessageBox.No:
+                closed=True
+            else:
+                closed=False
+        
+            if closed:
+                if postCloseFun:
+                    print 'asdfasdfasfd'
+                    r = postCloseFun()
+                    print 'a', r
+                self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
+                redRObjects.closeAllWidgets() # close all the widget first so their global data is saved
+                import shutil
+                shutil.rmtree(redREnviron.directoryNames['tempDir'], True) # remove the tempdir, better hope we saved everything we wanted.
+                # close the entire session dropping anything that was open in case it was left by something else, 
+                # makes the closing much cleaner than just loosing the session.
+                
+                redRHistory.saveConnectionHistory()
+                redRLog.fileLogger.closeLogFile()
+                #redRLog.closeLogger()
+                ce.accept()
+                QMainWindow.closeEvent(self,ce)
+                
 
-        else:
+            else:
+                ce.ignore()
+        except Exception as inst:
+            redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL, 'Error closing session %s' % unicode(inst))
             ce.ignore()
         
-    
         
 class RedRQApplication(QApplication):
     def __init__(self, *args):

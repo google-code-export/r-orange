@@ -67,7 +67,7 @@ class readFile(OWRpy):
         buttons = [_('Text'), _('Excel'), _('Clipboard')], setChecked=_('Text'),callback=self.scanNewFile,
         orientation='horizontal')
         #self.fileType.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Preferred)
-        self.fileType.hide()
+        #self.fileType.hide()
 
         
         self.delimiter = redRGUI.base.radioButtons(options, label=_('Column Seperator'),
@@ -157,10 +157,10 @@ class readFile(OWRpy):
         import sys
         if sys.platform=="win32":
             self.require_librarys(['RODBC'])
-            self.setForExcel()
+            #self.setForExcel()
 
-    def setForExcel(self):
-        self.fileType.show()
+    #def setForExcel(self):
+        #self.fileType.show()
     def otherSep(self,text):
         self.delimiter.setChecked('other')
         

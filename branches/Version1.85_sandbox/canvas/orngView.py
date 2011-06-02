@@ -203,7 +203,9 @@ class SchemaView(QGraphicsView):
         if self.widgetSelectionRect:
             self.widgetSelectionRect.hide()
             self.widgetSelectionRect = None
-        if not self.controlHeld:
+        #print ev.modifiers()
+        if not ev.modifiers() == Qt.ControlModifier:
+        #if not self.controlHeld:
             self.unselectAllWidgets()  ## should clear the selections ahead of time KRC
         # do we start drawing a connection line
         if ev.button() == Qt.LeftButton:
@@ -251,7 +253,7 @@ class SchemaView(QGraphicsView):
                 # did we click inside the boxes to draw connections
                 if ev.button() == Qt.LeftButton:
                     self.bWidgetDragging = True
-                    if self.doc.ctrlPressed:
+                    if ev.modifiers() == Qt.ControlModifier:
                         activeItem.setSelected(not activeItem.isSelected())
                     elif activeItem.isSelected() == 0:
                         self.unselectAllWidgets()
@@ -346,35 +348,37 @@ class SchemaView(QGraphicsView):
                      QMessageBox.information( self, _("Red-R Canvas"), _("Unable to connect widgets while signal processing is in progress. Please wait."))
                 else:
                     self.doc.addLine(start, end)
-            else:
-                state = [self.doc.widgets()[i].widgetInfo.name for i in range(min(len(self.doc.widgets()), 5))]
+            #else:
+                ##state = [self.doc.widgets()[i].widgetInfo.name for i in range(min(len(self.doc.widgets()), 5))]
+                ##predictedWidgets = orngHistory.predictWidgets(state, 20)
 
-                newCoords = QPoint(ev.globalPos())
-                self.doc.widgetPopupMenu.updateMenu()
-                action = self.doc.widgetPopupMenu.exec_(newCoords- QPoint(0, self.doc.widgetPopupMenu.categoriesYOffset))
-                if action and hasattr(action, "widgetInfo"):
-                    xOff = -48 * bool(end)
-                    newWidget = self.doc.addWidget(action.widgetInfo, point.x()+xOff, point.y()-24)
-                    if newWidget != None:
-                        nw = redRObjects.getWidgetByIDActiveTabOnly(newWidget)
-                        if self.doc.signalManager.signalProcessingInProgress:
-                            QMessageBox.information( self, _("Red-R Canvas"), _("Unable to connect widgets while signal processing is in progress. Please wait."))
-                        else:
-                            self.doc.addLine(start or nw, end or nw)
+                #newCoords = QPoint(ev.globalPos())
+                #self.doc.widgetPopupMenu.updateMenu()
+                #action = self.doc.widgetPopupMenu.exec_(newCoords- QPoint(0, self.doc.widgetPopupMenu.categoriesYOffset))
+                #if action and hasattr(action, "widgetInfo"):
+                    #xOff = -48 * bool(end)
+                    #newWidget = self.doc.addWidget(action.widgetInfo, point.x()+xOff, point.y()-24)
+                    #if newWidget != None:
+                        #nw = redRObjects.getWidgetByIDActiveTabOnly(newWidget)
+                        #if self.doc.signalManager.signalProcessingInProgress:
+                            #QMessageBox.information( self, _("Red-R Canvas"), _("Unable to connect widgets while signal processing is in progress. Please wait."))
+                        #else:
+                            #self.doc.addLine(start or nw, end or nw)
 
-        elif ev.button() == Qt.RightButton:
-            activeItem = self.scene().itemAt(point)
-            diff = self.mouseDownPosition - point
-            if not activeItem and (diff.x()**2 + diff.y()**2) < 25:     # if no active widgets and we pressed and released mouse at approx same position
-                newCoords = QPoint(ev.globalPos())
-                self.doc.widgetPopupMenu.showAllWidgets()
-                state = [self.doc.widgets()[i].widgetInfo.name for i in range(min(len(self.doc.widgets()), 5))]
-                #self.doc.widgetPopupMenu.updatePredictedWidgets(predictedWidgets, 'inputClasses')
-                self.doc.widgetPopupMenu.updateMenu()
-                height = sum([self.doc.widgetPopupMenu.actionGeometry(action).height() for action in self.doc.widgetPopupMenu.actions()])
-                action = self.doc.widgetPopupMenu.exec_(newCoords - QPoint(0, self.doc.widgetPopupMenu.categoriesYOffset))
-                if action and hasattr(action, "widgetInfo"):
-                    newWidget = self.doc.addWidget(action.widgetInfo, point.x(), point.y())
+        #elif ev.button() == Qt.RightButton:
+            #activeItem = self.scene().itemAt(point)
+            #diff = self.mouseDownPosition - point
+            #if not activeItem and (diff.x()**2 + diff.y()**2) < 25:     # if no active widgets and we pressed and released mouse at approx same position
+                #newCoords = QPoint(ev.globalPos())
+                #self.doc.widgetPopupMenu.showAllWidgets()
+                ##state = [self.doc.widgets()[i].widgetInfo.name for i in range(min(len(self.doc.widgets()), 5))]
+                ##predictedWidgets = orngHistory.predictWidgets(state, 20)
+                ##self.doc.widgetPopupMenu.updatePredictedWidgets(predictedWidgets, 'inputClasses')
+                #self.doc.widgetPopupMenu.updateMenu()
+                #height = sum([self.doc.widgetPopupMenu.actionGeometry(action).height() for action in self.doc.widgetPopupMenu.actions()])
+                #action = self.doc.widgetPopupMenu.exec_(newCoords - QPoint(0, self.doc.widgetPopupMenu.categoriesYOffset))
+                #if action and hasattr(action, "widgetInfo"):
+                    #newWidget = self.doc.addWidget(action.widgetInfo, point.x(), point.y())
                     
 
         self.scene().update()
