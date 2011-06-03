@@ -1,3 +1,16 @@
+"""redRSaveLoad
+
+This module handles saving and loading of schemas, templates, and pipelines in the Red-R framework.
+
+Not surprisingly, the saved files are actually zip files that are unpacked by Red-R to instantiate the schema.
+
+The critical components of the saved files are the:
+settings.pickle file; a file of settings for each widget
+tempSchema.tmp; schema settings and structure
+tmp.RData; saved R data image of the session
+
+"""
+
 ## <redRSaveLoad Module.  This module (not a class) will contain and provide functions for loading and saving of objects.  The module will make great use of the redRObjects module to access and instantiate objects.>
     # Copyright (C) 2010 Kyle R Covington
 
@@ -382,6 +395,18 @@ def loadTemplate(filename, caption = None, freeze = 0):
     loadDocument(filename = filename, caption = caption, freeze = freeze)
 
 def loadDocument(filename, caption = None, freeze = 0, importing = 0):
+    if not os.path.exists(filename):
+        mb = QMessageBox(QMessageBox.Information, _("File Location Error"), 
+_("""The file that you attempted to load can't be found.
+This can happen if you moved the location of the file.
+
+If you were loading a template please use the refresh registry button
+(green and red arrows forming a circle) to resolve this.
+
+If you were loading a file from the quick bar, please try loading using "Open"."""), 
+                 buttons = QMessageBox.Ok | QMessageBox.Default)
+        mb.exec_()
+        return
     global _schemaName
     global schemaPath
     global globalNotes

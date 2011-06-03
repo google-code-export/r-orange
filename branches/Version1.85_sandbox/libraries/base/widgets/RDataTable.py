@@ -268,7 +268,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
             sep  = ' '
         #use the R function if the parent of the dict is an R object.
         if type(self.data) in [str, unicode]:
-            self.R('write.table('+self.data+',file="'+unicode(name)+'", quote = FALSE, sep="'+sep+'")', wantType = 'NoConversion')
+            self.R('write.table('+self.data+',file="'+unicode(name)+'", quote = FALSE, col.names = NA, sep="'+sep+'")', wantType = 'NoConversion')
         else:  # We write the file ourselves
             if self.dataParent:
                 string = ''
