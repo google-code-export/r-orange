@@ -387,7 +387,7 @@ class OrangeCanvasDlg(QMainWindow):
             else:
                 ce.ignore()
         except Exception as inst:
-            redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL, 'Error closing session %s' % unicode(inst))
+            redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL, 'Error closing session: %s' % unicode(inst))
             ce.ignore()
         
         

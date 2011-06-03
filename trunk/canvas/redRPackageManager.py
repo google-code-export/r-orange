@@ -9,7 +9,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtNetwork import *
 
 import xml.dom.minidom
-import redRGUI, re 
+import redRQTCore, re 
 import orngRegistry
 import pprint
 import xml.etree.ElementTree as etree
@@ -18,21 +18,48 @@ import redRi18n
     # return a
 _ = redRi18n.Coreget_()
 
+## moves through the local package file and returns a dict of packages with version, stability, update date, etc
+def getInstalledPackages():
+    """Accessory function used by this and other modules to check for available packages on this installation and on the repository.  
+    
+    Returns a dict of packages with version, stability and updat date.
+    """
+    packageDict = {}
+    for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
+        if not (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
+        and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
+            continue
+
+        packageXML = readXML(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))
+        
+        packageDict[package] = orngRegistry.parsePackageXML(packageXML)
+        
+    
+    # pp = pprint.PrettyPrinter(indent=4)
+    # pp.pprint(packageDict)
+    return packageDict
+        
+def readXML(fileName):
+    with open(fileName, 'r') as f:
+        #print fileName
+        mainTabs = xml.dom.minidom.parse(f)
+    
+    return mainTabs
 ## packageManager class handles package functions such as resolving rrp's resolving dependencies, appending packages to the package xml or any function that remotely has to do with handling packages
-class packageManager(redRGUI.base.dialog):
+class packageManager(redRQTCore.dialog):
     def __init__(self,canvas):
         # self.urlOpener = urllib.FancyURLopener()
         self.repository = 'http://www.red-r.org/repository/Red-R-' + redREnviron.version['REDRVERSION'] 
         self.version = redREnviron.version['REDRVERSION']
         self.availablePackages = self.getPackages()
-        redRGUI.base.dialog.__init__(self,canvas, title = _('Package Manager'))
+        redRQTCore.dialog.__init__(self,canvas, title = _('Package Manager'))
         self.canvas = canvas
         self.setMinimumWidth(700)
         
         ## GUI ##
-        self.controlArea = redRGUI.base.widgetBox(self)
+        self.controlArea = redRQTCore.widgetBox(self)
         #### layout of the tabsArea
-        self.treeViewUpdates = redRGUI.base.treeWidget(self.controlArea, label=_('Package List'), displayLabel=False, 
+        self.treeViewUpdates = redRQTCore.treeWidget(self.controlArea, label=_('Package List'), displayLabel=False, 
         callback = self.updateItemClicked)
 
         # holds the tree view of all of the packages that need updating
@@ -49,15 +76,15 @@ class packageManager(redRGUI.base.dialog):
           
         #self.treeViewUpdates.setSelectionModel(QItemSelectModel.Rows)
         self.treeViewUpdates.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.infoViewUpdates = redRGUI.base.textEdit(self.controlArea, label=_('Update Info'), displayLabel=False)  ## holds the         
+        self.infoViewUpdates = redRQTCore.textEdit(self.controlArea, label=_('Update Info'), displayLabel=False)  ## holds the         
         #### buttons and the like
-        buttonArea2 = redRGUI.base.widgetBox(self,orientation = 'horizontal')
-        redRGUI.base.button(buttonArea2, _('Install'), callback = self.installUpdates)
-        redRGUI.base.button(buttonArea2, _('Delete'), callback = self.uninstallPackages)
-        redRGUI.base.widgetBox(buttonArea2, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
+        buttonArea2 = redRQTCore.widgetBox(self,orientation = 'horizontal')
+        redRQTCore.button(buttonArea2, _('Install'), callback = self.installUpdates)
+        redRQTCore.button(buttonArea2, _('Delete'), callback = self.uninstallPackages)
+        redRQTCore.widgetBox(buttonArea2, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
         orientation = 'horizontal')
-        redRGUI.base.button(buttonArea2, label = _('Update Repository'), callback = self.updateFromRepository)
-        redRGUI.base.button(buttonArea2, label = _('Done'), callback = self.accept)        
+        redRQTCore.button(buttonArea2, label = _('Update Repository'), callback = self.updateFromRepository)
+        redRQTCore.button(buttonArea2, label = _('Done'), callback = self.accept)        
     def resolveRDependencies(self, packageList):
         import RSession
         packageList = [x.strip() for x in packageList]
@@ -81,7 +108,7 @@ class packageManager(redRGUI.base.dialog):
             compileall.compile_dir(installDir) # compile the directory for later importing.
             ## now process the requires for R
             
-            pack = self.readXML(os.path.join(installDir, 'package.xml'))
+            pack = readXML(os.path.join(installDir, 'package.xml'))
             packageInfo = orngRegistry.parsePackageXML(pack)
             redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'package xml parsing complete')
             import RSession
@@ -191,31 +218,6 @@ class packageManager(redRGUI.base.dialog):
                 
         rc = unicode(rc).strip()
         return rc
-    # takes a xml file name and returns an xml object
-    def readXML(self, fileName):
-        f = open(fileName, 'r')
-        #print fileName
-        mainTabs = xml.dom.minidom.parse(f)
-        f.close()
-        return mainTabs
-
-     
-    ## moves through the local package file and returns a dict of packages with version, stability, update date, etc
-    def getInstalledPackages(self):
-        packageDict = {}
-        for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
-            if not (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
-            and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
-                continue
-    
-            packageXML = self.readXML(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))
-            
-            packageDict[package] = orngRegistry.parsePackageXML(packageXML)
-            
-        
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(packageDict)
-        return packageDict
         
     # downloads the packages.xml file from repository
     # The file is stored in the canvasSettingsDir/red-RPackages.xml
@@ -274,7 +276,7 @@ class packageManager(redRGUI.base.dialog):
         file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
         if not os.path.isfile(file):
             self.createAvailablePackagesXML()
-        packages = self.readXML(file)
+        packages = readXML(file)
         if packages == None: 
             self.createAvailablePackagesXML()
         
@@ -292,7 +294,7 @@ class packageManager(redRGUI.base.dialog):
     ## returns a tuple of dicts (packages needed updates, installed packages, and packages available on the repository)
     
     def getPackages(self):
-        self.localPackages = self.getInstalledPackages()
+        self.localPackages = getInstalledPackages()
         self.sitePackages = self.getAvailablePackages()
         # print self.sitePackages
         if self.sitePackages in [None, {}]:
@@ -309,7 +311,7 @@ class packageManager(redRGUI.base.dialog):
             if name in self.localPackages.keys():
                 localPackage = self.localPackages[name]
                 self.availablePackages[name]['current'] = localPackage
-                if localPackage['Version']['Number'] != remotePackage['Version']['Number']:
+                if float(localPackage['Version']['Number']) < float(remotePackage['Version']['Number']):
                     self.availablePackages[name]['status'] = 'Out of date'
                 else:
                     self.availablePackages[name]['status'] = 'Current'
@@ -347,7 +349,7 @@ class packageManager(redRGUI.base.dialog):
         # if mb.exec_() == QMessageBox.Ok:
         self.updatePackagesFromRepository(auto=True)
         self.loadPackagesLists(force=False)
-        redRGUI.base.dialog.exec_(self)
+        redRQTCore.dialog.exec_(self)
         
     def setUpdates(self, packages):
         self.treeViewUpdates.clear()
@@ -385,7 +387,7 @@ class packageManager(redRGUI.base.dialog):
             
             line += [new['Author'], new['Summary']]
             
-            newChild = redRGUI.base.treeWidgetItem(self.treeViewUpdates, line,bgcolor=QColor(color))
+            newChild = redRQTCore.treeWidgetItem(self.treeViewUpdates, line,bgcolor=QColor(color))
             
                     
     def installUpdates(self):

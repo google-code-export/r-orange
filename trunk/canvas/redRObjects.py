@@ -149,14 +149,15 @@ def getIconsByTab(tabs = None):  # returns a dict of lists of icons for a specif
         tabIconsList[t] = _widgetIcons[t]
     return tabIconsList
 
-def getWidgetByInstance(instance):
+def getWidgetByInstance(instance): 
+    """This function returns an icon matching the instance of the sent instance.  This can indicate if a widget is matched with an icon or not to prevent lost widgets from cluttering the session.""" 
     global _widgetIcons
     for t in _widgetIcons.values():
         for widget in t:
             if widget.instance() == instance:
                 return widget
     else:
-        
+        redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'Unable to find a matching widget instance %s' % str(instance))
         raise Exception(_('Widget %s not found in %s') % (instance, _widgetIcons))
     
 def newIcon(canvas, tab, info, pic, dlg, instanceID, tabName):
@@ -309,10 +310,14 @@ def showAllWidgets(): # move to redRObjects
             i.show()
 def closeAllWidgets():
     for k, i in _widgetInstances.items():
-	print 'closing widget k'
-        i.close()
+	print 'closing widget %s' % k
+        try:
+            i.close()
+        except Exception as inst:
+            pass
         
 def addInstance(info, settings, insig, outsig, id = None):
+    """Called to add an instance of a widget to the canvas."""
     global _widgetInstances
     global _widgetIcons
     global _widgetInfo
@@ -328,6 +333,7 @@ def addInstance(info, settings, insig, outsig, id = None):
         OWRpy.uniqueWidgetNumber += 1
         ctime = unicode(time.time())
         id = unicode(OWRpy.uniqueWidgetNumber) + '_' + ctime
+    #redRLog.log(redRLog.REDRCORE, redRLog.DEBUG,redRLog.formatException())    
     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('adding instance number %s name %s') % (id, info.name))
     if info.name == 'Dummy': 
         instance.__init__(forceInSignals = insig, forceOutSignals = outsig, id = id)

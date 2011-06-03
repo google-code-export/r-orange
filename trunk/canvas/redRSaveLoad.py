@@ -31,6 +31,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, sys, redRObjects, cPickle, redREnviron, redRLog, globalData, RSession, redRPackageManager
 import redRi18n
+from orngDlgs import TemplateDialog
 # def _(a):
     # return a
 _ = redRi18n.Coreget_()
@@ -143,14 +144,20 @@ def makeTemplate(filename, copy = False):
         tempXML = tempdoc.createElement("TemplateXML")
         saveTagsList = tempdoc.createElement("TagsList")
         saveDescription = tempdoc.createElement("saveDescription")
+        templateName = tempdoc.createElement('Name')
+        
         tempXML.appendChild(saveTagsList)
         tempXML.appendChild(saveDescription)
+        tempXML.appendChild(templateName)
         
         taglist = unicode(tempDialog.tagsList.text())
         tempDescription = unicode(tempDialog.descriptionEdit.toPlainText())
+        templateName = unicode(tempDialog.nameEdit.text())
         
         saveTagsList.setAttribute("tagsList", taglist)
         saveDescription.setAttribute("tempDescription", tempDescription)
+        templateName.setAttribute("name", templateName)
+        
         tempdoc.appendChild(tempXML)
         print tempdoc.toprettyxml()
     activeIcons = collectIcons()
@@ -378,7 +385,7 @@ def loadRequiredPackages(required, loadingProgressBar):
             loadingProgressBar.setLabelText(_('Loading required R Packages. If not found they will be downloaded.\n This may take a while...'))
             RSession.require_librarys(required['R'], repository=repo)
         
-        installedPackages = redRPackageManager.packageManager.getInstalledPackages()
+        installedPackages = redRPackageManager.getInstalledPackages()
         downloadList = {}
         print type(required['RedR'])
         #print required['RedR']
@@ -386,11 +393,11 @@ def loadRequiredPackages(required, loadingProgressBar):
         for name,package in required['RedR'].items():
             #print package
             if not (package['Name'] in installedPackages.keys() 
-            and package['Version']['Number'] == installedPackages[package['Name']]['Version']['Number']):
+            and float(package['Version']['Number']) < float(installedPackages[package['Name']]['Version']['Number'])):
                 downloadList[package['Name']] = {'Version':unicode(package['Version']['Number']), 'installed':False}
 
         if len(downloadList.keys()) > 0:
-            pm = redRPackageManager.packageManagerDialog()
+            pm = redRPackageManager.packageManager(canvasDlg)
             pm.show()
             pm.askToInstall(downloadList, _('The following packages need to be installed before the session can be loaded.'))
     except Exception as inst: 
@@ -517,14 +524,14 @@ If you were loading a file from the quick bar, please try loading using "Open"."
     loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
     loadingProgressBar.setValue(0)
     
-    """!@#$ Why are widgets only loaded for non tmp files.  This whould also include an else statement to load if this is a tmp file."""
+    """Load the widget instances.  We load widget instances for schemas and then load the tab data.  This is different for templates where the widget data is stored in the tab structure.  Because the settings are consolidated with the widgets on that level (or rather are accessible there too) we do the loading of widgets in templates with the tabs."""
     if not tmp:
         ## load the global data.
         globalData.globalData = cPickle.loads(settingsDict['_globalData'])
         if notesTextWidget and ('none' in globalData.globalData.keys()) and ('globalNotes' in globalData.globalData['none'].keys()):
             notesTextWidget.setHtml(globalData.globalData['none']['globalNotes']['data'])
     
-    (loadedOkW, tempFailureTextW) = loadWidgets(widgets = widgets, loadingProgressBar = loadingProgressBar, loadedSettingsDict = settingsDict, tmp = tmp)
+        (loadedOkW, tempFailureTextW) = loadWidgets(widgets = widgets, loadingProgressBar = loadingProgressBar, loadedSettingsDict = settingsDict, tmp = tmp)
     
     ## LOAD tabs
     #####  move through all of the tabs and load them.
@@ -713,6 +720,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
     lpb = 0
     loadedOk = 1
     failureText = ''
+    redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Loading widgets %s' % str(widgets.getElementsByTagName("widget")))
     for widget in widgets.getElementsByTagName("widget"):
         try:
             name = widget.getAttribute("widgetName")
@@ -944,45 +952,3 @@ def startProgressBar(title,text,max):
     return progressBar
 
     
-class TemplateDialog(QDialog):
-    def __init__(self):
-        QDialog.__init__(self)
-        
-        self.setWindowTitle(_('Save as template'))
-        
-        self.setLayout(QVBoxLayout())
-        layout = self.layout()
-        
-        mainWidgetBox = QWidget(self)
-        mainWidgetBox.setLayout(QVBoxLayout())
-        layout.addWidget(mainWidgetBox)
-        
-        mainWidgetBox.layout().addWidget(QLabel(_('Set tags as comma ( , ) delimited list'), mainWidgetBox))
-        
-        
-        topWidgetBox = QWidget(mainWidgetBox)
-        topWidgetBox.setLayout(QHBoxLayout())
-        mainWidgetBox.layout().addWidget(topWidgetBox)
-        
-        topWidgetBox.layout().addWidget(QLabel(_('Tags:'), topWidgetBox))
-        self.tagsList = QLineEdit(topWidgetBox)
-        topWidgetBox.layout().addWidget(self.tagsList)
-        
-        bottomWidgetBox = QWidget(mainWidgetBox)
-        bottomWidgetBox.setLayout(QVBoxLayout())
-        mainWidgetBox.layout().addWidget(bottomWidgetBox)
-        
-        bottomWidgetBox.layout().addWidget(QLabel(_('Description:'), bottomWidgetBox))
-        self.descriptionEdit = QTextEdit(bottomWidgetBox)
-        bottomWidgetBox.layout().addWidget(self.descriptionEdit)
-        
-        buttonWidgetBox = QWidget(mainWidgetBox)
-        buttonWidgetBox.setLayout(QHBoxLayout())
-        mainWidgetBox.layout().addWidget(buttonWidgetBox)
-        
-        acceptButton = QPushButton(_('Accept'), buttonWidgetBox)
-        cancelButton = QPushButton(_('Cancel'), buttonWidgetBox)
-        buttonWidgetBox.layout().addWidget(acceptButton)
-        buttonWidgetBox.layout().addWidget(cancelButton)
-        QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
-        QObject.connect(cancelButton, SIGNAL("clicked()"), self.reject)

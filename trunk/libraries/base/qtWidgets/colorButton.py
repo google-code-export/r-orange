@@ -74,6 +74,7 @@ class colorButton(QPushButton, widgetState):
         """Returns a dict of settings used in the widget for reloading"""
         return {'color':self.getColor()}
     def loadSettings(self, data):
+        if not data or data == None: return
         if 'color' in data.keys():
             self.color = data['color']
             self.updateColor()

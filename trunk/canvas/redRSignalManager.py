@@ -245,7 +245,7 @@ class OutputHandler:
     
     def returnOutputs(self):
         ## move through the outputs and return a list of outputs and connections.  these connections should be reconnected on reloading of the widget, ideally we will only put atomics into this outputHandler
-        data = {}
+        data = {'version':1.90}
         for (key, outSig) in self.outputs.items():
             print 'isolation 1'
             data[key] = {'name':outSig.name, 'signalClass':unicode(outSig.signalClass), 'connections':[]}
@@ -263,33 +263,53 @@ class OutputHandler:
         
     def setOutputs(self, data, tmp = False):
         """Accepts a dict of key values and an optional arg tmp indicating if this is a template.
-        The structure of the data dict is 
+        The structure of the data dict is
+        {
+        version: version number
         id {
+        
         name = outputSocket.name,
         signalClass = unicode(outputSocket.signalClass,
         value = None or outputSocket.signalCalss.saveSettings()
-        }"""
-        
-        for (key, value) in data.items():
-            if key not in self.outputs.keys():
-                #print _('Signal does not exist')
-                continue
-            ## find the signal from the widget and connect it
-            for vValue in value['connections']:
-                ### find the widget
-                if not tmp:
-                    widget = redRObjects.getWidgetInstanceByID(vValue['parentID'])
-                elif tmp:
-                    widget = redRObjects.getWidgetInstanceByTempID(vValue['parentID'])
-                redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Input widget is %s' % widget)
-                if not widget:
-                    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Failed to find input widget %s' % vValue['parentID'])
-                    return
-                inputSignal = widget.inputs.getSignal(vValue['id'])
-                self.connectSignal(inputSignal, key, vValue['enabled'], process = False)  # connect the signal but don't send data through it.
-                if tmp:
-                    self.propogateNone(ask = False)
-                    
+        }...
+        }
+        """
+        if data.get('version', 1.85) > 1.85:
+            for (key, value) in data.items():
+                if key not in self.outputs.keys() or 'connections' not in value:
+                    #print _('Signal does not exist')
+                    continue
+                ## find the signal from the widget and connect it
+                for vValue in value['connections']:
+                    ### find the widget
+                    if not tmp:
+                        widget = redRObjects.getWidgetInstanceByID(vValue['parentID'])
+                    elif tmp:
+                        widget = redRObjects.getWidgetInstanceByTempID(vValue['parentID'])
+                    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Input widget is %s' % widget)
+                    if not widget:
+                        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Failed to find input widget %s' % vValue['parentID'])
+                        return
+                    inputSignal = widget.inputs.getSignal(vValue['id'])
+                    self.connectSignal(inputSignal, key, vValue['enabled'], process = False)  # connect the signal but don't send data through it.
+                    if tmp:
+                        self.propogateNone(ask = False)
+        elif data.get('version', 1.85) == 1.85: # 1.85 is the last supported version to not have version numbers in the output data containers.
+            for (key, value) in data.items():
+                if key not in self.outputs.keys() or 'connections' not in value: continue
+                for (vKey, vValue) in value['connections'].items():
+                    if not tmp:
+                        widget = redRObjects.getWidgetInstanceByID(vValue['parentID'])
+                    elif tmp:
+                        widget = redRObjects.getWidgetInstanceByTempID(vValue['parentID'])
+                    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Input widget is %s' % widget)
+                    if not widget:
+                        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Failed to find input widget %s' % vValue['parentID'])
+                        return
+                    inputSignal = widget.inputs.getSignal(vValue['id'])
+                    self.connectSignal(inputSignal, key, vValue['enabled'], process = False)  # connect the signal but don't send data through it.
+                    if tmp:
+                        self.propogateNone(ask = False)
     #def linkingWidgets(self):
         #widgets = []
         #for (i, s) in self.outputs.items():

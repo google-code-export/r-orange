@@ -77,8 +77,9 @@ class widgetState:
         return r
     def setDefaultState(self,data):
         # print _(' in wdiget state')
-        self.controlArea.setEnabled(data['enabled'])
-        self.controlArea.setHidden(data['hidden'])
+        
+        self.controlArea.setEnabled(data.get('enabled', True))
+        self.controlArea.setHidden(data.get('hidden', False))
     def getSettings(self):
         pass
     def loadSettings(self,data):

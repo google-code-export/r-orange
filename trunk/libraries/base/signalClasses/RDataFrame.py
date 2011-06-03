@@ -163,7 +163,7 @@ class RDataFrameModel(QAbstractTableModel):
     def __init__(self, parent, Rdata, filteredOn = [], editable=False,
     filterable=False,sortable=False, orgRdata = None, reload = False, criteriaList = {}): 
         QAbstractTableModel.__init__(self,parent) 
-
+        if not Rdata: raise Exception('Rdata must be present')
         self.working = False
         self.range = 500
         self.parent =  parent

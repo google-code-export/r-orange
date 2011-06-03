@@ -119,7 +119,8 @@ def getSafeString(s):
     """Escape log strings for HTML."""
     try:
         return unicode(s).replace("<", "&lt;").replace(">", "&gt;")
-    except:
+    except Exception as inst:
+        print unicode(inst)
         return s ## can't convert the string so we just return it and hope for the best.
 
 def formatException(type=None, value=None, tracebackInfo=None, errorMsg = None, plainText=False):

@@ -149,7 +149,7 @@ class widgetSession():
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(settings)
         for k,v in settings.iteritems():
-            print 'loading %s in widget %s' % (k, self.captionTitle)
+            #print 'loading %s in widget %s' % (k, self.captionTitle)
             try:
                 #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Loading %s' % k)
                 if k in ['inputs', 'outputs']: continue

@@ -121,8 +121,11 @@ def readCategories(force = True):
         allTemplates += readTemplates(os.path.join(directory,'templates')) # a function to read in the templates that are in the directories
          #+= templates
         #print templates
+    
+    for directory in redREnviron.settings['templateDirectories']:
+        allTemplates += readTemplates(directory)
         
-    allTemplates += readTemplates(redREnviron.directoryNames['templatesDir'])
+    #allTemplates += readTemplates(redREnviron.directoryNames['templatesDir'])
     categories['templates'] = allTemplates
     if splashWindow:
         splashWindow.hide()
@@ -383,13 +386,19 @@ def readTemplates(directory):
         #widgetName = package + '_' + widget
         try:
             # make a zipfile and then extract the template xml from it, then we can parse the template xml and set up the registry.
-            tempZip = zipfile.ZipFile(filename)
+            try:
+                tempZip = zipfile.ZipFile(filename)
+            except zipfile.BadZipfile: continue
             if 'template.xml' not in tempZip.namelist():
                 print 'no template.xml in %s, atts are %s' % (filename, unicode(tempZip.namelist()))
                 continue # these templates will not work with the current settings.
             
             tempXML = xml.dom.minidom.parseString(tempZip.read('template.xml'))
             description = tempXML.getElementsByTagName('saveDescription')[0].getAttribute('tempDescription')
+            try:
+                name = tempXML.getElementsByTagName('Name')[0].getAttribute('name')
+            except:
+                name = templateName
             #if not splashWindow:
                 #import redREnviron
                 #logo = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
@@ -397,7 +406,7 @@ def readTemplates(directory):
                 #splashWindow.setMask(logo.mask())
                 #splashWindow.show()
             qApp.processEvents()
-            templateInfo = TemplateDescription(name = templateName, file = filename, description = description, icon = os.path.join(redREnviron.directoryNames['canvasIconsDir'],'dialog-information.png'))
+            templateInfo = TemplateDescription(name = name, file = filename, description = description, icon = os.path.join(redREnviron.directoryNames['canvasIconsDir'],'dialog-information.png'))
             
             templates.append((filename, templateInfo))
             

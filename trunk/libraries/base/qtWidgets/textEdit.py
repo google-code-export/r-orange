@@ -13,7 +13,6 @@ from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.button import button
 
-import redRReports
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRi18n

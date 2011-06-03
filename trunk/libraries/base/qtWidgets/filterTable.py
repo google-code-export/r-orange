@@ -268,6 +268,7 @@ class filterTable(widgetState, QTableView):
         """Sets the table to a table model returned from a signal.  data represents a Red-R signal that contains a table model function getTableModel()."""
         self.tm = data.getTableModel(self, filterable, sortable)
         self.setModel(self.tm)
+        self.dataInfo.setText(self.tm.getSummary())
         
     def setStructuredDictTable(self, data):
         self.tm = StructuredDictTableModel(data, self, [], False, False, True)
@@ -400,13 +401,17 @@ class filterTable(widgetState, QTableView):
         # print data
         if 'Rdata' not in data:
             print 'loading with 1.90 settings'
+            if 'class' not in data:
+                redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'the class attribute is not found in the data %s' % str(data))
+                return
             import imp
             fp, pathname, description = imp.find_module('libraries', [redREnviron.directoryNames['redRDir']])
             varc = imp.load_module('libraries', fp, pathname, description)
+            
             for mod in data['class'].replace("<'", '').replace("'>", '').split('.')[1:]:
                 varc = getattr(varc, mod)
             var = varc(self, **data['modelSettings'])
-            
+            self.setTable(var, filterable = self.filterable, sortable = self.sortable) 
             selModel = self.selectionModel()
             # print selModel
             
@@ -414,17 +419,24 @@ class filterTable(widgetState, QTableView):
                 for x in data['selection2']:
                     selModel.select( QItemSelection(self.tm.createIndex(x[0],x[1]),self.tm.createIndex(x[2],x[3])),QItemSelectionModel.Select)
                     
+        elif data['Rdata'] == None:
+            self.clear()
         else:
             redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'DEPRICATION WARNING. Filter table loading of 1.85 settings will not be available in 2.0.  Please resave your old files using these settings before upgrading to 2.0')
-            self.Rdata = data['Rdata']
-            self.criteriaList = data['criteriaList']
-            # print 'filtering data on the following criteria %s' % unicode(self.criteriaList)
-            self.filter()
+            from libraries.base.signalClasses.RDataFrame import RDataFrameModel
+            self.tm = RDataFrameModel(parent = self, Rdata = data['Rdata'], filterable=self.filterable, sortable=self.sortable)
+            self.setModel(self.tm)
+            self.dataInfo.setText(self.tm.getSummary())
+            
+            #self.Rdata = data['Rdata']
+            #self.criteriaList = data['criteriaList']
+            ## print 'filtering data on the following criteria %s' % unicode(self.criteriaList)
+            #self.filter()
 
-            if 'sortIndex' in data.keys():
-                self.sortByColumn(data['sortIndex'][0],data['sortIndex'][1])
-            selModel = self.selectionModel()
-            # print selModel
+            #if 'sortIndex' in data.keys():
+                #self.sortByColumn(data['sortIndex'][0],data['sortIndex'][1])
+            #selModel = self.selectionModel()
+            ## print selModel
             
             if 'selection2' in data.keys() and len(data['selection2']):
                 for x in data['selection2']:
