@@ -17,7 +17,7 @@ import redRi18n
 # def _(a):
     # return a
 _ = redRi18n.Coreget_()
-
+repository = 'http://www.red-r.org/repository/Red-R-' + redREnviron.version['REDRVERSION'] 
 ## moves through the local package file and returns a dict of packages with version, stability, update date, etc
 def getInstalledPackages():
     """Accessory function used by this and other modules to check for available packages on this installation and on the repository.  
@@ -45,6 +45,31 @@ def readXML(fileName):
         mainTabs = xml.dom.minidom.parse(f)
     
     return mainTabs
+    
+def updatePackagesFromRepository(auto=True):
+    print 'updatePackagesFromRepository', auto
+    today = date.today()
+    if not redREnviron.checkInternetConnection():
+        return
+
+    if redREnviron.settings['lastUpdateCheckPackages'] != 0:
+        diff =  today - redREnviron.settings['lastUpdateCheckPackages']
+        if int(diff.days) < 7 and auto:
+                return 
+    
+    url = repository + '/packages.xml'
+    file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
+    print url
+    try:
+        f = urllib2.urlopen(url)
+        output = open(file,'wb')
+        output.write(f.read())
+        output.close()  
+        
+        redREnviron.settings['lastUpdateCheckPackages'] = today
+        redREnviron.saveSettings()
+    except:
+        redRLog.log(redRLog.REDRCORE,redRLog.ERROR,'Could not updated package repository from web.')
 ## packageManager class handles package functions such as resolving rrp's resolving dependencies, appending packages to the package xml or any function that remotely has to do with handling packages
 class packageManager(redRQTCore.dialog):
     def __init__(self,canvas):
@@ -230,29 +255,30 @@ class packageManager(redRQTCore.dialog):
             return False
             
     def updatePackagesFromRepository(self, auto=True):
-        print 'updatePackagesFromRepository', auto
-        today = date.today()
-        if not redREnviron.checkInternetConnection():
-            return
+        return updatePackagesFromRepository(auto = True)
+        #print 'updatePackagesFromRepository', auto
+        #today = date.today()
+        #if not redREnviron.checkInternetConnection():
+            #return
 
-        if redREnviron.settings['lastUpdateCheckPackages'] != 0:
-            diff =  today - redREnviron.settings['lastUpdateCheckPackages']
-            if int(diff.days) < 7 and auto:
-                    return 
+        #if redREnviron.settings['lastUpdateCheckPackages'] != 0:
+            #diff =  today - redREnviron.settings['lastUpdateCheckPackages']
+            #if int(diff.days) < 7 and auto:
+                    #return 
         
-        url = self.repository + '/packages.xml'
-        file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
-        print url
-        try:
-            f = urllib2.urlopen(url)
-            output = open(file,'wb')
-            output.write(f.read())
-            output.close()  
+        #url = self.repository + '/packages.xml'
+        #file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
+        #print url
+        #try:
+            #f = urllib2.urlopen(url)
+            #output = open(file,'wb')
+            #output.write(f.read())
+            #output.close()  
             
-            redREnviron.settings['lastUpdateCheckPackages'] = today
-            redREnviron.saveSettings()
-        except:
-            redRLog.log(redRLog.REDRCORE,redRLog.ERROR,'Could not updated package repository from web.')
+            #redREnviron.settings['lastUpdateCheckPackages'] = today
+            #redREnviron.saveSettings()
+        #except:
+            #redRLog.log(redRLog.REDRCORE,redRLog.ERROR,'Could not updated package repository from web.')
              
         #return self.getPackages()
         
