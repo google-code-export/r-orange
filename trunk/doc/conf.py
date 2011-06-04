@@ -13,15 +13,15 @@
 
 import sys, os
 #
-#print os.path.abspath('../')
-os.chdir(os.path.abspath('../'))
-#print os.path.abspath('canvas')
-sys.path.append(os.path.abspath('canvas'))
-import redREnviron
-directoryNames = redREnviron.__getDirectoryNames(os.path.abspath(''))
-redREnviron.directoryNames = directoryNames
-redREnviron.addOrangeDirectoriesToPath(directoryNames)
-import orngDlgs
+##print os.path.abspath('../')
+# os.chdir(os.path.abspath('../'))
+##print os.path.abspath('canvas')
+# sys.path.append(os.path.abspath('canvas'))
+# import redREnviron
+# directoryNames = redREnviron.__getDirectoryNames(os.path.abspath(''))
+# redREnviron.directoryNames = directoryNames
+# redREnviron.addOrangeDirectoriesToPath(directoryNames)
+# import orngDlgs
 
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -102,7 +102,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'theme'
+#html_theme = 'theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -110,7 +110,9 @@ html_theme = 'theme'
 #html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ['.']
+html_theme_path = ['.', '../../doc', './theme', '../../doc/theme']
+for p in html_theme_path:
+    print os.path.abspath(p)
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".

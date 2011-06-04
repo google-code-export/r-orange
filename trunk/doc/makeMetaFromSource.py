@@ -173,24 +173,8 @@ def parseWidgetFile(filename, outputXML, outputHelp):
         f.write(makeXML(d))
     with open(outputHelp, 'w') as f:
         helprst = makeHelp(d)
-        output = publish_parts(helprst, writer_name='html', settings_overrides = overrides)
-        output.update({'sidebar': makeWidgetSidebar(d)})
-        finalhtml = """%(head_prefix)s
-        %(meta)s
-        <title>%(title)s</title>
-        %(stylesheet)s
-        </head>
-        <body>
-        <div class="sidebar" id="navSidebar">
-        %(sidebar)s
-        </div>
-        <div class="mainText" id="mainText">
-        %(body)s
-        </div>
-        </body>
-        </html>
-        """ % output
-        f.write(finalhtml)
+        
+        f.write(helprst)
     print 'Success for %s' % filename
     return d['name']
     

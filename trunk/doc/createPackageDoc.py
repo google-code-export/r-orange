@@ -4,13 +4,16 @@ This module aids developers in making documentation files from annotated package
 """
 
 import sys,os,glob,subprocess
-import re, xml.dom.minidom
+import shutil, re, xml.dom.minidom, subprocess
 import makeMetaFromSource
 from docutils.core import publish_string
 
 
 
 root = sys.argv[1]
+if not os.path.exists(os.path.join(root, 'package.xml')):
+    raise Exception('package.xml not found, either not a package or not complete. Please check directory')
+core = os.path.split(os.path.split(root)[0])[0]
 helpDir = os.path.join(root, 'help')
 widgetHelp = os.path.join(helpDir, 'widgets')
 signalHelp = os.path.join(helpDir, 'signalClasses')
@@ -20,21 +23,21 @@ widgetMeta = os.path.join(metaDir, 'widgets')
 signalMeta = os.path.join(metaDir, 'signalClasses')
 qtMeta = os.path.join(metaDir, 'qtWidgets')
 
-print 'Root dir = ', os.path.abspath(root)
-
-#overrides = {'stylesheet_path':','.join([os.path.join(os.path.split(os.path.split(root)[0])[0], 'doc', 'userHelpStyles')]), 'stylesheet': ','.join(['helpDocStyle.css'])}
-
-makeMetaFromSource.overrides = {'stylesheet_path': ','.join([os.path.join(os.path.split(os.path.split(root)[0])[0], 'doc', 'userHelpStyles', 'userHelpCSS.css')])}
-
-
-header = """.. image:: ../../../canvas/icons/CanvasIcon.png
-    :target: http://www.red-r.org
-
-"""
+overrides = {'stylesheet':[os.path.join(os.path.split(os.path.split(root)[0])[0], 'doc', 'helpDocStyle.css')]}
 
 def makeHelpDirs():
     """Make essential files for the help directories"""
-    if not os.path.exists(helpDir): os.mkdir(helpDir)
+    if not os.path.exists(helpDir): 
+        os.mkdir(helpDir)
+    shutil.copyfile(os.path.join(core, 'doc', 'make.bat'), os.path.join(helpDir, 'make.bat'))
+    shutil.copyfile(os.path.join(core, 'doc', 'conf.py'), os.path.join(helpDir, 'conf.py'))
+    if os.path.exists(os.path.join(helpDir, '_static')):
+        shutil.rmtree(os.path.join(helpDir, '_static'))
+    shutil.copytree(os.path.join(core, 'doc', '_static'), os.path.join(helpDir, '_static'), ignore = shutil.ignore_patterns('*.svn', '*.svn*'))
+    #shutil.copyfile(os.path.join(core, 'doc', 'make.bat'), os.path.join(helpDir, 'Makefile'))
+    #shutil.copyfile(os.path.join(core, 'doc', 'packageIndex.rst'), os.path.join(helpDir, 'index.rst'))
+    # if not os.path.exists(os.path.join(helpDir, 'introduction.rst')):
+        # shutil.copyfile(os.path.join(core, 'doc', 'defaultPackageIntroduciton.rst'), os.path.join(helpDir, 'introduction.rst'))
     if not os.path.exists(metaDir): os.mkdir(metaDir)
     if not os.path.exists(widgetHelp): os.mkdir(widgetHelp)
     if not os.path.exists(signalHelp): os.mkdir(signalHelp)
@@ -82,87 +85,142 @@ def packageToDict(filename):
     
 def makeIndex(nd):
     """Make the index files for the package."""
+    
     pDict = packageToDict(os.path.join(root, 'package.xml'))
-    s = header
-    s += '%s\n%s\n\n' % (pDict['Name'], '}'*len(pDict['Name']))
+    
+    index = """.. Red-R package documentation master file, created by
+   sphinx-quickstart on Sat May 07 17:15:13 2011.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to %(Name)s's documentation!
+=========================================================================
+
+Contents:
+
+.. toctree::
+   :glob:
+   :maxdepth: 2
+    
+   introduction
+   widgets
+   signals
+   qtWidgets
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+""" % pDict
+    
+    widgets = """%(Name)s Widgets
+=========================================================
+Contents:
+
+.. toctree::
+   :glob:
+   :maxdepth: 2
+   
+   widgets/*
+   """ % pDict
+
+    signals = """%(Name)s Signals
+=====================================================
+Contents:
+
+.. toctree::
+   :glob:
+   :maxdepth: 2
+   
+   signalClasses/*
+   """ % pDict
+   
+    qtWidgets = """%(Name)s QT Widgets
+========================================================
+Contents:
+
+.. toctree::
+   :glob:
+   :maxdepth: 2
+   
+   qtWidgets/*
+   """ % pDict
+
+    
+    s = '%s\n%s\n\n' % (pDict['Name'], '}'*len(pDict['Name']))
     s += '%s\n%s\n\n' % ('Description', '{'*len('Description'))
     s += '%s\n\n' % pDict['Description']
     
+    with open(os.path.join(helpDir, 'widgets.rst'), 'w') as f:
+        f.write(widgets)
+    with open(os.path.join(helpDir, 'signals.rst'), 'w') as f:
+        f.write(signals)
+    with open(os.path.join(helpDir, 'qtWidgets.rst'), 'w') as f:
+        f.write(qtWidgets)
+    if not os.path.exists(os.path.join(helpDir, 'introduction.rst')):
+        with open(os.path.join(helpDir, 'introduction.rst'), 'w') as f:
+            f.write(s)
     ### bullet list
-    s += '\n%s\n%s\n\n' % ('Widgets', '{{'*len('Widgets'))
-    for n, dn in nd['W']:
-        s += '- `%s`_\n' % dn
-    
-    s += '\n%s\n%s\n\n' % ('Signals', '{{'*len('Signals'))
-    for n, dn in nd['S']:
-        s += '- `%s`_\n' % dn
-    
-    s += '\n%s\n%s\n\n' % ('QtWidgets', '{{'*len('QtWidgets'))
-    for n, dn in nd['Q']:
-        s += '- `%s`_\n' % dn
         
-    ### put in the links
-    for n, dn in nd['W']:
-        s += '.. _%s: ./widgets/%s.html\n\n' % (dn, n)
-    
-    for n, dn in nd['S']:
-        s += '.. _%s: ./signalClasses/%s.html\n\n' % (dn, n)
-    
-    for n, dn in nd['Q']:
-        s += '.. _%s: ./qtWidgets/%s.html\n\n' % (dn, n)
+    with open(os.path.join(helpDir, 'index.rst'), 'w') as h:
+        h.write(index)
         
-    print 'Publishing index'
-    output = publish_string(s, writer_name='html', settings_overrides = overrides)
-    with open(os.path.join(helpDir, 'index.html'), 'w') as h:
-        h.write(output)
+        
 def makeFiles():
     d = getPackageComponents()
-    print d
     nd = {'W':[], 'S':[], 'Q':[]}
     ## make rst and xml files.
     for w in d['widgets']:
-        wn = makeMetaFromSource.parseWidgetFile(os.path.abspath(os.path.join(root, 'widgets', '%s.py' % w)), 
-            os.path.abspath(os.path.join(widgetMeta, '%s.xml' % w)), 
-            os.path.abspath(os.path.join(widgetHelp, '%s.html' % w)))
+        wn = makeMetaFromSource.parseWidgetFile(os.path.join(root, 'widgets', '%s.py' % w), 
+            os.path.join(widgetMeta, '%s.xml' % w), 
+            os.path.join(widgetHelp, '%s.rst' % w))
         nd['W'].append((w, wn))
     for s in d['signalClasses']:
         sn = makeMetaFromSource.parseSignalFile(os.path.join(root, 'signalClasses', '%s.py' % s), 
-            os.path.join(signalHelp, '%s.html' % s),
+            os.path.join(signalHelp, '%s.rst' % s),
             os.path.join(signalMeta, '%s.xml' % s))
         nd['S'].append((s, sn))
     for q in d['qtWidgets']:
         qn = makeMetaFromSource.parseQTWidgetFile(os.path.join(root, 'qtWidgets', '%s.py' % s), 
-            os.path.join(qtHelp, '%s.html' % q),
+            os.path.join(qtHelp, '%s.rst' % q),
             os.path.join(qtMeta, '%s.xml' % q))
         nd['Q'].append((q, qn))
-    ## now make the html by converting .rst to html
+    
+    ## make the index files
+    makeIndex(nd)
+    
+    ## now make the html by converting .rst to html.  We do this using sphinx
+    shutil.rmtree(os.path.join(os.path.abspath(helpDir),'build'),True)
+    cmd = 'sphinx-build -b html %s %s' % (helpDir, os.path.join(helpDir, 'build'))
+    print 'Running doc compiler: ' + cmd
+    p = subprocess.Popen(cmd,stdout=subprocess.PIPE).communicate()[0]
+    print p
+    
     # for w in d['widgets']:
-        # print 'Publishing %s' % w
         # with open(os.path.join(widgetHelp, '%s.rst' % w), 'r') as f:
             # thisFile = f.read()
             # output = publish_string(thisFile, writer_name='html', settings_overrides = overrides)
             # with open(os.path.join(widgetHelp, '%s.html' % w), 'w') as h:
                 # h.write(output)
                 
-    for s in d['signalClasses']:
-        print 'Publishing signal %s' % s
-        with open(os.path.join(signalHelp, '%s.rst' % s), 'r') as f:
-            thisFile = f.read()
-            output = publish_string(thisFile, writer_name='html', settings_overrides = overrides)
-            with open(os.path.join(signalHelp, '%s.html' % s), 'w') as h:
-                h.write(output)
+    # for s in d['signalClasses']:
+        # with open(os.path.join(signalHelp, '%s.rst' % s), 'r') as f:
+            # thisFile = f.read()
+            # output = publish_string(thisFile, writer_name='html', settings_overrides = overrides)
+            # with open(os.path.join(signalHelp, '%s.html' % w), 'w') as h:
+                # h.write(output)
             
     # for s in d['qtWidgets']:
-        # print 'Publishing qtWidget %s' % s
         # with open(os.path.join(qtHelp, '%s.rst' % s), 'r') as f:
             # thisFile = f.read()
             # output = publish_string(thisFile, writer_name='html', settings_overrides = overrides)
-            # with open(os.path.join(qtHelp, '%s.html' % s), 'w') as h:
+            # with open(os.path.join(qtHelp, '%s.html' % w), 'w') as h:
                 # h.write(output)
     
     
-    ## make the index files
-    makeIndex(nd)
     
 makeHelpDirs()
 makeFiles()
