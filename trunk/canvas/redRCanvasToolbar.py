@@ -716,8 +716,7 @@ class SearchBox2(redRlineEdit):
                 for item in templateitems]
         except Exception as inst:
             print unicode(inst)
-            mb = QMessageBox(QMessageBox.Information, _("Registry Error"), _("Your registry does not conform to Red-R registry settings.\n\nThis is compleatly normal if you have recently updated Red-R.\n\nThe system will now refresh your registry which should fix this problem.  You may need to restart Red-R for these changes to take effect.\n\nThanks, The Red-R Core Development Team."), 
-                 buttons = QMessageBox.Ok | QMessageBox.Default)
+            mb = QMessageBox(QMessageBox.Information, _("Registry Error"), _("Your registry does not conform to Red-R registry settings.\n\nThis is compleatly normal if you have recently updated Red-R.\n\nThe system will now refresh your registry which should fix this problem.  You may need to restart Red-R for these changes to take effect.\n\nThanks, The Red-R Core Development Team."), QMessageBox.Ok)
             mb.exec_()
             orngRegistry.readCategories(force = True)
     def updateSuggestedItems(self):
@@ -882,7 +881,7 @@ class SearchBox2(redRlineEdit):
         if c == 't':
             redRSaveLoad.loadTemplate(info.file)
         elif c == 'w':
-            redRObjects.addWidget(redRObjects.widgetRegistry()['widgets'][widgetInfo.fileName]) # add the correct widget to the schema
+            redRObjects.addWidget(redRObjects.widgetRegistry()['widgets'][info.fileName]) # add the correct widget to the schema
         self.clear()  # clear the line edit for the next widget
         return
         #text = unicode(self.widgetSuggestEdit.text())

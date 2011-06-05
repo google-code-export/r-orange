@@ -209,6 +209,9 @@ class CanvasOptionsDlg(QDialog):
         redRQTCore.button(templateButtons, label = _('Add Directory'), callback = self.addTemplateDirectory)
         redRQTCore.button(templateButtons, label = _('Remove Selected'), callback = self.removeTemplateDirectory)
         
+        redRQTCore.button(UnderHood, label = _('Regression Test (Core Developers Only)'), callback = lambda val = 1:self.regressionTest(val))
+        redRQTCore.button(UnderHood, label = _('Test Packages (Core Developers Only)'), callback = lambda val = 2:self.regressionTest(val))
+        
         
 
         # #################################################################
@@ -268,6 +271,11 @@ class CanvasOptionsDlg(QDialog):
 
         self.topLayout.addWidget(self.tabs)
         self.topLayout.addWidget(hbox)
+        
+    def regressionTest(self, val):
+        import redRRegressionTest
+        redRRegressionTest.test(val)
+        
     def addTemplateDirectory(self):
         """This function is called to add a directory to the list of template directories.  This will repopulate the list box and update redREnviron."""
         dn = QFileDialog.getExistingDirectory(self, "Template Directory", redREnviron.directoryNames['documentsDir'])

@@ -19,6 +19,25 @@ import redRi18n
 _ = redRi18n.Coreget_()
 repository = 'http://www.red-r.org/repository/Red-R-' + redREnviron.version['REDRVERSION'] 
 ## moves through the local package file and returns a dict of packages with version, stability, update date, etc
+def getAvailablePackages():
+    file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
+    if not os.path.isfile(file):
+        self.createAvailablePackagesXML()
+    packages = readXML(file)
+    if packages == None: 
+        self.createAvailablePackagesXML()
+    
+    packageDict = {}
+    for package in packages.firstChild.childNodes:
+        if package.nodeType !=package.ELEMENT_NODE:
+            continue
+        p = orngRegistry.parsePackageXML(package)
+        packageDict[p['Name']] =  p
+    
+    # pp = pprint.PrettyPrinter(indent=4)
+    # pp.pprint(packageDict)        
+    return packageDict
+        
 def getInstalledPackages():
     """Accessory function used by this and other modules to check for available packages on this installation and on the repository.  
     
@@ -116,7 +135,10 @@ class packageManager(redRQTCore.dialog):
         RSession.install_libraries(packageList)
 
     def installRRP(self,packageName,filename):
-
+        """Installs the RRP zip file as the new package.  The old package is removed first then the new downloaded package is unzipped into it's place.  
+        
+        
+        """
         installDir = os.path.join(redREnviron.directoryNames['libraryDir'], packageName)
         #print _('installDir'), installDir
         import shutil
@@ -146,12 +168,13 @@ class packageManager(redRQTCore.dialog):
         except Exception as inst:
             redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL, _('There was an error installing %(PACKAGENAME)s. %(ERROR)s') % {'PACKAGENAME':packageName, 'ERROR':unicode(inst)})
             redRLog.log(redRLog.REDRCORE, redRLog.DEBUG,redRLog.formatException())
-            mb = QMessageBox(_("Package Installation Error"),_('There was an error installing %(PACKAGENAME)s. %(ERROR)s') % {'PACKAGENAME':packageName, 'ERROR':unicode(inst)}, QMessageBox.Information, 
-            QMessageBox.Ok | QMessageBox.Default,
-            QMessageBox.NoButton, 
-            QMessageBox.NoButton, 
-            self.canvas)
-            mb.exec_()            
+            if redREnviron.settings['outputVerbosity'] > 0:
+                mb = QMessageBox(_("Package Installation Error"),_('There was an error installing %(PACKAGENAME)s. %(ERROR)s') % {'PACKAGENAME':packageName, 'ERROR':unicode(inst)}, QMessageBox.Information, 
+                QMessageBox.Ok | QMessageBox.Default,
+                QMessageBox.NoButton, 
+                QMessageBox.NoButton, 
+                self.canvas)
+                mb.exec_()            
        
         self.canvas.toolbarFunctions.reloadWidgets()
         self.loadPackagesLists()
@@ -168,14 +191,14 @@ class packageManager(redRQTCore.dialog):
         return package
     # take a dict with package name as key and value a dict containing key 'installed' 
     # if value of 'installed' key is true do nothing and return else install 
-    def downloadPackages(self,packages,window=None):
+    def downloadPackages(self,packages,window=None, force = False):
         if not redREnviron.checkInternetConnection():
             return False
         if not window:
             window  = self.canvas
         OK = True
         for package,status in packages.items():
-            if status['installed']: continue
+            if status['installed'] and not force: continue
             if not package in self.sitePackages: continue
             self.progressBar = QProgressDialog(window)
             self.progressBar.setCancelButtonText(QString())
@@ -299,23 +322,24 @@ class packageManager(redRQTCore.dialog):
         # print 'asdfasdfsd', xml
     ## moves through the local package file and returns a dict of packages with version, stability, update date, etc
     def getAvailablePackages(self):
-        file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
-        if not os.path.isfile(file):
-            self.createAvailablePackagesXML()
-        packages = readXML(file)
-        if packages == None: 
-            self.createAvailablePackagesXML()
+        return getAvailablePackages()
+        # file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
+        # if not os.path.isfile(file):
+            # self.createAvailablePackagesXML()
+        # packages = readXML(file)
+        # if packages == None: 
+            # self.createAvailablePackagesXML()
         
-        packageDict = {}
-        for package in packages.firstChild.childNodes:
-            if package.nodeType !=package.ELEMENT_NODE:
-                continue
-            p = orngRegistry.parsePackageXML(package)
-            packageDict[p['Name']] =  p
+        # packageDict = {}
+        # for package in packages.firstChild.childNodes:
+            # if package.nodeType !=package.ELEMENT_NODE:
+                # continue
+            # p = orngRegistry.parsePackageXML(package)
+            # packageDict[p['Name']] =  p
         
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(packageDict)        
-        return packageDict
+        ##pp = pprint.PrettyPrinter(indent=4)
+        ##pp.pprint(packageDict)        
+        # return packageDict
         
     ## returns a tuple of dicts (packages needed updates, installed packages, and packages available on the repository)
     
@@ -415,7 +439,26 @@ class packageManager(redRQTCore.dialog):
             
             newChild = redRQTCore.treeWidgetItem(self.treeViewUpdates, line,bgcolor=QColor(color))
             
-                    
+    def installAllPakcages(self):
+        """Install all packages on the repository, this is if you just want to get everything."""
+        downloadList = {}
+        for package, value in self.availablePackages.items():
+            if value['status'] == 'Local only': continue
+            downloadList[package] = {'Version':'force', 'installed':False}
+        
+        self.askToInstall(downloadList, _("Are you sure that you want to install all available packages?"))
+        
+    # takes user selected list of packages from the available packages menu and installed them and all the dependencies
+    def installNewPackage(self):
+        selectedItems = self.treeViewAvailable.selectedItems()
+        if len(selectedItems) ==0: return
+        downloadList = {}
+        for item in selectedItems:  
+            name = unicode(item.text(0))
+            downloadList[name] = {'Version':unicode(item.text(3)), 'installed':False}
+
+        self.askToInstall(downloadList, _("Are you sure that you want to install these packages?"))
+        
     def installUpdates(self):
         ### move through the selected items in the updates page, get the RRP locations and install the rrp's for the packages.
         selectedItems = self.treeViewUpdates.selectedItems()
@@ -489,16 +532,7 @@ class packageManager(redRQTCore.dialog):
         
         #self.tabsArea.setCurrentIndex(1)
     
-    # takes user selected list of packages from the available packages menu and installed them and all the dependencies
-    def installNewPackage(self):
-        selectedItems = self.treeViewAvailable.selectedItems()
-        if len(selectedItems) ==0: return
-        downloadList = {}
-        for item in selectedItems:  
-            name = unicode(item.text(0))
-            downloadList[name] = {'Version':unicode(item.text(3)), 'installed':False}
-
-        self.askToInstall(downloadList,_("Are you sure that you want to install these packages?"))
+    
 
     # install file form file. Takes package rrp location and parses the xml file to dependencies
     # installs the local rrp file as well as all the required dependencies if they exist in the repository
