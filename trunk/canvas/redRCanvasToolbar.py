@@ -629,7 +629,10 @@ class HTMLDelegate(QItemDelegate):
         ctx = QAbstractTextDocumentLayout.PaintContext()
        
         painter.translate(option.rect.topLeft());
-        icon = QIcon(record[1].icon)
+        try:
+            icon = QIcon(record[1].icon)
+        except:
+            icon = record[1]['icon']
         self.drawDecoration(painter, option, QRect(5,5,32,32), icon.pixmap(QSize(32,32)))
         painter.translate(QPointF(40,4));
         painter.setClipRect(option.rect.translated(-option.rect.topLeft()))
@@ -704,7 +707,7 @@ class SearchBox2(redRlineEdit):
         self.setItems(redRObjects.widgetRegistry()['widgets'], redRObjects.widgetRegistry()['templates'])
     def setItems(self, widgetitems, templateitems):
         
-        print 'templates', templateitems
+        #print 'templates', templateitems
         try:
             self.itemsAsItems = widgetitems
             self.templateItemsAsItems = [temp[1] for temp in templateitems]
@@ -724,9 +727,13 @@ class SearchBox2(redRlineEdit):
         self.listWidget.setUpdatesEnabled(0)
         self.model.clear()
         last = self.getLastTextItem()
-        """There is a hook  to ignore the processing and clear the model if the text begins with the search modifier !@"""
-        if '!@' in last[0]:
+        if len(last) == 0:
+            self.listWidget.hide()
             return
+        
+        # """There is a hook  to ignore the processing and clear the model if the text begins with the search modifier !@"""
+        # if '!@' in last[0]:
+            # return
             
         tuples = zip(self.itemsAsStrings, self.itemsAsItems.values(), ['w']*len(self.itemsAsStrings))
         tuples += zip(self.templateItemsAsStrings, self.templateItemsAsItems, ['t']*len(self.templateItemsAsStrings))
@@ -754,13 +761,13 @@ class SearchBox2(redRlineEdit):
             
         # tuples = [(text, item) for (text, item) in tuples if last in text]
         ################## end old block ########################
-        
+        self.model.listdata = []
         """Once the tuples are formatted for searching we populate the listbox."""
         if tuples:
             if len(tuples) > self.maxResults:       # collect only the max results number of records.
                 tuples = tuples[0:self.maxResults]
             
-            self.model.listdata = []
+            
             p =  '(%s)' % '|'.join(last)
             pattern = re.compile(p, re.IGNORECASE)
             
@@ -781,21 +788,36 @@ class SearchBox2(redRlineEdit):
                     x = QStandardItem(QIcon(info.icon), theText)
                     #x.info = (info, c)
                     self.model.appendRow(x)
-            selectionModel = self.listWidget.selectionModel()
-            selectionModel.setCurrentIndex(self.model.index(0,0),QItemSelectionModel.ClearAndSelect)
             
-            height = len(tuples)*50
-            
-            self.listWidget.setUpdatesEnabled(1)
-            width = max(self.width(), self.autoSizeListWidget and self.listWidget.sizeHintForColumn(0)+10)
-            if self.autoSizeListWidget:
-                self.listWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)  
-            self.listWidget.resize(width, min(height,qApp.canvasDlg.height())+10)            
-            self.listWidget.move(self.mapToGlobal(QPoint(0, self.height())))
-            self.listWidget.show()
-        else:
-            self.listWidget.hide()
-            return
+        ### add the websearch 
+        theText = 'Web Search <br/>http://www.red-r.org/search/node/%s' % ' '.join(last)
+        self.model.listdata.append((theText, {'icon':QIcon(os.path.join(redREnviron.directoryNames['canvasIconsDir'], 'webQuery.png')), 'text':'http://www.red-r.org/search/node/%s' % ' '.join(last)}, 'web'))
+        x = QStandardItem(QIcon(os.path.join(redREnviron.directoryNames['canvasIconsDir'], 'webQuery.png')), theText)
+        self.model.appendRow(x)
+                
+        ### add the help search
+        theText = 'Local Help Search <br/>%s' % ' '.join(last)
+        self.model.listdata.append((theText, {'icon':QIcon(os.path.join(redREnviron.directoryNames['canvasIconsDir'], 'help.png')), 'text':'%s?q=%s&check_keywords=yes&area=default' % (os.path.join(redREnviron.directoryNames['redRDir'], 'doc', 'search.html'), ' '.join(last))}, 'help'))
+        x = QStandardItem(QIcon(os.path.join(redREnviron.directoryNames['canvasIconsDir'], 'help.png')), theText)
+        self.model.appendRow(x)
+        
+        
+        
+        selectionModel = self.listWidget.selectionModel()
+        selectionModel.setCurrentIndex(self.model.index(0,0),QItemSelectionModel.ClearAndSelect)
+        
+        height = (len(tuples)+2)*50
+        
+        self.listWidget.setUpdatesEnabled(1)
+        width = max(self.width(), self.autoSizeListWidget and self.listWidget.sizeHintForColumn(0)+10)
+        if self.autoSizeListWidget:
+            self.listWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)  
+        self.listWidget.resize(width, min(height,qApp.canvasDlg.height())+10)            
+        self.listWidget.move(self.mapToGlobal(QPoint(0, self.height())))
+        self.listWidget.show()
+        # else:
+            # self.listWidget.hide()
+            # return
         
         if self.listUpdateCallback:
             self.listUpdateCallback()
@@ -847,23 +869,28 @@ class SearchBox2(redRlineEdit):
         This function gets the widgetInfo from the model and, hides the listWidget and calls the callbackOnComplete (searchCallback by default)"""
         
         if self.listWidget.isVisible():
-            widgetInfo, c = self.model.listdata[self.listWidget.selectedIndexes()[0].row()][1:]
-            self.setText(unicode(widgetInfo.name))
-            self.listWidget.hide()
-            self.setFocus()
-            
-            if self.callbackOnComplete:
-                QTimer.singleShot(0, lambda:self.callbackOnComplete(widgetInfo, c))
+            info, c = self.model.listdata[self.listWidget.selectedIndexes()[0].row()][1:]
+            if c in ['web', 'help']:
+                import webbrowser
+                webbrowser.open(info['text'])
+                self.clear()
+            else:
+                self.setText(unicode(info.name))
+                self.listWidget.hide()
+                self.setFocus()
                 
-        elif '!@' in unicode(self.text()):
-            import webbrowser
-            itemText = unicode(self.text())
-            itemText = itemText.replace('!@', '').strip()
-            #print _('Searching ')+itemText+' on Red-R.org'
-            #self.searchBox.show()
-            url = 'http://www.red-r.org/search/node/%s' % itemText
-            #self.searchBox.updateUrl(url)
-            webbrowser.open(url)
+                if self.callbackOnComplete:
+                    QTimer.singleShot(0, lambda:self.callbackOnComplete(info, c))
+                
+        # elif '!@' in unicode(self.text()):
+            # import webbrowser
+            # itemText = unicode(self.text())
+            # itemText = itemText.replace('!@', '').strip()
+            ##print _('Searching ')+itemText+' on Red-R.org'
+            ##self.searchBox.show()
+            # url = 'http://www.red-r.org/search/node/%s' % itemText
+            ##self.searchBox.updateUrl(url)
+            # webbrowser.open(url)
         self.listWidget.hide()
         
     #def searchDialog(self):
