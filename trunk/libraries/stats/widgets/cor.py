@@ -1,3 +1,33 @@
+"""Correlation/Variance widget
+
+
+.. helpdoc::
+Performs correlation, variance, or covariance testing on two data tables.
+"""
+
+
+"""<widgetXML>
+    <name>
+        Correlation/Variance
+    </name>
+    <icon>
+        correlation.png
+    </icon>
+    <summary>
+        Performs correlation, variance, or covariance testing on two data tables.
+    </summary>
+    <tags>
+        <tag priority="1">
+            Stats
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+"""
+
 """
 <name>Correlation/Variance</name>
 <tags>Stats</tags>
@@ -40,7 +70,13 @@ class cor(OWRpy):
         
         # Define the inputs that this widget will accept
         # When data is received the three element in the tuple which is a function will be executed
+        
+        """.. rrsignals::
+            :description: `Input data table for comparison.`"""
         self.inputs.addInput('id0', 'x', [signals.base.RMatrix, signals.base.RDataFrame], self.processx)
+        
+        """.. rrsignals::
+            :description: `Input data table for comparison.`"""
         self.inputs.addInput('id1', 'y', [signals.base.RMatrix, signals.base.RDataFrame], self.processy)
 
         # Define the outputs of this widget
@@ -53,23 +89,41 @@ class cor(OWRpy):
         options = redRGUI.base.widgetBox(area,orientation='vertical')
         area.layout().setAlignment(options,Qt.AlignTop)
         
+        """.. rrgui::
+            :description: `Select the type of comparison to be made.`
+        """
         # radioButtons are a type of qtWidget from the base package.  This widget will show radioButtons in a group.  Only one radio button may be selected at one time.  Buttons are declared using buttons = , the callback is the function that will be executed when the button selection changes.  setChecked sets a button to be checked by default.
         self.type = redRGUI.base.radioButtons(options,  label = "Perform", 
         buttons = ['Variance', 'Correlation', 'Covariance'],setChecked='Correlation',
         orientation='vertical',callback=self.changeType)
         
+        
+        """.. rrgui::
+            :description: `Select statistic to ouptut.`
+        """
         self.methodButtons = redRGUI.base.radioButtons(options,  label = "Method", 
         buttons = ['pearson', 'kendall', 'spearman'],setChecked='pearson',
         orientation='vertical')
 
+        
+        """.. rrgui::
+            :description: `Set how missing values are to be handled.`
+        """
         self.useButtons =  redRGUI.base.radioButtons(options, label='Handing Missing Values', setChecked='everything',
         buttons = ["everything","all.obs", "complete.obs", "pairwise.complete.obs"],
         orientation='vertical')
         
+        
+        """.. rrgui::
+            :description: `Run the comparison.`
+        """
         # the commit button is a special button that can be set to process on data input.  Widgets must be aware of these selections.  Clicking the commit button executes the callback which in this case executes the commitFunction.
         self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
         
+        """.. rrgui::
+            :description: `Display results from the comparison in a table.`
+        """
         # this is a filter table designed to hold R data.  The name is Cor/Var for the report generation but the user will not see this label because displayLabel is set to False.
         self.RoutputWindow = redRGUI.base.filterTable(area,label='Cor/Var', displayLabel=False,
         sortable=True,filterable=False)

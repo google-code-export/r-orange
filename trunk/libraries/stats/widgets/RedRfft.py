@@ -1,3 +1,28 @@
+"""Fast Discrete Fourier Transform widget
+
+.. helpdoc::
+Performs fast discrete fourier transform on a data matrix.
+"""
+
+
+"""<widgetXML>
+    name>Fast Discrete Fourier Transform</name>
+    <icon>default.png</icon>
+    <summary>
+        Performs fast discrete fourier transform on a data matrix.
+    </summary>
+    <tags>
+        <tag priority="10">
+            Data Input
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+"""
+
 """
 <name>Fast Discrete Fourier Transform</name>
 <tags>Stats</tags>
@@ -5,7 +30,6 @@
 """
 from OWRpy import * 
 import redRGUI, signals
-import redRGUI 
 
 
 class RedRfft(OWRpy): 
@@ -16,11 +40,18 @@ class RedRfft(OWRpy):
         self.data = {}
         self.RFunctionParam_z = ''
         self.isNumeric = False
+        
+        """.. rrsignals::
+            :description: `Z matrix`"""
         self.inputs.addInput('id0', 'z', signals.base.RMatrix, self.processz)
 
+        """.. rrsignals::
+            :description: `Transformed data matrix`"""
         self.outputs.addOutput('id0', 'fft Output', signals.base.RMatrix)
 
-        
+        """.. rrgui::
+            :description: `Inverse transform.`
+        """
         self.RFunctionParaminverse_radioBox = redRGUI.base.radioButtons(self.controlArea, 
         label = "inverse:", buttons = ["Yes","No"], setChecked = "No")
         

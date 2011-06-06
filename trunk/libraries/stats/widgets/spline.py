@@ -1,3 +1,28 @@
+"""Spline Fit widget
+
+
+.. helpdoc::
+Generates a spline fit to X, Y data.  This can be used for plotting or for interogating the splines.
+"""
+
+
+"""<widgetXML>
+    <name>Spline Fit</name>
+    <icon>stats.png</icon>
+    <screenshots></screenshots>
+    <summary>Produces a spline fit of X/Y data.</summary>
+    <tags>
+        <tag priority="10">
+            Parametric
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+"""
+
 """
 <name>Spline Fit</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
@@ -15,32 +40,73 @@ class spline(OWRpy):
     settingsList = []
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
+        
+        """.. rrvnames::""" ## left blank so no description
         self.setRvariableNames(["spline"])
         self.data = {}
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
+        
+        """.. rrsignals::
+            :description: `X data`"""
+        self.inputs.addInput('id1', 'x', [signals.base.RVector, signals.base.RDataFrame], self.processx)
+        
+        """.. rrsignals::
+            :description: `Y data`"""
         self.inputs.addInput('id0', 'y', signals.base.RVector, self.processy)
-        self.inputs.addInput('id1', 'x', signals.base.RVector, self.processx)
-
+        
+        
+        """.. rrsignals::
+            :description: `spline Output fit`"""
         self.outputs.addOutput('id0', 'spline Output', signals.base.RModelFit)
+        
+        
+        """.. rrsignals::
+            :description: `spline plot attribute`"""
         self.outputs.addOutput('id1', 'spline plot attribute', signals.plotting.RPlotAttribute)
 
         
         self.standardTab = redRGUI.base.groupBox(self.controlArea, label = 'Parameters')
+        
+        """.. rrgui::
+            :description: `XMin.`
+        """
         self.RFunctionParamxmin_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "xmin:", text = 'min(x)')
+        
+        """.. rrgui::
+            :description: `Function to handle ties.`
+        """
         self.RFunctionParamties_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "ties:", text = 'mean')
+        
+        """.. rrgui::
+            :description: `Fit method.`
+        """
         self.RFunctionParammethod_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "method:", text = '"fmm"')
+        
+        """.. rrgui::
+            :description: `xmax.`
+        """
         self.RFunctionParamxmax_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "xmax:", text = 'max(x)')
+        
+        """.. rrgui::
+            :description: `Number of inflection points.`
+        """
         self.RFunctionParamn_lineEdit =  redRGUI.base.lineEdit(self.standardTab,  label = "n:", text = '3*length(x)')
         
+        
+        """.. rrgui::
+            :description: `Optional X Data parameter.`
+        """
         self.xcolumnComboBox = redRGUI.base.comboBox(self.standardTab, label = 'X data')
+        
+        """.. rrgui::
+            :description: `Optional Y Data parameter.`
+        """
         self.ycolumnComboBox = redRGUI.base.comboBox(self.standardTab, label = 'Y data')
+        
         redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "RoutputWindow")
     def processy(self, data):
-        if not self.require_librarys(["stats"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
         if data:
             self.RFunctionParam_y=data.getData()
             #self.data = data
@@ -48,9 +114,6 @@ class spline(OWRpy):
         else:
             self.RFunctionParam_y=''
     def processx(self, data):
-        if not self.require_librarys(["stats"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
         if data:
             self.RFunctionParam_x=data.getData()
             self.data = data

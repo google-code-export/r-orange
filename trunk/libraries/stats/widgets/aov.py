@@ -16,19 +16,48 @@ class aov(OWRpy):
         self.data = {}
         self.RFunctionParam_data = ''
         self.saveSettingsList.extend(['data', 'RFunctionParam_data'])
+        
+        """.. rrsignals::
+            :description: `A data table to perform the modeling on.`"""
         self.inputs.addInput('id0', 'data', signals.base.RDataFrame, self.processdata)
-
+        
+        """.. rrsignals::
+            :description: `Output of the ANVOA model..`"""
         self.outputs.addOutput('id0', 'aov Output', signals.base.RModelFit)
 
         
         box = redRGUI.base.tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
         self.advancedTab = box.createTabPage(name = "Advanced")
+        
+        """.. rrgui::
+            :description: `Set the contrasts of the model (Advanced).`
+        """
         self.RFunctionParamcontrasts_lineEdit =  redRGUI.base.lineEdit(self.advancedTab,  label = "contrasts:", text = 'NULL')
+        
+        """.. rrgui::
+            :description: `Enter the model formula.`
+        """
         self.RFunctionParamformula_formulaEntry =  redRGUI.base.RFormulaEntry(self.standardTab)
+        
+        """.. rrgui::
+            :description: `Set the qr of the model (Advanced).`
+        """
         self.RFunctionParamqr_lineEdit =  redRGUI.base.lineEdit(self.advancedTab,  label = "qr:", text = 'TRUE')
+        
+        """.. rrgui::
+            :description: `Set the projections for the model (Advanced).`
+        """
         self.RFunctionParamprojections_lineEdit =  redRGUI.base.lineEdit(self.advancedTab,  label = "projections:", text = 'FALSE')
+        
+        """.. rrgui::
+            :description: `Run the model.`
+        """
         redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        
+        """.. rrgui::
+            :description: `Display results from the model.`
+        """
         self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "R Output Window")
     def processdata(self, data):
         

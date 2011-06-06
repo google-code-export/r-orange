@@ -1,10 +1,32 @@
+"""Test For Correlation (Single) widget
+
+.. helpdoc::
+Performs a test for correlation using the cor.test function.  This will make a test for correlation with associated summaries about the correlation including R-squared, p-value, etc.
 """
-<name>Test For Correlation (Single)</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<RFunctions>stats:cor.test</RFunctions>
-<tags>Parametric</tags>
-<icon>stats.png</icon>
+
+
+"""<widgetXML>
+    <name>
+        Test For Correlation (Single)
+    </name>
+    <icon>
+        default.png
+    </icon>
+    <summary>
+        Read data files into Red-R.
+    </summary>
+    <tags>
+        <tag priority="10">
+            Parametric
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
 """
+
 from OWRpy import * 
 import redRGUI, signals
 import redRGUI 
@@ -12,19 +34,30 @@ class cor_test(OWRpy):
     settingsList = []
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
+        
+        """.. rrvnames::""" ## left blank so no description
         self.setRvariableNames(["cor.test"])
         self.data = {}
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'y', signals.base.RVector, self.processy)
+        
+        """.. rrsignals::
+            :description: `X Vector`"""
         self.inputs.addInput('id1', 'x', signals.base.RVector, self.processx)
-
+        
+        """.. rrsignals::
+            :description: `Y Vector`"""
+        self.inputs.addInput('id0', 'y', signals.base.RVector, self.processy)
+        
+        
+        """.. rrgui::
+            :description: `Run the correlation test.`""" 
         redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        
+        """.. rrgui::
+            :description: `View the output of the correlation test.`""" 
         self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "RoutputWindow")
     def processy(self, data):
-        if not self.require_librarys(["stats"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
         if data:
             self.RFunctionParam_y=data.getData()
             #self.data = data
@@ -32,9 +65,6 @@ class cor_test(OWRpy):
         else:
             self.RFunctionParam_y=''
     def processx(self, data):
-        if not self.require_librarys(["stats"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
         if data:
             self.RFunctionParam_x=data.getData()
             #self.data = data

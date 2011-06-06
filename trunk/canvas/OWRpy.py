@@ -59,7 +59,6 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         self.reportOrder = None
         self.tempID = None
         
-
     def log(self, comment, level = redRLog.DEVEL):
         """Class implemnetation of logging
         
@@ -77,6 +76,9 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             self.variable_suffix = '_' + self.widgetID
         for x in self.RvariablesNames:
             self.Rvariables[x] = x + self.variable_suffix
+            
+        self.resetRVariableNameEdits()
+        
     def setRvariableNames(self,names):
         """Sets the self.Rvariables dict with a unicode string for each variable, this is called in __init__.
         
@@ -86,6 +88,8 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             self.Rvariables[x] = x + self.variable_suffix
             self.RvariablesNames.append(x)
             
+        self.resetRVariableNameEdits()
+        
     def makeCM(self, Variable):
         self.R(Variable+'<-list()', wantType = 'NoConversion')
     def addToCM(self, colname = 'tmepColname', CM = None, values = None):

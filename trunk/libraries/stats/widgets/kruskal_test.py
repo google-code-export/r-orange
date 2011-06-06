@@ -1,3 +1,32 @@
+"""Kruskal widget
+
+.. helpdoc::
+Performs the Kruskal Walis test on data.
+"""
+
+
+"""<widgetXML>
+    <name>
+        Kruskal
+    </name>
+    <icon>
+        default.png
+    </icon>
+    <summary>
+        Performs the Kruskal Walis test on data.
+    </summary>
+    <tags>
+        <tag priority="10">
+            Non Parametric
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+"""
+
 """
 <name>Kruskal</name>
 <description>Performs the Kruskal Walis test on data.</description>
@@ -16,16 +45,20 @@ class kruskal_test(OWRpy):
         OWRpy.__init__(self, **kwargs)
          
         self.RFunctionParam_data = ''
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', 'data', signals.base.RVariable, self.processdata)
 
-
+        """.. rrgui::"""
         self.RFunctionParamformula =  redRGUI.base.RFormulaEntry(self.controlArea)
+        
+        """.. rrgui::"""
         redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        
+        """.. rrgui::"""
         self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "RoutputWindow")
+    
     def processdata(self, data):
-        if not self.require_librarys(["stats"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
         self.RoutputWindow.clear()
         self.status.setText('New data recieved')
         if data:

@@ -1,3 +1,32 @@
+"""ANOVA-LM widget
+
+.. helpdoc::
+Performs LM then ANOVA function on a model fit or data.
+"""
+
+
+"""<widgetXML>
+    <name>
+        ANOVA-LM
+    </name>
+    <icon>
+        defualt.png
+    </icon>
+    <summary>
+        Read data files into Red-R.
+    </summary>
+    <tags>
+        <tag priority="50">
+            Parametric
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+"""
+
 """
 <name>ANOVA-LM</name>
 <tags>Parametric</tags>
@@ -13,12 +42,23 @@ class anova_lm(OWRpy):
         OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_object = ''
         self.saveSettingsList.extend(['RFunctionParam_object'])
+        
+        """.. rrsignals::
+            :description: `A linear model fit.`"""
         self.inputs.addInput('id0', 'object', signals.stats.RLMFit, self.processobject)
 
         
         box = redRGUI.base.groupBox(self.controlArea, "Output")
+        
+        """.. rrgui::
+            :description: `Run the ANOVA LM function.`
+        """
         self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
+        
+        """.. rrgui::
+            :description: `Display output from the ANOVALM function.`
+        """
         self.RoutputWindow = redRGUI.base.textEdit(box,label='R Output', displayLabel=False)
         
     def onLoadSavedSession(self):

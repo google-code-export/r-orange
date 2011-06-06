@@ -1,3 +1,33 @@
+"""Generate Distributions widget
+
+
+.. helpdoc::
+Generates vectors of distributions for a variety of preset distributions.
+"""
+
+
+"""<widgetXML>
+    <name>
+        Generate Distributions
+    </name>
+    <icon>
+        defualt.png
+    </icon>
+    <summary>
+        Generates vectors of distributions for a variety of preset distributions.
+    </summary>
+    <tags>
+        <tag priority="70">
+            Stats
+        </tag>
+    </tags>
+    <author>
+        <authorname>Anup Parikh</authorname>
+        <authorcontact>anup@red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+"""
+
 """
 <name>Generate Distributions</name>
 <author>Anup Parikh anup@red-r.org</author>
@@ -30,9 +60,14 @@ class distributions(OWRpy):
         
         #create a R variable cor in the R session.
         #the output variable will not conflict with some other widgets variables
+        
+        """.. rrvnames::""" ## left blank so no description
         self.setRvariableNames(["distri"])
 
         # Define the outputs of this widget
+        
+        """.. rrsignals::
+            :description: `A resulting distribution as a vector.`"""
         self.outputs.addOutput('id0', 'Results', signals.base.RVector)
 
         
@@ -42,6 +77,7 @@ class distributions(OWRpy):
         area.layout().setAlignment(options,Qt.AlignTop)
         self.count = redRGUI.base.spinBox(options, label='# Observations to Generate', min = 0,max=60000000, value = 10)
         
+        """.. rrgui::""" 
         self.methodButtons = redRGUI.base.comboBox(options,  label = "Distributions", 
         items = [("rnorm", "Normal"),
         ('rbeta','Beta'),
@@ -56,48 +92,86 @@ class distributions(OWRpy):
         textBoxWidth = 70
         self.distOptions = redRGUI.base.widgetBox(options)
         self.normalDist = redRGUI.base.groupBox(self.distOptions,label='Normal Distribution')
+        
+        """.. rrgui::"""
         self.normMean = redRGUI.base.lineEdit(self.normalDist, label='Mean',id='mean', text='0', width=textBoxWidth)
+        
+        """.. rrgui::"""
         self.normSD = redRGUI.base.lineEdit(self.normalDist, label='Standard Deviations',id='sd', text='1',width=textBoxWidth)
         
+        """.. rrgui::"""
         self.betaDist = redRGUI.base.groupBox(self.distOptions,label='Beta Distribution')
+        
+        """.. rrgui::"""
         self.betaShape1 = redRGUI.base.lineEdit(self.betaDist, label='Shape 1', id='shape1', width=textBoxWidth,text='1')
+        
+        """.. rrgui::"""
         self.betaShape2 = redRGUI.base.lineEdit(self.betaDist, label='Shape 2', id='shape2', width=textBoxWidth,text='1')
+        
+        """.. rrgui::"""
         self.betaNCP = redRGUI.base.lineEdit(self.betaDist, label='Non-centrality', id='ncp', width=textBoxWidth,text='0')
         self.betaDist.hide()
 
         
         self.binomDist = redRGUI.base.groupBox(self.distOptions,label='Binomial Distribution')
+        
+        """.. rrgui::"""
         self.binomSize = redRGUI.base.lineEdit(self.binomDist, label='Size', id='size', width=textBoxWidth,text='1')
+        
+        """.. rrgui::"""
         self.binomProb = redRGUI.base.lineEdit(self.binomDist, label='Probability', id='prob', width=textBoxWidth,text='.5')
         self.binomDist.hide()
         
         
         self.cauchyDist = redRGUI.base.groupBox(self.distOptions,label='Cauchy Distribution')
+        
+        """.. rrgui::"""
         self.cauchyLocation = redRGUI.base.lineEdit(self.cauchyDist, label='Location', id='location', width=textBoxWidth,text='0')
+        
+        """.. rrgui::"""
         self.cauchyScale = redRGUI.base.lineEdit(self.cauchyDist, label='Scale', id='scale', width=textBoxWidth,text='1')
         self.cauchyDist.hide()
         
         self.gammaDist = redRGUI.base.groupBox(self.distOptions,label='Gamma Distribution')
+        
+        """.. rrgui::"""
         self.gammaShape = redRGUI.base.lineEdit(self.gammaDist, label='Shape', id='location', width=textBoxWidth,text='1')
+        
+        """.. rrgui::"""
         self.gammaRate = redRGUI.base.lineEdit(self.gammaDist, label='Rate', id='scale', width=textBoxWidth,text='1')
+        
+        """.. rrgui::"""
         self.gammaScale = redRGUI.base.lineEdit(self.gammaDist, label='Scale', id='scale', width=textBoxWidth,text='.5')
         self.gammaDist.hide()
         
         self.chiDist = redRGUI.base.groupBox(self.distOptions,label='Chi Square Distribution')
+        
+        """.. rrgui::"""
         self.chiDF = redRGUI.base.lineEdit(self.chiDist, label='Degrees of Freedom', id='df', width=textBoxWidth,text='1')
+        
+        """.. rrgui::"""
         self.chiNCP = redRGUI.base.lineEdit(self.chiDist, label='Non-centrality', id='ncp', width=textBoxWidth,text='0')
         self.chiDist.hide()
         
         self.fDist = redRGUI.base.groupBox(self.distOptions,label='F Distribution')
+        
+        """.. rrgui::"""
         self.fDF1 = redRGUI.base.lineEdit(self.fDist, label='Degrees of Freedom 1', id='df1', width=textBoxWidth,text='1')
+        
+        """.. rrgui::"""
         self.fDF2 = redRGUI.base.lineEdit(self.fDist, label='Degrees of Freedom 2', id='df2', width=textBoxWidth,text='1')
+        
+        """.. rrgui::"""
         self.fNCP = redRGUI.base.lineEdit(self.fDist, label='Non-centrality', id='ncp', width=textBoxWidth,text='0')
         self.fDist.hide()
         
         self.expDist = redRGUI.base.groupBox(self.distOptions,label='Exponential Distribution')
+        
+        """.. rrgui::"""
         self.expRate = redRGUI.base.lineEdit(self.expDist, label='Rate ', id='rate', width=textBoxWidth,text='1')
         self.expDist.hide()
         
+        """.. rrgui::"""
         commit = redRGUI.base.commitButton(options, "Commit", toolTip='Calculate values', callback = self.commitFunction)
         options.layout().setAlignment(commit, Qt.AlignRight)
         

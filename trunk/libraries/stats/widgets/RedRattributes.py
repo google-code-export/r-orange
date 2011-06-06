@@ -18,15 +18,15 @@ class RedRattributes(OWRpy):
         self.setRvariableNames(["attributes"])
         self.data = {}
         self.RFunctionParam_obj = ''
-        self.inputs.addInput('id0', 'obj', signals.base.RVariable, self.processobj)
+        
+        """.. rrsignals::
+            :description: `Model object`"""
+        self.inputs.addInput('id0', 'Objectd', signals.base.RVariable, self.processobj)
 
         
         redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "R Output Window")
     def processobj(self, data):
-            if not self.require_librarys(["base"]):
-                    self.status.setText('R Libraries Not Loaded.')
-                    return
             if data:
                     self.RFunctionParam_obj=data.getData()
                     #self.data = data
@@ -34,7 +34,9 @@ class RedRattributes(OWRpy):
             else:
                     self.RFunctionParam_obj=''
     def commitFunction(self):
-            if unicode(self.RFunctionParam_obj) == '': return
+            if unicode(self.RFunctionParam_obj) == '': 
+                self.status.setText('No data')
+                return
             injection = []
             inj = ','.join(injection)
             self.R(self.Rvariables['attributes']+'<-attributes(obj='+unicode(self.RFunctionParam_obj)+','+inj+')')

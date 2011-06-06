@@ -1,3 +1,32 @@
+"""Pairwise T-Test widget
+
+.. helpdoc::
+This widget performs pairwise t-tests on the supplied samples.  This is also effective at performing t-tests on two samples if supplied.  Data should be supplied in the form of a two columned table with one column representing values and the other the groupings.  Use of Melt DF and Column Selector may be helpful in transforming your data.
+"""
+
+
+"""<widgetXML>
+    <name>
+        Pairwise T-Test
+    </name>
+    <icon>
+        defualt.png
+    </icon>
+    <summary>
+        This widget performs pairwise t-tests on the supplied samples.  This is also effective at performing t-tests on two samples if supplied.  Data should be supplied in the form of a two columned table with one column representing values and the other the groupings.  Use of Melt DF and Column Selector may be helpful in transforming your data.
+    </summary>
+    <tags>
+        <tag priority="10">
+            Parametric
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+"""
+
 """
 <name>Pairwise T-Test</name>
 <description>This widget performs pairwise t-tests on the supplied samples.  This is also effective at performing t-tests on two samples if supplied.  Data should be supplied in the form of a two columned table with one column representing values and the other the groupings.  Use of Melt DF and Column Selector may be helpful in transforming your data.</description>
@@ -13,24 +42,56 @@ class pairwise_t_test(OWRpy):
     settingsList = []
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
+        
+        """.. rrvnames::""" ## left blank so no description
         self.setRvariableNames(["pairwise.t.test"])
         self.RFunctionParam_x = ""
         self.RFunctionParam_pool_sd = "TRUE"
         self.RFunctionParam_g = ""
         self.RFunctionParam_p_adjust_method = "p.adjust.methods"
         self.indata = ''
+        
+        """.. rrsignals::
+            :description: `A data table containing groups and values.`"""
         self.inputs.addInput('id0', 'R Data Frame', signals.base.RDataFrame, self.process)
 
+        """.. rrsignals::
+            :description: `Output generic variable reporesenting the t-test model fit.`"""
         self.outputs.addOutput('id0', 'pairwise.t.test Output', signals.base.RVariable)
 
         
         box = redRGUI.base.widgetBox(self.controlArea)
+        
+        """.. rrgui::
+            :description: `Indicate the column in the data representing the Values.`
+        """
         self.RFunctionParam_x = redRGUI.base.comboBox(box, label = "Values:")
+        
+        """.. rrgui::
+            :description: `Indicate if standard deviations should be pooled or not.`
+        """
         self.RFunctionParam_pool_sd = redRGUI.base.comboBox(box, label = "Pool Standard Deviation:", items = ['True', 'False'])
+        
+        """.. rrgui::
+            :description: `Indicate the columns representing the groups.`
+        """
         self.RFunctionParam_g = redRGUI.base.comboBox(box, label = "Groups Column:")
+        
+        """.. rrgui::
+            :description: `Indicate which p-value adjustment method should be used.`
+        """
         self.RFunctionParam_p_adjust_method = redRGUI.base.comboBox(box, label = "P-value Adjust Method:", items = ["holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"])
+        
+        """.. rrgui::
+            :description: `Indicate if the test is either two.sided, greater or less.`
+        """
         self.alternative = redRGUI.base.comboBox(box, label = 'Alternative Hypothesis:', items = ['two.sided', 'greater', 'less'])
+        
         redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        
+        """.. rrgui::
+            :description: `Displays the results of the comparison.`
+        """
         self.RoutputWindow = redRGUI.base.textEdit(box,label='R Output')
         #box.layout().addWidget(self.RoutputWindow)
     

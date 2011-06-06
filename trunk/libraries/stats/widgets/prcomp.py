@@ -1,3 +1,27 @@
+"""Read File widget
+
+
+.. helpdoc::
+Calculates principal components for a numeric matrix.
+"""
+
+
+"""<widgetXML>
+    <name>Principal Component</name>
+    <icon>stats.png</icon>
+    <summary>Calculates principal components for a numeric matrix.</summary>
+    <tags>
+        <tag priority="10">
+            Parametric
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+"""
+
 """
 <name>Principal Component</name>
 <icon>stats.png</icon>

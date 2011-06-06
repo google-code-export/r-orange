@@ -1,3 +1,26 @@
+"""F Test widget
+
+.. helpdoc::
+Performs the F-test on connected data.
+"""
+
+
+"""<widgetXML>
+    <name>F Test</name>
+    <icon>default.png</icon>
+    <summary>Performs an F test.</summary>
+    <tags>
+        <tag priority="10">
+            Stats
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+"""
+
 """
 <name>F Test</name>
 <RFunctions>stats:var.test</RFunctions>
@@ -8,28 +31,46 @@ import redRGUI, signals
 import redRGUI 
 
 
-class RedRvar_test(OWRpy): 
-    globalSettingsList = ['commit']
+class RedRvar_test(OWRpy):
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(["var.test"])
         self.data = {}
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'y', signals.base.RVector, self.processy)
+        
+        """.. rrsignals::
+            :description: `X data`"""
         self.inputs.addInput('id1', 'x', signals.base.RVector, self.processx)
 
+        """.. rrsignals::
+            :description: `Y data`"""
+        self.inputs.addInput('id0', 'y', signals.base.RVector, self.processy)
         
+        
+        
+        """.. rrgui::
+            :description: `alternative.`
+        """
         self.RFunctionParamalternative_comboBox = redRGUI.base.comboBox(self.controlArea, label = "alternative:", items = ["two.sided","less","greater"])
+        
+        """.. rrgui::
+            :description: `ratio.`
+        """
         self.RFunctionParamratio_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = "ratio:", text = '1')
+        
+        """.. rrgui::
+            :description: `Confidence Interval.`
+        """
         self.RFunctionParamconf_level_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = 'Confidence Interval:', text = '0.95')
+        
+        """.. rrgui::
+            :description: `Commit.`
+        """
         self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
         self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "RoutputWindow")
     def processy(self, data):
-        if not self.require_librarys(["stats"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
         if data:
             self.RFunctionParam_y=data.getData()
             if self.commit.processOnInput():
@@ -37,9 +78,6 @@ class RedRvar_test(OWRpy):
         else:
             self.RFunctionParam_y=''
     def processx(self, data):
-        if not self.require_librarys(["stats"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
         if data:
             self.RFunctionParam_x=data.getData()
             if self.commit.processOnInput():

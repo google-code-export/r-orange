@@ -12,7 +12,7 @@ from PyQt4.QtGui import *
 import redRStyle
 from datetime import date
 import redRi18n
-import redRGUI
+import redRQTCore
 # def _(a):
     # return a
 _ = redRi18n.Coreget_()
@@ -65,6 +65,7 @@ class redRWidgetGUI(QMainWindow):
         self.widgetState = {"Info":{}, "Warning":{}, "Error":{}}
 
         self.windowState = {}
+        self.rVariableNameEdits = {}
         self.savePosition = True
         self.hasBeenShown = False
         self.hasAdvancedOptions = wantGUIDialog
@@ -73,20 +74,20 @@ class redRWidgetGUI(QMainWindow):
         #self.setLayout(QVBoxLayout())
         self.layout().setMargin(2)
         self.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
-        topWidgetPart = redRGUI.base.widgetBox(self, orientation="vertical", margin=0)
+        topWidgetPart = redRQTCore.widgetBox(self, orientation="vertical", margin=0)
         topWidgetPart.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         self.setCentralWidget(topWidgetPart)
-        self.controlArea = redRGUI.base.widgetBox(topWidgetPart, orientation="vertical", margin=4)
+        self.controlArea = redRQTCore.widgetBox(topWidgetPart, orientation="vertical", margin=4)
         #self.controlArea.setLayout(QVBoxLayout())
         #self.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.controlArea.setMinimumWidth(300)
         topWidgetPart.layout().setAlignment(self.controlArea,Qt.AlignTop | Qt.AlignLeft)
         #self.layout().addWidget(self.controlArea)
-        bottomArea = redRGUI.base.widgetBox(topWidgetPart, orientation="horizontal", margin=4)
-        self.bottomAreaLeft = redRGUI.base.widgetBox(bottomArea, orientation = 'horizontal')
-        self.bottomAreaCenter = redRGUI.base.widgetBox(bottomArea, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
+        bottomArea = redRQTCore.widgetBox(topWidgetPart, orientation="horizontal", margin=4)
+        self.bottomAreaLeft = redRQTCore.widgetBox(bottomArea, orientation = 'horizontal')
+        self.bottomAreaCenter = redRQTCore.widgetBox(bottomArea, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
         orientation = 'horizontal')
-        self.bottomAreaRight = redRGUI.base.widgetBox(bottomArea, orientation = 'horizontal')
+        self.bottomAreaRight = redRQTCore.widgetBox(bottomArea, orientation = 'horizontal')
         #start widget GUI
         
         
@@ -96,13 +97,13 @@ class redRWidgetGUI(QMainWindow):
         
         self.setStatusBar(self.statusBar)
         
-        self.RIndicator = redRGUI.base.widgetLabel(self.statusBar)
+        self.RIndicator = redRQTCore.widgetLabel(self.statusBar)
         self.statusBar.addWidget(self.RIndicator)
         self.setRIndicator(False)
         
         
         
-        self.status = redRGUI.base.statusLabel(self.statusBar, '')
+        self.status = redRQTCore.statusLabel(self.statusBar, '')
         self.status.setStatus(0)
         self.status.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.statusBar.addPermanentWidget(self.status,4)
@@ -123,20 +124,47 @@ class redRWidgetGUI(QMainWindow):
         self.notesDock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea | Qt.BottomDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea,self.notesDock)
 
-        self.notesBox = redRGUI.base.widgetBox(None,orientation=QVBoxLayout())
+        self.notesBox = redRQTCore.widgetBox(None,orientation=QVBoxLayout())
         self.notesDock.setWidget(self.notesBox)
         
         self.notesBox.setMinimumWidth(minWidth)
         self.notesBox.setMinimumHeight(50)
         self.notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        redRGUI.base.widgetLabel(self.notesBox, label="Notes:", icon=redRStyle.notesIcon)
+        redRQTCore.widgetLabel(self.notesBox, label="Notes:", icon=redRStyle.notesIcon)
 
-        self.notes = redRGUI.base.textEdit(self.notesBox, label = _('Notes'), displayLabel=False)
+        self.notes = redRQTCore.textEdit(self.notesBox, label = _('Notes'), displayLabel=False)
         self.notes.setMinimumWidth(minWidth)
         self.notes.setMinimumHeight(50)
         self.notes.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
+        
+        #####################
+        # Rvariable Names ###
+        #####################
+        self.RvarNamesDock=QDockWidget(_('R Varibale Names'))
+        self.RvarNamesDock.setObjectName('RvarNamesDock')
+        
+        QObject.connect(self.RvarNamesDock,SIGNAL('topLevelChanged(bool)'),self.updateDock)
+        
+        self.RvarNamesDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
+        self.RvarNamesDock.setMinimumWidth(minWidth)
+        self.RvarNamesDock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea | Qt.BottomDockWidgetArea)
+        
+        self.addDockWidget(Qt.RightDockWidgetArea,self.RvarNamesDock)
+
+        self.RVarNamesBox = redRQTCore.widgetBox(None,orientation=QVBoxLayout())
+        self.RvarNamesDock.setWidget(self.RVarNamesBox)
+
+        self.RVarNamesBox.setMinimumHeight(50)
+        redRQTCore.widgetLabel(self.RVarNamesBox, label=_("R variable names for this widget:"),
+        icon=redRStyle.RIcon)
+
+        #self.ROutput = redRQTCore.textEdit(self.RVarNamesBox, label = _('R Output'),displayLabel=False)
+        #self.ROutput.setMinimumWidth(minWidth)
+        #self.ROutput.setMinimumHeight(50)
+        #self.ROutput.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        redRQTCore.button(self.RVarNamesBox, label = _('Accept Names'), callback = self._acceptNameChanges, toolTip = _('This resets the R variable names for this widget to the indicated names.  This should only be done if the user really knows what she is doing!!'))
         
         
         ################
@@ -153,18 +181,18 @@ class redRWidgetGUI(QMainWindow):
         
         self.addDockWidget(Qt.RightDockWidgetArea,self.RoutputDock)
 
-        self.ROutputBox = redRGUI.base.widgetBox(None,orientation=QVBoxLayout())
+        self.ROutputBox = redRQTCore.widgetBox(None,orientation=QVBoxLayout())
         self.RoutputDock.setWidget(self.ROutputBox)
 
         self.ROutputBox.setMinimumHeight(50)
-        redRGUI.base.widgetLabel(self.ROutputBox, label=_("R code executed in this widget:"),
+        redRQTCore.widgetLabel(self.ROutputBox, label=_("R code executed in this widget:"),
         icon=redRStyle.RIcon)
 
-        self.ROutput = redRGUI.base.textEdit(self.ROutputBox, label = _('R Output'),displayLabel=False)
+        self.ROutput = redRQTCore.textEdit(self.ROutputBox, label = _('R Output'),displayLabel=False)
         self.ROutput.setMinimumWidth(minWidth)
         self.ROutput.setMinimumHeight(50)
         self.ROutput.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        redRGUI.base.button(self.ROutputBox, label = _('Run Selected Code'), callback = self._runSelectedRCode, toolTip = _('You may select any code to execute in the R session.  This will override anything that other widgets have done to this point and will be overriden when this widget executes again.  Use this with great caution.'))
+        redRQTCore.button(self.ROutputBox, label = _('Run Selected Code'), callback = self._runSelectedRCode, toolTip = _('You may select any code to execute in the R session.  This will override anything that other widgets have done to this point and will be overriden when this widget executes again.  Use this with great caution.'))
         
         ### help ####
         self.helpFile = None
@@ -185,30 +213,36 @@ class redRWidgetGUI(QMainWindow):
         # Status Bar ###
         ################
         
-        self.windowState['documentationState'] = {'notesBox':True,'ROutputBox':False}
+        self.windowState['documentationState'] = {'notesBox':True,'ROutputBox':False,'RVarNamesBox':False}
 
-        docBox = redRGUI.base.widgetBox(self.controlArea,orientation='horizontal',spacing=4)
+        docBox = redRQTCore.widgetBox(self.controlArea,orientation='horizontal',spacing=4)
         
-        self.showNotesButton = redRGUI.base.button(docBox, '',toggleButton=True, 
+        self.showNotesButton = redRQTCore.button(docBox, '',toggleButton=True, 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'),
         toolTip=_('Notes'),
         callback = self.updateDocumentationDock)
-        self.showROutputButton = redRGUI.base.button(docBox, '',toggleButton=True, 
+        
+        self.showRVarNamesButton = redRQTCore.button(docBox, '',toggleButton=True, 
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'options.png'),
+        toolTip=_('RVarNames'),
+        callback = self.updateDocumentationDock)
+        
+        self.showROutputButton = redRQTCore.button(docBox, '',toggleButton=True, 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'R_icon.png'),
         toolTip=_('R Code'),
         callback = self.updateDocumentationDock)
         
-        self.printButton = redRGUI.base.button(docBox, "",
+        self.printButton = redRQTCore.button(docBox, "",
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'printer_icon.png'),
         toolTip=_('Print'),
         callback = self.createReport)
 
-        self.showHelpButton = redRGUI.base.button(docBox, '',
+        self.showHelpButton = redRQTCore.button(docBox, '',
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'help_icon.png'),
         toolTip=_('Help'),
         callback = self.showHelp)
 
-        self.includeInReport = redRGUI.base.button(docBox, '', 
+        self.includeInReport = redRQTCore.button(docBox, '', 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'report_icon.png'),
         toolTip=_('Include In Report'), toggleButton = True)
         self.includeInReport.setChecked(True)
@@ -231,10 +265,10 @@ class redRWidgetGUI(QMainWindow):
             self.leftDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
             self.leftDock.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
             self.addDockWidget(Qt.LeftDockWidgetArea,self.leftDock)
-            self.GUIDialog = redRGUI.base.widgetBox(self.leftDock,orientation='vertical')
+            self.GUIDialog = redRQTCore.widgetBox(self.leftDock,orientation='vertical')
             self.GUIDialog.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
             self.leftDock.setWidget(self.GUIDialog)
-            self.leftDockButton = redRGUI.base.button(self.bottomAreaLeft, _('Advanced Options'),toggleButton=True, callback = self.showLeftDock)
+            self.leftDockButton = redRQTCore.button(self.bottomAreaLeft, _('Advanced Options'),toggleButton=True, callback = self.showLeftDock)
             self.statusBar.insertPermanentWidget(2,self.leftDockButton)
             self.windowState['leftDockState'] = True
   
@@ -249,6 +283,27 @@ class redRWidgetGUI(QMainWindow):
             print unicode(self.windowTitle()), eventDict[e.type()]
         return QMainWindow.event(self, e)
     """
+    
+    def _acceptNameChanges(self):
+        for k in self.Rvariables.keys():
+            if self.rVariableNameEdits[k].text() == '': continue
+            self.Rvariables[k] = self.rVariableNameEdits[k].text()
+            
+        self.resetRVariableNameEdits()
+    
+    def resetRVariableNameEdits(self):
+        """Clears the R Variable Names Edit and then repopulates the edit"""
+        self.clearRVariableNameEdits()
+        for k, v in self.Rvariables.items():
+            self.rVariableNameEdits[k] = redRQTCore.lineEdit(self.RVarNamesBox, label = k, text = v)
+            
+    def clearRVariableNameEdits(self):
+        """Clears the R Variable Name Edits"""
+        for v in self.rVariableNameEdits.values():
+            v.hide()
+            
+        self.rVariableNameEdits = {}
+        
     def _runSelectedRCode(self):
         code = unicode(self.ROutput.textCursor().selectedText())
         self.R(code, wantType = 'NoConversion')
@@ -325,6 +380,14 @@ class redRWidgetGUI(QMainWindow):
             self.RoutputDock.hide()
             self.windowState['documentationState']['ROutputBox'] = False
         
+        if self.showRVarNamesButton.isChecked():
+            self.RvarNamesDock.show()
+            self.windowState['documentationState']['RVarNamesBox'] = True
+        else:
+            self.RvarNamesDock.hide()
+            self.windowState['documentationState']['RvarNamesBox'] = False
+            
+            
         # if True in self.windowState['documentationState'].values():
             # self.rightDock.show()
         # else:
@@ -404,8 +467,10 @@ class redRWidgetGUI(QMainWindow):
                 self.hasAdvancedOptions = False
         
         if 'documentationState' in self.windowState.keys():
-            self.showNotesButton.setChecked(self.windowState['documentationState']['notesBox'])
-            self.showROutputButton.setChecked(self.windowState['documentationState']['ROutputBox'])
+            self.showNotesButton.setChecked(self.windowState['documentationState'].get('notesBox', True))
+            self.showROutputButton.setChecked(self.windowState['documentationState'].get('ROutputBox', False))
+            self.showRVarNamesButton.setChecked(self.windowState['documentationState'].get('RVarNamesBox', False))
+            
         self.updateDocumentationDock()
         
         self.hide()

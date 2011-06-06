@@ -1,25 +1,60 @@
+"""Linear Model widget
+
+.. helpdoc::
+Generates a linear model fit to data.
 """
-<name>Linear Model</name>
-<tags>Parametric</tags>
-<icon>stats.png</icon>
+
+
+"""<widgetXML>
+    <name>
+        Linear Model
+    </name>
+    <icon>
+        defualt.png
+    </icon>
+    <summary>
+        Generates a linear model fit to data.
+    </summary>
+    <tags>
+        <tag priority="10">
+            Parametric
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
 """
+
+
 from OWRpy import * 
 import redRGUI, signals
 import redRGUI
 
 class lm(OWRpy): 
-    globalSettingsList = ['commit']
     def __init__(self, **kwargs):
         OWRpy.__init__(self, wantGUIDialog = 1, **kwargs)
+        
+        """.. rrvnames::""" ## left blank so no description  
         self.setRvariableNames(["lm"])
+        
+        
         self.RFunctionParam_formula = ""
         self.RFunctionParam_data = ''
         self.modelFormula = ''
         self.processingComplete = 0
         
+        """.. rrsignals::
+            :description: `Input data table.`"""
         self.inputs.addInput('id0', 'data', signals.base.RDataFrame, self.processdata)
-
+        
+        """.. rrsignals::
+            :description: `LM Fit object for further modeling.`"""
         self.outputs.addOutput('id0', 'lm Output', signals.stats.RLMFit)
+        
+        """.. rrsignals::
+            :description: `LM Plot Attribute, for plotting.`"""
         self.outputs.addOutput('id1', 'lm plot attribute', signals.plotting.RPlotAttribute)
 
         
@@ -28,21 +63,64 @@ class lm(OWRpy):
         box = redRGUI.base.widgetBox(self.GUIDialog, orientation = 'horizontal')
         paramBox = redRGUI.base.groupBox(self.GUIDialog, 'Parameters')
         formulaBox = redRGUI.base.widgetBox(self.controlArea)
+        
+        """.. rrgui::
+            :description: `Subset parameter.`
+        """
         self.RFunctionParam_subset = redRGUI.base.lineEdit(paramBox, 'NULL', label = "subset:")
+        
+        """.. rrgui::
+            :description: `qr parameter.`
+        """
         self.RFunctionParam_qr = redRGUI.base.lineEdit(paramBox, 'TRUE', label = "qr:")
 
+        """.. rrgui::
+            :description: `singular_ok parameter.`
+        """
         self.RFunctionParam_singular_ok = redRGUI.base.lineEdit(paramBox, 'TRUE', label = "singular_ok:")
+        
+        """.. rrgui::
+            :description: `y parameter.`
+        """
         self.RFunctionParam_y = redRGUI.base.lineEdit(paramBox, 'FALSE', label = "y:")
+        
+        """.. rrgui::
+            :description: `weights parameter.`
+        """
         self.RFunctionParam_weights = redRGUI.base.lineEdit(paramBox, "", label = "weights:")
+        
+        """.. rrgui::
+            :description: `offset parameter.`
+        """
         self.RFunctionParam_offset = redRGUI.base.lineEdit(paramBox, "", label = "offset:")
+        
+        """.. rrgui::
+            :description: `contrasts parameter.`
+        """
         self.RFunctionParam_contrasts = redRGUI.base.lineEdit(paramBox, "NULL", label = "contrasts:")
+        
+        """.. rrgui::
+            :description: `x parameter.`
+        """
         self.RFunctionParam_x = redRGUI.base.lineEdit(paramBox, "FALSE", label = "x:")
+        
+        """.. rrgui::
+            :description: `model parameter.`
+        """
         self.RFunctionParam_model = redRGUI.base.lineEdit(paramBox, "TRUE", label = "model:")
+        
+        """.. rrgui::
+            :description: `method parameter.`
+        """
         self.RFunctionParam_method = redRGUI.base.lineEdit(paramBox, "qr", label = "method:")
         
         #start formula entry section
 
         buttonsBox = redRGUI.base.widgetBox(formulaBox, "Commands")
+        
+        """.. rrgui::
+            :description: `Formula entry for model.`
+        """
         self.formulEntry = redRGUI.base.RFormulaEntry(buttonsBox,label='Formula',displayLabel=False)
         
         

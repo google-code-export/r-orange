@@ -41,6 +41,7 @@ class widgetState:
         self.widgetName = widgetName
     
     def hide(self):
+        print 'hiding'
         self.controlArea.hide()
     
     def show(self):
