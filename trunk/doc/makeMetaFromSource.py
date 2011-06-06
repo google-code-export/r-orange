@@ -160,21 +160,36 @@ def _parsefile(myFile):
     return d
     
     
-def parseWidgetFile(filename, outputXML, outputHelp):
+def parseWidgetFile(filename, outputXML, userHelp,devHelp):
     """Reads a file and parses out the relevant widget xml settings, writes to the file output an xml document representing the parsed data.  Prints success message on success."""
     global doc
     fileStrings = []
     with open(filename, 'r') as f:
         myFile = f.read()
-
+    moduleName = os.path.basename(filename).split('.')[0]
+    packgeName = os.path.split(os.path.split(os.path.split(filename)[0])[0])[1]
+    
     """Pass the list of strings to the parser to extract the relevant structure"""
     d = _parsefile(myFile)
+
     with open(outputXML, 'w') as f:
         f.write(makeXML(d))
-    with open(outputHelp, 'w') as f:
+    with open(userHelp, 'w') as f:
         helprst = makeHelp(d)
-        
         f.write(helprst)
+
+    with open(devHelp, 'w') as f:
+        output = """%(WIDGETNAME)s
+=================================
+   
+.. automodule:: libraries.%(PACKAGENAME)s.widgets.%(WIDGETNAME)s
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+""" % {'WIDGETNAME':moduleName, 'PACKAGENAME':packgeName}
+        f.write(output)
+
     print 'Success for %s' % filename
     return d['name']
     
@@ -198,20 +213,10 @@ def makeXML(d):
     s += '</documentation>'
     return s
     
-def makeWidgetSidebar(d):
-    """Returns a string for the widget sidebar."""
-    s = sidebar
-    s += '<ul class="simple">\n'
-    s += '<li><a class="reference internal" href="#authors">Authors</a></li>\n'
-    s += '<li><a class="reference internal" href="#documentation">Documentation</a></li>\n'
-    s += '<li><a class="reference internal" href="#interface">Interface</a></li>\n'
-    s += '<li><a class="reference internal" href="#signals">Signals</a></li>\n'
-    s += '<li><a class="reference internal" href="#r-packages">R Packages</a></li>\n'
-    return s
     
 def makeHelp(d):
     """Makes a help document from the source as a .rst document"""
-    s = header
+    s = ''
     s += '%s\n%s\n\n' % (d['name'], ')'*len(d['name']))
     s += 'Authors\n((((((((((((\n\n'
     for n, c in d['author']:
@@ -228,22 +233,44 @@ def makeHelp(d):
         s += 'Description\n{{{{{{{{{{{{{{{\n\n'
         s += '%s\n\n' % gui['description']
         s += '%s\n\n' % gui['rst']
-        s += 'Class: %s\n\n' % gui['class']
+        s += 'Class: `%s`_\n\n' % gui['class']
     s += 'Signals\n((((((((((((((\n\n'
     for sig in d['signals']:
         s += '%s\n%s\n\n' % (sig['name'], '}'*len(sig['name']))
-        s += 'Classes: %s\n\n' % ','.join(sig['signals'])
+        s += 'Classes:'
+        for ss in sig['signals']:
+            s += '`%s`_ ' % ss
+        s+= '\n\n'
         s += 'Description\n{{{{{{{{{{{{{{{\n\n'
         s += '%s\n\n' % sig['description']
         s += '%s\n\n' % sig['rst']
         
     s += 'R Packages\n((((((((((((((\n\n'
     s += ','.join(d['rpackages'])
+    s += '\n\n'
+    for gui in d['rrgui']:
+        if gui['class'] =='': 
+            s += '.. _%s: #\n\n' % (gui['class'])          
+        else: 
+            (package,guiClass) = gui['class'].split('.')
+            s += '.. _%s: ../../../../%s/help/userDoc/qtWidgets/%s.html\n\n' % (gui['class'],package,guiClass)
+        
+    for sig in d['signals']:
+        # print sig, len(sig['signals'])
+        if len(sig['signals']) ==0: 
+            s += '.. _%s: #\n\n' % (sig['signals'])
+        else:
+            for ss in sig['signals']:
+                (package,sigClass) = ss.split('.')
+                s += '.. _%s: ../../../%s/help/userDoc/signalClasses/%s.html\n\n' % (ss, package,sigClass)                
+        
     return s
 
-def parseSignalFile(filename, outputHelp, outputXML):
+def parseSignalFile(filename, userHelp,devHelp, outputXML):
     with open(filename, 'r') as f:
         myFile = f.read()
+    moduleName = os.path.basename(filename).split('.')[0]
+    packgeName = os.path.split(os.path.split(os.path.split(filename)[0])[0])[1]
     
     d = {'helpdoc':[], 'signalClass':[], 'name':os.path.split(filename)[1]}
     
@@ -256,14 +283,31 @@ def parseSignalFile(filename, outputHelp, outputXML):
             d['signalClass'].append(m.group('signalClass').strip())
     except: pass
     
-    with open(outputHelp, 'w') as f:
+    with open(userHelp, 'w') as f:
         f.write(makeSignalHelp(d))
+    
+    with open(devHelp, 'w') as f:
+        output = """%(WIDGETNAME)s
+=================================
+   
+.. automodule:: libraries.%(PACKAGENAME)s.signalClasses.%(WIDGETNAME)s
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+""" % {'WIDGETNAME':moduleName, 'PACKAGENAME':packgeName}
+        f.write(output)
+        
     with open(outputXML, 'w') as f:
         f.write(makeSignalXML(d))
+        
     return d['name']
-def parseQTWidgetFile(filename, outputHelp, outputXML):
+def parseQTWidgetFile(filename, userHelp,devHelp, outputXML):
     with open(filename, 'r') as f:
         myFile = f.read()
+    moduleName = os.path.basename(filename).split('.')[0]
+    packgeName = os.path.split(os.path.split(os.path.split(filename)[0])[0])[1]
+
     d = {'helpdoc':[], 'name':os.path.split(filename)[1], 'parent':''}
     try:
         for m in re.finditer(getHelpDoc, myFile):
@@ -273,33 +317,24 @@ def parseQTWidgetFile(filename, outputHelp, outputXML):
         d['parent'] = re.search(getQTClass, myFile).group('parent')[0]
     except: pass
     
-    with open(outputHelp, 'w') as f:
+    with open(userHelp, 'w') as f:
         helprst = makeQTHelp(d)
-        output = publish_parts(helprst, writer_name='html', settings_overrides = overrides)
-        output.update({'sidebar': makeQTSidebar(d)})
-        finalhtml = """%(head_prefix)s
-        %(meta)s
-        <title>%(title)s</title>
-        %(stylesheet)s
-        </head>
-        <body>
-        <div class="sidebar" id="navSidebar">
-        %(sidebar)s
-        </div>
-        <div class="mainText" id="mainText">
-        %(body)s
-        </div>
-        </body>
-        </html>
-        """ % output
-        f.write(finalhtml)
+        f.write(helprst)
     with open(outputXML, 'w') as f:
         f.write(makeQTXML(d))
+    with open(devHelp, 'w') as f:
+        output = """%(WIDGETNAME)s
+=================================
+   
+.. automodule:: libraries.%(PACKAGENAME)s.qtWidgets.%(WIDGETNAME)s
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+""" % {'WIDGETNAME':moduleName, 'PACKAGENAME':packgeName}
+        f.write(output)
+
     return d['name']
-def makeQTSidebar(d):
-    """Returns a string formatted to make the sidebar of QTWidgets."""
-    s = sidebar
-    return s
 def makeQTHelp(d):
     """Takes a dict of helpdoc, name, and parent and makes an rst file for documentation."""
     s = header

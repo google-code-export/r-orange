@@ -143,7 +143,7 @@ This is another helpdoc.  This doc tells the user that there is something intere
 
 I want to put in an image below that likely isn't there.
 
-.. image:: asdfasdf.png
+.. image:: arrow_down.png
 
 """
         """.. rrgui::"""

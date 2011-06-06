@@ -14,34 +14,43 @@ root = sys.argv[1]
 if not os.path.exists(os.path.join(root, 'package.xml')):
     raise Exception('package.xml not found, either not a package or not complete. Please check directory')
 core = os.path.split(os.path.split(root)[0])[0]
+
 helpDir = os.path.join(root, 'help')
-widgetHelp = os.path.join(helpDir, 'widgets')
-signalHelp = os.path.join(helpDir, 'signalClasses')
-qtHelp = os.path.join(helpDir, 'qtWidgets')
+userHelpDir = os.path.join(root, 'help','userDoc')
+devHelpDir = os.path.join(root, 'help','devDoc')
+
+userWidgetHelp = os.path.join(userHelpDir, 'widgets')
+userSignalHelp = os.path.join(userHelpDir, 'signalClasses')
+userQtHelp = os.path.join(userHelpDir, 'qtWidgets')
+
+devWidgetHelp = os.path.join(devHelpDir, 'widgets')
+devSignalHelp = os.path.join(devHelpDir, 'signalClasses')
+devQtHelp = os.path.join(devHelpDir, 'qtWidgets')
+
 metaDir = os.path.join(root, 'meta')
 widgetMeta = os.path.join(metaDir, 'widgets')
 signalMeta = os.path.join(metaDir, 'signalClasses')
+qtMeta = os.path.join(metaDir, 'qtWidgets')
 qtMeta = os.path.join(metaDir, 'qtWidgets')
 
 overrides = {'stylesheet':[os.path.join(os.path.split(os.path.split(root)[0])[0], 'doc', 'helpDocStyle.css')]}
 
 def makeHelpDirs():
     """Make essential files for the help directories"""
-    if not os.path.exists(helpDir): 
-        os.mkdir(helpDir)
-    shutil.copyfile(os.path.join(core, 'doc', 'make.bat'), os.path.join(helpDir, 'make.bat'))
-    shutil.copyfile(os.path.join(core, 'doc', 'conf.py'), os.path.join(helpDir, 'conf.py'))
-    if os.path.exists(os.path.join(helpDir, '_static')):
-        shutil.rmtree(os.path.join(helpDir, '_static'))
-    shutil.copytree(os.path.join(core, 'doc', '_static'), os.path.join(helpDir, '_static'), ignore = shutil.ignore_patterns('*.svn', '*.svn*'))
-    #shutil.copyfile(os.path.join(core, 'doc', 'make.bat'), os.path.join(helpDir, 'Makefile'))
-    #shutil.copyfile(os.path.join(core, 'doc', 'packageIndex.rst'), os.path.join(helpDir, 'index.rst'))
-    # if not os.path.exists(os.path.join(helpDir, 'introduction.rst')):
-        # shutil.copyfile(os.path.join(core, 'doc', 'defaultPackageIntroduciton.rst'), os.path.join(helpDir, 'introduction.rst'))
+    
+    if not os.path.exists(helpDir): os.mkdir(helpDir)
+    if not os.path.exists(userHelpDir): os.mkdir(userHelpDir)
+    if not os.path.exists(devHelpDir): os.mkdir(devHelpDir)
     if not os.path.exists(metaDir): os.mkdir(metaDir)
-    if not os.path.exists(widgetHelp): os.mkdir(widgetHelp)
-    if not os.path.exists(signalHelp): os.mkdir(signalHelp)
-    if not os.path.exists(qtHelp): os.mkdir(qtHelp)
+    
+    if not os.path.exists(userWidgetHelp): os.mkdir(userWidgetHelp)
+    if not os.path.exists(userSignalHelp): os.mkdir(userSignalHelp)
+    if not os.path.exists(userQtHelp): os.mkdir(userQtHelp)
+    
+    if not os.path.exists(devWidgetHelp): os.mkdir(devWidgetHelp)
+    if not os.path.exists(devSignalHelp): os.mkdir(devSignalHelp)
+    if not os.path.exists(devQtHelp): os.mkdir(devQtHelp)
+    
     if not os.path.exists(widgetMeta): os.mkdir(widgetMeta)
     if not os.path.exists(signalMeta): os.mkdir(signalMeta)
     if not os.path.exists(qtMeta): os.mkdir(qtMeta)
@@ -88,83 +97,67 @@ def makeIndex(nd):
     
     pDict = packageToDict(os.path.join(root, 'package.xml'))
     
-    index = """.. Red-R package documentation master file, created by
-   sphinx-quickstart on Sat May 07 17:15:13 2011.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to %(Name)s's documentation!
-=========================================================================
-
-Contents:
+    userIndex = """
+User Doc
+========
 
 .. toctree::
    :glob:
-   :maxdepth: 2
-    
-   introduction
-   widgets
-   signals
-   qtWidgets
+   :maxdepth: 1
+   
+   extra/*
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-""" % pDict
-    
-    widgets = """%(Name)s Widgets
-=========================================================
-Contents:
+Widgets
+=======
 
 .. toctree::
    :glob:
-   :maxdepth: 2
+   :maxdepth: 1
    
    widgets/*
-   """ % pDict
 
-    signals = """%(Name)s Signals
+Signals
 =====================================================
-Contents:
 
 .. toctree::
    :glob:
-   :maxdepth: 2
+   :maxdepth: 1
    
    signalClasses/*
-   """ % pDict
-   
-    qtWidgets = """%(Name)s QT Widgets
-========================================================
-Contents:
+
+QT Widgets
+===========
 
 .. toctree::
    :glob:
-   :maxdepth: 2
+   :maxdepth: 1
    
    qtWidgets/*
    """ % pDict
 
+    index = """
+User Doc
+========
+.. toctree::
+   :glob:
+   :maxdepth: 2
+   
+   userDoc/*
+
+Dev Doc
+========
+.. toctree::
+   :glob:
+   :maxdepth: 2
+
+   devDoc/*
+   
+   """
     
-    s = '%s\n%s\n\n' % (pDict['Name'], '}'*len(pDict['Name']))
-    s += '%s\n%s\n\n' % ('Description', '{'*len('Description'))
-    s += '%s\n\n' % pDict['Description']
-    
-    with open(os.path.join(helpDir, 'widgets.rst'), 'w') as f:
-        f.write(widgets)
-    with open(os.path.join(helpDir, 'signals.rst'), 'w') as f:
-        f.write(signals)
-    with open(os.path.join(helpDir, 'qtWidgets.rst'), 'w') as f:
-        f.write(qtWidgets)
-    if not os.path.exists(os.path.join(helpDir, 'introduction.rst')):
-        with open(os.path.join(helpDir, 'introduction.rst'), 'w') as f:
-            f.write(s)
-    ### bullet list
-        
+    with open(os.path.join(userHelpDir, 'index.rst'), 'w') as h:
+        h.write(userIndex)
+    with open(os.path.join(devHelpDir, 'index.rst'), 'w') as h:
+        h.write(userIndex)
     with open(os.path.join(helpDir, 'index.rst'), 'w') as h:
         h.write(index)
         
@@ -176,51 +169,36 @@ def makeFiles():
     for w in d['widgets']:
         wn = makeMetaFromSource.parseWidgetFile(os.path.join(root, 'widgets', '%s.py' % w), 
             os.path.join(widgetMeta, '%s.xml' % w), 
-            os.path.join(widgetHelp, '%s.rst' % w))
+            os.path.join(userWidgetHelp, '%s.rst' % w), os.path.join(devWidgetHelp, '%s.rst' % w))
         nd['W'].append((w, wn))
+        
+        
+        
     for s in d['signalClasses']:
         sn = makeMetaFromSource.parseSignalFile(os.path.join(root, 'signalClasses', '%s.py' % s), 
-            os.path.join(signalHelp, '%s.rst' % s),
+            os.path.join(userSignalHelp, '%s.rst' % s),
+            os.path.join(devSignalHelp, '%s.rst' % s),
             os.path.join(signalMeta, '%s.xml' % s))
         nd['S'].append((s, sn))
     for q in d['qtWidgets']:
         qn = makeMetaFromSource.parseQTWidgetFile(os.path.join(root, 'qtWidgets', '%s.py' % s), 
-            os.path.join(qtHelp, '%s.rst' % q),
+            os.path.join(userQtHelp, '%s.rst' % q),
+            os.path.join(devQtHelp, '%s.rst' % q),
             os.path.join(qtMeta, '%s.xml' % q))
         nd['Q'].append((q, qn))
     
     ## make the index files
     makeIndex(nd)
     
-    ## now make the html by converting .rst to html.  We do this using sphinx
-    shutil.rmtree(os.path.join(os.path.abspath(helpDir),'build'),True)
-    cmd = 'sphinx-build -b html %s %s' % (helpDir, os.path.join(helpDir, 'build'))
-    print 'Running doc compiler: ' + cmd
-    p = subprocess.Popen(cmd,stdout=subprocess.PIPE).communicate()[0]
-    print p
-    
-    # for w in d['widgets']:
-        # with open(os.path.join(widgetHelp, '%s.rst' % w), 'r') as f:
-            # thisFile = f.read()
-            # output = publish_string(thisFile, writer_name='html', settings_overrides = overrides)
-            # with open(os.path.join(widgetHelp, '%s.html' % w), 'w') as h:
-                # h.write(output)
-                
-    # for s in d['signalClasses']:
-        # with open(os.path.join(signalHelp, '%s.rst' % s), 'r') as f:
-            # thisFile = f.read()
-            # output = publish_string(thisFile, writer_name='html', settings_overrides = overrides)
-            # with open(os.path.join(signalHelp, '%s.html' % w), 'w') as h:
-                # h.write(output)
-            
-    # for s in d['qtWidgets']:
-        # with open(os.path.join(qtHelp, '%s.rst' % s), 'r') as f:
-            # thisFile = f.read()
-            # output = publish_string(thisFile, writer_name='html', settings_overrides = overrides)
-            # with open(os.path.join(qtHelp, '%s.html' % w), 'w') as h:
-                # h.write(output)
-    
-    
-    
 makeHelpDirs()
 makeFiles()
+
+# if os.path.exists(os.path.join(root, 'help')):
+    # shutil.rmtree(os.path.join(root, 'help'))
+  
+
+cmd = 'sphinx-build -c ./ -b html %s %s' % (helpDir.replace('\\','/'),helpDir.replace('\\','/'))# os.path.join(root, 'help').replace('\\','/'))
+print 'Running doc compiler: ' + cmd
+p = subprocess.Popen(cmd,stdout=subprocess.PIPE).communicate()[0]
+print p
+

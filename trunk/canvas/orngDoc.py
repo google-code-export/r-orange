@@ -779,8 +779,8 @@ class TemplateDialog(QDialog):
         QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
         QObject.connect(cancelButton, SIGNAL("clicked()"), self.reject)
         
-     
-class SearchBox(redRGUI.base.lineEditHint):
+from libraries.base.qtWidgets.lineEditHint import lineEditHint
+class SearchBox(lineEditHint):
     def __init__(self, widget, label=_('Search'),orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
         redRGUI.base.lineEditHint.__init__(self, widget = widget, label = label,displayLabel=True,
         orientation = orientation, items = items, toolTip = toolTip, width = width, callback = callback, **args)
