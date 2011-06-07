@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+
+"""
+
+"""
+<widgetXML>    
+    <name>Row or Column Selection</name>
+    <icon>subset.png</icon>
+    <tags> 
+        <tag>Subsetting</tag> 
+    </tags>
+    <summary></summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Row or Column Selection</name>
 <tags>Subsetting</tags>
 <icon>Subset.png</icon>

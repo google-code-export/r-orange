@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
+"""
+
+"""
+<widgetXML>    
+    <name>Row or Column Names</name>
+    <icon>readfile.png</icon>
+    <tags> 
+        <tag>Subsetting</tag> 
+    </tags>
+    <summary>Return Rownames</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Row or Column Names</name>
 <tags>Subsetting</tags>
 <icon>readfile.png</icon>

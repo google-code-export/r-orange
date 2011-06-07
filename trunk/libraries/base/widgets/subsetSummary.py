@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+Very similar to summary except that this function first splits a data table into multiple tables based on the levels of a factor(s) and then performs the summary function on each resulting data table.
+"""
+
+"""
+<widgetXML>    
+    <name>Subset Summary</name>
+    <icon>subset.png</icon>
+    <tags> 
+        <tag>R</tag> 
+    </tags>
+    <summary>Very similar to summary except that this function first splits a data table into multiple tables based on the levels of a factor(s) and then performs the summary function on each resulting data table.</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Subset Summary</name>
 <description>Very similar to summary except that this function first splits a data table into multiple tables based on the levels of a factor(s) and then performs the summary function on each resulting data table.</description>
 <tags>R</tags>

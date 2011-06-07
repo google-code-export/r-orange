@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
+"""
+
+"""
+<widgetXML>    
+    <name>Rank</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag>Data Manipulation</tag> 
+    </tags>
+    <summary>Returns the sample ranks of the values in a vector</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Rank</name>
 <tags>Data Manipulation</tags>
 """

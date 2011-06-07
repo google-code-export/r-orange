@@ -1,4 +1,29 @@
 """
+.. helpdoc::
+
+"""
+
+"""
+<widgetXML>    
+    <name>R Executor</name>
+    <icon>rexecutor.png</icon>
+    <tags> 
+        <tag>Special</tag> 
+        <tag>R</tag> 
+    </tags>
+    <summary></summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>R Executor</name>
 <tags>Special, R</tags>
 <icon>rexecutor.png</icon>

@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+
+"""
+
+"""
+<widgetXML>    
+    <name>Transpose</name>
+    <icon>transpose.png</icon>
+    <tags> 
+        <tag>Data Manipulation</tag> 
+    </tags>
+    <summary></summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Transpose</name>
 <tags>Data Manipulation</tags>
 """

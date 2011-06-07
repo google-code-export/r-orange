@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+
+"""
+
+"""
+<widgetXML>    
+    <name>Reorder Rows and Columns</name>
+    <icon>default.png</icon>
+    <tags>
+        <tag>Data Manipulation</tag>
+    </tags>
+    <summary>Reorders the rows and columns of a Data Table</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Kyle R Covington</name>
+            <contact>kyle@red-r.org</contact>
+        </author>
+        <reference></reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Reorder Rows or Columns</name>
 """
 from OWRpy import * 

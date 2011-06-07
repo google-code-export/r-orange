@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+
+"""
+
+"""
+<widgetXML>    
+    <name>Generate sequence</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag>Prototypes</tag> 
+    </tags>
+    <summary></summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Serge-Etienne Parent</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Sequence</name>
 <tags>Prototypes</tags>
 """

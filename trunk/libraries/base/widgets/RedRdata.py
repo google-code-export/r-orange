@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+<p>Loads data from R into Red-R.  This widget allows access to example data from within R and is useful when testing schemas or widgets to ensure that they are working as indicated in R documentation.  Novice users may also find this widget useful for exploring widget functionality when they have no data of their own to explore.</p>
+"""
+
+"""
+<widgetXML>    
+    <name>R Datasets</name>
+    <icon>datasets.png</icon>
+    <tags> 
+        <tag>Data Input</tag> 
+    </tags>
+    <summary>Search and import any example R dataset.</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>R Datasets</name>
 <tags>Data Input</tags>
 """

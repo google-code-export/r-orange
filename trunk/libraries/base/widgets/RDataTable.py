@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+<p>Click on column headers to see options for sorting and filtering data.</p>
+"""
+
+"""
+<widgetXML>    
+    <name>View Data Table</name>
+    <icon>datatable.png</icon>
+    <tags> 
+        <tag>View Data</tag> 
+    </tags>
+    <summary>Shows data in a spreadsheet.</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>View Data Table</name>
 <tags>View Data</tags>
 <icon>datatable.png</icon>

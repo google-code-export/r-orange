@@ -1,3 +1,27 @@
+"""
+.. helpdoc::
+<p>This widget will read data from tab, comma, or space delimited text files. On Microsoft Windows it will also ready Excel files. Click the browse button to search your computer for the file to read. Select how the columns are delimited. On data read or change in these options, the first few lines of the file will be scanned. R will try to automaticlly determine the type of the column. The column data types can be changed. Once the data, column and row header information is properly selected click Load Data to read the full file into Red-R and send forward. </p>
+"""
+
+"""
+<widgetXML>    
+    <name>Read Files</name>
+    <icon>readfile.png</icon>
+    <tags> 
+        <tag>Data Input</tag> 
+    </tags>
+    <summary>Read data files into Red-R.</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
 """Read File widget
 
 This widget reads in text files from either a delimited file or the clipboard.  Clipboard files are typically space separated so values with spaces in the strings should be adjusted.

@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+
+"""
+
+"""
+<widgetXML>    
+    <name>View R Output</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag>R</tag> 
+    </tags>
+    <summary></summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>View R Output</name>
 <tags>R</tags>
 """

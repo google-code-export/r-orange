@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+
+"""
+
+"""
+<widgetXML>    
+    <name>Clipboard<!-- [REQUIRED] title --></name>
+    <icon>clipboard.png</icon>
+    <tags>
+        <tag>View Data</tag>
+    </tags>
+    <summary>Writes tables to the clipboard. <!-- [REQUIRED] A Brief description of the widget and what it does--></summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Kyle R Covington</name>
+            <contact>kyle@red-r.org</contact>
+        </author>
+        <reference></reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Clipboard</name>
 """
 from OWRpy import * 

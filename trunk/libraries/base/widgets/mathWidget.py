@@ -1,3 +1,27 @@
+"""
+.. helpdoc::
+<p>Perform simple math transformation of data one column at at time.</p>
+"""
+
+"""
+<widgetXML>    
+    <name>Math</name>
+    <icon>math.png</icon>
+    <tags> 
+        <tag>Data Manipulation</tag> 
+    </tags>
+    <summary>Perform basic math operations on columns of data.</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
 ## Math widget.  Performs math on a column of a data table (RDataFrame).  Math functions can be added as the user wishes but many functions should already be present.  Note that if the widget fails you will get a message indicating that your function is unknown.
 
 """

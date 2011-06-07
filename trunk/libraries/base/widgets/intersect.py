@@ -1,4 +1,27 @@
 """
+.. helpdoc::
+<p></p>
+"""
+
+"""
+<widgetXML>    
+    <name>Intersect</name>
+    <icon>datatable.png</icon>
+    <tags> 
+        <tag>Deprecated</tag> 
+    </tags>
+    <summary>This widget takes two vectors and performs a set intersect. Returns the set of element common to both.</summary>
+    <citation>
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Intersect</name>
 <tags>Deprecated</tags>
 <icon>datatable.png</icon>

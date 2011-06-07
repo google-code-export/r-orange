@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
+"""
+
+"""
+<widgetXML>    
+    <name>Summary</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag>R</tag> 
+    </tags>
+    <summary>Output a summary of the data</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Summary</name>
 <tags>R</tags>
 """

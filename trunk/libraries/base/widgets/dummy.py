@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
+"""
+
+"""
+<widgetXML>    
+    <name>Dummy</name>
+    <icon>dummy.png</icon>
+    <tags> 
+        <tag>R</tag> 
+    </tags>
+    <summary>A special widget that takes the place of any widget that fails during session load.</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Dummy</name>
 <tags>R</tags>
 <icon>dummy.png</icon>

@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
+"""
+
+"""
+<widgetXML>    
+    <name>Convert To Table/Prop Table</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag>Data Manipulation</tag> 
+    </tags>
+    <summary>Converts a data table of factors to counts of the unique combinations of levels.  For exampel if your data table consisted of rows representing observations of cars with columns indicating make, color, and year, this widget would return a list of counts for each make color year combination.</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Convert To Table/Prop Table</name>
 <tags>Data Manipulation</tags>
 """

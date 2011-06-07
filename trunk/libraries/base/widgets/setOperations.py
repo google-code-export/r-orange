@@ -1,4 +1,30 @@
 """
+.. helpdoc::
+<p>Perform base set operations:union, intersect, difference, and equality.<br />
+Each of union, intersect, setdiff and setequal will discard any duplicated values in the arguments. 
+</p>
+"""
+
+"""
+<widgetXML>    
+    <name>Set Operations</name>
+    <icon>datatable.png</icon>
+    <tags> 
+        <tag>Data Manipulation</tag> 
+    </tags>
+    <summary>Perform base set operations:union, intersect, difference, and equality</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Set Operations</name>
 <tags>Data Manipulation</tags>
 <icon>datatable.png</icon>

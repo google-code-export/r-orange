@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+Generates a table that is identical to the input table but with a new column added that contains the names of a series of selected columns that is either the greatest of the selected columns or the least of the selected columns.  This only works on numbers.
+"""
+
+"""
+<widgetXML>    
+    <name>Column Matcher</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag>Data Manipulation</tag> 
+    </tags>
+    <summary>Generates a table that is identical to the input table but with a new column added that contains the names of a series of selected columns that is either the greatest of the selected columns or the least of the selected columns.  This only works on numbers.</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Column Matcher (Max/Min Column)</name>
 <author>Kyle R Covington kyle@red-r.org</author>
 <description>Generates a table that is identical to the input table but with a new column added that contains the names of a series of selected columns that is either the greatest of the selected columns or the least of the selected columns.  This only works on numbers.</description>

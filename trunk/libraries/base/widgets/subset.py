@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
+"""
+
+"""
+<widgetXML>    
+    <name>Subset</name>
+    <icon>subset.png</icon>
+    <tags> 
+        <tag>Subsetting</tag> 
+    </tags>
+    <summary>Subset a dataset by values from another dataset.</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Subset</name>
 <tags>Subsetting</tags>
 <icon>Subset.png</icon>

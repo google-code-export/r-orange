@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
+"""
+
+"""
+<widgetXML>    
+    <name>Percentile Classifier</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag>Data Classification</tag> 
+    </tags>
+    <summary>Appends a column to a data frame with the classifications of rows based on the values of a column being greater than some percentile.</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Percentile Classifier</name>
 <tags>Data Classification</tags>
 """

@@ -1,3 +1,27 @@
+"""
+.. helpdoc::
+
+"""
+
+"""
+<widgetXML>    
+    <name>Table Normalization<!-- [REQUIRED] title --></name>
+    <icon>default.png</icon>
+    <tags>
+        <tag>Data Manipulation</tag>
+    </tags>
+    <summary>Performs normalization and background correction on tables.<!-- [REQUIRED] A Brief description of the widget and what it does--></summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name></name>
+            <contact></contact>
+        </author>
+        <reference></reference>
+    </citation>
+</widgetXML>
+"""
+
 ## plateManipulator, a tool to work with plates of any size.  This tool will do some of the basic leg work for you for example, normalize a series of plates to some background value, or normalize a series of measurements to a control value for relative induction.
 
 """

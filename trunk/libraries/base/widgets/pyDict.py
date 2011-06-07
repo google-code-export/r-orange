@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+
+"""
+
+"""
+<widgetXML>    
+    <name>View Pyton Dict<!-- [REQUIRED] title --></name>
+    <icon>default.png</icon>
+    <tags>
+        <tag>R</tag>
+    </tags>
+    <summary>View items of the python structured Dict class<!-- [REQUIRED] A Brief description of the widget and what it does--></summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name></name>
+            <contact></contact>
+        </author>
+        <reference></reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>View Python Dict</name>
 <tags>R</tags>
 """

@@ -1,4 +1,29 @@
 """
+.. helpdoc::
+<p>Most Red-R widgets require data in the form of columns that contain either data or classes.  Data in this form is required for most statistical widgets.  Melt Data Frame uses the reshape package to convert a data frame from one that may be more conductive to data entry (values of groups in columns) to one with values of groups in one column and a grouping column.
+</p>
+"""
+
+"""
+<widgetXML>    
+    <name>Reshape Data</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag>Data Manipulation</tag> 
+    </tags>
+    <summary>Reshapes a data frame to one that may be more conducive to Red-R widgets.</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Reshape Data</name>
 <tags>Data Manipulation</tags>
 """

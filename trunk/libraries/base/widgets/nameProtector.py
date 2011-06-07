@@ -1,4 +1,28 @@
 """
+.. helpdoc::
+<p>R cannot handle row and column names that begin with numbers. This widget renames the row or column names that begin with numbers by adding and 'X' to the beginning.</p>
+"""
+
+"""
+<widgetXML>    
+    <name>Create Valid Rows\Columns</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag>R</tag> 
+    </tags>
+    <summary>Make row and column names valid R names.</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <name>Red-R Core Team</name>
+            <contact>http://www.red-r.org/contact</contact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
+"""
+
+"""
 <name>Create Valid Rows\Columns</name>
 <tags>R</tags>
 """
