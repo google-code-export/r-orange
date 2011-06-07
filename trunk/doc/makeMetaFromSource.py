@@ -45,6 +45,8 @@ getAuthorContact = re.compile(r'<contact>(?P<authorcontact>.*?)</contact>', re.D
         
 getSignalXML = re.compile(r'<signalXML>.*?</signalXML>', re.DOTALL)
 getSignalParent = re.compile(r'.. signalClass:: *(?P<signalClass>.+?)[ "]')
+getSignalConvertTo = re.compile(r'.. convertTo:: *`(?P<convertTo>.+?)`')
+getSignalConvertFrom = re.compile(r'.. convertFrom:: *`(?P<convertFrom>.+?)`')
 
 getQTClass = re.compile(r'class .+?\((<?P<parent>.+?)\)')
 
@@ -297,7 +299,7 @@ def parseSignalFile(filename, userHelp,devHelp, outputXML):
     moduleName = os.path.basename(filename).split('.')[0]
     packgeName = os.path.split(os.path.split(os.path.split(filename)[0])[0])[1]
     
-    d = {'helpdoc':[], 'signalClass':[], 'name':os.path.split(filename)[1]}
+    d = {'helpdoc':[], 'signalClass':[], 'name':os.path.split(filename)[1], 'convertFrom':[], 'convertTo':[]}
     
     try:
         for m in re.finditer(getHelpDoc, myFile):
@@ -306,6 +308,14 @@ def parseSignalFile(filename, userHelp,devHelp, outputXML):
     try:
         for m in re.finditer(getSignalParent, myFile):
             d['signalClass'].append(m.group('signalClass').strip())
+    except: pass
+    try:
+        for m in re.finditer(getSignalConverTo, myFile):
+            d['convertTo'].append(m.group('convertTo').strip())
+    except: pass
+    try:
+        for m in re.finditer(getSignalConvertFrom, myFile):
+            d['convertFrom'].append(m.group('convertFrom').strip())
     except: pass
     
     with open(userHelp, 'w') as f:
@@ -421,6 +431,8 @@ def makeSignalXML(d):
     for rs in d['signalClass']:
         s += '<signal>%s</signal>\n' % rs
     s += '</signals>\n'
+    s += '<convertTo>%s</convertTo>\n' % ','.join(d['convertTo'])
+    s += '<convertFrom>%s</convertFrom>\n' % ','.join(d['convertFrom'])
     s += '</documentation>'
     return s
 # def test(path):

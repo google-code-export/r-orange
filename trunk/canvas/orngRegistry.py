@@ -91,6 +91,7 @@ def readCategories(force = True):
                 # directories.append((dirName, directory, ""))
     categories = {'widgets':{}, 'templates':[], 'tags': None}     
     allWidgets = []
+    allSignals = {}
     theTags = xml.dom.minidom.parseString('<tree></tree>')
     for dirName, directory, plugin in directories:
         if not os.path.isfile(os.path.join(directory,'package.xml')): continue
@@ -109,6 +110,9 @@ def readCategories(force = True):
 
             #print '#########widgets',widgets
             allWidgets += widgets
+            try:
+                allSignals.update(readSignals(directory, package))
+            except: pass
         except:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Error in loading package %s' % directory)
@@ -128,6 +132,9 @@ def readCategories(force = True):
         
     #allTemplates += readTemplates(redREnviron.directoryNames['templatesDir'])
     categories['templates'] = allTemplates
+    categories['signals'] = allSignals
+    
+    ########## Read the Signals
     if splashWindow:
         splashWindow.hide()
     
@@ -212,6 +219,52 @@ def getXMLText(nodelist):
             
     rc = unicode(rc).strip()
     return rc
+
+def readSignals(directory, package):
+    """This function generates the signals registry which is a container for all signal classes and their convert to classes.  Since all valid conversion must be contained in the convert to and convert from lists then this is a good enough surrogate for widget conversion.
+    
+    The object is returned as a dict with package_signal:{'convertTo':[package_signal, package_signal,...], 'convertFrom':[package_signal, package_signal, ...]}
+    
+    When checking if something can be converted to the sending signal is checked against the input signals in the receiving widget.  When checking if something can be converted from the receiving signal is checked against the sending signal.
+    """
+    signalDict = {}
+    for filename in glob.iglob(os.path.join(directory,'signalClasses', "*.py")):
+        if os.path.isdir(filename) or os.path.islink(filename) or '__init__' in filename:
+            continue
+        dirname, fname = os.path.split(filename)
+        signalName = os.path.splitext(fname)[0]
+        signalID = unicode(package['Name']+':'+signalName)
+        
+        signalMetaData = {}
+        metaFile = os.path.join(directory,'meta','signalClasses',signalName+'.xml')
+        makeXML = True
+        if not os.path.exists(metaFile) and '__init__' not in filename:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('<b>Meta file for %s does not exist.</b>') % (filename))
+            continue
+        try:
+            signalMetaXML = xml.dom.minidom.parse(metaFile)
+        except Exception as inst:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException()) 
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('<b>Error loading meta data for %s; %s</b>') % (metaFile, unicode(inst)))
+            continue
+        signalMetaData['signals'] = getXMLText(signalMetaXML.getElementsByTagName('signals')[0].childNodes)
+        signalMetaData['convertTo'] = [s.strip() for s in getXMLText(signalMetaXML.getElementsByTagName('convertTo')[0].childNodes).split(',')]
+        signalMetaData['convertFrom'] = [s.strip() for s in getXMLText(signalMetaXML.getElementsByTagName('convertFrom')[0].childNodes).split(',')]
+        
+        
+        signalInfo = SignalDescription(
+                     packageName = package['Name'],
+                     package = package,
+                     time = datetime,
+                     fileName = package['Name'] + ':' + signalName,
+                     signalName = signalName,
+                     fullName = filename,
+                     convertTo = signalMetaData['convertTo'],
+                     convertFrom = signalMetaData['convertFrom']
+                     )
+        signalDict[signalID] = signalInfo
+        
+    return signalDict
 
 def readWidgets(directory, package):
     """This function makes the widgets categories in the categories dict.  All .py files in the widgets dir of the package are cataloged into the registry.

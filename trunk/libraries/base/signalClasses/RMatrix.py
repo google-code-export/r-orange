@@ -2,7 +2,7 @@ from libraries.base.signalClasses.RDataFrame import *
 import time
 class RMatrix(RDataFrame):
     convertFromList = [RDataFrame, StructuredDict]
-    convertToList = [RDataFrame, StructuredDict, UnstructuredDict, RVariable, RList]
+    convertToList = [RDataFrame, StructuredDict, UnstructuredDict, RVariable, RList, TableView]
     def __init__(self, widget, data, parent = None, checkVal = True, **kwargs):
         RDataFrame.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() not in ['matrix', 'numeric', 'complex']:
@@ -43,6 +43,8 @@ class RMatrix(RDataFrame):
             return self._convertToStructuredDict()
         elif varClass == UnstructuredDict:
             return self._convertToStructuredDict()
+        elif varClass == TableView:
+            return self._convertToRDataFrame()
         else:
             raise Exception
         

@@ -75,129 +75,7 @@ class WidgetButtonBase():
             self.setBackgroundColor(Qt.blue)
         else:
             self.setBackgroundColor(Qt.white)
-        
-#class WidgetButton(QFrame, WidgetButtonBase):
-    #"""Primary parent class of the widget tree buttons, includes a nice icon"""
-    #def __init__(self, tab, name, widgetInfo, widgetTabs, canvasDlg, buttonType = 2, size=30):
-        #QFrame.__init__(self)
-        #WidgetButtonBase.__init__(self, name, widgetInfo, widgetTabs, canvasDlg)
-
-        #self.buttonType = buttonType
-        #self.iconSize = size
-        #self.setLayout(buttonType == WB_TOOLBOX and QHBoxLayout() or QVBoxLayout())
-        #self.pixmapWidget = QLabel(self)
-
-        #self.textWidget = OrangeLabel(self)
-        #if buttonType == WB_TABBAR_NO_TEXT:
-            #self.textWidget.hide()
-
-        #self.layout().setMargin(3)
-        #if buttonType != WB_TOOLBOX:
-            #self.layout().setSpacing(0)
-            
-        #self.icon = QIcon(widgetInfo.icon)
-        #self.pixmapWidget.setPixmap(self.icon.pixmap(self.iconSize, self.iconSize))
-        #self.pixmapWidget.setScaledContents(1)
-        #self.pixmapWidget.setFixedSize(QSize(self.iconSize, self.iconSize))
-
-        ##split long names into two lines
-        #buttonName = name
-        #if self.buttonType == WB_TABBAR_TEXT:
-            #numSpaces = count(buttonName, " ")
-            #if numSpaces == 1: buttonName = replace(buttonName, " ", "<br>")
-            #elif numSpaces > 1:
-                #mid = len(buttonName)/2; i = 0
-                #found = 0
-                #while "<br>" not in buttonName:
-                    #if buttonName[mid + i] == " ": buttonName = buttonName[:mid + i] + "<br>" + buttonName[(mid + i + 1):]
-                    #elif buttonName[mid - i] == " ": buttonName = buttonName[:mid - i] + "<br>" + buttonName[(mid - i + 1):]
-                    #i+=1
-            #else:
-                #buttonName += "<br>"
-
-        #self.layout().addWidget(self.pixmapWidget)
-        #self.layout().addWidget(self.textWidget)
-
-        #if self.buttonType != WB_TOOLBOX:
-            #self.textWidget.setText("<div align=\"center\">" + buttonName + "</div>")
-            #self.layout().setAlignment(self.pixmapWidget, Qt.AlignHCenter)
-            #self.layout().setAlignment(self.textWidget, Qt.AlignHCenter)
-        #else:
-            #self.textWidget.setText(name)
-        #self.setToolTip(widgetInfo.tooltipText)
-
-
-    ## we need to handle context menu event, otherwise we get a popup when pressing the right button on one of the icons
-    #def contextMenuEvent(self, ev):
-        #ev.accept()
-
-    #def mouseMoveEvent(self, e):
-        #### Semaphore "busy" is needed for some widgets whose loading takes more time, e.g. Select Data
-        #### Since the active window cannot change during dragging, we wouldn't have to remember the window; but let's leave the code in, it can't hurt
-        #schema = self.canvasDlg.schema
-        #if hasattr(self, "busy"):
-            #return
-        #self.busy = 1
-
-        #inside = schema.canvasView.rect().contains(schema.canvasView.mapFromGlobal(self.mapToGlobal(e.pos())) - QPoint(50,50))
-        #p = QPointF(schema.canvasView.mapFromGlobal(self.mapToGlobal(e.pos()))) + QPointF(schema.canvasView.mapToScene(QPoint(0, 0)))
-
-        #dinwin, widget = getattr(self, "widgetDragging", (None, None))
-        #if dinwin and (dinwin != schema or not inside):
-             #dinwin.removeWidget(widget)
-             #delattr(self, "widgetDragging")
-             ##dinwin.canvasView.scene().update()
-
-        #if inside:
-            ##print 'I\'m inside'
-            #if not widget:
-                ##print 'I\'m adding a widget!!!'
-                #widget = schema.addWidget(self.widgetInfo, p.x(), p.y())
-                #self.widgetDragging = schema, widget
-
-            ## in case we got an exception when creating a widget instance
-            #if widget == None:
-                #delattr(self, "busy")
-                #return
-
-            #widget.setCoords(p.x() - widget.rect().width()/2, p.y() - widget.rect().height()/2)
-
-            #import orngCanvasItems
-            #items = schema.canvas.collidingItems(widget)
-            #widget.invalidPosition = widget.selected = (schema.canvasView.findItemTypeCount(items, orngCanvasItems.CanvasWidget) > 0)
-
-        #delattr(self, "busy")
-
-    #def mousePressEvent(self, e):
-        #self.setFrameShape(QFrame.StyledPanel)
-        #self.layout().setMargin(self.layout().margin()-2)
-
-        
-    #def mouseReleaseEvent(self, e):
-        #self.layout().setMargin(self.layout().margin()+2)
-        #self.setFrameShape(QFrame.NoFrame)
-        #dinwin, widget = getattr(self, "widgetDragging", (None, None))
-        #self.shiftPressed = e.modifiers() & Qt.ShiftModifier
-        #if widget:
-            #if widget.invalidPosition:
-                #dinwin.removeWidget(widget)
-                #dinwin.canvasView.scene().update()
-            #elif self.shiftPressed and len(dinwin.widgets) > 1:
-                #dinwin.addLine(dinwin.widgets[-2], dinwin.widgets[-1])
-            #delattr(self, "widgetDragging")
-        
-        ## we say that we clicked the button only if we released the mouse inside the button
-        #if e.pos().x() >= 0 and e.pos().x() < self.width() and e.pos().y() > 0 and e.pos().y() < self.height():
-            #self.clicked(e.button() == Qt.RightButton)
-
-    #def wheelEvent(self, ev):
-        #if self.parent() and self.buttonType != WB_TOOLBOX:
-            #hs = self.parent().tab.horizontalScrollBar()
-            #hs.setValue(min(max(hs.minimum(), hs.value()-ev.delta()), hs.maximum()))
-        #else:
-            #QFrame.wheelEvent(self, ev)
-
-
+      
 class WidgetTreeItem(QTreeWidgetItem, WidgetButtonBase):
     """Class for items in the widget tree"""
     def __init__(self, parent, name, widgetInfo, tabs, canvasDlg):
@@ -231,9 +109,10 @@ class widgetSuggestions(QTreeWidget):
         self.hide()
         
     def activateSuggestWidget(self, action):
-        newwidget = self.canvasDlg.schema.addWidget(action.widgetInfo)
-        if self.suggestingWidget:
-            self.canvasDlg.schema.addLine(self.suggestingWidget, redRObjects.getWidgetByIDActiveTabOnly(newwidget))
+        newwidget = redRObjects.schemaDoc.addWidget(action.widgetInfo)
+        #if self.suggestingWidget:
+            #redrObjects.schemaDlg.addLine(self.suggestingWidget, redRObjects.getWidgetByIDActiveTabOnly(newwidget))
+            #self.canvasDlg.schema.addLine(self.suggestingWidget, redRObjects.getWidgetByIDActiveTabOnly(newwidget))
         
 
 class WidgetTree(QTreeWidget):
@@ -259,33 +138,7 @@ class WidgetTree(QTreeWidget):
         self.setFocusPolicy(Qt.ClickFocus)   
         self.createWidgetTabs(widgetRegistry)            
         
-        # iconSize = redRStyle.iconSizeList[redREnviron.settings["toolbarIconSize"]]
-        # self.setIconSize(QSize(iconSize, iconSize))
-       
         
-        # must make a widget container to hold the search area and the widget tree
-        # self.containerWidget = QWidget()
-        # tmpBoxLayout = QBoxLayout(QBoxLayout.TopToBottom, self.containerWidget)
-        #self.widgetSuggestEdit = OWGUIEx.lineEditHint(self, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, autoSizeListWidget = 1, callback = self.callback)
-        # self.widgetSuggestEdit = SearchBox(None, callback = self.callback)
-        # self.widgetSuggestEdit.caseSensitive = 0
-        # self.widgetSuggestEdit.matchAnywhere = 1
-        # self.widgetSuggestEdit.autoSizeListWidget = 1
-        
-        # self.widgetSuggestEdit.setItems([QListWidgetItem(action.icon(), action.widgetInfo.name) for action in self.actions])
-        # self.widgetSuggestEdit.addItems([QListWidgetItem(action.icon(), action.templateInfo.name) for action in self.templateActions])
-        #self.favoritesTree = MyTreeWidget(canvasDlg, self) # tree that will contain a set of favorite widgets that the user will set
-        #tmpBoxLayout.insertWidget(0, CanvasPopup)
-        
-        # tmpBoxLayout.insertWidget(0, self.widgetSuggestEdit)
-        # tmpBoxLayout.insertWidget(1, self.treeWidget)
-            
-        #tmpBoxLayout.insertWidget(2, self.favoritesTree)
-        
-        # self.setWidget(self.containerWidget)
-        
-#        self.treeWidget.setRootIsDecorated(0) 
-        #self.setWidget(OWGUIEx.lineEditHint(self, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, autoSizeListWidget = 1))
     def mousePressEvent(self, e):
         QTreeWidget.mousePressEvent(self, e)
         self.mousePressed = 1
@@ -312,16 +165,14 @@ class WidgetTree(QTreeWidget):
             return
         
         if hasattr(self, 'busy'): return
+        
         self.busy = 1
-        win = self.canvasDlg.schema
         newwidget = redRObjects.addWidget(item.widgetInfo)
         if (self.mouseRightClick or self.shiftPressed):
-            print 'Shift is pressed'
             if len(redRObjects.activeTab().getSelectedWidgets()) == 1:
-                print redRObjects.activeTab().getSelectedWidgets()[0]
-                print redRObjects.getWidgetByIDActiveTabOnly(newwidget)
-                win.addLine(redRObjects.activeTab().getSelectedWidgets()[0], redRObjects.getWidgetByIDActiveTabOnly(newwidget))
+                redRObjects.schemaDlg.addLine(redRObjects.activeTab().getSelectedWidgets()[0], redRObjects.getWidgetByIDActiveTabOnly(newwidget))
         delattr(self, 'busy')
+    
     def clear(self):
         """Clears the widget tree"""
         self.allWidgets = []

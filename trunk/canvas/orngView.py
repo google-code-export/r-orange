@@ -387,8 +387,13 @@ class SchemaView(QGraphicsView):
             self.tempWidget = activeItem
             self.openActiveWidget()
         elif type(activeItem) == orngCanvasItems.CanvasLine:
-            
-            self.doc.resetActiveSignals(activeItem.outWidget, activeItem.inWidget, enabled = activeItem.outWidget.instance().outputs.isSignalEnabled(activeItem.inWidget.instance()))
+            import redRSignalManager
+            enabled = False
+            for l in redRSignalManager.getLinksByWidgetInstance(activeItem.outWidget.instance(), activeItem.inWidget.instance()):
+                if l[2]: 
+                    enabled = True
+                    break
+            self.doc.resetActiveSignals(activeItem.outWidget, activeItem.inWidget, enabled = enabled)
             activeItem.inWidget.updateTooltip()
             activeItem.outWidget.updateTooltip()
             activeItem.updateTooltip()

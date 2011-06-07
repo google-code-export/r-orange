@@ -321,20 +321,42 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         if self.selected:
             self.canvasDlg.suggestButtonsList.clear()
             suggestedWidgets = redRHistory.getSuggestWidgets(self)
-            actions = []
+            compat = redRObjects.getCompatibleWidgets(self)
+            outputSug = []
+            inputSug = []
+            for o in compat['outputs']:
+                if o not in outputSug: outputSug.append(o)
+            for i in compat['inputs']:
+                if i not in inputSug: inputSug.append(i)
+                
+            history = QTreeWidgetItem([_('History')])
+            output = QTreeWidgetItem([_('Can Accept Data')])
+            input = QTreeWidgetItem([_('Can Take Data')])
             for wInfo in suggestedWidgets:
                 newAct = QTreeWidgetItem([wInfo.name])
                 newAct.setIcon(0, QIcon(wInfo.icon))
                 newAct.widgetInfo = wInfo
-                actions.append(newAct)
+                history.addChild(newAct)
                 
-            if len(actions) > 0:
-                self.canvasDlg.suggestButtonsList.show()
-                self.canvasDlg.suggestButtonsList.addTopLevelItems(actions)
-                self.canvasDlg.suggestButtonsList.suggestingWidget = self
-                self.canvasDlg.suggestButtonsList.setHeaderLabels([_('Suggested Widgets for %s') % unicode(self.widgetInfo.name)])
-            else:
-                self.canvasDlg.suggestButtonsList.hide()
+            for wInfo in outputSug:
+                newAct = QTreeWidgetItem([wInfo.name])
+                newAct.setIcon(0, QIcon(wInfo.icon))
+                newAct.widgetInfo = wInfo
+                output.addChild(newAct)
+            
+            for wInfo in inputSug:
+                newAct = QTreeWidgetItem([wInfo.name])
+                newAct.setIcon(0, QIcon(wInfo.icon))
+                newAct.widgetInfo = wInfo
+                input.addChild(newAct)
+            
+            #if len(actions) > 0:
+            self.canvasDlg.suggestButtonsList.show()
+            self.canvasDlg.suggestButtonsList.addTopLevelItems([history, output, input])
+            self.canvasDlg.suggestButtonsList.suggestingWidget = self
+            self.canvasDlg.suggestButtonsList.setHeaderLabels([_('Suggested Widgets for %s') % unicode(self.widgetInfo.name)])
+            #else:
+                #self.canvasDlg.suggestButtonsList.hide()
             #self.canvasDlg.suggestButtonsList.show()
             #highlight the compatible wigets for this widget.
             # for i in redRObjects.widgetRegistry()['widgets']:

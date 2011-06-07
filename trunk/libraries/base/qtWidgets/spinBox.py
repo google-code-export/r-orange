@@ -37,8 +37,6 @@ class spinBox(QDoubleSpinBox ,widgetState):
             self.setMaximum(int(max))
         if min:
             self.setMinimum(int(min))
-        if toolTip:
-            self.setToolTip(unicode(toolTip))
         self.setWrapping(True) # we always allow the spin box to wrap around
         if value:
             self.setValue(value)

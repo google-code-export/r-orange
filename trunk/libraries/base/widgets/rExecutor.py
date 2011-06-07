@@ -35,11 +35,10 @@ import redRGUI
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class rExecutor(OWRpy):
-    settingsList = ['command', 'sendthis', 'sendt']
     def __init__(self, **kwargs):
         #OWWidget.__init__(self, parent, signalManager, "Sample Data")
         OWRpy.__init__(self, wantGUIDialog = 1, **kwargs)
-        
+        self.require_librarys(['pmg'], load = False)
         self.command = ''
         self.sendthis = ''
         self.sendt = {}
@@ -73,6 +72,8 @@ class rExecutor(OWRpy):
         leftArea = redRGUI.base.widgetBox(self.box)
         leftArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         rightArea = redRGUI.base.widgetBox(area)
+        redRGUI.base.widgetLabel(rightArea, 
+        _('Note: R Executor is an advanced widget and is intended for advanced users.\nIf things are not working in this widget then you are free to contact the forum for help or advice.\nThis gives the user access to the underlying R session where you can cause a lot of errors if you are not careful.'))
 
         runbox = redRGUI.base.groupBox(rightArea, label = _("Command Edit:"), orientation='horizontal')
         runbox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
@@ -94,13 +95,15 @@ class rExecutor(OWRpy):
         varbutton = redRGUI.base.button(leftArea, _("Recieved"), callback = self.putrecieved, width = 150)
         history = redRGUI.base.button(leftArea, _("RHistory"), callback = self.putRHistory, width = 150)
         redRGUI.base.button(leftArea, _("Clear Output"), callback = self.clearOutput)
+        redRGUI.base.button(leftArea, _('Start PMG'), callback = self.startRcmdr)
         
         self.lsList = redRGUI.base.listBox(self.box, label = _('Available R Items'), items = self.R('ls()', wantType = 'list'), callback = self.addlsList)
         redRGUI.base.button(self.box, 'Refresh List', callback = self.refreshLsList)
 
         self.thistext = redRGUI.base.textEdit(rightArea,label=_('Output'), displayLabel=False)
 
-
+    def startRcmdr(self):
+        self.R('require(pmg)')
     def addlsList(self):
         self.command.insertPlainText(unicode(self.lsList.selectedItems().values()[0]))
     def refreshLsList(self):
@@ -108,7 +111,7 @@ class rExecutor(OWRpy):
     def clearOutput(self):
         self.thistext.clear()
     def putrecieved(self):
-        self.command.insert(unicode(self.data))
+        self.command.insertPlainText(unicode(self.data))
     def sendThis(self):
         if unicode(self.command.textCursor().selectedText()) != '':
                 text = unicode(self.command.textCursor().selectedText())

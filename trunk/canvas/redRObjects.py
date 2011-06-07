@@ -136,6 +136,51 @@ def removeSchemaTab(tabname):
 ###############################
 #######     icons       #######
 ###############################
+
+def getCompatibleWidgets(icon):
+    fn = icon.widgetInfo.fileName
+    info = _widgetRegistry['widgets'][fn]
+    outputs = info.outputs
+    oAdd = []
+    for o in outputs:
+        if o[0] not in _widgetRegistry['signals']: continue
+        oAdd += _widgetRegistry['signals'][o[0]]['convertTo']
+    outputs += oAdd
+    outputs = [o[0] for o in outputs]
+    inputs = info.inputs
+    iAdd = []
+    for i in inputs:
+        if i[0] not in _widgetRegistry['signals'] or i[0] == '': continue
+        iAdd += _widgetRegistry['signals'][i[0]]['convertFrom']
+    inputs += iAdd
+    inputs = [i[0] for i in inputs]
+    
+    topcon = {'inputs':[], 'outputs':[]}
+    for w in _widgetRegistry['widgets']:
+        tempout = [o[0] for o in _widgetRegistry['widgets'][w].outputs if o[0] != '']
+        fullout = tempout
+        for o in tempout:
+            if o not in _widgetRegistry['signals'] or o == '': continue
+            fullout += _widgetRegistry['signals'][o]['convertTo']
+        
+        #print fullout
+        tempin = [i[0] for i in _widgetRegistry['widgets'][w].inputs if i[0] != '']
+        fullin = tempin
+        for i in tempin:
+            if i not in _widgetRegistry['signals']: continue
+            fullin += _widgetRegistry['signals'][i]['convertFrom']
+        #print fullin
+        for i in inputs: 
+            if i in fullout: 
+                topcon['inputs'].append(_widgetRegistry['widgets'][w])
+                break
+        for o in outputs:
+            if o in fullin:
+                topcon['outputs'].append(_widgetRegistry['widgets'][w])
+                break
+    return topcon
+            
+            
 def getIconsByTab(tabs = None):  # returns a dict of lists of icons for a specified tab, if no tab specified then all incons on all tabs are returned.
     global _widgetIcons
     global _canvasScene

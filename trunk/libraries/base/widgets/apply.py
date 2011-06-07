@@ -42,7 +42,21 @@ While applied across the columns would result in: [7, 8, 9].
 
 """
 <name>Apply</name>
-<tags>Data Manipulation</tags>
+    <icon>default.png</icon>
+    <tags> 
+        <tag>Data Manipulation</tag> 
+    </tags>
+    <screenshots></screenshots>
+    <summary>Apply a function across an matrix or array.</summary>
+    <citation>
+    <!-- [REQUIRED] -->
+        <author>
+            <authorname>Red-R Core Team</authorname>
+            <authorcontact>http://www.red-r.org/contact</authorcontact>
+        </author>
+        <reference>http://www.red-r.org</reference>
+    </citation>
+</widgetXML>
 """
 from OWRpy import * 
 import redRGUI, signals
@@ -58,8 +72,11 @@ class apply(OWRpy):
         self.setRvariableNames(["apply"])
         self.numDims = 2
         self.data=None
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('X'), signals.base.RMatrix, self.processX)
 
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('apply Output'), signals.base.RDataFrame)
 
         

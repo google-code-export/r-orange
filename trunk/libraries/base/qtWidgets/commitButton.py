@@ -30,8 +30,7 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 class commitButton(button,widgetState):
     def __init__(self,widget,label = _('Commit'), callback = None, processOnInput=None,processOnChange=None,
-    icon=None, orientation='horizontal',
-    width = None, height = None, alignment=Qt.AlignRight, toggleButton = False,**kwargs):
+    icon=None, orientation='horizontal', width = None, height = None, alignment=Qt.AlignRight, toggleButton = False,**kwargs):
         kwargs.setdefault('includeInReports', False)
         kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         widgetState.__init__(self,widget,label,**kwargs)
@@ -63,8 +62,8 @@ class commitButton(button,widgetState):
             )
 
         button.__init__(self, widget = box, label = label, callback = callback, 
-        icon = icon, toolTip = toolTip, width = width, height = 35, 
-        toggleButton = toggleButton)
+        icon = icon, width = width, height = 35, 
+        toggleButton = toggleButton,**kwargs)
         
         self.setIcon(QIcon(icon))
         self.setIconSize(QSize(20, 20))

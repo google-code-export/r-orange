@@ -42,14 +42,14 @@ class RedRdata(OWRpy):
         self.outputs.addOutput('id2', _('Example Data (Arbitrary Example [Advanced])'), 'All')
 
                 
-        self.R('%s <- as.data.frame(data(package = .packages())$results[,c(1,3:4)])' % self.Rvariables['datasets'],silent=True, wantType = 'NoConversion')
+        self.R('%s <- as.data.frame(data(package = .packages(all.available=T))$results[,c(1,3:4)])' % self.Rvariables['datasets'],silent=True, wantType = 'NoConversion')
         self.R('%s$Title <- as.character(%s$Title)' % (self.Rvariables['datasets'],self.Rvariables['datasets']),silent=True, wantType = 'NoConversion')
         
         
         self.table = redRGUI.base.filterTable(self.controlArea, label='R Datasets', includeInReports=False,
         Rdata = self.Rvariables['datasets'], sortable=True,
         filterable=True,selectionMode = QAbstractItemView.SingleSelection, callback=self.selectDataSet)
-
+        self.table.resizeColumnsToContents()
 
         box = redRGUI.base.groupBox(self.controlArea,orientation='horizontal', margin=16)
         self.controlArea.layout().setAlignment(box,Qt.AlignHCenter)
@@ -65,9 +65,10 @@ class RedRdata(OWRpy):
     def loadPackage(self):
         if unicode(self.package.text()) != '':
             self.require_librarys([unicode(self.package.text())])
-        self.R('%s <- as.data.frame(data(package = .packages())$results[,c(1,3:4)])' % self.Rvariables['datasets'],silent=True, wantType = 'NoConversion')
+        self.R('%s <- as.data.frame(data(package = .packages(all.available=T))$results[,c(1,3:4)])' % self.Rvariables['datasets'],silent=True, wantType = 'NoConversion')
         self.R('%s$Title <- as.character(%s$Title)' % (self.Rvariables['datasets'],self.Rvariables['datasets']),silent=True, wantType = 'NoConversion')
         self.table.setRTable(self.Rvariables['datasets'])
+        self.table.resizeColumnsToContents()
         
     
     def selectDataSet(self,ind):

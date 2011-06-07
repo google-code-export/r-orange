@@ -218,7 +218,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         # tableName=_('Parameters'))
         # return text        
 
-    def require_librarys(self, librarys, repository = None):
+    def require_librarys(self, librarys, repository = None, load = True):
         """Load R libraries using the :mod:`RSession` require_librarys function.
         
         Takes a list of strings as R libraries to load.  These should be valid R packages or an error will occur.  repository is an optional argument to specity a custom repository if the library is not in a standard location.
@@ -228,10 +228,12 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             repository = redREnviron.settings['CRANrepos']
         
         #print _('Loading required librarys')
-        success = RSession.require_librarys(librarys = librarys, repository = repository)
-        self.requiredRLibraries.extend(librarys)
-        qApp.restoreOverrideCursor()
-        return success
+        try:
+            success = RSession.require_librarys(librarys = librarys, repository = repository, load = load)
+            self.requiredRLibraries.extend(librarys)
+        finally:
+            qApp.restoreOverrideCursor()
+            return success
     def onDeleteWidget(self):
         """Called when widget is deleted.
         
@@ -239,7 +241,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         """
         for k in self.Rvariables:
             #print self.Rvariables[k]
-            self.R('if(exists("%(NAME)s")) { rm(%(NAME)s) }' % {'NAME':self.Rvariables[k]}, wantType = 'NoConversion')
+            self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }', wantType = 'NoConversion')
         # send none through the signals
         globalData.removeGlobalData(self)
         self.outputs.propogateNone(ask = False)

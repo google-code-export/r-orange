@@ -116,9 +116,11 @@ def Rcommand(query, silent = False, wantType = redR.CONVERT, listOfLists = False
         output = rpy.r(unicode(query).encode('Latin-1'))
         
     except Exception as inst:
-        redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br><br>The original query:<br> <b>%s</b><br>##################################<br>" % (inst,redRLog.getSafeString(query)))
         mutex.unlock()
-        raise RuntimeError(unicode(inst) + '<br>Original Query was:  ' + unicode(query))
+        rtb = Rcommand('paste(capture.output(traceback()), collapse = "<br>")')
+        redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br><br>The original query:<br> <b>%s</b><br>R Traceback was%s<br>##################################<br>" % (inst,redRLog.getSafeString(query),rtb))
+        
+        raise RuntimeError(unicode(inst) + '<br>Original Query was:  %s<br>R Traceback was%s' % (unicode(query), rtb))
         return None # now processes can catch potential errors
     if wantType == redR.NOCONVERSION: 
         mutex.unlock()
@@ -202,7 +204,7 @@ def setLibPaths(libLoc):
     ## sets the libPaths argument for the directory tree that will be searched for loading and installing librarys
     Rcommand('.libPaths(\''+unicode(libLoc)+'\')', wantType = 'NoConversion') 
     print 'library location is ', libLoc
-def require_librarys(librarys, repository = 'http://cran.r-project.org'):
+def require_librarys(librarys, repository = 'http://cran.r-project.org', load = True):
         setLibPaths(redREnviron.directoryNames['RlibPath'])
         print redREnviron.directoryNames['RlibPath']
         loadedOK = True
@@ -214,13 +216,14 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         if not install_libraries(librarys, repository):
             return False
         installedRPackages = getInstalledLibraries() ## remake the installedRPackages list
+        loadedOK = True
         for library in [l for l in librarys if l not in loadedLibraries]:
+            if not load: continue
             if installedRPackages and library and (library in installedRPackages):
                 redRLog.log(redRLog.R, redRLog.INFO, 'Loading library %s.' % library)
                 Rcommand('require(' + library + ')') #, lib.loc=' + libPath + ')')
                 
                 loadedLibraries.append(library)
-                loadedOK = True
             else:
                 loadedOK = False
         return loadedOK
