@@ -22,8 +22,10 @@
 ## Controls the execution of R funcitons into the underlying R session
 
 
-import sys, os, redREnviron, numpy, redR
+import sys, os, redREnviron, numpy, redR, redRLog
 
+def writeR(s):
+    redRLog.log(redRLog.REDRCORE, redRLog.INFO, s)
 
 ####### system specific import of rpy in it's various flavors ##########
 ## if mac ##
@@ -38,19 +40,26 @@ if sys.platform == 'darwin':
     os.environ['DYLD_LIBRARY_PATH'] = os.path.join(redREnviron.directoryNames['RDir'],'lib','i386')    
     os.environ['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home'
     import rpy3.robjects as rpy
-
+    import rpy3.rinterface
+    rpy3.rinterface.set_writeconsole(writeR)
 ## if windows ##
 elif sys.platform == 'win32':
     print redREnviron.directoryNames['RDir']
     os.environ['R_HOME'] = redREnviron.directoryNames['RDir']
     import rpy3.robjects as rpy
+    import rpy3.rinterface
+    rpy3.rinterface.set_writeconsole(writeR)
 ## if linux ##
 elif sys.platform == 'linux2':
     print 'loading rpy3'
     import rpy3.robjects as rpy
+    import rpy3.rinterface
+    rpy3.rinterface.set_writeconsole(writeR)
 ## if we don't know ##
 else:
     import rpy2.robjects as rpy
+    import rpy2.rinterface
+    rpy2.rinterface.set_writeconsole(writeR)
     
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
