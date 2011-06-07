@@ -12,9 +12,10 @@ from PyQt4.QtGui import *
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class tabWidget(QTabWidget,widgetState):
-    def __init__(self,widget, position = QTabWidget.North):
-        
-        widgetState.__init__(self,widget, 'tabWidget',includeInReports=True)
+    def __init__(self,widget, position = QTabWidget.North, **kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,widget, 'tabWidget',**kwargs)
         QTabWidget.__init__(self,self.controlArea)
         self.controlArea.layout().addWidget(self)
         

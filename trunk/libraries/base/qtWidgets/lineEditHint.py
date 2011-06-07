@@ -14,12 +14,11 @@ _ = redRi18n.get_(package = 'base')
 
 class lineEditHint(lineEdit):        
     def __init__(self, widget, label=None, displayLabel=True,includeInReports=True,orientation='horizontal', 
-    items = [], toolTip = None,  width = 0, callback = None, **args):
-        
+    items = [], width = 0, callback = None, **args):
         
         #widgetState.__init__(self,label,includeInReports)
         lineEdit.__init__(self, widget = widget, label = label, displayLabel=displayLabel,
-        orientation = orientation, toolTip = toolTip, width = width, **args)
+        orientation = orientation, width = width, **args)
         
         QObject.connect(self, SIGNAL("textEdited(const QString &)"), self.textEdited)
         self.enteredText = ""

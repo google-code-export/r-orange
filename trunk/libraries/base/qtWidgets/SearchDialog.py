@@ -15,7 +15,9 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 class SearchDialog(QDialog,widgetState):
     def __init__(self, caption = _('Search Dialog'), url = '', icon = None, orientation = 'horizontal'):
-        widgetState.__init__(self,None, _('SearchDialog'),includeInReports=False)
+        kwargs.setdefault('includeInReports', False)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,None, _('SearchDialog'),**kwargs)
         QDialog.__init__(self)
         
         self.setWindowTitle(caption)

@@ -166,16 +166,17 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 
 class filterTable(widgetState, QTableView):
-    def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, Rdata=None, 
+    def __init__(self,widget,label=None, displayLabel=True, Rdata=None, 
     editable=False, sortable=True, filterable=False,
     selectionBehavior=QAbstractItemView.SelectRows, 
     selectionMode = QAbstractItemView.ExtendedSelection, 
     showResizeButtons = True,
     onFilterCallback = None,
     callback=None,
-    selectionCallback=None):
-        
-        widgetState.__init__(self,widget,label,includeInReports)
+    selectionCallback=None,**kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,widget,label,**kwargs)
         
         if displayLabel:
             mainBox = groupBox(self.controlArea,label=label, orientation='vertical')

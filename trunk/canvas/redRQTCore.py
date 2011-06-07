@@ -896,8 +896,9 @@ class lineEdit(QLineEdit,widgetState):
     id=None, orientation='horizontal', toolTip = None,  width = 0, callback = None, textChangedCallBack=None,
     sp='shrinking', **args):
 
-        widgetState.__init__(self,widget,label,includeInReports)
         QLineEdit.__init__(self,widget)
+        widgetState.__init__(self,widget,label,includeInReports)
+        
         
         if displayLabel:
             self.hb = widgetBox(self.controlArea,orientation=orientation, spacing=2)
@@ -934,6 +935,10 @@ class lineEdit(QLineEdit,widgetState):
         
         if textChangedCallBack:
             QObject.connect(self, SIGNAL('textEdited(QString)'), textChangedCallBack)
+            
+    def hide(self):
+        ##print 'hiding in qtcore'
+        self.controlArea.hide()
     def showToolTip(self):
         return
     def text(self):

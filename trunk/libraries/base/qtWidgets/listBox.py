@@ -27,12 +27,10 @@ def startProgressBar(title,text,max):
     return progressBar
     
 class listBox(QListWidget,widgetState):
-    def __init__(self, widget, value=None, label=None, displayLabel=True, includeInReports=True, 
-    orientation='vertical', selectionMode=QAbstractItemView.SingleSelection,
-    enableDragDrop = 0, dragDropCallback = None, dataValidityCallback = None, sizeHint = None, 
-    callback=None, toolTip = None, items = None, *args):
-        
-        widgetState.__init__(self,widget,label,includeInReports)
+    def __init__(self, widget, value=None, label=None, displayLabel=True, orientation='vertical', selectionMode=QAbstractItemView.SingleSelection, enableDragDrop = 0, dragDropCallback = None, dataValidityCallback = None, sizeHint = None, callback=None, items = None, *args, **kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,widget,label,**kwargs)
         QListWidget.__init__(self, *args)
         self.label = label
         self.widget = self.controlArea
@@ -48,10 +46,7 @@ class listBox(QListWidget,widgetState):
         self.enableDragDrop = enableDragDrop
         self.dragDopCallback = dragDropCallback
         self.dataValidityCallback = dataValidityCallback
-        if not sizeHint:
-            self.defaultSizeHint = QSize(150,100)
-        else:
-            self.defaultSizeHint = sizeHint
+        self.defaultSizeHint = QSize(150,100)
         self.setSelectionMode(selectionMode)
         if enableDragDrop:
             self.setDragEnabled(1)
@@ -60,8 +55,6 @@ class listBox(QListWidget,widgetState):
             #self.setDragDropMode(QAbstractItemView.DragDrop)
             
             self.dragStartPosition = 0
-        if toolTip:
-            self.setToolTip(toolTip)
         
         self.listItems = OrderedDict()
         if items:

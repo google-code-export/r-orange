@@ -239,7 +239,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         """
         for k in self.Rvariables:
             #print self.Rvariables[k]
-            self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }', wantType = 'NoConversion')
+            self.R('if(exists("%(NAME)s")) { rm(%(NAME)s) }' % {'NAME':self.Rvariables[k]}, wantType = 'NoConversion')
         # send none through the signals
         globalData.removeGlobalData(self)
         self.outputs.propogateNone(ask = False)

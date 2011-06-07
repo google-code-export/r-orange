@@ -13,9 +13,8 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 
 class shuffleBox(listBox):
-    def __init__(self, widget, value = None, label = None, displayLabel = True, includeInReports = True, orientation = 'vertical', selectionMode = QAbstractItemView.SingleSelection,
-         enableDragDrop = True, dragDropCallback = None, dataValidityCallback = None, sizeHint = None, callback = None, toolTip = None, items = None, *args, **kwargs):
-         listBox.__init__(self, widget = widget, value = value, label = label, displayLabel = displayLabel, includeInReports = includeInReports, orientation = orientation, selectionMode = selectionMode, enableDragDrop = enableDragDrop, dragDropCallback = dragDropCallback, dataValidityCallback = dataValidityCallback, sizeHint = sizeHint, callback = callback, toolTip = toolTip, items = items, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+         listBox.__init__(self, *args, **kwargs)
 
     def dropEvent(self, ev):
         if not self.enableDragDrop: return

@@ -16,9 +16,11 @@ from PyQt4.QtGui import *
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class RFormulaEntry(widgetState):
-    def __init__(self, widget, label = _('Formula Entry'), displayLabel=True, includeInReports=True):
+    def __init__(self, widget, label = _('Formula Entry'), displayLabel=True, **kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         # make a widgetBox to hold everything
-        widgetState.__init__(self,widget,label,includeInReports)
+        widgetState.__init__(self,widget,label,**kwargs)
         
         box = groupBox(self.controlArea,label=label)
 

@@ -13,11 +13,10 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 
 class lineEdit(QLineEdit,widgetState):
-    def __init__(self,widget,text='', label=None, displayLabel=True, includeInReports=True,
-    id=None, orientation='horizontal', toolTip = None,  width = 0, callback = None, textChangedCallBack=None,
-    sp='shrinking', **args):
-
-        widgetState.__init__(self,widget,label,includeInReports)
+    def __init__(self,widget,text='', label=None, displayLabel=True, id=None, orientation='horizontal', width = 0, callback = None, textChangedCallBack=None, sp='shrinking', **kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,widget,label,**kwargs)
         QLineEdit.__init__(self,widget)
         
         if displayLabel:
@@ -32,12 +31,7 @@ class lineEdit(QLineEdit,widgetState):
             self.hb.layout().setAlignment(lb,Qt.AlignRight)
         else:
             self.controlArea.layout().addWidget(self)
-        
-        if toolTip and displayLabel: 
-            self.hb.setToolTip(toolTip)
-        elif toolTip:
-            self.setToolTip(toolTip)
-            
+
         if width == 0:
             self.setMaximumWidth(175)
             self.setMinimumWidth(175)

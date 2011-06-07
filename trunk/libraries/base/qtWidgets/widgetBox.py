@@ -11,10 +11,10 @@ import redREnviron, os
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class widgetBox(QWidget,widgetState):
-    def __init__(self,widget, orientation='vertical', addSpace=False, includeInReports=True,
-    sizePolicy = None, margin = -1, spacing = -1, addToLayout = 1, alignment=Qt.AlignTop, helpButton = False):
-
-        widgetState.__init__(self,widget, _('WidgetBox'),includeInReports)
+    def __init__(self,widget, orientation='vertical', addSpace=False, margin = -1, spacing = -1, addToLayout = 1, alignment=Qt.AlignTop, helpButton = False, **kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,widget, _('WidgetBox'), **kwargs)
         QWidget.__init__(self,self.controlArea)
             
         self.controlArea.layout().addWidget(self)
@@ -55,8 +55,6 @@ class widgetBox(QWidget,widgetState):
                 separator(self.controlArea, 0, addSpace)
             elif addSpace:
                 separator(self.controlArea)
-        if sizePolicy:
-            self.setSizePolicy(sizePolicy)
     
     def layout(self):
         """Returns the layout of the box."""

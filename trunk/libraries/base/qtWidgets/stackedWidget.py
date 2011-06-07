@@ -12,8 +12,10 @@ _ = redRi18n.get_(package = 'base')
 
 
 class stackedWidget(QStackedWidget, widgetState):
-    def __init__(self, widget, label = None, displayLabel = False):
-        widgetState.__init__(self,widget, 'stackedWidget',includeInReports=False)
+    def __init__(self, widget, label = None, displayLabel = False,**kwargs):
+        kwargs.setdefault('includeInReports', False)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,widget, 'stackedWidget',**kwargs)
         QStackedWidget.__init__(self, self.controlArea)
         self.controlArea.layout().addWidget(self)
         self.stackIndex = []

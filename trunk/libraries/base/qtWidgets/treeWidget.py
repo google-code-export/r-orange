@@ -12,10 +12,11 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class treeWidget(QTreeWidget, widgetState):
-    def __init__(self, widget, label = None, displayLabel=False, includeInReports=True, sortable=True,
-    orientation='vertical', toolTip = None, callback = None):
-        
-        widgetState.__init__(self,widget,label,includeInReports)
+    def __init__(self, widget, label = None, displayLabel=False, sortable=True,
+    orientation='vertical', callback = None, **kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,widget,label,**kwargs)
 
         QTreeWidget.__init__(self, self.controlArea)
         self.setSortingEnabled(sortable)
@@ -28,8 +29,6 @@ class treeWidget(QTreeWidget, widgetState):
             self.hb.layout().addWidget(self)
         else:
             self.controlArea.layout().addWidget(self)
-
-        if toolTip: self.setToolTip(toolTip)
         if callback:
             QObject.connect(self, SIGNAL('currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)'), callback)
     def setHeaderLabels(self, labels):

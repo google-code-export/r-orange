@@ -30,10 +30,11 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 class commitButton(button,widgetState):
     def __init__(self,widget,label = _('Commit'), callback = None, processOnInput=None,processOnChange=None,
-    disabled=0, icon=None, orientation='horizontal',
-    toolTip=None, width = None, height = None, alignment=Qt.AlignRight, toggleButton = False):
-
-        widgetState.__init__(self,widget,label,includeInReports=False)
+    icon=None, orientation='horizontal',
+    width = None, height = None, alignment=Qt.AlignRight, toggleButton = False,**kwargs):
+        kwargs.setdefault('includeInReports', False)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,widget,label,**kwargs)
         icon = str(redREnviron.directoryNames['libraryDir']+'/base/icons/fork.png').replace('\\', '/')
 
         box = widgetBox(self.controlArea,orientation=orientation,alignment=alignment,includeInReports=False)
@@ -61,7 +62,7 @@ class commitButton(button,widgetState):
             toolTips = [_('Try to process as soon as data is received by the widget. The current state of parameters will be applied.')]
             )
 
-        button.__init__(self, widget = box, label = label, callback = callback, disabled = disabled, 
+        button.__init__(self, widget = box, label = label, callback = callback, 
         icon = icon, toolTip = toolTip, width = width, height = 35, 
         toggleButton = toggleButton)
         

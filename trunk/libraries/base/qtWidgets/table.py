@@ -7,11 +7,11 @@ from libraries.base.qtWidgets.widgetBox import widgetBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class table(widgetState,QTableWidget):
-    def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, 
-    data=None, keys = None, rows = 0, columns = 0, sortable = False, selectionMode = -1, addToLayout = 1, callback = None):
+    def __init__(self,widget,label=None, displayLabel=True, data=None, keys = None, rows = 0, columns = 0, sortable = False, selectionMode = -1, addToLayout = 1, callback = None,**kwargs):
         
-        
-        widgetState.__init__(self,widget,label,includeInReports)
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,widget,label,**kwargs)
         
         if displayLabel:
             mainBox = groupBox(self.controlArea,label=label, orientation='vertical')

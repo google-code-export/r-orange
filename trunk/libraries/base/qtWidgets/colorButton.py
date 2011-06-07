@@ -10,11 +10,13 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 
 class colorButton(QPushButton, widgetState):
-    def __init__(self, widget, label = None, displayLabel = True, startColor = '#000000', callback = None, toolTip=None, width = 15, height = 15):
+    def __init__(self, widget, label = None, displayLabel = True, startColor = '#000000', callback = None, width = 15, height = 15,**kwargs):
         """Constructor, typically called with label, startColor, callback, and toolTip
         
         """
-        widgetState.__init__(self,widget, label, includeInReports=True)
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,widget, label, **kwargs)
         
         QToolButton.__init__(self, self.controlArea)
         

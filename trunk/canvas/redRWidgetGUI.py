@@ -285,9 +285,14 @@ class redRWidgetGUI(QMainWindow):
     """
     
     def _acceptNameChanges(self):
-        for k in self.Rvariables.keys():
+        for k, old in self.Rvariables.items():
             if self.rVariableNameEdits[k].text() == '': continue
-            self.Rvariables[k] = self.rVariableNameEdits[k].text()
+            new = self.rVariableNameEdits[k].text()
+            
+            if self.R('exists("%s")' % old, wantType = redR.CONVERT):
+                self.R('%s<-%s' % (new, old), wantType = redR.NOCONVERSTION)
+                self.R('rm(%s)' % old, wantType = redR.NOCONVERSTION)
+            self.Rvariables[k] = new
             
         self.resetRVariableNameEdits()
     
@@ -300,7 +305,10 @@ class redRWidgetGUI(QMainWindow):
     def clearRVariableNameEdits(self):
         """Clears the R Variable Name Edits"""
         for v in self.rVariableNameEdits.values():
+            ##print 'hiding edit in redRWidgetGUI'
             v.hide()
+            
+        
             
         self.rVariableNameEdits = {}
         

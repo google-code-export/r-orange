@@ -13,16 +13,11 @@ from PyQt4.QtGui import *
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class statusLabel(QLabel,widgetState):
-    def __init__(self,widget,label = '', wordWrap=True):
-        widgetState.__init__(self, widget, 'statusLabel',includeInReports=False)
+    def __init__(self,widget,label = '', wordWrap=True,**kwargs):
+        kwargs.setdefault('includeInReports', False)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self, widget, 'statusLabel',**kwargs)
         QLabel.__init__(self,self.controlArea)
-        # if icon:
-            # icon = QIcon(icon)
-            # box = redRWidgetBox(widget,orientation='horizontal')
-            # box.layout().addWidget(icon)
-            # box.layout().addWidget(self)
-        # else:
-        #widget.layout().addWidget(self)
         
         box = redRWidgetBox(self.controlArea,orientation='horizontal')
         

@@ -16,8 +16,9 @@ from PyQt4.QtGui import *
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class widgetLabel(QLabel,widgetState):
-    def __init__(self,widget,label = '', icon=None, wordWrap=False,sizePolicy=QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)):
-        widgetState.__init__(self,widget, _('widgetLabel'),includeInReports=False)
+    def __init__(self,widget,label = '', icon=None, wordWrap=False, **kwargs):
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum))
+        widgetState.__init__(self,widget, _('widgetLabel'),includeInReports=False, **kwargs)
         QLabel.__init__(self,self.controlArea)
         self.controlArea.layout().addWidget(self)
         if icon:
@@ -25,10 +26,7 @@ class widgetLabel(QLabel,widgetState):
         self.setText(label)
         self.setWordWrap(wordWrap)
         self.setTextInteractionFlags(Qt.TextBrowserInteraction)
-        if not sizePolicy:
-            self.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
-        else:
-            self.setSizePolicy(sizePolicy)
+        
         #self.connect(self, SIGNAL('linkActivated (const QString&)'), self.followLink)
     def text(self):
         """Returns the text of the label"""

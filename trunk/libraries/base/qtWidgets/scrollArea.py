@@ -14,9 +14,10 @@ _ = redRi18n.get_(package = 'base')
         
 class scrollArea(QScrollArea,widgetState):
     def __init__(self,widget, orientation=QVBoxLayout(), addSpace=False, 
-    sizePolicy = None, margin = -1, spacing = -1, addToLayout = 1):
-
-        widgetState.__init__(self,widget, 'scrollArea',includeInReports=True)
+    margin = -1, spacing = -1, addToLayout = 1, **kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,widget, 'scrollArea',**kwargs)
         QScrollArea.__init__(self,self.controlArea)
             
         if margin == -1: margin = 0
@@ -35,13 +36,7 @@ class scrollArea(QScrollArea,widgetState):
         if self.layout() == 0 or self.layout() == None:
             self.setLayout(QVBoxLayout())
 
-        if sizePolicy:
-            self.setSizePolicy(sizePolicy)
-        # else:
-            # self.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
         
-            
-
         if spacing == -1: spacing = 4
         self.layout().setSpacing(spacing)
         if margin != -1:

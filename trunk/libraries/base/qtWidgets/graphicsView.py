@@ -18,13 +18,16 @@ import RSession, redREnviron, datetime, os, time
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class graphicsView(QGraphicsView, widgetState):
-    def __init__(self, parent,label=_('Graph'), displayLabel=True,includeInReports=True, name = '', data = None):
+    def __init__(self, parent,label=_('Graph'), displayLabel=True,name = '', data = None,**kwargs):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
-        self.R = RSession.Rcommand
-        self.require_librarys = RSession.require_librarys
+        
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         widgetState.__init__(self,parent,label,includeInReports)
         
         QGraphicsView.__init__(self, self.controlArea)
+        self.R = RSession.Rcommand
+        self.require_librarys = RSession.require_librarys
         if displayLabel:
             self.controlArea = groupBox(self.controlArea,label=label, orientation='vertical')
         else:

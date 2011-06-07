@@ -9,8 +9,10 @@ from libraries.base.qtWidgets.widgetBox import widgetBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class splitter(QSplitter, widgetState):
-    def __init__(self, widget = None, orientation = 'horizontal'):
-        widgetState.__init__(self,widget, 'splitter',includeInReports=False)
+    def __init__(self, widget = None, orientation = 'horizontal',**kwargs):
+        kwargs.setdefault('includeInReports', False)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,widget, 'splitter',**kwargs)
         QSplitter.__init__(self, widget)
         
         self.controlArea.layout().addWidget(self)

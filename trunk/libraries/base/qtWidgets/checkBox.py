@@ -13,15 +13,16 @@ from PyQt4.QtGui import *
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class checkBox(widgetState,QWidget):
-    def __init__(self,widget,label = None, displayLabel= True, includeInReports=True,
-    buttons = None,toolTips = None, setChecked=None,
-    orientation='vertical',callback = None):
+    def __init__(self,widget,label = None, displayLabel= True, buttons = None,toolTips = None, setChecked=None,
+    orientation='vertical',callback = None, **kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         """Constructor, common parameters will be widget, label, buttons (a list or list-tuple of key values for buttons), toolTips (a list of toolTips for the buttons), and setChecked (a list of keys to check from the buttons)"""
         if toolTips and len(toolTips) != len(buttons):
             raise RuntimeError(_('Number of buttons and toolTips must be equal'))
  
         QWidget.__init__(self,widget)
-        widgetState.__init__(self,widget,label,includeInReports)
+        widgetState.__init__(self,widget,label,**kwargs)
         
 
         self.controlArea.layout().addWidget(self)

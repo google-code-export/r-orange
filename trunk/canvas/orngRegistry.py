@@ -63,6 +63,7 @@ def readCategories(force = True):
                         try:
                             wmod = imp.load_source(v.fileName, v.fullName)
                         except Exception as inst:
+                            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Error loading widget %s' % c) 
                             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException()) 
                             #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('<b>Error loading meta data for %s; %s</b>') % (metaFile, unicode(inst)))
                             continue

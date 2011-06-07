@@ -11,13 +11,14 @@ from PyQt4.QtGui import *
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class groupBox(QGroupBox,widgetState):
-    def __init__(self,widget, label = None, displayLabel=True, includeInReports=True,
-    orientation='vertical', addSpace=False, 
-    sizePolicy = None, margin = -1, spacing = -1, flat = 0,alignment=Qt.AlignTop):        
+    def __init__(self,widget, label = None, displayLabel=True, orientation='vertical', addSpace=False, 
+    sizePolicy = None, margin = -1, spacing = -1, flat = 0,alignment=Qt.AlignTop, **kwargs):        
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         if label:
-            widgetState.__init__(self,widget,label,includeInReports)
+            widgetState.__init__(self,widget,label,**kwargs)
         else:
-            widgetState.__init__(self,widget,_('Group Box'),includeInReports)
+            widgetState.__init__(self,widget,_('Group Box'),**kwargs)
         
         if displayLabel:
             QGroupBox.__init__(self,label)

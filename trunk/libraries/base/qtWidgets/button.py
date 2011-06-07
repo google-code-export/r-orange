@@ -14,13 +14,14 @@ class button(QPushButton,widgetState):
     This is the base class for buttons.  By buttons we mean pushbuttons.  The button can also act as a checkbutton.  Checkbuttons remain checked or unchecked when clicked.
     """
     
-    def __init__(self,widget,label, callback = None, disabled=0, icon=None, 
-    toolTip=None, width = None, height = None,alignment=Qt.AlignLeft, toggleButton = False, setChecked = False):
-
+    def __init__(self,widget,label, callback = None, icon=None, 
+    width = None, height = None,alignment=Qt.AlignLeft, toggleButton = False, setChecked = False,**kwargs):
+        kwargs.setdefault('includeInReports', False)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         if icon and (not label or label == ''):
-            widgetState.__init__(self,widget,os.path.basename(icon),includeInReports=False)
+            widgetState.__init__(self,widget,os.path.basename(icon),**kwargs)
         else:
-            widgetState.__init__(self,widget,label,includeInReports=False)
+            widgetState.__init__(self,widget,label,**kwargs)
             
         if icon:
             QPushButton.__init__(self,QIcon(icon), label,self.controlArea)
@@ -42,11 +43,6 @@ class button(QPushButton,widgetState):
             
         if height:
             self.setFixedHeight(height)
-        self.setDisabled(disabled)
-        
-        if toolTip:
-            self.setToolTip(toolTip)
-            
         if toggleButton:
             self.setCheckable(True)
             if setChecked:

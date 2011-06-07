@@ -397,8 +397,10 @@ I want to put in an image below that likely isn't there.
             self.updateScan()
             return
         
-        self.updateScan()
-        self.commit()
+        if scan:
+            self.updateScan()
+        else:
+            self.commit()
 
     def updateScan(self):
         if self.rowNamesCombo.count() == 0:

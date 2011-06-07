@@ -18,10 +18,10 @@ from PyQt4.QtGui import *
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class textEdit(QTextEdit,widgetState):
-    def __init__(self,widget,html='',label=None, displayLabel=True,includeInReports=True, 
-    orientation='vertical', alignment=None, editable=True, printable=False,clearable=False,**args):
-
-        widgetState.__init__(self,widget, label,includeInReports)
+    def __init__(self,widget,html='',label=None, displayLabel=True, orientation='vertical', alignment=None, editable=True, printable=False,clearable=False,**kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,widget, label,**kwargs)
 
         QTextEdit.__init__(self,self.controlArea)
         self.label = label

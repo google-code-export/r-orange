@@ -13,11 +13,12 @@ from PyQt4.QtGui import *
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class TFCheckBox(widgetState,QWidget):
-    def __init__(self,widget,label = None, displayLabel= True, includeInReports=True,
-    toolTip = None, setChecked=False,
-    orientation='vertical',callback = None):
+    def __init__(self,widget,label = None, displayLabel= True, setChecked=False,
+    orientation='vertical',callback = None, **kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         QWidget.__init__(self,widget)
-        widgetState.__init__(self,widget,label,includeInReports)
+        widgetState.__init__(self,widget,label,**kwargs)
         
 
         self.controlArea.layout().addWidget(self)

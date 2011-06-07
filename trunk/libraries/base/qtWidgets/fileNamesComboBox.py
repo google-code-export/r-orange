@@ -14,12 +14,12 @@ from PyQt4.QtGui import *
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class fileNamesComboBox(comboBox,widgetState):
-    def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, files=None, editable=False,
-    orientation='horizontal',callback = None, **args):
-
+    def __init__(self,widget,label=None, displayLabel=True,files=None, editable=False,orientation='horizontal',callback = None, **kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         comboBox.__init__(self,widget,label=label,displayLabel=displayLabel,
         items=None, orientation=orientation,editable=editable,
-        callback=callback, **args)
+        callback=callback, **kwargs)
         
         self.label = label
         

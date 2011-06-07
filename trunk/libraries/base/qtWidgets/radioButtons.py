@@ -16,12 +16,12 @@ from PyQt4.QtGui import *
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class radioButtons(widgetState,QWidget):
-    def __init__(self,widget,label=None, displayLabel=True, includeInReports=True,
-    buttons=None,toolTips = None, setChecked = None,
-    orientation='vertical',callback = None):
-        
+    def __init__(self,widget,label=None, displayLabel=True, buttons=None,toolTips = None, setChecked = None,
+    orientation='vertical',callback = None,**kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         QWidget.__init__(self,widget)
-        widgetState.__init__(self,widget,label,includeInReports)
+        widgetState.__init__(self,widget,label,**kwargs)
         
         
         self.label = label

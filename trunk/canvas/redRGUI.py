@@ -23,8 +23,10 @@ class qtWidgetBox(QWidget):
 
        
 class widgetState:
-    def __init__(self,widget,widgetName,includeInReports,**args):
-        
+    def __init__(self,widget,widgetName,includeInReports,**kwargs):
+        if not widgetName:
+            # print '#########widget Name is required############'
+            raise RuntimeError(_('#########widget Name is required############'))
         self.controlArea = qtWidgetBox(widget)
         #print widgetName,self.controlArea
         if hasattr(self,'getReportText'):
@@ -39,9 +41,18 @@ class widgetState:
             raise RuntimeError(_('#########widget Name is required############'))
 
         self.widgetName = widgetName
-    
+        
+        if 'toolTip' in kwargs:
+            self.controlArea.setToolTip(kwargs['toolTip'])
+        if 'sizePolicy' in kwargs:
+            self.controlArea.setSizePolicy(kwargs['sizePolicy'])
+        if 'whatsThis' in kwargs:
+            self.controlArea.setWhatsThis(kwargs['whatsThis'])
+        if 'disabled' in kwargs:
+            self.controlArea.setDisabled(kwargs['disabled'])
+        if 'styleSheet' in kwargs:
+            self.controlArea.setStyleSheet(kwargs['styleSheet'])
     def hide(self):
-        print 'hiding'
         self.controlArea.hide()
     
     def show(self):

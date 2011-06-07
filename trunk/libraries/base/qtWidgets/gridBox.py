@@ -10,9 +10,10 @@ from libraries.base.qtWidgets.widgetBox import *
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class gridBox(QWidget,widgetState):
-    def __init__(self,widget, includeInReports=False, addToLayout = 1, alignment=Qt.AlignTop, spacing = -1, margin = -1):
-
-        widgetState.__init__(self,widget, _('GridBox'),includeInReports)
+    def __init__(self,widget, addToLayout = 1, alignment=Qt.AlignTop, spacing = -1, margin = -1,**kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,widget, _('GridBox'),**kwargs)
         QWidget.__init__(self,self.controlArea)
         
         self.controlArea.layout().addWidget(self)

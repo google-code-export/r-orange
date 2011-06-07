@@ -10,12 +10,12 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 
 class dialog(QDialog,widgetState):
-    def __init__(self, parent = None, 
-    layout = 'vertical',title=None, callback = None):
+    def __init__(self, parent = None, layout = 'vertical',title=None, callback = None):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self, self, 'dialog',**kwargs)
         QDialog.__init__(self,parent)
-        widgetState.__init__(self, self, 'dialog',includeInReports=True)
-        
-        
+
         if title:
             self.setWindowTitle(title)
         if layout == 'horizontal':

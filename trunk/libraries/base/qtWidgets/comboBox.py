@@ -13,10 +13,11 @@ import redRLog
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class comboBox(QComboBox,widgetState):
-    def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, 
-    items=None, editable=False, orientation='horizontal',callback = None, toolTip = None):
-        
-        widgetState.__init__(self,widget,label,includeInReports)
+    def __init__(self,widget,label=None, displayLabel=True, 
+    items=None, editable=False, orientation='horizontal',callback = None,**kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,widget,label,**kwargs)
         QComboBox.__init__(self,self.controlArea)
         
         if displayLabel:
@@ -41,8 +42,6 @@ class comboBox(QComboBox,widgetState):
 
         if callback:
             QObject.connect(self, SIGNAL('activated(int)'), callback)
-        if toolTip:
-            self.setToolTip(toolTip)
     def getSettings(self):            
         """Standard getSettings"""
         r = {'items':self.items,

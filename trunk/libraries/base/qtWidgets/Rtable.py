@@ -13,11 +13,11 @@ class Rtable(widgetState,QTableView):
     Rtable class handles all the QT GUI functionality like creating header with menus, 
     and row/column/cell selection.
     """
-    def __init__(self,widget, label=None, displayLabel=True,includeInReports=True, 
-    Rdata=None, editable=False, rows=None, columns=None,
-    sortable=False, selectionMode = -1, addToLayout = 1,callback=None):
-    
-        widgetState.__init__(self,widget, widget.label,includeInReports)
+    def __init__(self,widget, label=None, displayLabel=True, Rdata=None, editable=False, rows=None, columns=None,
+    sortable=False, selectionMode = -1, addToLayout = 1,callback=None,**kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        widgetState.__init__(self,widget, widget.label,**kwargs)
         if displayLabel:
             mainBox = groupBox(self.controlArea,label=label, orientation='vertical')
         else:

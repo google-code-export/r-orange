@@ -9,8 +9,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 class DynamicSpinBox(groupBox):
     def __init__(self,widget, label = None, values = None, displayLabel=True, includeInReports=True,
-            orientation='vertical', addSpace=False, sizePolicy = None, margin = -1, spacing = -1, flat = 0,alignment=Qt.AlignTop, callback = None, toolTip = None):
-        groupBox.__init__(self, widget, label = label, displayLabel = displayLabel, includeInReports = includeInReports, orientation=orientation, addSpace=addSpace, sizePolicy = sizePolicy, margin = margin, spacing = spacing, alignment=alignment)
+            orientation='vertical', addSpace=False, sizePolicy = None, margin = -1, spacing = -1, flat = 0,alignment=Qt.AlignTop, callback = None, toolTip = None,**kwargs):
+        groupBox.__init__(self, widget, label = label, displayLabel = displayLabel, includeInReports = includeInReports, orientation=orientation, addSpace=addSpace, sizePolicy = sizePolicy, margin = margin, spacing = spacing, alignment=alignment,**kwargs)
         
         self.spinBoxes = {}
         if callback:

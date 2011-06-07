@@ -15,12 +15,12 @@ from PyQt4.QtGui import *
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class spinBox(QDoubleSpinBox ,widgetState):
-    def __init__(self, widget, label=None, displayLabel=True, includeInReports=True, value=None, 
-    orientation='horizontal', decimals=0, max = None, min = None, callback=None, toolTip = None, *args):
-        
+    def __init__(self, widget, label=None, displayLabel=True, value=None, orientation='horizontal', decimals=0, max = None, min = None, callback=None, *args, **kwargs):
+        kwargs.setdefault('includeInReports', True)
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         self.widget = widget
         
-        widgetState.__init__(self,widget,label,includeInReports)
+        widgetState.__init__(self,widget,label,**kwargs)
         QDoubleSpinBox.__init__(self)
         self.setDecimals(decimals)
         self.label = label
