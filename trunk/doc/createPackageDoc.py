@@ -167,6 +167,7 @@ def makeFiles():
     nd = {'W':[], 'S':[], 'Q':[]}
     ## make rst and xml files.
     for w in d['widgets']:
+        print os.path.join(root, 'widgets', '%s.py' % w)
         wn = makeMetaFromSource.parseWidgetFile(os.path.join(root, 'widgets', '%s.py' % w), 
             os.path.join(widgetMeta, '%s.xml' % w), 
             os.path.join(userWidgetHelp, '%s.rst' % w), os.path.join(devWidgetHelp, '%s.rst' % w))
@@ -180,8 +181,10 @@ def makeFiles():
             os.path.join(devSignalHelp, '%s.rst' % s),
             os.path.join(signalMeta, '%s.xml' % s))
         nd['S'].append((s, sn))
+    
+    
     for q in d['qtWidgets']:
-        qn = makeMetaFromSource.parseQTWidgetFile(os.path.join(root, 'qtWidgets', '%s.py' % s), 
+        qn = makeMetaFromSource.parseQTWidgetFile(os.path.join(root, 'qtWidgets', '%s.py' % q), 
             os.path.join(userQtHelp, '%s.rst' % q),
             os.path.join(devQtHelp, '%s.rst' % q),
             os.path.join(qtMeta, '%s.xml' % q))

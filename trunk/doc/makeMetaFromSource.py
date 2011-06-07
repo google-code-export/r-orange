@@ -32,7 +32,7 @@ getQuote = re.compile(r"""(_\()?['\"](?P<quote>.+?)['"]""", re.DOTALL)
 
 getGUIClass = re.compile(r'redRGUI\.(?P<class>[a-zA-Z\.]+)', re.DOTALL)
 getLabel = re.compile(r'label\s*=\s*(?P<label>.+?)[,\)]', re.DOTALL)
-getWidgetXML = re.compile(r'<widgetXML>(?P<widgetXML>.*?)</widgetXML>', re.DOTALL)
+getWidgetXML = re.compile(r'(<widgetXML>.*</widgetXML>)', re.DOTALL)
 getBlock = re.compile(r'""".*?"""[\s\n]*?.*?(?=""")|(.*?\n\s*\n)', re.DOTALL)
 getSignalClass = re.compile(r'signals\.(?P<signalClass>.+?)[,\]\)]')
 getRawRST = re.compile(r'\s::rawrst::(?P<rawrst>.+?)(?=""")', re.DOTALL)
@@ -40,8 +40,8 @@ getRLibraryCall = re.compile(r'self\.require_librarys\((?P<libs>.+?)\)', re.DOTA
 getHelpDoc = re.compile(r'.. helpdoc::(?P<helpdoc>.*?)"""', re.DOTALL)
 getName = re.compile(r'<name>\s*(?P<name>.+?)\s*</name>', re.DOTALL)
 getAuthor = re.compile(r'<author>(?P<authorBlock>.*?)</author>', re.DOTALL)
-getAuthorName = re.compile(r'<authorname>(?P<authorname>.*?)</authorname>', re.DOTALL)
-getAuthorContact = re.compile(r'<authorcontact>(?P<authorcontact>.*?)</authorcontact>', re.DOTALL)
+getAuthorName = re.compile(r'<name>(?P<authorname>.*?)</name>', re.DOTALL)
+getAuthorContact = re.compile(r'<contact>(?P<authorcontact>.*?)</contact>', re.DOTALL)
         
 getSignalXML = re.compile(r'<signalXML>.*?</signalXML>', re.DOTALL)
 getSignalParent = re.compile(r'.. signalClass:: *(?P<signalClass>.+?)[ "]')
@@ -111,31 +111,53 @@ def _getRRGUISettings(string):
     if rawRST: d['rst'] = rawRST.group('rawrst')
     else: d['rst'] = ''
     return d
+def getXMLText(nodelist):
+    """A function to handle retrieval of xml text.  
+    
+    .. note:: 
+        This is such a ubiquitous function that we may consider making our own xml handler with this built in.
+    """
+    rc = ''
+    for node in nodelist:
+        if node.nodeType == node.TEXT_NODE:
+            rc = rc + node.data
+            
+    rc = unicode(rc).strip()
+    return rc
+
 
 def _parsefile(myFile):
     d = {'widgetXML':'', 'signals':[], 'rrgui':[], 'rrvarnammes':[], 'rpackages':[], 'helpdoc':[], 'name':'', 'author':[]}
-    
     # parse the widgetXML and handle that.
     widgetXML = re.search(getWidgetXML, myFile)
     if not widgetXML: raise Exception('Widget does not have a widgetXML section')
-    d['widgetXML'] = widgetXML.group('widgetXML')
-        
+    d['widgetXML'] = widgetXML.group(1)
+    # print d['widgetXML']
+    widgetMetaXML = xml.dom.minidom.parseString(d['widgetXML'])
+    d['name'] = getXMLText(widgetMetaXML.getElementsByTagName('name')[0].childNodes)
+    d['icon'] = getXMLText(widgetMetaXML.getElementsByTagName('icon')[0].childNodes)
+    d['summary'] = getXMLText(widgetMetaXML.getElementsByTagName('summary')[0].childNodes)
+    
+    d['tags'] = [] ## will be a list of tuples in the form (<tag>, <priority>); ('Data Input', 4)
+    for tag in widgetMetaXML.getElementsByTagName('tags')[0].childNodes:
+        if getXMLText(tag.childNodes) != '':
+            if tag.hasAttribute('priority'):
+                d['tags'].append((getXMLText(tag.childNodes), int(tag.getAttribute('priority'))))
+            else:
+                d['tags'].append((getXMLText(tag.childNodes), 0))
+    
+    d['author'] = [] ## will be a list of tuples in the form (<tag>, <priority>); ('Data Input', 4)
+    for author in widgetMetaXML.getElementsByTagName('author'):
+        #print author
+        #print getXMLText(author.getElementsByTagName('name')[0].childNodes)
+        d['author'].append((getXMLText(author.getElementsByTagName('name')[0].childNodes), 
+        getXMLText(author.getElementsByTagName('contact')[0].childNodes)))
     # get any loaded R libraries, wrapped in a try because some widgets might not load R libraries
     try:
         for m in re.finditer(getRLibraryCall, myFile):
             for q in re.finditer(getQuote, m.group()):
                 d['rpackages'].append(q.group('quote'))
     except:pass
-    
-    if not re.search(getName, myFile): raise Exception('There is not a name tag.')
-    d['name'] = re.search(getName, myFile).group('name')
-    
-    # get the authors
-    try:
-        for m in re.finditer(getAuthor, myFile):
-            d['author'].append((re.search(getAuthorName, m.group('authorBlock')).group('authorname'), re.search(getAuthorContact, m.group('authorBlock')).group('authorcontact')))
-    except:
-        raise Exception('Widget must contain at least one author block and each author block must have a name and contact.  Please use the form;\n<author>\n\t<authorname>Name</authorname>\n\t<authorcontact>name@x.com</authorcontact>\n</author>\n\nThis should be in the widgetXML block')
     
     # get the help documentation, wrapped in a try because some widget might not have any help documentation
     try:
@@ -157,6 +179,9 @@ def _parsefile(myFile):
                d['signals'].append(_getRRSignals(string))
             elif directive == 'rrgui':
                 d['rrgui'].append(_getRRGUISettings(string))
+    
+    # print d
+    # asdfafd
     return d
     
     
@@ -172,8 +197,8 @@ def parseWidgetFile(filename, outputXML, userHelp,devHelp):
     """Pass the list of strings to the parser to extract the relevant structure"""
     d = _parsefile(myFile)
 
-    with open(outputXML, 'w') as f:
-        f.write(makeXML(d))
+    # with open(outputXML, 'w') as f:
+        # f.write(makeXML(d))
     with open(userHelp, 'w') as f:
         helprst = makeHelp(d)
         f.write(helprst)
