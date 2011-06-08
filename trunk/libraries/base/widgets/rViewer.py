@@ -11,14 +11,10 @@
         <tag>R</tag> 
     </tags>
     <summary></summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -40,6 +36,7 @@ class rViewer(OWRpy):
         self.RFunctionParam_data = None
         self.data = None
         
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('R Variable Data'), signals.base.RVariable, self.processdata)
 
         self.RoutputWindow = redRGUI.base.textEdit(self.controlArea,label=_('Output'), editable=False)

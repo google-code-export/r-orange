@@ -1,6 +1,6 @@
 """
 .. helpdoc::
-<p>Perform simple math transformation of data one column at at time.</p>
+Perform simple math transformation of data one column at at time.
 """
 
 """
@@ -11,14 +11,10 @@
         <tag>Data Manipulation</tag> 
     </tags>
     <summary>Perform basic math operations on columns of data.</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -43,8 +39,10 @@ class mathWidget(OWRpy):
         self.counter = 1
         self.functionsList = ['log2', 'log10', 'add', 'subtract', 'multiply', 'divide', 'match', 'as.numeric', 'as.character', 'exp', 'logicAND', 'logicOR', 'toDateTime (MDY)', 'toDateTime (DMY)', 'toDateTime (YMD)']
         
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('Data Frame'), signals.base.RDataFrame, self.gotData)
 
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('Data Frame'), signals.base.RDataFrame)
 
         #GUI#

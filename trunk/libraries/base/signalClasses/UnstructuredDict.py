@@ -1,7 +1,10 @@
 ### Python Dictionary Class.  Contains python dictionary objects and can be the parent class of other classes, even R classes.
 
 from signals import BaseRedRVariable
-
+"""
+.. convertTo:: ``
+.. convertFrom:: ``
+"""
 class UnstructuredDict(BaseRedRVariable):
     convertToList = [BaseRedRVariable]
     convertFromList = []

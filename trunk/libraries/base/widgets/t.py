@@ -1,6 +1,6 @@
-"""
+"""Transpose
 .. helpdoc::
-
+This widget transposes either a matrix or data frame.
 """
 
 """
@@ -10,22 +10,14 @@
     <tags> 
         <tag>Data Manipulation</tag> 
     </tags>
-    <summary></summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <summary>Transpose a matrix or data frame.</summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
-"""
-<name>Transpose</name>
-<tags>Data Manipulation</tags>
-"""
 from OWRpy import * 
 import redRGUI, signals
 
@@ -40,9 +32,9 @@ class t(OWRpy):
         self.RFunctionParam_x = ''
         self.data={}
         
-        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('Input Data Table or Matrix'), [signals.base.RDataFrame, signals.base.RMatrix], self.processx)
-
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('Transposed Data Table'), signals.base.RDataFrame)
 
         self.commit = redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,

@@ -1,3 +1,12 @@
+"""RVector
+.. helpdoc::
+This is the least generic signal.  Vectors can either represent single data points or sets of data points.  R treats these the same."""
+
+"""
+.. convertTo:: `base:RDataFrame, base:StructuredDict, base:UnstructuredDict, base:RMatrix, base:RVariable, base:RList`
+.. convertFrom:: ``
+"""
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from RSession import Rcommand

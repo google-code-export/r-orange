@@ -1,6 +1,6 @@
 """
 .. helpdoc::
-<p>Click on column headers to see options for sorting and filtering data.</p>
+Click on column headers to see options for sorting and filtering data.
 """
 
 """
@@ -11,14 +11,10 @@
         <tag>View Data</tag> 
     </tags>
     <summary>Shows data in a spreadsheet.</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -42,6 +38,7 @@ class RDataTable(OWRpy):
         
         self.setRvariableNames(['summaryData'])
 
+        """.. rrsignals::"""
         self.inputs.addInput('id1', _('Input Data Table'), [signals.base.TableView, signals.base.RDataFrame, signals.base.StructuredDict], self.dataset) 
 
         self.data = {}          # dict containing the table infromation

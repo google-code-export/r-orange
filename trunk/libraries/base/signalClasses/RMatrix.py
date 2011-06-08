@@ -1,3 +1,12 @@
+"""RMatrix
+.. helpdoc::
+This signal represents a signal class that contains matrix data."""
+
+"""
+.. convertTo:: `base:RDataFrame, base:StructuredDict, base:UnstructuredDict, base:RVariable, base:RList, base:TableView`
+.. convertFrom:: `base:RDataFrame, base:StructuredDict`
+"""
+
 from libraries.base.signalClasses.RDataFrame import *
 import time
 class RMatrix(RDataFrame):

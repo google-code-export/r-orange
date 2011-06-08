@@ -1,3 +1,7 @@
+"""RDataFrame
+.. helpdoc::
+
+This signal class represents the RDataFrame type.  Data frames are table like data objects that are actually very special lists."""
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from libraries.base.signalClasses.RList import *
@@ -15,6 +19,12 @@ from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.checkBox import checkBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
+
+"""
+.. convertTo:: `base:RList, base:RVariable, base:StructuredDict, base:UnstructuredDict, base:TableView`
+.. convertFrom:: `base:StructuredDict`
+"""
+
 class RDataFrame(RList, StructuredDict, TableView):
     
     convertFromList = [StructuredDict]

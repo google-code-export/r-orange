@@ -11,14 +11,10 @@
         <tag>R</tag>
     </tags>
     <summary>View items of the python structured Dict class<!-- [REQUIRED] A Brief description of the widget and what it does--></summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name></name>
-            <contact></contact>
-        </author>
-        <reference></reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -40,6 +36,7 @@ class pyDict(OWRpy):
         self.RFunctionParam_data = None
         self.data = None
         
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('R Variable Data'), signals.base.StructuredDict, self.processdata)
 
         self.RoutputWindow = redRGUI.base.textEdit(self.controlArea,label=_('Output'), editable=False)

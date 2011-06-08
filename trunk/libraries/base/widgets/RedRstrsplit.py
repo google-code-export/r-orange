@@ -11,14 +11,10 @@
         <tag>Data Manipulation</tag> 
     </tags>
     <summary>Split strings by some function or string from a vector or list selection (works on data tables too).</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -37,10 +33,17 @@ class RedRstrsplit(OWRpy):
         self.setRvariableNames(["strsplit", "dataframe"])
         self.data = {}
         self.RFunctionParam_x = ''
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('Input Data'), [signals.base.RVector, signals.base.RList], self.processx)
 
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('strsplit Output'), signals.base.RList)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id1', _('strsplit Vector'), signals.base.RVector)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('dataframe', _('Data Table'), signals.base.RDataFrame)
 
         

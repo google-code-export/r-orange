@@ -1,8 +1,9 @@
-"""
+"""Row Filtering
 .. helpdoc::
-<p>Click on the column headers to bring up a menu for filtering data.<br />
-Depending on the column type (numeric, string, factor) a different menu is presented. You can filter one mutliple columns at a time. Columns that have been filtered will show a different icon in column header. <br />
-To remove filtering click on the column header again and click Clear filtering</p>
+Click on the column headers to bring up a menu for filtering data.<br />
+Depending on the column type (numeric, string, factor) a different menu is presented. You can filter one mutliple columns at a time. Columns that have been filtered will show a different icon in column header.
+
+To remove filtering click on the column header again and click Clear filtering<
 """
 
 """
@@ -13,14 +14,10 @@ To remove filtering click on the column header again and click Clear filtering</
         <tag>Subsetting</tag> 
     </tags>
     <summary>Filter data by column criteria.</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -53,8 +50,11 @@ class rowFilter(OWRpy):
         
         self.setRvariableNames(['dataExplorer'])
         self.criteriaDialogList = []
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('Data Table'), signals.base.RDataFrame, self.processData)
  
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('Data Table'), signals.base.RDataFrame)
 
         

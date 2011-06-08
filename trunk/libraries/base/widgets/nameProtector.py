@@ -1,6 +1,6 @@
 """
 .. helpdoc::
-<p>R cannot handle row and column names that begin with numbers. This widget renames the row or column names that begin with numbers by adding and 'X' to the beginning.</p>
+R cannot handle row and column names that begin with numbers. This widget renames the row or column names that begin with numbers by adding and 'X' to the beginning.
 """
 
 """
@@ -11,14 +11,10 @@
         <tag>R</tag> 
     </tags>
     <summary>Make row and column names valid R names.</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -39,10 +35,18 @@ class nameProtector(OWRpy):
         self.parentData = {}
         self.data = ''
         self.setRvariableNames(['nameProtector', 'newDataFromNameProtector'])
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('Data Frame'), signals.base.RDataFrame, self.gotDF)
+        
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id1', _('Vector'), signals.base.RVector, self.gotV)
 
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('Data Frame'), signals.base.RDataFrame)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id1', _('Vector'), signals.base.RVector)
 
         

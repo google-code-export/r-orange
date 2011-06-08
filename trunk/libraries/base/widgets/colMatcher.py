@@ -11,14 +11,10 @@ Generates a table that is identical to the input table but with a new column add
         <tag>Data Manipulation</tag> 
     </tags>
     <summary>Generates a table that is identical to the input table but with a new column added that contains the names of a series of selected columns that is either the greatest of the selected columns or the least of the selected columns.  This only works on numbers.</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -40,7 +36,11 @@ class colMatcher(OWRpy):
         OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_x = ''
         self.setRvariableNames(['newmat', 'compColumn'])
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('Data Table'), signals.base.RDataFrame, self.processx)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('data', _('Data Table'), signals.base.RDataFrame)
 
         

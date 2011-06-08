@@ -1,7 +1,6 @@
 """
 .. helpdoc::
-<p>Most Red-R widgets require data in the form of columns that contain either data or classes.  Data in this form is required for most statistical widgets.  Melt Data Frame uses the reshape package to convert a data frame from one that may be more conductive to data entry (values of groups in columns) to one with values of groups in one column and a grouping column.
-</p>
+Most Red-R widgets require data in the form of columns that contain either data or classes.  Data in this form is required for most statistical widgets.  Melt Data Frame uses the reshape package to convert a data frame from one that may be more conductive to data entry (values of groups in columns) to one with values of groups in one column and a grouping column.
 """
 
 """
@@ -12,14 +11,10 @@
         <tag>Data Manipulation</tag> 
     </tags>
     <summary>Reshapes a data frame to one that may be more conducive to Red-R widgets.</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -39,8 +34,11 @@ class Melt_DF(OWRpy):
         self.setRvariableNames(["melt.data.frame", "melt.data.frame.cm"])
         self.RFunctionParam_data = ''
         self.data = {}
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('data'), signals.base.RDataFrame, self.processdata)
 
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('melt.data.frame Output'), signals.base.RDataFrame)
 
         

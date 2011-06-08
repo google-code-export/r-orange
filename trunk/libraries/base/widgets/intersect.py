@@ -1,6 +1,6 @@
 """
 .. helpdoc::
-<p></p>
+Searches for intersection between two vectors.
 """
 
 """
@@ -10,14 +10,11 @@
     <tags> 
         <tag>Deprecated</tag> 
     </tags>
-    <summary>This widget takes two vectors and performs a set intersect. Returns the set of element common to both.</summary>
-    <citation>
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <summary>This widget takes two vectors and performs a set intersect. Returns the set of element common to both.</summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -40,9 +37,14 @@ class intersect(OWRpy):
          
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('y'), signals.base.RVector, self.processy)
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id1', _('x'), signals.base.RVector, self.processx)
 
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('intersect Output'), signals.base.RVector)
 
         

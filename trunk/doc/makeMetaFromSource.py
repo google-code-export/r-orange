@@ -152,8 +152,8 @@ def _parsefile(myFile):
     for author in widgetMetaXML.getElementsByTagName('author'):
         #print author
         #print getXMLText(author.getElementsByTagName('name')[0].childNodes)
-        d['author'].append((getXMLText(author.getElementsByTagName('name')[0].childNodes), 
-        getXMLText(author.getElementsByTagName('contact')[0].childNodes)))
+        d['author'].append((getXMLText(author.getElementsByTagName('authorname')[0].childNodes), 
+        getXMLText(author.getElementsByTagName('authorcontact')[0].childNodes)))
     # get any loaded R libraries, wrapped in a try because some widgets might not load R libraries
     try:
         for m in re.finditer(getRLibraryCall, myFile):
@@ -199,8 +199,8 @@ def parseWidgetFile(filename, outputXML, userHelp,devHelp):
     """Pass the list of strings to the parser to extract the relevant structure"""
     d = _parsefile(myFile)
 
-    # with open(outputXML, 'w') as f:
-        # f.write(makeXML(d))
+    with open(outputXML, 'w') as f:
+        f.write(makeXML(d))
     with open(userHelp, 'w') as f:
         helprst = makeHelp(d)
         f.write(helprst)
@@ -229,7 +229,7 @@ def makeXML(d):
 <documentation>"""
     s += d['widgetXML']
     """put in the signal classes"""
-    s += '<signals>'
+    s += '\n<signals>\n'
     for rs in d['signals']:
         s += '<%(type)s>\n' % rs
         s += '\t<name>%(name)s</name>\n' % rs
@@ -310,12 +310,10 @@ def parseSignalFile(filename, userHelp,devHelp, outputXML):
             d['signalClass'].append(m.group('signalClass').strip())
     except: pass
     try:
-        for m in re.finditer(getSignalConverTo, myFile):
-            d['convertTo'].append(m.group('convertTo').strip())
+        d['convertTo'] = [c.strip() for c in re.search(getSignalConvertTo, myFile).group('convertTo').split(',')]
     except: pass
     try:
-        for m in re.finditer(getSignalConvertFrom, myFile):
-            d['convertFrom'].append(m.group('convertFrom').strip())
+        d['convertFrom'] = [c.strip() for c in re.search(getSignalConvertFrom, myFile).group('convertFrom').split(',')]
     except: pass
     
     with open(userHelp, 'w') as f:

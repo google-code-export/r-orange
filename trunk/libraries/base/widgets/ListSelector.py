@@ -1,6 +1,6 @@
 """
 .. helpdoc::
-<p>Some Red-R manipulations send RList objects through their send slots.  Lists are collections of other objects such as RVectors, RDataFrames, or even other RLists.  This widget simply shows the elements of your RList in it's 'List Data' Section.  Clicking on these sends just that section of the data through the appropriate slot in the List Selector's outputs.</p>
+Some Red-R manipulations send RList objects through their send slots.  Lists are collections of other objects such as RVectors, RDataFrames, or even other RLists.  This widget simply shows the elements of your RList in it's 'List Data' Section. Clicking on these sends just that section of the data through the appropriate slot in the List Selector's outputs.
 """
 
 """
@@ -11,14 +11,10 @@
         <tag>Subsetting</tag> 
     </tags>
     <summary>View all the elements of a list and select one to send forward.</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -42,12 +38,22 @@ class ListSelector(OWRpy):
         self.setRvariableNames(['listelement'])
         self.data = None
         
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('R List'), [signals.base.RList, signals.base.RArbitraryList] , self.process)
 
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('R Data Frame'), signals.base.RDataFrame)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id1', _('R Vector'), signals.base.RVector)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id2', _('R List'), signals.base.RList)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id3', _('R Variable'), signals.base.RVariable)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id4', _('R Matrix'), signals.base.RMatrix)
 
         

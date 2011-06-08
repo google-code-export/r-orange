@@ -11,14 +11,10 @@
         <tag>Data Manipulation</tag>
     </tags>
     <summary>Performs normalization and background correction on tables.<!-- [REQUIRED] A Brief description of the widget and what it does--></summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name></name>
-            <contact></contact>
-        </author>
-        <reference></reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -45,7 +41,10 @@ class plateManipulator(OWRpy):
         self.groupings = {}
         self.tables = {}
         self.processInt = 1
+        
+        """.. rrsignals::"""
         self.inputs.addInput('plateData', 'Plate Data (must be numeric)', signals.base.RMatrix, self.processData, multiple = True)
+        """.. rrsignals::"""
         self.outputs.addOutput('normPlate', 'Processed Values', signals.base.RList)
         
         ## GUI

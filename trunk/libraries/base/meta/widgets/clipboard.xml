@@ -1,47 +1,22 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
-<documentation>
+<documentation><widgetXML>    
     <name>Clipboard<!-- [REQUIRED] title --></name>
     <icon>clipboard.png</icon>
     <tags>
         <tag>View Data</tag>
     </tags>
     <summary>Writes tables to the clipboard. <!-- [REQUIRED] A Brief description of the widget and what it does--></summary>
-    <details></details>
-    <relatedWidgets>
-        <inputWidget><!-- <package>.<widget> ie. base.apply, plotting.heatmap --></inputWidget>
-    </relatedWidgets>
-    <signals>
-    <!-- [REQUIRED] List all the widget input output slots and their data type.-->
-        <input>
-            <signalClass>baes.RDataFrame<!-- base.RDataFrame --></signalClass>
-            <description>Data to be writen to the clipboard.<!-- signal description --></description>
-        </input>
-    </signals>
-    <GUIElements>
-        <!-- [REQUIRED] A list of the parameters and how to use them.-->
-        <parameter>
-            <name>Commit Button</name>
-            <description>Executes the clipboard paste command.</description>
-        </parameter>
-        <!-- [REQUIRED] A list of the GUI elements that output data and a description of what they output.-->
-        <display>
-            <name></name>
-            <description></description>
-        </display>
-    </GUIElements>
-    <RFunctions>
-    <!-- [REQUIRED] R functions used in this widget.-->
-        <function>base:write.table</function>
-    </RFunctions>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Kyle R Covington</name>
-            <contact>kyle@red-r.org</contact>
-        </author>
-        <reference></reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML><signals><input>
+	<name>Data Table</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</input>
+</signals>
 </documentation>
-
-

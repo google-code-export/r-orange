@@ -11,14 +11,10 @@
         <tag>R</tag> 
     </tags>
     <summary></summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -45,14 +41,26 @@ class RVarSeparator(OWRpy):
     globalSettingsList = ['commitButton']
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
-       
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('R Environment'), renv.REnvironment, self.process)
 
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('R Session'), renv.REnvironment)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id1', _('Non-Standard R Variable'), rvar.RVariable)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id2', _('R Data Frame (Data Table)'), rdf.RDataFrame)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id3', _('R List'), rlist.RList)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id4', _('R Vector'), rvec.RVector)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('ral', _('R Arbitrary List'), ral.RArbitraryList)
 
        

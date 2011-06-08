@@ -11,14 +11,10 @@
         <tag>Subsetting</tag> 
     </tags>
     <summary></summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -43,11 +39,16 @@ class rowcolPicker(OWRpy):
         self.setRvariableNames(['rowcolSelector', 'rowcolSelectorNot'])
         self.SubsetByAttached = 0
         
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('Data Table'), signals.base.RDataFrame, self.setWidget)
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id1', _('Subsetting Vector'), signals.base.RList, self.setSubsettingVector)
 
-        
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('Selected Items'), signals.base.RDataFrame)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id1', _('Non-selected Items'), signals.base.RDataFrame)
 
         

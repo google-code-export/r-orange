@@ -1,9 +1,8 @@
 """
 .. helpdoc::
-<p>Combining data from different tables is often required during data mining.  The Merge Data widget combines data in a variety of ways.
-<br />
-<br />Once data is connected it is loaded into the appropriate channel and the names of the columns are shown in the selection list boxes under the headings 'Select Columns to Merge From A/B'.  The name Rownames will always be displayed in these for merging on rownames.  If there are two identically named columns in your data these will be the default merge columns on widget connect.  After selecting a column name or to merge using rownames your data will be merged and three data tables will be sent.  One with the merger of all of the data through the Merge_All slot, and two others with the merger on only one of the tables (ex. All rows from table A merged with the matching columns from table B).
-</p>
+Combining data from different tables is often required during data mining.  The Merge Data widget combines data in a variety of ways.
+
+Once data is connected it is loaded into the appropriate channel and the names of the columns are shown in the selection list boxes under the headings 'Select Columns to Merge From A/B'.  The name Rownames will always be displayed in these for merging on rownames.  If there are two identically named columns in your data these will be the default merge columns on widget connect.  After selecting a column name or to merge using rownames your data will be merged and three data tables will be sent.  One with the merger of all of the data through the Merge_All slot, and two others with the merger on only one of the tables (ex. All rows from table A merged with the matching columns from table B).
 """
 
 """
@@ -14,14 +13,10 @@
         <tag>Data Manipulation</tag> 
     </tags>
     <summary>Merge two datasets</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -48,10 +43,13 @@ class mergeR(OWRpy):
         self.dataA = ''
         self.dataB = ''
         
-        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('Dataset A'), signals.base.RDataFrame, self.processA)
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id1', _('Dataset B'), signals.base.RDataFrame, self.processB)
 
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('Merged'), signals.base.RDataFrame)
 
         #default values        

@@ -11,14 +11,10 @@ Scores samples based on a scoring matrix.  First merges the data by the row name
         <tag>Data Classification</tag> 
     </tags>
     <summary>Scores samples based on a scoring matrix.  First merges the data by the row names and extracts only those row names that are in the scoring matrix.  Also any NA values are removed prior to scoring.  Several scoring options are available and include; multiplication (values are multiplied and summed to generate a score for every sample for every level of the scoring matrix), correlation (identical to correlation / variance widget).</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -44,9 +40,17 @@ class score(OWRpy):
         self.data = {}
         self.RFunctionParam_data = ''
         self.RFunctionParam_score = ''
+        
+        """.. rrsignals::"""
         self.inputs.addInput("data", _("Sample Data"), signals.base.RDataFrame, self.processdata)
+        
+        """.. rrsignals::"""
         self.inputs.addInput("scoremat", _("Scoring Matrix"), signals.base.RDataFrame, self.processscores)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput("fscoremat",_("Sored Samples"), signals.base.RDataFrame)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput("maxScore", _("Max Scored Class"), signals.base.RVector)
 
         wb = redRGUI.base.widgetBox(self.controlArea, orientation = 'horizontal')

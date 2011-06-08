@@ -1,6 +1,6 @@
-"""
+"""Summary
 .. helpdoc::
-<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
+Generate a summary of a data object.
 """
 
 """
@@ -11,14 +11,10 @@
         <tag>R</tag> 
     </tags>
     <summary>Output a summary of the data</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -39,7 +35,11 @@ class summary(OWRpy):
         self.data = {}
          
         self.RFunctionParam_object = ''
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('R Variable Object'), signals.base.RVariable, self.processobject)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('R Summary'), signals.base.RArbitraryList)
         
         self.commit = redRGUI.base.commitButton(self.bottomAreaRight, _('Commit'), callback = self.commitFunction,

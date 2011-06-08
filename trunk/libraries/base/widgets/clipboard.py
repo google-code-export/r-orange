@@ -1,6 +1,6 @@
-"""
+"""Clipboard
 .. helpdoc::
-
+This widget copies data to the clipboard, it is relatively generic but should only take data of the RDataFrame signal type.
 """
 
 """
@@ -11,14 +11,10 @@
         <tag>View Data</tag>
     </tags>
     <summary>Writes tables to the clipboard. <!-- [REQUIRED] A Brief description of the widget and what it does--></summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Kyle R Covington</name>
-            <contact>kyle@red-r.org</contact>
-        </author>
-        <reference></reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -34,6 +30,8 @@ class clipboard(OWRpy):
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_data = ''
+        
+        """.. rrsignals::"""
         self.inputs.addInput("data", "Data Table", signals.base.RDataFrame, self.processdata)
         
         redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)

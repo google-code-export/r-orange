@@ -1,4 +1,11 @@
-"""Table View signal class.  This is a holder signal class that should be reimplimented in other signals.  The table view signal class can return table views to the view data table widget."""
+"""RArbitraryList
+.. helpdoc::
+Table View signal class.  This is a holder signal class that should be reimplimented in other signals.  The table view signal class can return table views to the view data table widget."""
+
+"""
+.. convertTo:: ``
+.. convertFrom:: ``
+"""
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *

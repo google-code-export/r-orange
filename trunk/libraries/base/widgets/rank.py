@@ -1,6 +1,5 @@
 """
 .. helpdoc::
-<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
 """
 
 """
@@ -11,14 +10,10 @@
         <tag>Data Manipulation</tag> 
     </tags>
     <summary>Returns the sample ranks of the values in a vector</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -42,8 +37,11 @@ class rank(OWRpy):
         #self.RFunctionParam_na_last = "TRUE"
          
         self.RFunctionParam_x = ''
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('x'), signals.base.RList, self.processx)
 
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('rank Output'), signals.base.RMatrix)
         
         

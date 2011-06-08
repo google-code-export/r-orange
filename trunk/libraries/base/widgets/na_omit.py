@@ -1,6 +1,5 @@
 """
 .. helpdoc::
-<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
 """
 
 """
@@ -11,14 +10,10 @@
         <tag>R</tag> 
     </tags>
     <summary>Remove NAs from data</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -40,11 +35,20 @@ class na_omit(OWRpy):
         self.data = {}
          
         self.RFunctionParam_object = ''
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('object'), signals.base.RVariable, self.processobject)
 
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('R Data Frame'), signals.base.RDataFrame)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id1', _('R List'), signals.base.RList)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id2', _('R Vector'), signals.base.RVector)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id3', _('R.object'), signals.base.RVariable)
 
         self.commit = redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,

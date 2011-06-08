@@ -1,6 +1,6 @@
-"""
+"""Subset
 .. helpdoc::
-<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
+Subset a dataset by values from another dataset.
 """
 
 """
@@ -11,14 +11,10 @@
         <tag>Subsetting</tag> 
     </tags>
     <summary>Subset a dataset by values from another dataset.</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -48,11 +44,16 @@ class subset(OWRpy):
         
         self.setRvariableNames(['subset'])
         
-        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('Data Table to Subset On'), signals.base.RDataFrame, self.processA)
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id1', _('Optional List of Subsetting Attributes'), signals.base.RList, self.processB)
-
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('Subsetted Data Table'), signals.base.RDataFrame)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id1', _('Subsetted Data Vector'), signals.base.RVector)
 
         #GUI

@@ -47,8 +47,8 @@ elif sys.platform == 'win32':
     print redREnviron.directoryNames['RDir']
     os.environ['R_HOME'] = redREnviron.directoryNames['RDir']
     import rpy3.robjects as rpy
-    import rpy3.rinterface
-    rpy3.rinterface.set_writeconsole(writeR)
+    #import rpy3.rinterface
+    #rpy3.rinterface.set_writeconsole(writeR)
 ## if linux ##
 elif sys.platform == 'linux2':
     print 'loading rpy3'

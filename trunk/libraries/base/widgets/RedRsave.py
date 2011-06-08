@@ -1,6 +1,5 @@
 """
 .. helpdoc::
-<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
 """
 
 """
@@ -11,14 +10,10 @@
         <tag>View Data</tag> 
     </tags>
     <summary>Save data to file</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -37,6 +32,8 @@ class RedRsave(OWRpy):
         self.path = os.path.abspath('/')
 
         self.data = None
+        
+        """.. rrsignals::"""
         self.inputs.addInput("list", _("R Data"), signals.base.RVariable, self.processlist)
         
         self.fileType = redRGUI.base.radioButtons(self.controlArea, label=_('Save File Type'),

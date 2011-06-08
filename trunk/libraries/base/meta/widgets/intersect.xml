@@ -1,50 +1,36 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
-<documentation>
+<documentation><widgetXML>    
     <name>Intersect</name>
     <icon>datatable.png</icon>
     <tags> 
         <tag>Deprecated</tag> 
     </tags>
-    <screenshots></screenshots>
-    <summary>This widget takes two vectors and performs a set intersect. Returns the set of element common to both.</summary>
-    <details><p></p></details>
-    <relatedWidgets>
-        <inputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></inputWidget>
-        <outputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></outputWidget>
-    </relatedWidgets>
-    <signals>
-    <!-- [REQUIRED] List all the widget input output slots and their data type.-->
-        <input>
-            <signalClass>base:RVector</signalClass>
-            <description>First vector</description>
-        </input>
-        <input>
-            <signalClass>base:RVector</signalClass>
-            <description>Second vector</description>
-        </input>
-        <output>
-            <signalClass>base:RVector</signalClass>
-            <description>vector of intersected values</description>
-        </output>
-    </signals>
-    <GUIElements>
-        <!-- [REQUIRED] A list of the parameters and how to use them.-->
-        <parameter>
-            <name><!--Name of the parameter in the widget GUI--></name>
-            <description><!--Description of the parameter--></description>
-        </parameter>
-    </GUIElements>
-    <RFunctions>
-    <!-- [REQUIRED] R functions used in this widget.-->
-        <function>base:intersect</function>
-    </RFunctions>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <summary>This widget takes two vectors and performs a set intersect. Returns the set of element common to both.</summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML><signals><input>
+	<name>y</name>
+	<description>
+
+	</description>
+	<signalClass>base.RVector</signalClass>
+</input>
+<input>
+	<name>x</name>
+	<description>
+
+	</description>
+	<signalClass>base.RVector</signalClass>
+</input>
+<output>
+	<name>intersect Output</name>
+	<description>
+
+	</description>
+	<signalClass>base.RVector</signalClass>
+</output>
+</signals>
 </documentation>

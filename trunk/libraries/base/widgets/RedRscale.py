@@ -11,14 +11,10 @@
         <tag>Prototypes</tag> 
     </tags>
     <summary></summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -39,9 +35,14 @@ class RedRscale(OWRpy):
         self.data = {}
         self.RFunctionParam_x = ''
         self.dataType = 1
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('Input Data'), [signals.base.RDataFrame, signals.base.RMatrix], self.processx)
 
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('scale Output'), signals.base.RDataFrame)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id1', _('scale Output (Matrix)'), signals.base.RMatrix)
 
         

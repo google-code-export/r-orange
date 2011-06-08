@@ -1,6 +1,5 @@
 """
 .. helpdoc::
-<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
 """
 
 """
@@ -11,14 +10,10 @@
         <tag>Data Classification</tag> 
     </tags>
     <summary>Appends a column to a data frame with the classifications of rows based on the values of a column being greater than some percentile.</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -38,8 +33,11 @@ class percentileClassifier(OWRpy):
         self.setRvariableNames(["percentileClassifier_df", "percentileClassifier", 'percentileClassifier_cm'])
         self.data = ''
         self.dataParent = None
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('Data Frame'), signals.base.RDataFrame, self.processData)
 
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('Data Frame'), signals.base.RDataFrame)
 
         

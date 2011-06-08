@@ -1,3 +1,10 @@
+"""RList
+.. helpdoc::
+The RList signal class represents special kinds of lists.  These lists should only contain vectors of data, as opposed to RArbitraryList's which can contain any arbitrary kinds of data."""
+"""
+.. convertTo:: `base:RVariable, base:UnstructuredDict, base:RArbitraryList`
+.. convertFrom:: `base:UnstructuredDict, base:StructuredDict`
+"""
 from libraries.base.signalClasses.RVariable import *
 from libraries.base.signalClasses.UnstructuredDict import *
 from libraries.base.signalClasses.StructuredDict import *

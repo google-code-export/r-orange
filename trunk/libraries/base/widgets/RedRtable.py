@@ -1,6 +1,5 @@
 """
 .. helpdoc::
-<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
 """
 
 """
@@ -11,14 +10,10 @@
         <tag>Data Manipulation</tag> 
     </tags>
     <summary>Converts a data table of factors to counts of the unique combinations of levels.  For exampel if your data table consisted of rows representing observations of cars with columns indicating make, color, and year, this widget would return a list of counts for each make color year combination.</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -37,8 +32,14 @@ class RedRtable(OWRpy):
         self.setRvariableNames(["table", "propTable"])
         self.data = {}
         self.RFunctionParam_data = ''
+        
+        """.. rrsignals::"""
         self.inputs.addInput("data", _("Data Table"), signals.base.RDataFrame, self.processdata)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput("table Output",_("Table Output"), signals.base.RDataFrame)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput("propTable", _("Prob Table Output"), signals.base.RDataFrame)
         
         self.cols = redRGUI.base.listBox(self.controlArea, label = _('Use Columns:'), selectionMode = QAbstractItemView.MultiSelection)

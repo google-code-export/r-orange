@@ -12,14 +12,10 @@
         <tag>R</tag> 
     </tags>
     <summary></summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -45,13 +41,22 @@ class rExecutor(OWRpy):
         self.dfselected = None
         self.setRvariableNames(['rExecutor', 'rExecutor_cm'])
         
-        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('R.object'), signals.base.RVariable, self.process)
 
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('R Data Frame'), signals.base.RDataFrame)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id1', _('R List'), signals.base.RList)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id2', _('R Vector'), signals.base.RVector)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id3', _('R.object'), 'All')
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id4', _('R Matrix'), signals.base.RMatrix)
 
         #self.breakme()

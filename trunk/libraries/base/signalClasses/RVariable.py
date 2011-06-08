@@ -1,3 +1,13 @@
+"""RVariable
+.. helpdoc::
+This signal class is the most generic.  All R signals should inherit from this class.
+"""
+
+"""
+.. convertTo:: ``
+.. convertFrom:: ``
+"""
+
 from signals import BaseRedRVariable
 from RSession import Rcommand
 from RSession import require_librarys

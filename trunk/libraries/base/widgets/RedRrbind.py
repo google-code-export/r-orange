@@ -1,6 +1,5 @@
 """
 .. helpdoc::
-<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
 """
 
 """
@@ -11,14 +10,10 @@
         <tag>Prototypes</tag> 
     </tags>
     <summary>Row bind data</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -37,8 +32,13 @@ class RedRrbind(OWRpy):
         self.setRvariableNames(["rbind"])
         self.data = {}
         self.RFunctionParam_x = ''
+        
+        """.. rrsignals::"""
         self.inputs.addInput("x", _("Data"), [signals.base.RDataFrame, signals.base.RDataFrame], self.processx, multiple = True)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput("rbind Output",_("Joined Data"), signals.base.RDataFrame)
+        
         self.rowcolnames = redRGUI.base.comboBox(self.controlArea, label = _('Source of Row / Column Names:'), callback = self.commitFunction)
         self.bindingMode = redRGUI.base.radioButtons(self.controlArea, label = _('Binding Mode:'), buttons = [_('Row'), _('Column')], setChecked = _('Row'))
         self.RFunctionParamdeparse_level_lineEdit = redRGUI.base.lineEdit(self.controlArea, label = _("Deparse Level:"), text = '1')

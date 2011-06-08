@@ -1,8 +1,7 @@
 """
 .. helpdoc::
-<p>Perform base set operations:union, intersect, difference, and equality.<br />
+Perform base set operations:union, intersect, difference, and equality.<br />
 Each of union, intersect, setdiff and setequal will discard any duplicated values in the arguments. 
-</p>
 """
 
 """
@@ -13,14 +12,10 @@ Each of union, intersect, setdiff and setequal will discard any duplicated value
         <tag>Data Manipulation</tag> 
     </tags>
     <summary>Perform base set operations:union, intersect, difference, and equality</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -44,9 +39,13 @@ class setOperations(OWRpy):
         self.dataA = None
         self.dataB = None
         
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('Input Data A'), signals.base.RList, self.processA)
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id1', _('Input Data B'), signals.base.RList, self.processB)
 
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('intersect Output'), signals.base.RVector)
         
         box = redRGUI.base.widgetBox(self.controlArea,orientation = 'vertical')

@@ -11,14 +11,10 @@
         <tag>Data Manipulation</tag>
     </tags>
     <summary>Reorders the rows and columns of a Data Table</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Kyle R Covington</name>
-            <contact>kyle@red-r.org</contact>
-        </author>
-        <reference></reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -35,8 +31,13 @@ class reorderRowColumn(OWRpy):
         OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_data = ''
         self.setRvariableNames(["shuffledData"])
+        
+        """.. rrsignals::"""
         self.inputs.addInput("data", "Data Table", signals.base.RDataFrame, self.processdata)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', "Data Table", signals.base.RDataFrame)
+        
         self.RFunctionParam_rowcolselector = redRGUI.base.radioButtons(self.controlArea, label = 'Table Component', buttons = ['Column', 'Row'], setChecked = 'Row', callback = self.setNewOrderList)
         self.RFunctionParam_newOrder = redRGUI.base.shuffleBox(self.controlArea, label = 'Revised Order (Must Commit!!)')
         redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)

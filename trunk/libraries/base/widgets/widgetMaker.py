@@ -1,6 +1,6 @@
-"""
+"""WidgetMaker
 .. helpdoc::
-
+This widget makes other widgets based on an R package and function.  There are dialogs and tables to help the user to make the widget.  This should not be seen as the end-all be-all of widget development, but rather as a way to start generating widgets.
 """
 
 """
@@ -10,15 +10,11 @@
     <tags> 
         <tag>R</tag> 
     </tags>
-    <summary></summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <summary>A widget that makes other widgets.</summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 

@@ -1,6 +1,5 @@
 """
 .. helpdoc::
-<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
 """
 
 """
@@ -11,14 +10,10 @@
         <tag>Subsetting</tag> 
     </tags>
     <summary>Return Rownames</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -40,9 +35,14 @@ class rownames(OWRpy):
         self.data = {}
          
         self.RFunctionParam_x = ''
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('Input Data'), signals.base.RDataFrame, self.processx)
 
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('Row or Column Names'), signals.base.RVector)
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('renamedDF', _("Renamed Data Table"), signals.base.RDataFrame)
 
         

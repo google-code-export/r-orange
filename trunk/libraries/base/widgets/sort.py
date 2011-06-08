@@ -1,6 +1,5 @@
-"""
+"""Sort
 .. helpdoc::
-<p><!-- [REQUIRED] A detailed description of the widget and what it does--></p>
 """
 
 """
@@ -11,14 +10,10 @@
         <tag>Data Manipulation</tag> 
     </tags>
     <summary>Sorts data by multiple columns.</summary>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
 </widgetXML>
 """
 
@@ -32,16 +27,18 @@ import redRGUI
 
 import redRi18n
 _ = redRi18n.get_(package = 'base')
-class sort(OWRpy): 
-    globalSettingsList = ['commit']
+class sort(OWRpy):
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(["sort"])
         self.data = {}
          
         self.RFunctionParam_x = ''
+        
+        """.. rrsignals::"""
         self.inputs.addInput('id0', _('Data Tabel'), signals.base.RDataFrame, self.processx)
-
+        
+        """.. rrsignals::"""
         self.outputs.addOutput('id0', _('Sorted Data Table'), signals.base.RDataFrame)
 
         self.standardTab = redRGUI.base.widgetBox(self.controlArea)
