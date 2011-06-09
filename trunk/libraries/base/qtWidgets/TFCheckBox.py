@@ -40,7 +40,7 @@ class TFCheckBox(widgetState,QWidget):
         self.items = OrderedDict()
         self.buttons = QButtonGroup(self.box)
         self.buttons.setExclusive(False)
-        self.addButton('TRUE', label, toolTip)
+        self.addButton('TRUE', label)
 
 
         if callback:
@@ -48,12 +48,10 @@ class TFCheckBox(widgetState,QWidget):
         if setChecked:
             self.setChecked('TRUE')
 
-    def addButton(self,id, text,toolTip=None):
+    def addButton(self,id, text):
         """Internal function that adds the TRUE button.  Please use the checkBox widget if you want to do this"""
         self.items[id] = text
         w = QCheckBox(text)
-        if toolTip:
-            w.setToolTip(toolTip)
         self.buttons.addButton(w,self.items.keys().index(id))
         self.box.layout().addWidget(w)
                     
