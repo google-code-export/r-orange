@@ -1,0 +1,205 @@
+<?xml version="1.0" ?>
+<documentation>
+	<name>
+		Read File
+	</name>
+	<icon>
+		readfile.png
+	</icon>
+	<summary>
+		Read data files into Red-R.
+	</summary>
+	<details>
+		This widget will read data from tab, comma, or space delimited text files. On Microsoft Windows it will also ready Excel files. Click the browse button to search your computer for the file to read. Select how the columns are delimited. On data read or change in these options, the first few lines of the file will be scanned. R will try to automaticlly determine the type of the column. The column data types can be changed. Once the data, column and row header information is properly selected click Load Data to read the full file into Red-R and send forward.
+	</details>
+	<tags>
+		<tag>
+			Data Input
+		</tag>
+	</tags>
+	<signals>
+		<output>
+			<signalClass>
+				base.RDataFrame
+			</signalClass>
+			<name>
+				Output Data
+			</name>
+			<description>
+				A regular data table
+			</description>
+		</output>
+	</signals>
+	<GUIElements>
+		<display>
+			<name>
+				Browse
+			</name>
+			<class>
+				base.button
+			</class>
+			<description>
+				Opens a file browser to search for files.
+			</description>
+		</display>
+		<display>
+			<name>
+				File Type
+			</name>
+			<class>
+				base.radioButtons
+			</class>
+			<description>
+				A set of buttons to pull data from a text file, excel sheet, or clipboard.
+			</description>
+		</display>
+		<display>
+			<name>
+				Column Seperator
+			</name>
+			<class>
+				base.radioButtons
+			</class>
+			<description>
+				
+			</description>
+		</display>
+		<display>
+			<name>
+				Seperator
+			</name>
+			<class>
+				base.lineEdit
+			</class>
+			<description>
+				
+			</description>
+		</display>
+		<display>
+			<name>
+				Row and Column Names
+			</name>
+			<class>
+				base.groupBox
+			</class>
+			<description>
+				
+			</description>
+		</display>
+		<display>
+			<name>
+				Column Header
+			</name>
+			<class>
+				base.checkBox
+			</class>
+			<description>
+				
+			</description>
+		</display>
+		<display>
+			<name>
+				Select Row Names
+			</name>
+			<class>
+				base.comboBox
+			</class>
+			<description>
+				
+			</description>
+		</display>
+		<display>
+			<name>
+				Options
+			</name>
+			<class>
+				base.checkBox
+			</class>
+			<description>
+				
+			</description>
+		</display>
+		<display>
+			<name>
+				Quote:
+			</name>
+			<class>
+				base.lineEdit
+			</class>
+			<description>
+				
+			</description>
+		</display>
+		<display>
+			<name>
+				Decimal:
+			</name>
+			<class>
+				base.lineEdit
+			</class>
+			<description>
+				Decimal sign, some countries may want to use the \
+			</description>
+		</display>
+		<display>
+			<name>
+				# Lines to Preview:
+			</name>
+			<class>
+				base.lineEdit
+			</class>
+			<description>
+				The maximum number of rows to read in while previewing the file. Negative values are ignored.
+			</description>
+		</display>
+		<display>
+			<name>
+				# Lines to Read:
+			</name>
+			<class>
+				base.lineEdit
+			</class>
+			<description>
+				Number of lines to read from file. Read whole file if 0 or negative values.
+			</description>
+		</display>
+		<display>
+			<name>
+				# Lines to Skip:
+			</name>
+			<class>
+				base.lineEdit
+			</class>
+			<description>
+				The number of lines of the data file to skip before beginning to read data.
+			</description>
+		</display>
+		<display>
+			<name>
+				File Info
+			</name>
+			<class>
+				base.groupBox
+			</class>
+			<description>
+				
+			</description>
+		</display>
+		<display>
+			<name>
+				File Preview
+			</name>
+			<class>
+				base.textEdit
+			</class>
+			<description>
+				
+			</description>
+		</display>
+	</GUIElements>
+	<citation>
+		<author>
+			
+		</author>
+	</citation>
+</documentation>
