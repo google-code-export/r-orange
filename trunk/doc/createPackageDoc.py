@@ -200,8 +200,8 @@ makeFiles()
     # shutil.rmtree(os.path.join(root, 'help'))
   
 
-cmd = 'sphinx-build -c ./ -b html %s %s' % (helpDir.replace('\\','/'),helpDir.replace('\\','/'))# os.path.join(root, 'help').replace('\\','/'))
-print 'Running doc compiler: ' + cmd
-p = subprocess.Popen(cmd,stdout=subprocess.PIPE).communicate()[0]
-print p
+#cmd = 'sphinx-build -c ./ -b html %s %s' % (helpDir.replace('\\','/'),helpDir.replace('\\','/'))# os.path.join(root, 'help').replace('\\','/'))
+#print 'Running doc compiler: ' + cmd
+#p = subprocess.Popen(cmd,stdout=subprocess.PIPE).communicate()[0]
+#print p
 

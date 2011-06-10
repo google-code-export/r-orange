@@ -211,6 +211,7 @@ class CanvasOptionsDlg(QDialog):
         
         redRQTCore.button(UnderHood, label = _('Regression Test (Core Developers Only)'), callback = lambda val = 1:self.regressionTest(val))
         redRQTCore.button(UnderHood, label = _('Test Packages (Core Developers Only)'), callback = lambda val = 2:self.regressionTest(val))
+        redRQTCore.button(UnderHood, label = _('Create help index.'), callback = self.createHelpIndex)
         
         
 
@@ -271,6 +272,9 @@ class CanvasOptionsDlg(QDialog):
 
         self.topLayout.addWidget(self.tabs)
         self.topLayout.addWidget(hbox)
+    def createHelpIndex(self):
+        import docSearcher
+        docSearcher.createIndex()
         
     def regressionTest(self, val):
         import redRRegressionTest
@@ -979,6 +983,28 @@ class SignalCanvasView(QGraphicsView):
                 self.scene().update()
                 return
         
+class helpSearchDlg(QDialog):
+    def __init__(self, term = ''):
+        QDialog.__init__(self)
+        self.setLayout(QVBoxLayout())
+        mainBox = redRQTCore.widgetBox(self)
+        self.searchEdit = redRQTCore.lineEdit(mainBox, label = 'Search Terms', text = term, callback = self.searchDocumentation)
+        self.helpList = redRQTCore.listBox(mainBox, label = 'Help Search Matches', callback = self.openDocumentation)
+        
+        self.searchDocumentation()
+        self.show()
+    def searchDocumentation(self):
+        if self.searchEdit.text() == '': return
+        import docSearcher
+        res = docSearcher.searchIndex(self.searchEdit.text())
+        self.helpList.update([(r['path'], r['title']) for r in res])
+        
+    def openDocumentation(self):
+        import webbrowser
+        import urllib
+        target = urllib.pathname2url(self.helpList.selectedIds()[0])
+        print target
+        webbrowser.open('file:%s' % target)
 if __name__=="__main__":
     import sys
     app = QApplication(sys.argv)

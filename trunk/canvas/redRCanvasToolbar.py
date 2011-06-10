@@ -703,7 +703,7 @@ class SearchBox2(redRlineEdit):
         self.itemsAsStrings = []        # a list of strings that appear in the list widget
         self.itemsAsItems = {}          # can be a list of QListWidgetItems or a list of strings (the same as self.itemsAsStrings)
         
-        self.setToolTip(_('Search for widgets and templates by typing directly.\nType !@ in the beginning to query the Red-R website.'))
+        self.setToolTip(_('Search for widgets and templates by typing directly.'))
         self.setItems(redRObjects.widgetRegistry()['widgets'], redRObjects.widgetRegistry()['templates'])
     def setItems(self, widgetitems, templateitems):
         
@@ -797,7 +797,7 @@ class SearchBox2(redRlineEdit):
                 
         ### add the help search
         theText = 'Local Help Search <br/>%s' % ' '.join(last)
-        self.model.listdata.append((theText, {'icon':QIcon(os.path.join(redREnviron.directoryNames['canvasIconsDir'], 'help.png')), 'text':'%s?q=%s&check_keywords=yes&area=default' % (os.path.join(redREnviron.directoryNames['redRDir'], 'doc', 'search.html'), ' '.join(last))}, 'help'))
+        self.model.listdata.append((theText, {'icon':QIcon(os.path.join(redREnviron.directoryNames['canvasIconsDir'], 'help.png')), 'text':'%s' % ' '.join(last)}, 'help'))
         x = QStandardItem(QIcon(os.path.join(redREnviron.directoryNames['canvasIconsDir'], 'help.png')), theText)
         self.model.appendRow(x)
         
@@ -870,10 +870,14 @@ class SearchBox2(redRlineEdit):
         
         if self.listWidget.isVisible():
             info, c = self.model.listdata[self.listWidget.selectedIndexes()[0].row()][1:]
-            if c in ['web', 'help']:
+            if c in ['web']:
                 import webbrowser
                 webbrowser.open(info['text'])
                 self.clear()
+            elif c in ['help']:
+                ## search for the terms in the docSearcher and make a dialog of matches.
+                sb = orngDlgs.helpSearchDlg(info['text'])
+                sb.exec_()
             else:
                 self.setText(unicode(info.name))
                 self.listWidget.hide()
