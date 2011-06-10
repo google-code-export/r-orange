@@ -97,7 +97,23 @@ def makeIndex(nd):
     
     pDict = packageToDict(os.path.join(root, 'package.xml'))
     
-    userIndex = """
+    userIndex = """%(Name)s Package (%(Number)s)
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+
+General Info
+========================
+
+Author: %(Author)s
+
+Number: %(Number)s
+
+Stability: %(Stability)s, Date: %(Date)s
+
+Description
+================
+
+%(Description)s
+
 User Doc
 ========
 

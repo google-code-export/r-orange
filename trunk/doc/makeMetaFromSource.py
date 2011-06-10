@@ -48,7 +48,7 @@ getSignalParent = re.compile(r'.. signalClass:: *(?P<signalClass>.+?)[ "]')
 getSignalConvertTo = re.compile(r'.. convertTo:: *`(?P<convertTo>.+?)`')
 getSignalConvertFrom = re.compile(r'.. convertFrom:: *`(?P<convertFrom>.+?)`')
 
-getQTClass = re.compile(r'class .+?\((<?P<parent>.+?)\)')
+getQTClass = re.compile(r'class .+?\((?P<parent>Q[A-Xa-z]+?)[, \)]')
 
     
 def _getXMLDirective(string):
@@ -280,7 +280,7 @@ def makeHelp(d):
             s += '.. _%s: #\n\n' % (gui['class'])          
         else: 
             (package,guiClass) = gui['class'].split('.')
-            s += '.. _%s: ../../../../%s/help/userDoc/qtWidgets/%s.html\n\n' % (gui['class'],package,guiClass)
+            s += '.. _%s: ../../../../../%s/help/userDoc/qtWidgets/%s.html\n\n' % (gui['class'],package,guiClass)
         
     for sig in d['signals']:
         # print sig, len(sig['signals'])
@@ -289,7 +289,7 @@ def makeHelp(d):
         else:
             for ss in sig['signals']:
                 (package,sigClass) = ss.split('.')
-                s += '.. _%s: ../../../%s/help/userDoc/signalClasses/%s.html\n\n' % (ss, package,sigClass)                
+                s += '.. _%s: ../../../../%s/help/userDoc/signalClasses/%s.html\n\n' % (ss, package,sigClass)                
         
     return s
 
@@ -334,6 +334,7 @@ def parseSignalFile(filename, userHelp,devHelp, outputXML):
     with open(outputXML, 'w') as f:
         f.write(makeSignalXML(d))
         
+    print 'Success for %s' % filename
     return d['name']
 def parseQTWidgetFile(filename, userHelp,devHelp, outputXML):
     with open(filename, 'r') as f:
@@ -347,7 +348,7 @@ def parseQTWidgetFile(filename, userHelp,devHelp, outputXML):
             d['helpdoc'].append(m.group('helpdoc'))
     except: pass
     try:
-        d['parent'] = re.search(getQTClass, myFile).group('parent')[0]
+        d['parent'] = re.search(getQTClass, myFile).group('parent')
     except: pass
     
     with open(userHelp, 'w') as f:
@@ -405,8 +406,14 @@ def makeSignalHelp(d):
     s += '.. contents::\n\n'
     s += 'Dependent signals\n(((((((((((((((((((((((\n\n'
     for sig in d['signalClass']:
-        s += '%s\n%s\n\n' % (sig+'_', '}'*(len(sig['name'])+5))
-    
+        s += '%s\n%s\n\n' % (sig+'_', '}'*(len(sig)+5))
+    s += '\n\nConvert To\n{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{\n\n'
+    for sig in d['convertTo']:
+        s += '%s\n' % (sig+'_')
+    s += '\n\nConvert From\n{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{\n\n'    
+    for sig in d['convertFrom']:
+        s += '%s\n' % (sig+'_')
+        
     s += '\nDocumentation\n((((((((((((((((((\n\n'
     if len(d['helpdoc']) == 0:
         s += 'No help documentation entered for this signal class'
@@ -414,8 +421,11 @@ def makeSignalHelp(d):
         s += '\n'.join(d['helpdoc'])
     s += '\n\n'
     for sig in d['signalClass']:
-        s += '.. _%s: ../../../%s/help/signalClasses/%s.html\n\n' % (sig, sig.split('.')[0], sig.split('.')[1])
-        
+        s += '.. _%s: ../../../../%s/help/userDoc/signalClasses/%s.html\n\n' % (sig, sig.split(':')[0], sig.split(':')[1])
+    for sig in d['convertTo']:
+        s += '.. _%s: ../../../../%s/help/userDoc/signalClasses/%s.html\n\n' % (sig, sig.split(':')[0], sig.split(':')[1])
+    for sig in d['convertFrom']:
+        s += '.. _%s: ../../../../%s/help/userDoc/signalClasses/%s.html\n\n' % (sig, sig.split(':')[0], sig.split(':')[1])
     return s
     
 def makeSignalXML(d):

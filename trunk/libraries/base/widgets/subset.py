@@ -118,19 +118,18 @@ class subset(OWRpy):
             self.subset()
 
     def subset(self):
-        if self.dataA and self.dataB :
-            h = self.R('intersect(colnames('+self.dataA+'), colnames('+self.dataB+'))')
-        else: 
+        if not (self.dataA and self.dataB):
             return
         
-        if self.colAsel == None and self.colBsel == None and type(h) is str: 
-            self.R(self.Rvariables['subset']+'<-'+self.dataA+'['+self.dataA+'[,"' + h +'"]'
-            +' %in% '+self.dataB+'[["'+h+'"]],]', wantType = 'NoConversion')
-        elif self.colAsel in ["'%s'" % x for x in self.colA.getItems()]  and self.colBsel in ["'%s'" % x for x in self.colB.getItems()]: 
-            self.R(self.Rvariables['subset']+'<-'+self.dataA+'['+self.dataA+'[,' + self.colAsel +']'
-            +' %in% '+self.dataB+'[['+self.colBsel+']],]', wantType = 'NoConversion')
-        else:
-            return
+        self.R('%s<-subset(%s, %s %s %s, drop = F)' % (self.Rvariables['subset'], self.dataA, unicode(self.colA.selectedIds()[0]), '%in%', unicode(self.colB.selectedIds()[0])))
+        #if self.colAsel == None and self.colBsel == None and type(h) is str: 
+            #self.R(self.Rvariables['subset']+'<-'+self.dataA+'['+self.dataA+'[,"' + h +'"]'
+            #+' %in% '+self.dataB+'[["'+h+'"]],]', wantType = 'NoConversion')
+        #elif self.colAsel in ["'%s'" % x for x in self.colA.getItems()]  and self.colBsel in ["'%s'" % x for x in self.colB.getItems()]: 
+            #self.R(self.Rvariables['subset']+'<-'+self.dataA+'['+self.dataA+'[,' + self.colAsel +']'
+            #+' %in% '+self.dataB+'[['+self.colBsel+']],]', wantType = 'NoConversion')
+        #else:
+            #return
         
         if self.R('class(%s) == "data.frame"' % self.Rvariables['subset']):
             newData = signals.base.RDataFrame(self, data = self.Rvariables['subset'])
@@ -139,9 +138,9 @@ class subset(OWRpy):
             
         self.rSend('id0', newData)
         
-        if self.R('ncol('+self.Rvariables['subset']+')') == 1:
-            newVector = signals.base.RVector(self, data = 'as.vector('+self.Rvariables['subset']+')')
-            self.rSend('id1', newVector)
+        #if self.R('ncol('+self.Rvariables['subset']+')') == 1:
+            #newVector = signals.base.RVector(self, data = 'as.vector('+self.Rvariables['subset']+')')
+            #self.rSend('id1', newVector)
 
 
     def subset2(self): # now we need to make the R command that will handle the subsetting.

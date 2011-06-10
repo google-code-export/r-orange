@@ -1,43 +1,33 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
-<documentation>
+<documentation><widgetXML>
     <name>Kolmogorov-Smirnov</name>
     <icon>default.png</icon>
-    <tags> 
-        <tag>Distributions</tag> 
-    </tags>
-    <screenshots></screenshots>
     <summary>Kolmogorov-Smirnov test providing a comparison of a fitted distribution with the empirical distribution.</summary>
-    <details>
-        The Kolmogorov-Smirnov test compares the null distribution with the empirical distribution function of the observed data, where left truncated data samples are allowed. The test statistic is given by
-
-KS+ = sqrt(n)/(1-zH) sup(zH + j/n (1-zH) -zj)
-
-KS+ = sqrt(n)/(1-zH) sup(zj - (zH + (j-1)/n (1-zH)))
-
-KS = max(KS+, KS-)
-
-with z_H = F_theta(H) and z_j=F_theta(x_j), where x_1, ..., x_n are the ordered data values. Here, F_theta is the null distribution.
-    </details>
-    <relatedWidgets>
-        <inputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></inputWidget>
-        <outputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></outputWidget>
-    </relatedWidgets>
-    <signals>
-    <!-- [REQUIRED] List all the widget input output slots and their data type.-->
-    </signals>
-    <GUIElements>
-        <!-- [REQUIRED] A list of the parameters and how to use them.-->
-    </GUIElements>
-    <RFunctions>
-    <!-- [REQUIRED] R functions used in this widget.-->
-    </RFunctions>
-    <citation>
-    <!-- [REQUIRED] -->
-        <author>
-            <name>Red-R Core Team</name>
-            <contact>http://www.red-r.org/contact</contact>
-        </author>
-        <reference>http://www.red-r.org</reference>
-    </citation>
+    <tags>
+        <tag priority="10">
+            Distributions
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+<signals>
+<input>
+	<name>x</name>
+	<description>
+X vector
+	</description>
+	<signalClass>base.RVector</signalClass>
+</input>
+<input>
+	<name>y</name>
+	<description>
+Y vector
+	</description>
+	<signalClass>base.RVector</signalClass>
+</input>
+</signals>
 </documentation>

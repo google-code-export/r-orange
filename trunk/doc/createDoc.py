@@ -47,12 +47,12 @@ for p in glob.glob(os.path.join(redRRoot, 'libraries', '*', 'package.xml')):
     try:
         cmd = 'python %s %s' % (os.path.join(redRRoot, 'doc', 'createPackageDoc.py'), os.path.split(p)[0])
         print cmd
-        pro = subprocess.Popen(cmd,stdout=subprocess.PIPE).communicate()[0]
+        pro = subprocess.Popen(cmd,stdout=subprocess.PIPE, shell = True).communicate()[0]
         print pro
         packageList.append(os.path.join(os.path.split(os.path.split(p)[0])[1], 'help'))
         shutil.copytree(os.path.join(os.path.split(p)[0], 'help'), os.path.join(docRoot,'libraries', os.path.split(os.path.split(p)[0])[1], 'help'))
-    except:
-        print 'Error in making docs for %s' % p
+    except Exception as inst:
+        print 'Error in making docs for %s %s' % (p, str(inst))
         
 # userdoc = """Users's documentation!
 # =================================
@@ -253,8 +253,8 @@ for p in glob.glob(os.path.join(redRRoot, 'libraries', '*', 'package.xml')):
 
 #################################################        
 shutil.rmtree(os.path.join(os.path.abspath(docRoot),'_build'),True)
-cmd = os.path.join(os.path.abspath(docRoot),'make.bat') + ' html'
+cmd = 'sphinx-build -b html %s %s' % (os.path.abspath(docRoot), os.path.join(os.path.abspath(docRoot),'_build'))
 print 'Running doc compiler: ' + cmd
-p = subprocess.Popen(cmd,stdout=subprocess.PIPE).communicate()[0]
+p = subprocess.Popen(cmd,stdout=subprocess.PIPE, shell=True).communicate()[0]
 print p
 
