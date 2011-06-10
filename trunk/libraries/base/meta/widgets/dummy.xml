@@ -11,5 +11,7 @@
         <authorname>Red-R Core Development Team</authorname>
         <authorcontact>www.red-r.org</authorcontact>
     </author>
-</widgetXML><signals></signals>
+</widgetXML>
+<signals>
+</signals>
 </documentation>

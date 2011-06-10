@@ -19,7 +19,9 @@
         <authorname>Red-R Core Development Team</authorname>
         <authorcontact>www.red-r.org</authorcontact>
     </author>
-    </widgetXML><signals><output>
+    </widgetXML>
+<signals>
+<output>
 	<name>Output Data</name>
 	<description>
 A data table read in by the widget

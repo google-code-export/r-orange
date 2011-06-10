@@ -11,7 +11,9 @@
         <authorname>Red-R Core Development Team</authorname>
         <authorcontact>www.red-r.org</authorcontact>
     </author>
-</widgetXML><signals><input>
+</widgetXML>
+<signals>
+<input>
 	<name>Input Data A</name>
 	<description>
 
