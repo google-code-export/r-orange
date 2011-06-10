@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
-<documentation>
+<documentation><widgetXML>
 <name>PreProcess Data</name>
     <icon>default.png</icon>
     <tags> 
@@ -11,7 +11,9 @@
             <authorname>Red-R Core Team</authorname>
             <authorcontact>http://www.red-r.org/contact</authorcontact>
         </author>
-<signals><input>
+</widgetXML>
+<signals>
+<input>
 	<name>Data Table / Sample List</name>
 	<description>
 A Caret data signal or data container

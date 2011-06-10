@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
-<documentation><name>Partition/Resample/Fold (Caret)</name>
+<documentation><widgetXML><name>Partition/Resample/Fold (Caret)</name>
     <icon>default.png</icon>
     <tags> 
         <tag priority='45'>Caret</tag> 
@@ -10,7 +10,9 @@
             <authorname>Red-R Core Team</authorname>
             <authorcontact>http://www.red-r.org/contact</authorcontact>
         </author>
-    <signals><input>
+    </widgetXML>
+<signals>
+<input>
 	<name>Input Caret Data</name>
 	<description>
 Caret data container.

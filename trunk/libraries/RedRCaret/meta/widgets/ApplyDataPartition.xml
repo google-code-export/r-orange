@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
-<documentation>
+<documentation><widgetXML>
 <name>Apply Data Partition</name>
     <icon>default.png</icon>
     <tags>
@@ -11,7 +11,9 @@
             <authorname>Red-R Core Development Team</authorname>
             <authorcontact>www.red-r.org</authorcontact>
         </author>
-    <signals><input>
+    </widgetXML>
+<signals>
+<input>
 	<name>Input Caret Data</name>
 	<description>
 A Caret Data Container

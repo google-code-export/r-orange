@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
-<documentation>
+<documentation><widgetXML>
 <name>Train Model</name>
     <icon>default.png</icon>
     <tags> 
@@ -11,7 +11,9 @@
             <authorname>Red-R Core Team</authorname>
             <authorcontact>http://www.red-r.org/contact</authorcontact>
         </author>
-<signals><input>
+</widgetXML>
+<signals>
+<input>
 	<name>Caret Data Model</name>
 	<description>
 A Caret data model on which to train
