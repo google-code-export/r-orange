@@ -257,7 +257,7 @@ def makeHelp(d):
     s += 'Interface\n((((((((((((\n\n'
     for gui in d['rrgui']:
         s += '%s\n%s\n\n' % (gui['label'], '}'*len(gui['label']))
-        s += 'Description\n{{{{{{{{{{{{{{{\n\n'
+        s += '**Description**\n\n'
         s += '%s\n\n' % gui['description']
         s += '%s\n\n' % gui['rst']
         s += 'Class: `%s`_\n\n' % gui['class']
@@ -268,7 +268,7 @@ def makeHelp(d):
         for ss in sig['signals']:
             s += '`%s`_ ' % ss
         s+= '\n\n'
-        s += 'Description\n{{{{{{{{{{{{{{{\n\n'
+        s += '**Description**\n\n'
         s += '%s\n\n' % sig['description']
         s += '%s\n\n' % sig['rst']
         

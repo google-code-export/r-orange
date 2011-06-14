@@ -152,11 +152,11 @@ def makeTemplate(filename, copy = False):
         
         taglist = unicode(tempDialog.tagsList.text())
         tempDescription = unicode(tempDialog.descriptionEdit.toPlainText())
-        templateName = unicode(tempDialog.nameEdit.text())
+        tempName = unicode(tempDialog.nameEdit.text())
         
         saveTagsList.setAttribute("tagsList", taglist)
         saveDescription.setAttribute("tempDescription", tempDescription)
-        templateName.setAttribute("name", templateName)
+        templateName.setAttribute("name", tempName)
         
         tempdoc.appendChild(tempXML)
         print tempdoc.toprettyxml()

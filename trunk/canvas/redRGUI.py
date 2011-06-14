@@ -48,6 +48,8 @@ class widgetState:
             self.controlArea.setSizePolicy(kwargs['sizePolicy'])
         if 'whatsThis' in kwargs:
             self.controlArea.setWhatsThis(kwargs['whatsThis'])
+        elif 'toolTip' in kwargs:
+            self.controlArea.setWhatsThis(kwargs['toolTip'])
         if 'disabled' in kwargs:
             self.controlArea.setDisabled(kwargs['disabled'])
         if 'styleSheet' in kwargs:

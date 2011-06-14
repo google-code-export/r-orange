@@ -131,9 +131,11 @@ class build_ext(_build_ext):
 
 
 def get_rversion(r_home):
-    r_exec = os.path.join(r_home, 'bin', 'R')
+    print 'checking r-home %s' % r_home
+    r_exec = os.path.abspath(os.path.join(r_home, 'bin', 'R'))
     # Twist if Win32
     if sys.platform == "win32":
+        print 'opening R for version %s' % r_exec
         rp = os.popen3('"'+r_exec+'" --version')[2]
     else:
         rp = os.popen('"'+r_exec+'" --version')
@@ -225,6 +227,7 @@ class RConfig(object):
         rconfig_m = None        
         span = (0, 0)
         rc = RConfig()
+        print 'from_string string: %s' % string
         for substring in re.split('(?<!-framework) ', string):
             ok = False
             for pattern in pp:
@@ -243,7 +246,7 @@ class RConfig(object):
                     else:
                         # if the configuration points to an existing library, 
                         # use it
-			print string
+                        print string
                         if os.path.exists(string):
                             rc += RConfig(library = substring)
                             ok = True
@@ -264,7 +267,10 @@ def get_rconfig(r_home, about, allow_empty = False):
     if rconfig.startswith("WARNING"):
         rconfig = rp.readline()
     rconfig = rconfig.strip()
-    rc = RConfig.from_string(rconfig)
+    try:
+        rc = RConfig.from_string(rconfig)
+    except Exception as inst:
+        print str(inst)
     return rc
 
 
