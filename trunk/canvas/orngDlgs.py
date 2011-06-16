@@ -1001,11 +1001,12 @@ class helpSearchDlg(QDialog):
         
     def openDocumentation(self):
         import webbrowser
-        import urllib
-        target = urllib.pathname2url(self.helpList.selectedIds()[0])
-        print target
-        webbrowser.open('')
-        webbrowser.open('file:%s' % target)
+        #import urllib
+        #target = urllib.pathname2url(self.helpList.selectedIds()[0])
+        target = self.helpList.selectedIds()[0]
+        
+        #webbrowser.open('file:%s' % target)
+        webbrowser.open(target)
 if __name__=="__main__":
     import sys
     app = QApplication(sys.argv)

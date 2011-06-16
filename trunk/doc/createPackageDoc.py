@@ -212,6 +212,9 @@ def makeFiles():
 makeHelpDirs()
 makeFiles()
 
+import docSearcher
+docSearcher.createIndex()
+
 # if os.path.exists(os.path.join(root, 'help')):
     # shutil.rmtree(os.path.join(root, 'help'))
   
