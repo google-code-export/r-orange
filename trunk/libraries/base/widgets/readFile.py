@@ -200,6 +200,9 @@ I want to put in an image below that likely isn't there.
         # callback = self.loadClipboard)
         
         """.. rrgui::"""
+        self.useColClasses = redRGUI.base.TFCheckBox(holder, label = _('Use Custom Col Classes'), setChecked = True, callback = self.hideColClassesArea)
+        
+        """.. rrgui::"""
         rescan = redRGUI.base.button(holder, label = _('Rescan File'),toolTip=_("Preview a small portion of the file"),
         callback = self.scanNewFile)
         
@@ -238,6 +241,8 @@ I want to put in an image below that likely isn't there.
 
     #def setForExcel(self):
         #self.fileType.show()
+    def hideColClassesArea(self):
+        self.scroll.setVisible(not self.scroll.isVisible())
     def otherSep(self,text):
         self.delimiter.setChecked('other')
         
@@ -360,9 +365,10 @@ I want to put in an image below that likely isn't there.
             self.rownames = 'NULL'
         
         cls = []
-        for i,new,old in zip(xrange(len(self.myColClasses)),self.myColClasses,self.colClasses):
-            if new != old:
-                cls.append(self.dataTypes[i][0] + '="' + new + '"')
+        if len(self.dataTypes) > 0:
+            for i,new,old in zip(xrange(len(self.myColClasses)),self.myColClasses,self.colClasses):
+                if new != old:
+                    cls.append(self.dataTypes[i][0] + '="' + new + '"')
         
         if len(cls) > 0:
             ccl = 'c(' + ','.join(cls) + ')'
@@ -419,29 +425,34 @@ I want to put in an image below that likely isn't there.
             
         
         try:
-            if len(self.colClasses) ==0:
-                self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
-                self.myColClasses = self.colClasses
-                # print '@@@@@@@@@@@@@@@@@@@@@@@@@', self.myColClasses
-            if len(self.dataTypes) ==0:
-                types = ['factor','numeric','character','integer','logical']
-                self.dataTypes = []
-                
-                for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
-                    s = redRGUI.base.radioButtons(self.columnTypes,label=i,displayLabel=False,
-                    buttons=types,orientation='horizontal',callback=self.updateColClasses)
-                    
-                    # print k,i,unicode(v)
-                    if unicode(v) in types:
-                        s.setChecked(unicode(v))
-                    else:
-                        s.addButton(unicode(v))
-                        s.setChecked(unicode(v))
-                    label = redRGUI.base.widgetLabel(None,label=i)
-                    self.columnTypes.layout().addWidget(label.controlArea,k,0)
-                    self.columnTypes.layout().addWidget(s.controlArea,k,1)
-                    
-                    self.dataTypes.append([i,s])
+            print 'checking col classes %s' % self.useColClasses.checked()
+            if self.useColClasses.checked() == 'TRUE':
+                print 'col classes seen as TRUE'
+                if len(self.colClasses) ==0:
+                    self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
+                    self.myColClasses = self.colClasses
+                    # print '@@@@@@@@@@@@@@@@@@@@@@@@@', self.myColClasses
+                if len(self.dataTypes) ==0:
+                    types = ['factor','numeric','character','integer','logical']
+                    self.dataTypes = []
+                    if len(self.colNames) > 200:
+                        mb = QMessageBox(QMessageBox.Question, _('Col Classes Setting'), _('You are loading more than 200 columns of data.\n\nDo you really want to load this many classes?'), QMessageBox.Yes | QMessageBox.No)
+                        if mb.exec_() == QMessageBox.No: return
+                    for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
+                        s = redRGUI.base.radioButtons(self.columnTypes,label=i,displayLabel=False,
+                        buttons=types,orientation='horizontal',callback=self.updateColClasses)
+                        
+                        # print k,i,unicode(v)
+                        if unicode(v) in types:
+                            s.setChecked(unicode(v))
+                        else:
+                            s.addButton(unicode(v))
+                            s.setChecked(unicode(v))
+                        label = redRGUI.base.widgetLabel(None,label=i)
+                        self.columnTypes.layout().addWidget(label.controlArea,k,0)
+                        self.columnTypes.layout().addWidget(s.controlArea,k,1)
+                        
+                        self.dataTypes.append([i,s])
         except:
             import redRLog
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())

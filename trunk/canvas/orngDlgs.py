@@ -274,7 +274,7 @@ class CanvasOptionsDlg(QDialog):
         self.topLayout.addWidget(hbox)
     def createHelpIndex(self):
         import docSearcher
-        docSearcher.createIndex()
+        docSearcher.createIndex(redREnviron.directoryNames['redRDir'])
         
     def regressionTest(self, val):
         import redRRegressionTest
@@ -293,7 +293,7 @@ class CanvasOptionsDlg(QDialog):
         self.templateDirsListBox.update(redREnviron.settings['templateDirectories'])
         
     def removeTemplateDirectory(self):
-        mb = QMessageBox(QMessageBox.Question, _('Remove Template Directories'), _('Are you sure that you want to remove the selected template directories?'), QMessageBox.Tes | QMessageBox.No)
+        mb = QMessageBox(QMessageBox.Question, _('Remove Template Directories'), _('Are you sure that you want to remove the selected template directories?'), QMessageBox.Yes | QMessageBox.No)
         if mb.exec_() == QMessageBox.No: return
         selections = self.templateDirsListBox.selectedIds()
         for s in selections:
@@ -996,7 +996,7 @@ class helpSearchDlg(QDialog):
     def searchDocumentation(self):
         if self.searchEdit.text() == '': return
         import docSearcher
-        res = docSearcher.searchIndex(self.searchEdit.text())
+        res = docSearcher.searchIndex(self.searchEdit.text(), redREnviron.directoryNames['redRDir'])
         self.helpList.update([(r['path'], r['title']) for r in res])
         
     def openDocumentation(self):
@@ -1004,9 +1004,10 @@ class helpSearchDlg(QDialog):
         #import urllib
         #target = urllib.pathname2url(self.helpList.selectedIds()[0])
         target = self.helpList.selectedIds()[0]
-        
+        print target
         #webbrowser.open('file:%s' % target)
         webbrowser.open(target)
+        self.accept()
 if __name__=="__main__":
     import sys
     app = QApplication(sys.argv)

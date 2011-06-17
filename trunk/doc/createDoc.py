@@ -5,6 +5,7 @@ import shutil
 
 redRRoot = sys.argv[1]
 docRoot = os.path.join(redRRoot, 'doc')
+sys.path.append(os.path.join(redRRoot, 'canvas'))
 makeDeps = False #int(sys.argv[2])
 
 # toRM = glob.glob(os.path.join(docRoot,'core','*.rst')) + glob.glob(os.path.join(docRoot,'libraries','*','*','*.rst')) + glob.glob(os.path.join(docRoot,'libraries','*','*.rst')) + glob.glob(os.path.join(docRoot,'libraries','*.rst'))
@@ -50,7 +51,7 @@ for p in glob.glob(os.path.join(redRRoot, 'libraries', '*', 'package.xml')):
         pro = subprocess.Popen(cmd,stdout=subprocess.PIPE, shell = True).communicate()[0]
         print pro
         packageList.append(os.path.join(os.path.split(os.path.split(p)[0])[1], 'help'))
-        shutil.copytree(os.path.join(os.path.split(p)[0], 'help'), os.path.join(docRoot,'libraries', os.path.split(os.path.split(p)[0])[1], 'help'))
+        shutil.copytree(os.path.join(os.path.split(p)[0], 'help'), os.path.join(docRoot,'libraries', os.path.split(os.path.split(p)[0])[1], 'help'), ignore = shutil.ignore_patterns('*.svn', '*.svn*'))
     except Exception as inst:
         print 'Error in making docs for %s %s' % (p, str(inst))
         
@@ -258,3 +259,5 @@ print 'Running doc compiler: ' + cmd
 p = subprocess.Popen(cmd,stdout=subprocess.PIPE, shell=True).communicate()[0]
 print p
 
+import docSearcher
+docSearcher.createIndex()
