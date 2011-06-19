@@ -136,7 +136,6 @@ class OutputHandler:
                         )
             except:
                 redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-                pass
             finally:
                 ## remove the signal from the outputs
                 rm = [l for l in _linkPairs if l[0] == self.outputs[id] and l[1] == signal]

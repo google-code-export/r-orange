@@ -230,25 +230,28 @@ class SchemaDoc(QWidget):
         if newSignals == None:
             dialog = SignalDialog(self.canvasDlg, None)
             dialog.setOutInWidgets(outWidget, inWidget)
-            for (outName, inName) in signals:
+            for o, i, e, n in signals:
+                dialog.addLink(o.id, i.id)
+            #for (outName, inName) in signals:
                 #print "<extra>orngDoc.py - SignalDialog.addLink() - adding signal to dialog: ", outName, inName
-                dialog.addLink(outName, inName)
+                #dialog.addLink(outName, inName)
 
             # if there are multiple choices, how to connect this two widget, then show the dialog
             if dialog.exec_() == QDialog.Rejected:
                 return
 
             newSignals = dialog.getLinks()
-
-        for (outName, inName) in signals:
-            if (outName, inName) not in newSignals:
-                self.removeLink(outWidget, inWidget, outName, inName)
-                signals.remove((outName, inName))
+        print newSignals
+        for o, i, e, n in signals:
+            if (o.id, i.id) not in newSignals:
+                self.removeLink(outWidget.instance(), inWidget.instance(), o.id, i.id)
+                
+                print 'Done removing link'
+                signals.remove((o, i, e, n))
 
         #self.signalManager.setFreeze(1)
-        for (outName, inName) in newSignals:
-            if (outName, inName) not in signals:
-                self.addLink(outWidget, inWidget, outName, inName, enabled)
+        for o, i in newSignals:
+            self.addLink(outWidget, inWidget, o, i, enabled)
         #self.signalManager.setFreeze(0, outWidget.instance)
 
         outWidget.updateTooltip()
@@ -270,7 +273,7 @@ class SchemaDoc(QWidget):
                     l.parent.outputs.removeSignal(inWidget.instance().inputs.getSignal(inSignalName), l)
                     redRObjects.removeLine(l.parent, inWidget.instance(), l, inSignalName)
         
-        
+        print 'adding line in redRObjects'
         redRObjects.addLine(outWidget.instance(), inWidget.instance(), enabled = enabled)
         
         """Retrieve the insignal from the input widget handler and connect that to the output signal"""
@@ -316,9 +319,11 @@ class SchemaDoc(QWidget):
     ### moved to redRObjects
     # remove only one signal from connected two widgets. If no signals are left, delete the line
     def removeLink(self, outWidget, inWidget, outSignalName, inSignalName):
-        outWidget.outputs.removeSignal(inWidgetInstance.inputs.getSignal(inSignalName), outSignalName)
-    
-        if not outWidget.outputs.signalLinkExists(inWidgetInstance): ## move through all of the icons and remove all lines connecting, only do this if there is no more signal.
+        outWidget.outputs.removeSignal(inWidget.inputs.getSignal(inSignalName), outSignalName)
+        
+        import redRSignalManager
+        if len(redRSignalManager.getLinksByWidgetInstance(outWidget, inWidget)) < 1:
+        #if not outWidget.outputs.signalLinkExists(inWidget): ## move through all of the icons and remove all lines connecting, only do this if there is no more signal.
             return redRObjects.removeLine(outWidget, inWidget, outSignalName, inSignalName)
     
     def newTab(self): # part of the view

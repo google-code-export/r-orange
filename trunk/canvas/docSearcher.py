@@ -8,6 +8,7 @@ import os, sys
 from whoosh.index import create_in, open_dir
 from whoosh.fields import *
 from whoosh import qparser
+from whoosh import highlight
 from whoosh.qparser import QueryParser
 from whoosh.qparser import MultifieldParser
 
@@ -29,7 +30,7 @@ def createIndex(root):
         shutil.rmtree(indexDir)
     if not os.path.exists(indexDir):
         os.mkdir(indexDir)
-    schema = Schema(title=TEXT(stored = True), path = ID(stored=True, unique = True), content = TEXT)
+    schema = Schema(title=TEXT(stored = True), path = ID(stored=True, unique = True), content = TEXT(stored = True))
     ix = create_in(indexDir, schema)
     writer = ix.writer()
     import glob
@@ -65,9 +66,11 @@ def searchIndex(term, root):
     with ix.searcher() as searcher:
         q = MultifieldParser(["title", "content"], schema = ix.schema, group = qparser.OrGroup).parse(term)
         r = searcher.search(q, limit = 50)
+        r.fragmenter = highlight.ContextFragmenter(surround=40)
+        r.formatter = highlight.HtmlFormatter()
         res = []
         for re in r:
-            res.append({'title':re['title'], 'path':re['path']})
+            res.append({'title':re['title'], 'path':re['path'], 'highlight':re.highlights("content")})
             
     return res
     

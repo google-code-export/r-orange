@@ -876,7 +876,7 @@ class SearchBox2(redRlineEdit):
                 self.clear()
             elif c in ['help']:
                 ## search for the terms in the docSearcher and make a dialog of matches.
-                sd = orngDlgs.helpSearchDlg(info['text'])
+                sd = orngDlgs.helpSearchDlg(redRObjects.canvasDlg, info['text'])
                 sd.exec_()
             else:
                 self.setText(unicode(info.name))

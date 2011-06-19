@@ -861,6 +861,7 @@ class SignalCanvasView(QGraphicsView):
         #signalSpace = (count)*ySignalSpace
         signalSpace = height
         j = 0
+        #self.outBoxesList = []
         for i in outputs.keys():
             y = yWidgetOffTop + ((j+1)*signalSpace)/float(len(outputs)+1)
             box = QGraphicsRectItem(xWidgetOff + width, y - ySignalSize/2.0, xSignalSize, ySignalSize, None, self.dlg.canvas)
@@ -934,13 +935,24 @@ class SignalCanvasView(QGraphicsView):
             activeItem = self.scene().itemAt(QPointF(ev.pos()))  # what is the item at the active position??
             if type(activeItem) == QGraphicsRectItem:
                 activeItem2 = self.scene().itemAt(self.tempLine.line().p1()) ## active item 2 is the item at the beginning of the line.
-                if activeItem.x() < activeItem2.x(): outBox = activeItem; inBox = activeItem2
-                else:                                outBox = activeItem2; inBox = activeItem
+
+                if self.tempLine.line().x2() < self.tempLine.line().x1():
+                    print 'x > x2'
+                    outBox = activeItem; inBox = activeItem2
+                else:
+                    print 'x2 > x'
+                    outBox = activeItem2; inBox = activeItem
                 outName = None; inName = None
                 for (name, box, id) in self.outBoxes:
-                    if box == outBox: outName = id
+                    if box == outBox: 
+                        print 'match name outBox %s' % id
+                        outName = id
+                        break
                 for (name, box, id) in self.inBoxes:
-                    if box == inBox: inName = id
+                    if box == inBox: 
+                        print 'match name inBox %s' % id
+                        inName = id
+                        break
                 print outName, inName
                 if outName != None and inName != None:
                     print _('adding link')
@@ -982,30 +994,117 @@ class SignalCanvasView(QGraphicsView):
                 self.lines.remove((line, outN, inN, outBox, inBox))
                 self.scene().update()
                 return
+
+import re
+
+class DocumentSearcherQListView(QListView):
+    def __init__(self, parent=None, *args):
+        QListView .__init__(self, parent, *args)
+    def keyPressEvent(self, event):
+        oldIdx = self.currentIndex();
+        QListView.keyPressEvent(self,event);
+        newIdx = self.currentIndex();
+        if(oldIdx.row() != newIdx.row()):
+            self.emit(SIGNAL("clicked (QModelIndex)"), newIdx)
+    
+    def mousePressEvent(self, event):
+        if not self.indexAt(event.pos()).isValid():
+            print _('invalid index')
+        QListView.mousePressEvent(self, event)
+        self.emit(SIGNAL("activated (QModelIndex)"), self.indexAt(event.pos()))
+    
+
+class DocumentSearcherHTMLDelegate(QItemDelegate):
+    def __init__(self, parent=None, *args):
+        QItemDelegate .__init__(self, parent, *args)
+    def paint(self, painter, option, index):
+        painter.save()
+        #QStyledItemDelegate.paint(self,painter, option, index)
+        # highlight selected items
+        #if option.state & QStyle.State_Selected:  
+        if index.row()%2: painter.fillRect(option.rect, QBrush(QColor(255, 255, 255)))
+        else: painter.fillRect(option.rect, QBrush(QColor(255, 240, 240)))
+
+
+        model = index.model()
+        record = model.listdata[index.row()]
+
+        doc = QTextDocument(self)
+        enterText = re.sub(r'[\(\)\{\}=]{3,}', ', ', record[1])
+        #print enterText
+        doc.setHtml("%s" % enterText)
+        doc.setTextWidth(option.rect.width()-40)
+        ctx = QAbstractTextDocumentLayout.PaintContext()
+       
+        painter.translate(option.rect.topLeft());
+        # try:
+            # icon = QIcon(record[1].icon)
+        # except:
+            # icon = record[1]['icon']
+        #self.drawDecoration(painter, option, QRect(5,5,32,32), icon.pixmap(QSize(32,32)))
+        painter.translate(QPointF(40,4));
+        painter.setClipRect(option.rect.translated(-option.rect.topLeft()))
+        dl = doc.documentLayout()
+        dl.draw(painter, ctx)
+        # painter.resetTransform()
+        # painter.translate(option.rect.topLeft());
+        
+        painter.restore()
+
+    def sizeHint(self, option, index):
+        return QSize(100,75)
+
+    def flags(self, index):
+        return Qt.ItemIsEnabled | Qt.ItemIsSelectable 
         
 class helpSearchDlg(QDialog):
-    def __init__(self, term = ''):
-        QDialog.__init__(self)
+    def __init__(self, parent, term = ''):
+        QDialog.__init__(self, parent)
         self.setLayout(QVBoxLayout())
+        self.setWindowTitle(_('Local Documentation Search'))
+        self.setWindowIcon(QIcon(os.path.join(redREnviron.directoryNames['canvasIconsDir'], 'help.png')))
         mainBox = redRQTCore.widgetBox(self)
+        
         self.searchEdit = redRQTCore.lineEdit(mainBox, label = 'Search Terms', text = term, callback = self.searchDocumentation)
-        self.helpList = redRQTCore.listBox(mainBox, label = 'Help Search Matches', callback = self.openDocumentation)
+        self.helpList = DocumentSearcherQListView(mainBox)#, label = 'Help Search Matches', callback = self.openDocumentation)
+        mainBox.layout().addWidget(self.helpList)
+        
+        de = DocumentSearcherHTMLDelegate(self)
+        self.model = QStandardItemModel(self)
+        
+        self.helpList.setModel(self.model)
+        self.helpList.setItemDelegate(de)
+        self.helpList.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.helpList.setSelectionBehavior(QAbstractItemView.SelectItems)
+        
+        QObject.connect(self.helpList, SIGNAL("activated ( QModelIndex )"), self.openDocumentation)
         
         self.searchDocumentation()
+        
         self.show()
+    
+    def sizeHint(self):
+        return QSize(700, 400)
+        
     def searchDocumentation(self):
         if self.searchEdit.text() == '': return
         import docSearcher
         res = docSearcher.searchIndex(self.searchEdit.text(), redREnviron.directoryNames['redRDir'])
-        self.helpList.update([(r['path'], r['title']) for r in res])
+        self.model.clear()
+        self.model.listdata = []
+        for r in res:
+            theText = unicode('%s <br>%s' % (r['title'],r['highlight']))
+            self.model.listdata.append((r, theText))
+            x = QStandardItem(theText)
+            #x.info = (info, c)
+            self.model.appendRow(x)
+        
+        #self.helpList.update([(r['path'], r['title']) for r in res])
         
     def openDocumentation(self):
         import webbrowser
-        #import urllib
-        #target = urllib.pathname2url(self.helpList.selectedIds()[0])
-        target = self.helpList.selectedIds()[0]
+        target = self.model.listdata[self.helpList.selectedIndexes()[0].row()][0]['path']
         print target
-        #webbrowser.open('file:%s' % target)
         webbrowser.open(target)
         self.accept()
 if __name__=="__main__":

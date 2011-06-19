@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, sys, math, sip
 import redRStyle
-import signals, redREnviron, redRObjects, redRLog, redRHistory, redRi18n
+import signals, redREnviron, redRObjects, redRLog, redRHistory, redRi18n, redRSignalManager
 ERROR = 0
 WARNING = 1
 
@@ -140,7 +140,8 @@ class CanvasLine(QGraphicsPathItem):
 
     def getSignals(self):
         """Return a list of outName and inName for all signals connected to the inwidget instance"""
-        return self.outWidget.instance().outputs.getLinkPairs(self.inWidget.instance())
+        return redRSignalManager.getLinksByWidgetInstance(self.outWidget.instance(), self.inWidget.instance())
+        #return self.outWidget.instance().outputs.getLinkPairs(self.inWidget.instance())
 
     def paint(self, painter, option, widget = None):
         p1 = self.outWidget.getRightEdgePoint()
