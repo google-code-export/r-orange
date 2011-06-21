@@ -152,7 +152,7 @@ class packageManager(redRQTCore.dialog):
             zfile.extractall(installDir)
             zfile.close()
             redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'zip file extraction complete')
-            compileall.compile_dir(installDir) # compile the directory for later importing.
+            
             ## now process the requires for R
             
             pack = readXML(os.path.join(installDir, 'package.xml'))
@@ -160,10 +160,13 @@ class packageManager(redRQTCore.dialog):
             redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'package xml parsing complete')
             import RSession
             if 'RLibraries' in packageInfo.keys():
-                RSession.require_librarys(packageInfo['RLibraries'])
+                if not RSession.require_librarys(packageInfo['RLibraries']):
+                    redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Installing package %(PACKAGENAME)s aborted by user.') % {'PACKAGENAME':packageName})
+                    shutil.rmtree(installDir,ignore_errors=True)
+                    return
             redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'R library installation complete')
             redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Installing package %(PACKAGENAME)s') % {'PACKAGENAME':packageName})
-        
+            compileall.compile_dir(installDir) # compile the directory for later importing.
             redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'package installation complete')
         except Exception as inst:
             redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL, _('There was an error installing %(PACKAGENAME)s. %(ERROR)s') % {'PACKAGENAME':packageName, 'ERROR':unicode(inst)})

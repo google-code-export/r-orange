@@ -30,6 +30,13 @@ def getInputConnectionsFromOutput(signal):
         if o == signal:
             r.append(i)
     return r
+
+def getLinkPairsByInput(signal):
+    r = []
+    for o, i, e, n in _linkPairs:
+        if i.id == signal:
+            r.append(o)
+    return r
     
 class OutputSocket():
     def __init__(self, id, name, signalClass, parent, value = None):

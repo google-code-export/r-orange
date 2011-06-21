@@ -267,10 +267,12 @@ class SchemaDoc(QWidget):
         if inWidget.instance().inputs.getSignal(inSignalName):
             if not inWidget.instance().inputs.getSignal(inSignalName).multiple:
                 ## check existing link to the input signal
-                
-                existing = inWidget.instance().inputs.getLinks(inSignalName)
+                import redRSignalManager
+                redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'checking for current lines')
+                existing = redRSignalManager.getLinkPairsByInput(inSignalName)
+                #existing = inWidget.instance().inputs.getLinks(inSignalName)
                 for l in existing:
-                    l.parent.outputs.removeSignal(inWidget.instance().inputs.getSignal(inSignalName), l)
+                    l.parent.outputs.removeSignal(inWidget.instance().inputs.getSignal(inSignalName), l.id)
                     redRObjects.removeLine(l.parent, inWidget.instance(), l, inSignalName)
         
         print 'adding line in redRObjects'

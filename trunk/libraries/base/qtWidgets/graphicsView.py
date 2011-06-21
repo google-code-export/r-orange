@@ -23,7 +23,7 @@ class graphicsView(QGraphicsView, widgetState):
         
         kwargs.setdefault('includeInReports', True)
         kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
-        widgetState.__init__(self,parent,label,includeInReports)
+        widgetState.__init__(self,parent,label,**kwargs)
         
         QGraphicsView.__init__(self, self.controlArea)
         self.R = RSession.Rcommand
@@ -403,6 +403,7 @@ class graphicsView(QGraphicsView, widgetState):
             #self.convertSVG(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/')) ## handle the conversion to glyph free svg
             mainItem = QGraphicsSvgItem(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/'))
         elif imageType == 'cairo':
+            print 'Executing cairo plotting'
             self.convertSVG(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/')) ## handle the conversion to glyph free svg
             mainItem = QGraphicsSvgItem(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/'))
         elif imageType in ['png', 'jpeg']:

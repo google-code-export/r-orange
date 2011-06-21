@@ -111,7 +111,7 @@ class CanvasLine(QGraphicsPathItem):
         return
         #  first we need to get the signals that are sent through the line, there might be more than one so we do it here.
         outinstance = self.outWidget.instance()
-        outSignalIDs = [i[0] for i in outinstance.outputs.getLinkPairs(self.inWidget.instance())]
+        outSignalIDs = [i[1] for i in redRSignalManager.getLinksByWidgetInstance(outinstance, self.inWidget.instance())]
         tip = 'Signal Data Summary:\n'
         for id in outSignalIDs:
             s = outinstance.outputs.getSignal(id)

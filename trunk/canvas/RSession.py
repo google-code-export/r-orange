@@ -243,7 +243,7 @@ def install_libraries(librarys, repository = 'http://cran.r-project.org'):
     if len(newLibs) == 0: return True
     
     if redREnviron.checkInternetConnection():
-        mb = QMessageBox(_("Download R Library"), _("You are missing some key files for this widget.\n\n%s\n\nWould you like to download it(them)?"
+        mb = QMessageBox(_("Download R Library"), _("You are missing some key files for this widget or package.\nYou must install these files to use the widget or package you requested.\nIf you click No or Cancel you will likely see many errors.\nIf you are loading a package the package loading will be aborted.\n\n%s\n\nWould you like to download the Files (Hint: say Yes)?"
         ) % unicode(','.join(newLibs)), 
         QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
         if mb.exec_() == QMessageBox.Ok:
@@ -255,6 +255,8 @@ def install_libraries(librarys, repository = 'http://cran.r-project.org'):
             except:
                 redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL,_('Library load failed') +"<br>"+ redRLog.formatException()) 
                 return False
+        else:
+            return False
         return True
     else:
         return False
