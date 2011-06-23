@@ -342,7 +342,7 @@ class reports(QWizard):
             if widgetReport['includeInReports']:
                 reportText+= self.formatWidgetReport(name,widgetReport)
         
-        
+        print reportText
         if os.path.splitext(unicode(reportName))[1].lower() in [".odt"]:#, ".html", ".tex"]
             reader = Reader()
             writer = Writer()

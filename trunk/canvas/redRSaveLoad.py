@@ -392,8 +392,8 @@ def loadRequiredPackages(required, loadingProgressBar):
         
         for name,package in required['RedR'].items():
             #print package
-            if not (package['Name'] in installedPackages.keys() 
-            and float(package['Version']['Number']) < float(installedPackages[package['Name']]['Version']['Number'])):
+            if (package['Name'] not in installedPackages.keys()) or (float(package['Version']['Number']) < float(installedPackages[package['Name']]['Version']['Number'])):
+                print 'my package number %s' % str(float(installedPackages[package['Name']]['Version']['Number'])), 'their package number %s' % str(float(package['Version']['Number']))
                 downloadList[package['Name']] = {'Version':unicode(package['Version']['Number']), 'installed':False}
 
         if len(downloadList.keys()) > 0:

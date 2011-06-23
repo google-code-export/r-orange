@@ -49,25 +49,10 @@ class widgetSession():
         tempSentItems = self.processSentItems()
         print 'appending sent items'
         settings['sentItems'] = {'sentItemsList':tempSentItems}
-        
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(settings)
-       
-        
-        
-        #settingsID = self.sqlite.saveObject(settings)
         self.progressBarFinished()
         return settings
     def saveCustomSettings(self): # dummy function that should be overwritten in child classes if they want the function
         pass
-        
-    #def getInputs(self):
-        
-        #return self.inputs.returnInputs()
-        
-    #def getOutputs(self):
-        #return self.outputs.returnOutputs()
 
     def isPickleable(self,d):  # check to see if the object can be included in the pickle file
         import re
@@ -144,10 +129,6 @@ class widgetSession():
         
     def setSettings(self,settings, globalSettings = False):
         redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Loading settings')
-        #settings = self.sqlite.setObject(settingsID)
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(settings)
         for k,v in settings.iteritems():
             #print 'loading %s in widget %s' % (k, self.captionTitle)
             try:
@@ -157,7 +138,10 @@ class widgetSession():
                     continue
                 elif 'pythonObject' in v.keys():
                     #print '|#| Setting pythonObject %s to %s' % (k,unicode(v['pythonObject']))
-                    self.__setattr__(k, v['pythonObject'])
+                    if k == 'Rvariables':
+                        self.Rvariables.update(v['pythonObject'])
+                    else:
+                        self.__setattr__(k, v['pythonObject'])
                 elif 'signalsObject' in v.keys():
                     #print '|#| Setting signalsObject'
                     varClass = self.setSignalClass(v['signalsObject'])
@@ -199,6 +183,7 @@ class widgetSession():
                 elif 'redRGUIObject' in v.keys():
                     #print getattr(self, k)
                     try:
+                        print v['redRGUIObject']['widgetSettings']
                         getattr(self, k).loadSettings(v['redRGUIObject']['widgetSettings'])
                         getattr(self, k).setDefaultState(v['redRGUIObject']['defaultSettings'])
                     except Exception as inst:
