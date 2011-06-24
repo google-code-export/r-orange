@@ -57,6 +57,10 @@ class cor_test(OWRpy):
         """.. rrgui::
             :description: `View the output of the correlation test.`""" 
         self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "RoutputWindow")
+        
+        """.. rrgui::
+            :description: `Specify the method by which to compute the statistics`"""
+        self.methodSelect = redRGUI.base.comboBox(self.controlArea, label = 'Method', items = [("pearson", "Pearson"), ("kendall", "Kendall"), ("spearman", "Spearman")])
     def processy(self, data):
         if data:
             self.RFunctionParam_y=data.getData()
@@ -75,6 +79,7 @@ class cor_test(OWRpy):
         if unicode(self.RFunctionParam_y) == '': return
         if unicode(self.RFunctionParam_x) == '': return
         injection = []
+        injection.append('method = "%s"' % self.methodSelect.currentId())
         inj = ','.join(injection)
         self.R(self.Rvariables['cor.test']+'<-cor.test(y=as.numeric(as.character('+unicode(self.RFunctionParam_y)+')),x=as.numeric(as.character('+unicode(self.RFunctionParam_x)+')),'+','+inj+')')
         self.R('txt<-capture.output('+self.Rvariables['cor.test']+')')

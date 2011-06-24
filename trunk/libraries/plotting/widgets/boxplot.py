@@ -13,7 +13,7 @@ class boxplot(OWRpy):
         self.RFunctionParam_x = ''
         self.inputs.addInput('id0', 'x', signals.base.RList, self.processx)
 
-        
+        self.plotArea = redRGUI.plotting.redRPlot(self.controlArea, label = 'Boxplot')
         self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,processOnInput=True)
     def processx(self, data):
         if data:
@@ -25,7 +25,7 @@ class boxplot(OWRpy):
             self.status.setText('Do data. Can not plot')
             return
         try:
-            self.R('boxplot(x=as.list('+unicode(self.RFunctionParam_x)+'), notch = TRUE)')
+            self.plotArea.plot('x=as.list('+unicode(self.RFunctionParam_x)+'), notch = TRUE', function = 'boxplot')
         except Exception as inst:
             QMessageBox.information(self,'R Error', "Plotting failed.  Try to format the data in a way that is acceptable for this widget.\nSee the documentation for help.\n%s" % inst, 
             QMessageBox.Ok + QMessageBox.Default)

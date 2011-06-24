@@ -13,6 +13,8 @@ from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.button import button
 
+import RSession
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRi18n
@@ -20,7 +22,7 @@ _ = redRi18n.get_(package = 'base')
 class textEdit(QTextEdit,widgetState):
     def __init__(self,widget,html='',label=None, displayLabel=True, orientation='vertical', alignment=None, editable=True, printable=False,clearable=False,**kwargs):
         kwargs.setdefault('includeInReports', True)
-        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding))
         widgetState.__init__(self,widget, label,**kwargs)
 
         QTextEdit.__init__(self,self.controlArea)
@@ -52,11 +54,16 @@ class textEdit(QTextEdit,widgetState):
         self.setTextCursor(cursor)
     def getSettings(self):
         # print _('in textEdit getSettings')
-        r = {'text': self.toHtml()}
+        r = {'text': unicode(self.toHtml())}
         # print r['text']
+        
+        print r
+        
         return r
     def loadSettings(self,data):
+        print 'Loading text edit data %s' % unicode(data)
         self.clear()
+        
         self.insertHtml(data['text'])
         # self.setEnabled(data['enabled'])
     def toPlainText(self):
@@ -75,3 +82,6 @@ class textEdit(QTextEdit,widgetState):
             return
         self.print_(printer)
         
+    def captureOutput(self, s):
+        tmp = RSession.Rcommand('paste(capture.output(%s), collapse ="\n")' % s)
+        self.insertHtml('<br><pre>'+tmp+'</pre><br><br>')

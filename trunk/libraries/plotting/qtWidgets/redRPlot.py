@@ -474,13 +474,22 @@ class redRPlot(graphicsView):
         # color series temporarily disabled...
         return '%s, %s' % (query, ','.join(widgetPars + titleOpts))
     def plot(self, query, function = 'plot', parameters=None,data=None):
+        """General plotting function.  This is called to simply make a plot with no layers."""
+        
         ## performs a quick plot given a query and an imageType
-        self.data = data
-        self.function = function
-        self.layers = []
-        self.plotMultiple(self, self.processQuery(query), function = function, dwidth = self.optionWidgets['dwidth'].value(), dheight = self.optionWidgets['dheight'].value(), layers = [], data = None, legend = False)
-    
+        
+        qApp.setOverrideCursor(Qt.WaitCursor)
+        try:
+            
+            self.data = data
+            self.function = function
+            self.layers = []
+            self.plotMultiple(self, self.processQuery(query), function = function, dwidth = self.optionWidgets['dwidth'].value(), dheight = self.optionWidgets['dheight'].value(), layers = [], data = None, legend = False)
+        finally:
+            qApp.restoreOverrideCursor()
     def plotMultiple(self, query, function = 'plot', dwidth = 5, dheight = 5, layers = [], data = None, legend = False):
+        """Called to plot the main plot and then layers on top of that plot."""
+        
         self.data = data
         self.function = function
         self.query = self.processQuery(query)

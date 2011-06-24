@@ -175,7 +175,7 @@ class lineEditHint(lineEdit):
             
     def getSettings(self):
         settings = {}
-        settings['lesettings'] = lineEditHint.getSettings(self)
+        settings['lesettings'] = lineEdit.getSettings(self)
         settings['itemsAsStrings'] = self.itemsAsStrings
         return settings
     def loadSettings(self, settings):

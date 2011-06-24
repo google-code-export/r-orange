@@ -397,10 +397,14 @@ class filterTable(widgetState, QTableView):
         progressBar.setValue(0)
         progressBar.show()
         return progressBar
+        
     def loadSettings(self,data):
         # print _('loadSettings for a filter table')
         # print data
+        if not data: return
         if 'Rdata' not in data:
+            if data['modelSettings'] == None: return
+            
             print 'loading with 1.90 settings'
             if 'class' not in data:
                 redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'the class attribute is not found in the data %s' % str(data))
@@ -411,8 +415,11 @@ class filterTable(widgetState, QTableView):
             
             for mod in data['class'].replace("<'", '').replace("'>", '').split('.')[1:]:
                 varc = getattr(varc, mod)
-            var = varc(self, **data['modelSettings'])
-            self.setTable(var, filterable = self.filterable, sortable = self.sortable) 
+            self.tm = varc(self, **data['modelSettings'])
+            #self.setTable(var, filterable = self.filterable, sortable = self.sortable) 
+            
+            self.setModel(self.tm)
+            self.dataInfo.setText(self.tm.getSummary())
             selModel = self.selectionModel()
             # print selModel
             

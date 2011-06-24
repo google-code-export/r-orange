@@ -187,7 +187,10 @@ class RDataFrameModel(QAbstractTableModel):
         self.columnFiltered = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'columnFilter.png'))
         
         # print self.filter_add,os.path.exists(self.filter_add),os.path.exists(self.filter_delete)
-        self.orgRdata = Rdata
+        if orgRdata:
+            self.orgRdata = orgRdata
+        else:
+            self.orgRdata = Rdata
         self.initData(Rdata)
         
     ##########  functions accessed by filter table  #########

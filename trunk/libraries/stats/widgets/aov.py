@@ -9,13 +9,11 @@ from OWRpy import *
 import redRGUI, signals
 import redRGUI 
 class aov(OWRpy): 
-    settingsList = []
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(["aov"])
         self.data = {}
         self.RFunctionParam_data = ''
-        self.saveSettingsList.extend(['data', 'RFunctionParam_data'])
         
         """.. rrsignals::
             :description: `A data table to perform the modeling on.`"""

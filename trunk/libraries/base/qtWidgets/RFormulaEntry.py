@@ -98,11 +98,14 @@ class RFormulaEntry(widgetState):
         'listBoxItems':self.elementsListBox.getSettings(),
         'formulaText':self.modelLineEdit.getSettings()}
         
+        print r
+        
         return r
         #items = []
         #for item in self.elementsListBox.items():
     def loadSettings(self, data):
         try:
+            print 'Loading data for formula entry: %s' % unicode(data)
             self.elementsListBox.loadSettings(data.get('listBoxItems', {}))
             # self.elementsListBox.addItems(data['listBoxItems'])
             self.outcomeVariable.loadSettings(data.get('outcomeVariable', {}))
