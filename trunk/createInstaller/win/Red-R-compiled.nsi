@@ -53,6 +53,19 @@ Name "${NAME}-${REDRVERSION}"
 !insertmacro MUI_LANGUAGE "English"
 
 Section "" ;this is the section that will install Red-R and all of it's files
+    ; check if the user is admin, if not then we can't install.
+    userInfo::getAccountType
+    
+    ; pop result to $1
+    pop $1
+    
+    ; compare result to see if Admin, if so skip three lines, if not then fail.
+    strCmp $1 "Admin" +3
+    
+        messageBox MB_OK "Your account level $1 is not an Admin account.  Please set to Admin account to install."
+        Quit
+    
+    
     ReadRegStr $0 HKCU "${SHELLFOLDERS}" AppData
     StrCmp $0 "" 0 +2
       ReadRegStr $0 HKLM "${SHELLFOLDERS}" "Common AppData"

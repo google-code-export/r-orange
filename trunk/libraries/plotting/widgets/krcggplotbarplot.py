@@ -95,12 +95,15 @@ class krcggplotbarplot(OWRpy):
         self.groupShuffle = redRGUI.base.shuffleBox(rightBox, label = 'Grouping Order')
         self.colourScaleChanged()
     def fillDataChanged(self):
-        if self.R('is.factor(%s$%s)' % (self.RFunctionParam_y, self.fillData.currentText())):
+        if self.RFunctionParam_y != '' and self.fillData.currentText() != 'None' and self.R('is.factor(%s$%s)' % (self.RFunctionParam_y, self.fillData.currentText())):
             self.fillShuffle.update(self.R('levels(%s$%s)' % (self.RFunctionParam_y, self.fillData.currentText())))
-            
+        else:
+            self.fillShuffle.clear()
     def xGroupChanged(self):
-        if self.R('is.factor(%s$%s)' % (self.RFunctionParam_y, self.xGroup.currentText())):
+        if self.RFunctionParam_y != '' and self.xGroup.currentText() != 'None' and self.R('is.factor(%s$%s)' % (self.RFunctionParam_y, self.xGroup.currentText())):
             self.groupShuffle.update(self.R('levels(%s$%s)' % (self.RFunctionParam_y, self.xGroup.currentText())))
+        else:
+            self.groupShuffle.clear()
     def colourScaleChanged(self):
         print self.colourScale.currentId()
         self.colourSelectorStack.setCurrentWidget(self.colourScaleWidgets[self.colourScale.currentId()])
@@ -142,9 +145,9 @@ class krcggplotbarplot(OWRpy):
         self.R('%s<-%s' % (self.Rvariables['boxplotData'], self.RFunctionParam_y), wantType = 'NoConversion')
         # set the order of the levels of the xGroup
         self.R('%(DATA)s$%(COL)s<-factor(%(DATA)s$%(COL)s, levels = c(\'%(LEV)s\'))' % {'DATA':self.Rvariables['boxplotData'], 'COL':self.xGroup.currentText(), 'LEV': '\',\''.join([i for i in self.groupShuffle.getItems()])})
-        self.R('%(DATA)s$%(COL)s<-factor(%(DATA)s$%(COL)s, levels = c(\'%(LEV)s\'))' % {'DATA':self.Rvariables['boxplotData'], 'COL':self.fillData.currentText(), 'LEV': '\',\''.join([i for i in self.fillShuffle.getItems()])})
+        
         if self.fillData.currentText() != 'None':
-            
+            self.R('%(DATA)s$%(COL)s<-factor(%(DATA)s$%(COL)s, levels = c(\'%(LEV)s\'))' % {'DATA':self.Rvariables['boxplotData'], 'COL':self.fillData.currentText(), 'LEV': '\',\''.join([i for i in self.fillShuffle.getItems()])})
             self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = %(XDATA)s, y = %(YDATA)s, fill = as.factor(%(ZDATA)s)))' % {'DATA':self.Rvariables['boxplotData'], 'VAR':self.Rvariables['boxplot'], 'XDATA':self._getXData(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()}, wantType = 'NoConversion')
         else:
             self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = as.factor(%(XDATA)s), y = %(YDATA)s))' % {'DATA':self.Rvariables['boxplotData'], 'VAR':self.Rvariables['boxplot'], 'XDATA':self.xGroup.currentText(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()}, wantType = 'NoConversion')
