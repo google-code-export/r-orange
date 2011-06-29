@@ -178,7 +178,11 @@ class packageManager(redRQTCore.dialog):
                 QMessageBox.NoButton, 
                 self.canvas)
                 mb.exec_()            
-       
+        
+        import subprocess
+        p = subprocess.Popen('python createDoc.py %s' % redREnviron.directoryNames['redRDir'], cwd = os.path.join(redREnviron.directoryNames['redRDir'], 'doc'), stdout=subprocess.PIPE, shell=True).communicate()[0]
+        redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, p)
+        
         self.canvas.toolbarFunctions.reloadWidgets()
         self.loadPackagesLists()
     

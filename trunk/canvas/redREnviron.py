@@ -1,5 +1,124 @@
 # -*- coding: utf-8 -*-
-""" Modified by Kyle R. Covington and Anup Parikh """
+""" Modified by Kyle R. Covington and Anup Parikh 
+
+The redREnviron module is responsible for establishing and maintaining environment variables for the Red-R core.  For example, the following directory names are maintained in the redREnviron.directoryNames variable;
+
+dirs['redRDir'] = rootDir
+dirs['canvasDir'] = os.path.join(dirs['redRDir'], "canvas")
+dirs['canvasIconsDir'] = os.path.join(dirs['redRDir'], "canvas",'icons')
+dirs['widgetDir'] = os.path.join(dirs['redRDir'], "libraries")
+dirs['libraryDir'] = os.path.join(dirs['redRDir'], "libraries")
+dirs['qtWidgetsDir'] = os.path.join(dirs['redRDir'], "libraries",'base','qtWidgets')
+dirs['redRSignalsDir'] = os.path.join(dirs['redRDir'], "libraries",'base','signalClasses')
+dirs['examplesDir'] = os.path.join(dirs['redRDir'], "Examples")
+dirs['includes'] = os.path.join(dirs['redRDir'], "includes")
+dirs['picsDir'] = os.path.join(dirs['widgetDir'],'base', "icons")
+
+dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
+dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'win32')
+#dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'win32', 'rpy3')
+
+createDir['settingsDir'] = os.path.join(os.environ['APPDATA'],'red-r')
+objShell = win32com.client.Dispatch("WScript.Shell")
+dirs['documentsDir'] = os.path.join(objShell.SpecialFolders("MyDocuments"))
+dirs['RlibPath'] = os.path.join(dirs['RDir'], 'library').replace('\\','/')
+
+createDir['reportsDir'] = os.path.join(createDir['settingsDir'], "RedRReports")
+createDir['logsDir'] = os.path.join(createDir['settingsDir'], "RedRlogs")
+createDir['canvasSettingsDir'] = os.path.join(createDir['settingsDir'], "RedRCanvas") 
+createDir['tempDirHolder'] = os.path.join(createDir['settingsDir'], 'RedRTemp')
+createDir['widgetSettingsDir'] = os.path.join(createDir['settingsDir'], "RedRWidgetSettings")
+createDir['downloadsDir'] = os.path.join(createDir['settingsDir'], "downloads")
+
+createDir['templatesDir'] = os.path.join(dirs['documentsDir'], 'Red-R', 'Templates')    
+createDir['schemaDir'] = os.path.join(dirs['documentsDir'],'Red-R', 'Schemas')
+
+Similarly, the following settings are available for other modules to access;
+
+settings['id'] = unicode(time.time())
+setTempDir('temp_'+ settings['id'])
+
+settings.setdefault("widgetListType", 3)
+settings.setdefault("iconSize", "40 x 40")
+settings.setdefault("toolbarIconSize", 1)
+settings.setdefault("toolboxWidth", 200)
+settings.setdefault('schemeIconSize', 2)
+settings.setdefault("snapToGrid", 1)
+settings.setdefault('helpMode', True)
+settings.setdefault("minSeverity", 5)
+settings.setdefault("saveWidgetsPosition", 1)
+# settings.setdefault("widgetSelectedColor", (0, 255, 0))
+# settings.setdefault("widgetActiveColor", (0,0,255))
+# settings.setdefault("lineColor", (0,255,0))
+
+settings.setdefault("exceptionLevel", 5)
+settings.setdefault("WidgetTabs", [])
+
+settings.setdefault("workingDir", directoryNames['documentsDir'])
+settings.setdefault("saveSchemaDir", directoryNames['documentsDir'])
+settings.setdefault("saveApplicationDir", directoryNames['canvasSettingsDir'])
+settings.setdefault("showSignalNames", 1)
+
+settings.setdefault("canvasWidth", 900)
+settings.setdefault("canvasHeight", 700)
+settings.setdefault('dockState', {'notesBox':True, 'outputBox':True, 'widgetBox':True})
+    
+settings.setdefault("useDefaultPalette", 0)
+
+settings.setdefault('CRANrepos','http://cran.r-project.org')
+settings.setdefault('keepForXDays', 7)
+
+############################
+#Updates##
+############################
+settings.setdefault('lastUpdateCheckPackages',0)
+settings.setdefault('checkForPackageUpdates',True)
+
+settings.setdefault('checkForUpdates',True)
+settings.setdefault('ignoredUpdates',[])
+
+settings.setdefault('lastUpdateCheck',0)
+settings.setdefault('updateAvailable',False)
+settings.setdefault('updatesRepository','http://www.red-r.org/redr_updates/Red-R-' + version['REDRVERSION'])
+
+############################
+#Dubug and output settings##
+############################
+
+settings.setdefault("dontAskBeforeClose", 0)
+settings.setdefault('askBeforeWidgetDelete', 1)
+
+settings.setdefault("writeLogFile", 1)
+settings.setdefault('logsDir', directoryNames['logsDir'])
+settings.setdefault("uploadError", 0)
+settings.setdefault("askToUploadError", 0)
+
+settings.setdefault("focusOnCatchException", 1)
+settings.setdefault("focusOnCatchOutput" , 0)
+settings.setdefault("printOutputInStatusBar", 0)
+settings.setdefault("printExceptionInStatusBar", 0)
+settings.setdefault("outputVerbosity", 3)
+settings.setdefault("displayTraceback", 0)
+
+settings.setdefault("ocShow", 1)
+settings.setdefault("owShow", 0)
+settings.setdefault("ocInfo", 1)
+settings.setdefault("owInfo", 1)
+settings.setdefault("ocWarning", 1)
+settings.setdefault("owWarning", 1)
+settings.setdefault("ocError", 1)
+settings.setdefault("owError", 1)
+
+settings.setdefault("synchronizeHelp", 1)
+settings.setdefault("firstLoad", 1)
+settings.setdefault("email", '')
+settings.setdefault('canContact', 1)
+
+settings.setdefault('templateDirectories', [directoryNames['templatesDir']])
+
+## language settings, these settings exist so that we can detect the language of the system
+settings.setdefault('language', OrderedDict([('en_EN.ISO8859-1', u'English'), ('fr_FR.ISO8859-1', u'Fran\u00E7aise'), ('de_DE.ISO8859-1', u'Deutsch'), ('latin', 'Latin')]))
+    """
 import os, sys, user, cPickle, time
 from OrderedDict import OrderedDict
 from PyQt4.QtCore import *
