@@ -159,11 +159,15 @@ class packageManager(redRQTCore.dialog):
             packageInfo = orngRegistry.parsePackageXML(pack)
             redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'package xml parsing complete')
             import RSession
+            md = QMessageBox()
+            md.setText(_('Please wait while we install the R packages for this Red-R package'))
+            md.show()
             if 'RLibraries' in packageInfo.keys():
                 if not RSession.require_librarys(packageInfo['RLibraries']):
                     redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Installing package %(PACKAGENAME)s aborted by user.') % {'PACKAGENAME':packageName})
                     shutil.rmtree(installDir,ignore_errors=True)
                     return
+            md.hide()
             redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'R library installation complete')
             redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Installing package %(PACKAGENAME)s') % {'PACKAGENAME':packageName})
             compileall.compile_dir(installDir) # compile the directory for later importing.
@@ -179,13 +183,21 @@ class packageManager(redRQTCore.dialog):
                 self.canvas)
                 mb.exec_()            
         
+        md = QMessageBox()
+        md.setText(_('Please wait while we generate the documentation for these files.\nThis might take a while so don\'t worry.'))
+        md.show()
+        redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'Creating package documentation')
         import subprocess
         p = subprocess.Popen('python createDoc.py %s' % redREnviron.directoryNames['redRDir'], cwd = os.path.join(redREnviron.directoryNames['redRDir'], 'doc'), stdout=subprocess.PIPE, shell=True).communicate()[0]
         redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, p)
+        md.hide()
         
+        md = QMessageBox()
+        md.setText(_('We are refreshing the canvas after loading all of those files.\nInstallation is almost done.'))
+        md.show()
         self.canvas.toolbarFunctions.reloadWidgets()
         self.loadPackagesLists()
-    
+        md.hide()
     # read and parse the package xml file
     # return dict
     def getPackageInfo(self,filename):

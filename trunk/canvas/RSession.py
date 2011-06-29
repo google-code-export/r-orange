@@ -25,7 +25,9 @@
 import sys, os, redREnviron, numpy, redR, redRLog
 
 def writeR(s):
-    redRLog.log(redRLog.REDRCORE, redRLog.INFO, s)
+    try:
+        redRLog.log(redRLog.REDRCORE, redRLog.INFO, s)
+    except: pass
 
 ####### system specific import of rpy in it's various flavors ##########
 ## if mac ##
@@ -206,13 +208,14 @@ def convertToPy(inobject):
 
 def getInstalledLibraries():
    setLibPaths(redREnviron.directoryNames['RlibPath'])
-   return Rcommand('as.vector(installed.packages(lib.loc="' + redREnviron.directoryNames['RlibPath'] + '")[,1])', wantType = 'list')
+   #return Rcommand('as.vector(installed.packages(lib.loc="' + redREnviron.directoryNames['RlibPath'] + '")[,1])', wantType = 'list')
+   return Rcommand('as.vector(installed.packages()[,1])', wantType = 'list')
 loadedLibraries = []
 
 def setLibPaths(libLoc):
     ## sets the libPaths argument for the directory tree that will be searched for loading and installing librarys
     Rcommand('.libPaths(\''+unicode(libLoc)+'\')', wantType = 'NoConversion') 
-    print 'library location is ', libLoc
+    #print 'library location is ', libLoc
 def require_librarys(librarys, repository = 'http://cran.r-project.org', load = True):
         setLibPaths(redREnviron.directoryNames['RlibPath'])
         print redREnviron.directoryNames['RlibPath']
