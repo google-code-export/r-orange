@@ -61,6 +61,7 @@ print sys.path
 
 import glob
 files = [os.path.basename(x).split('.')[0] for x in glob.glob(os.path.join(base,'canvas','*.py'))]
+#files += [os.path.basename(x).split('.')[0] for x in glob.glob(os.path.join(base,'doc','*.py'))]
 # print files
 setup(name="Red-R",
       version="0.2",
@@ -75,8 +76,8 @@ setup(name="Red-R",
       "skip_archive": True, 
       # "compressed": True, 
       # "bundle_files": 3,
-      "excludes": ['R', "Tkconstants","Tkinter","tcl",'libraries','rpy2'],
-      "includes": ["sip",'OWRpy','OWColorPalette','win32api','docutils','win32com','win32com.shell', 'win32com.shell','OWGraphTools','PyQt4.QtNetwork','PyQt4.Qwt5','PyQt4.QtSvg'] + files,
+      "excludes": ['R', "Tkconstants","Tkinter","tcl",'libraries','rpy2', 'conf'],
+      "includes": ["sip",'OWRpy','OWColorPalette','win32api','docutils','win32com','win32com.shell', 'win32com.shell','OWGraphTools','PyQt4.QtNetwork','PyQt4.Qwt5','PyQt4.QtSvg', 'whoosh', 'whoosh.index', 'whoosh.fields', 'whoosh.qparser'] + files,
       #'dll_includes' : ['MSVCP90.dll', 'mfc90.dll', 'QtSvg4.dll', 'QtNetwork.pyd', 'QtXmlPatterns4.dll'],
       'dll_excludes' : ['powrprof.dll', 'API-MS-Win-Core-LocalRegistry_L1-1-0.dll', 'API-MS-Core-ProcessThreads-L1-1-0.dll', 'API-MS-Win-Security-Base-L1-1-0.dll', 'R.dll', 'Rblas.dll', 'Rgraphapp.dll', 'Rinconv.dll', 'Rzlib.dll', 'tcl85.dll', 'tk85.dll', 'R\*']
       }})

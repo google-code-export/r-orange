@@ -3,7 +3,7 @@
 import os, subprocess, sys
  
 #redRDir = 'C:/Users/anup/Documents/red/develop/makeInstallers/code/Version1.85_gold'
-redRDir = 'C:/Python26/Lib/site-packages/RedR185_Sandbox'  # change for system specific for sandbox version
+redRDir = 'C:/Python26/Lib/site-packages/RedRTrunk'  # change for system specific for sandbox version
  
 runCompile = sys.argv[1]
 runInstaller = sys.argv[2]

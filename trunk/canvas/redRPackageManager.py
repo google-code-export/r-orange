@@ -186,10 +186,15 @@ class packageManager(redRQTCore.dialog):
         md = QMessageBox()
         md.setText(_('Please wait while we generate the documentation for these files.\nThis might take a while so don\'t worry.'))
         md.show()
-        redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'Creating package documentation')
-        import subprocess
-        p = subprocess.Popen('python createDoc.py %s' % redREnviron.directoryNames['redRDir'], cwd = os.path.join(redREnviron.directoryNames['redRDir'], 'doc'), stdout=subprocess.PIPE, shell=True).communicate()[0]
-        redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, p)
+        redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'Indexing package documentation')
+        
+        import docSearcher
+        docSearcher.createIndex(redREnviron.directoryNames['redRDir'])
+        #import doc.createDoc as createDoc
+        #createDoc.makeDoc(redREnviron.directoryNames['redRDir'])
+        # import subprocess
+        # p = subprocess.Popen('python createDoc.py %s' % redREnviron.directoryNames['redRDir'], cwd = os.path.join(redREnviron.directoryNames['redRDir'], 'doc'), stdout=subprocess.PIPE, shell=True).communicate()[0]
+        # redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, p)
         md.hide()
         
         md = QMessageBox()
@@ -515,6 +520,17 @@ class packageManager(redRQTCore.dialog):
         import shutil
         for name in uninstallList:
             shutil.rmtree(os.path.join(redREnviron.directoryNames['libraryDir'], name), True)
+        
+        md = QMessageBox()
+        md.setText(_('Please wait while we generate the documentation for these files.\nThis might take a while so don\'t worry.'))
+        md.show()
+        redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'Indexing package documentation')
+        
+        
+        ## remake the indexing files for documentation
+        import docSearcher
+        docSearcher.createIndex(redREnviron.directoryNames['redRDir'])
+        md.hide()
         
         self.canvas.toolbarFunctions.reloadWidgets()
         self.loadPackagesLists(force=False)

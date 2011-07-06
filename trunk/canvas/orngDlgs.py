@@ -212,6 +212,7 @@ class CanvasOptionsDlg(QDialog):
         redRQTCore.button(UnderHood, label = _('Regression Test (Core Developers Only)'), callback = lambda val = 1:self.regressionTest(val))
         redRQTCore.button(UnderHood, label = _('Test Packages (Core Developers Only)'), callback = lambda val = 2:self.regressionTest(val))
         redRQTCore.button(UnderHood, label = _('Create help index.'), callback = self.createHelpIndex)
+        #redRQTCore.button(UnderHood, label = _('Create Red-R Documentation'), callback = self.createPackageDocs)
         
         
 
@@ -272,6 +273,9 @@ class CanvasOptionsDlg(QDialog):
 
         self.topLayout.addWidget(self.tabs)
         self.topLayout.addWidget(hbox)
+    # def createPackageDocs(self):
+        # import doc.createDoc as createDoc
+        # createDoc.makeDoc(redREnviron.directoryNames['redRDir'])
     def createHelpIndex(self):
         import docSearcher
         docSearcher.createIndex(redREnviron.directoryNames['redRDir'])
