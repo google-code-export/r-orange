@@ -355,7 +355,7 @@ def showAllWidgets(): # move to redRObjects
             i.show()
 def closeAllWidgets():
     for k, i in _widgetInstances.items():
-	print 'closing widget %s' % k
+	#print 'closing widget %s' % k
         try:
             i.close()
         except Exception as inst:
@@ -492,10 +492,10 @@ def addCanvasLine(outWidget, inWidget, enabled = -1):
     _lines[unicode(time.time())] = line
     if enabled:
         line.setEnabled(1)
-        print 'setting line enabled'
+        #print 'setting line enabled'
     else:
         line.setEnabled(0)
-        print 'setting line disabled'
+        #print 'setting line disabled'
     line.show()
     outWidget.addOutLine(line)
     outWidget.updateTooltip()
@@ -511,8 +511,8 @@ def addLine(outWidgetInstance, inWidgetInstance, enabled = 1):
         ot = activeTabName()
         owi = outWidgetInstance
         iwi = inWidgetInstance
-        print 'owi', owi
-        print 'iwi', iwi
+        #print 'owi', owi
+        #print 'iwi', iwi
         redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'instances %s, %s' % (str(owi), str(iwi)))
         for tname, icons in tabIconStructure.items():
             schemaDoc.setTabActive(tname)
@@ -520,8 +520,8 @@ def addLine(outWidgetInstance, inWidgetInstance, enabled = 1):
             i = None
             
             for ic in icons:
-                print 'icon', ic
-                print 'icon instance', ic.instance()
+                #print 'icon', ic
+                #print 'icon instance', ic.instance()
                 if ic.instance() == iwi:
                     i = ic
                     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('found in widget %s') % str(ic))
@@ -538,7 +538,8 @@ def addLine(outWidgetInstance, inWidgetInstance, enabled = 1):
         schemaDoc.setTabActive(ot)
         updateLines()
         return 1
-def removeLine(outWidgetInstance, inWidgetInstance, outSignalName, inSignalName):
+def removeLine(outWidgetInstance, inWidgetInstance, outSignalName = None, inSignalName = None):
+        """This function removes the line between outWidgetInstance and inWidgetInstance.  It moves across all icons to identify icons that share an underlying widget instance."""
         redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Removing Line'))
         tabIconStructure = getIconsByTab()
         owi = outWidgetInstance
@@ -560,6 +561,8 @@ def removeLine(outWidgetInstance, inWidgetInstance, outSignalName, inSignalName)
             
             
 def removeLineInstance(line):
+    """This function removes all links between two widgets and also removes the line instance.  This is called to remove any line instances."""
+    
     import redRSignalManager
     obsoleteSignals = redRSignalManager.getLinksByWidgetInstance(line.outWidget.instance(), line.inWidget.instance())
     #obsoleteSignals = line.outWidget.instance().outputs.getSignalLinks(line.inWidget.instance())

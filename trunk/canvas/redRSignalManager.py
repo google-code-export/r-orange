@@ -31,10 +31,10 @@ def getInputConnectionsFromOutput(signal):
             r.append(i)
     return r
 
-def getLinkPairsByInput(signal):
+def getLinkPairsByInput(signal, inWidgetInstance):
     r = []
     for o, i, e, n in _linkPairs:
-        if i.id == signal:
+        if i.id == signal and i.parent == inWidgetInstance:
             r.append(o)
     return r
     
@@ -92,13 +92,14 @@ class OutputHandler:
     def connectSignal(self, signal, id, enabled = 1, process = True):
         try:
             outSig = self.outputs[id]
+            #print '!@#$ adding signal %s %s' % (unicode(outSig), unicode(signal))
             _linkPairs.append((outSig, signal, enabled, 1))
             # now send data through
             redRObjects.addLine(self.parent, signal.parent) # add a line between the two widget on the canvas
             if process:
                 #print _('processing signal')
                 self._processSingle(outSig, signal)
-            print 'returning true'
+            #print 'returning true'
             return True
         except:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
@@ -125,7 +126,7 @@ class OutputHandler:
         
     def removeSignal(self, signal, id):
         """Remove the connection between the inSocket and outSocket (specified by id)"""
-        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Removing signal %s, %s') % (signal, id))
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Removing signal %s, %s') % (unicode(signal), unicode(id)))
         ## send None through the signal to the handler before we disconnect it.
         
         l = getLinkPairBySignal(self.outputs[id], signal)
@@ -147,7 +148,9 @@ class OutputHandler:
                 ## remove the signal from the outputs
                 rm = [l for l in _linkPairs if l[0] == self.outputs[id] and l[1] == signal]
                 for s in rm:
+                    #print 'Links before remove', _linkPairs
                     _linkPairs.remove(s)
+                    #print 'Links after remove', _linkPairs
                 try:
                     signal.parent.outputs.propogateNone()
                 except:
@@ -161,7 +164,7 @@ class OutputHandler:
         return self.outputs.get(id, None)
     def _processSingle(self, outsig, insig, enabled = 1):
         """Process the data in the outsig socket through the handler specified by the insig socket."""
-        print 'Processing signal %s, %s' % (outsig.name, insig.name)
+        #print 'Processing signal %s, %s' % (outsig.name, insig.name)
         try:
             #print signal
             if not enabled: return 0
@@ -223,7 +226,7 @@ class OutputHandler:
                     line.setNoData(False)
                     redRObjects.activeCanvas().update()
     def _handleSignal(self, value, handler, multiple, parentWidget):
-        print 'handling signal'
+        #print 'handling signal'
         try:
             if multiple:
                 handler(value, self.parent.widgetID)
@@ -238,7 +241,7 @@ class OutputHandler:
             #print error
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
             parentWidget.status.setText(_('Error in processing signal'))
-        print 'signal success'
+        #print 'signal success'
     def hasOutputName(self, name):
         return name in self.outputs.keys()
         
@@ -253,7 +256,7 @@ class OutputHandler:
         ## move through the outputs and return a list of outputs and connections.  these connections should be reconnected on reloading of the widget, ideally we will only put atomics into this outputHandler
         data = {'version':1.90}
         for (key, outSig) in self.outputs.items():
-            print 'isolation 1'
+            #print 'isolation 1'
             data[key] = {'name':outSig.name, 'signalClass':unicode(outSig.signalClass), 'connections':[]}
             if outSig.value != None:
                 data[key]['value'] = outSig.value.saveSettings()

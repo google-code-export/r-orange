@@ -269,18 +269,26 @@ class SchemaDoc(QWidget):
                 ## check existing link to the input signal
                 import redRSignalManager
                 redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'checking for current lines')
-                existing = redRSignalManager.getLinkPairsByInput(inSignalName)
+                existing = redRSignalManager.getLinkPairsByInput(inSignalName, inWidget.instance())
                 #existing = inWidget.instance().inputs.getLinks(inSignalName)
+                #print 'The following signals will be removed: \n%s' % '  \n'.join([s.id for s in existing])
                 for l in existing:
+                    #print 'Removing signals for %s' % unicode(l)
                     l.parent.outputs.removeSignal(inWidget.instance().inputs.getSignal(inSignalName), l.id)
-                    redRObjects.removeLine(l.parent, inWidget.instance(), l, inSignalName)
+                    
+                    #print 'Checking for remaining signals in %s' % unicode(l)
+                    remaining = redRSignalManager.getLinksByWidgetInstance(l.parent, inWidget.instance())
+                    #print remaining, unicode(outWidget.instance()), unicode(inWidget.instance()), ','.join(['outi:%s, ini:%s' % (unicode(o.parent), unicode(i.parent)) for o, i, e, n in redRSignalManager._linkPairs])
+                    if len(remaining) == 0:
+                        #print 'Number of remaining links are %s' % unicode(len(redRSignalManager.getLinksByWidgetInstance(l.parent, inWidget.instance())))
+                        redRObjects.removeLine(l.parent, inWidget.instance(), l, inSignalName)
         
-        print 'adding line in redRObjects'
+        #print 'adding line in redRObjects'
         redRObjects.addLine(outWidget.instance(), inWidget.instance(), enabled = enabled)
         
         """Retrieve the insignal from the input widget handler and connect that to the output signal"""
         ok = outWidget.instance().outputs.connectSignal(inWidget.instance().inputs.getSignal(inSignalName), outSignalName, process = process)#    self.signalManager.addLink(outWidget, inWidget, outSignalName, inSignalName, enabled)
-        print ok
+        #print ok
         if not ok and not loading:
             #remove the lines
             redRObjects.removeLine(outWidget.instance(), inWidget.instance(), outSignalName, inSignalName)
