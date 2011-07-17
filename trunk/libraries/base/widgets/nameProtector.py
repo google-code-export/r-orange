@@ -111,12 +111,12 @@ class nameProtector(OWRpy):
 
         if len(self.nameProtectDFcheckBox.getChecked()) == 0 and unicode(self.namesProtectDFcomboBox.currentText()) == '': return # there is nothing to protect
         if 'Rows' in self.nameProtectDFcheckBox.getChecked():
-            self.R('rownames('+self.data+') <- make.names(rownames('+self.data+'))', wantType = 'NoConversion')
+            self.R('rownames('+self.data+') <- make.names(rownames('+self.data+'), unique = TRUE)', wantType = 'NoConversion')
             
         if unicode(self.namesProtectDFcomboBox.currentText()) != '':
-            self.R(self.data+'$'+self.Rvariables['nameProtector']+'<- make.names('+self.data+'[,\''+unicode(self.namesProtectDFcomboBox.currentText())+'\'])', wantType = 'NoConversion')
+            self.R(self.data+'$'+self.Rvariables['nameProtector']+'<- make.names('+self.data+'[,\''+unicode(self.namesProtectDFcomboBox.currentText())+'\'], unique = TRUE)', wantType = 'NoConversion')
         if 'Columns' in self.nameProtectDFcheckBox.getChecked():
-            self.R('colnames('+self.data+') <- make.names(colnames('+self.data+'))', wantType = 'NoConversion')
+            self.R('colnames('+self.data+') <- make.names(colnames('+self.data+'), unique = TRUE)', wantType = 'NoConversion')
         newData = signals.base.RDataFrame(self, data = self.Rvariables['newDataFromNameProtector'])
         self.rSend("id0", newData)
     def commitNewNames(self):
@@ -128,6 +128,6 @@ class nameProtector(OWRpy):
     def vCommit(self): # make protected names for a vector
         if self.data == '': return
         
-        self.R(self.Rvariables['nameProtector']+'<- make.names('+self.data+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['nameProtector']+'<- make.names('+self.data+', unique = TRUE)', wantType = 'NoConversion')
         newData = signals.base.RVector(self, data = self.Rvariables['nameProtector'])
         self.rSend("id1", newData)

@@ -2,7 +2,9 @@
 
 import sys,os,glob,subprocess
 import shutil
+print os.path.abspath(sys.argv[0])
 try:
+    sys.path.append(os.path.split(os.path.abspath(sys.argv[0])))
     import createPackageDoc
     print 'Imported createPackageDoc from local directory'
 except Exception as inst:
@@ -62,7 +64,7 @@ def makeDoc(redRRoot, makeCore = False):
         except Exception as inst:
             print 'Error in making docs for %s %s' % (p, str(inst))
     
-    print 'Generated documentation for packages %s' % unicode(packageList)
+    #print 'Generated documentation for packages %s' % unicode(packageList)
     
     #################################################        
     shutil.rmtree(os.path.join(os.path.abspath(docRoot),'_build'),True)
@@ -71,8 +73,8 @@ def makeDoc(redRRoot, makeCore = False):
     p = subprocess.Popen(cmd,stdout=subprocess.PIPE, shell=True, cwd=os.path.join(redRRoot, 'doc')).communicate()[0]
     print p
 
-    import docSearcher
-    docSearcher.createIndex(redRRoot)
+    #import docSearcher
+    #docSearcher.createIndex(redRRoot)
     
 if sys.argv[1]:
     print 'Found sys.argv[1] to be %s' % sys.argv[1]

@@ -11,8 +11,10 @@ from docutils.core import publish_string
 
 
 def createDoc(root):
+    print 'Compiling %s' % root
     if not os.path.exists(os.path.join(root, 'package.xml')):
-        raise Exception('package.xml not found, either not a package or not complete. Please check directory')
+        print 'package.xml not found, either not a package or not complete. Please check directory'
+        return
     core = os.path.split(os.path.split(root)[0])[0]
 
     helpDir = os.path.join(root, 'help')
@@ -215,11 +217,11 @@ Dev Doc
     
     cmd = 'sphinx-build -c ./ -b html %s %s' % (helpDir.replace('\\','/'),helpDir.replace('\\','/'))# os.path.join(root, 'help').replace('\\','/'))
     print 'Running doc compiler: ' + cmd
-    p = subprocess.Popen(cmd,stdout=subprocess.PIPE).communicate()[0]
+    p = subprocess.Popen(cmd,stdout=subprocess.PIPE, shell=True).communicate()[0]
     print p
 
-# if sys.argv[1]:
-    # createDoc(sys.argv[1])
+if sys.argv[1]:
+    createDoc(sys.argv[1])
 # import docSearcher
 # docSearcher.createIndex()
 

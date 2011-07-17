@@ -1,6 +1,8 @@
 # zipPackage.py,  requires that the function zip is enabled on the machine
 
-import sys, os, zipfile, glob
+import sys, os, zipfile, glob, re
+
+exclude = re.compile(r'(\.pyc)|(\.svn)|(\.py~)')
 
 packageName = sys.argv[1]
 
@@ -17,7 +19,7 @@ def zipdir(path, arch, exclude):
         p = os.path.join(path, p)
         if os.path.isdir(p) and ('.svn' not in p):
             zipdir(p, arch, exclude)
-        elif os.path.splitext(p)[1] not in exclude:
+        elif not re.search(exclude, p):
             archName = os.path.relpath(p, os.path.join('../libraries', packageName))
             arch.write(p, archName)
             print "Wrote to archive: %s as %s" % (p, archName)
@@ -37,5 +39,5 @@ def zippackage(path, outpath, exclude):
 outpath = os.path.join('../libraries', '%s.zip' % packageName)
 packagePath = os.path.join('../libraries', packageName)
 
-zippackage(packagePath, outpath, ['.pyc', '.svn'])
+zippackage(packagePath, outpath, exclude)
 print 'Your file is writen to %s' % os.path.join('..', 'libraries', '%s.zip' % packageName)

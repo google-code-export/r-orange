@@ -33,6 +33,7 @@ def getInputConnectionsFromOutput(signal):
 
 def getLinkPairsByInput(signal, inWidgetInstance):
     r = []
+    #print 'Checking for links with signal: %s, owner %s' % (unicode(signal), unicode(signalOwner.instance()))
     for o, i, e, n in _linkPairs:
         if i.id == signal and i.parent == inWidgetInstance:
             r.append(o)

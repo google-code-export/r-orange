@@ -163,6 +163,8 @@ class mergeR(OWRpy):
             self.status.setText(_("Dataset failed to find a match!"))
 
     def sendMe(self,kill=False):
+        """Sends the data to the canvas.  This step also forces the data to have syntactically valid names.  Failure to do so can cause problems later."""
+        self.R('names(%(DATA)s)<-make.names(names(%(DATA)s), unique = TRUE)' % {'DATA':self.Rvariables['merged']}, wantType = 'NoConversion')
         newDataAll = signals.base.RDataFrame(self, data = self.Rvariables['merged'])
         newDataAll.dictAttrs = self.dataParentB.dictAttrs.copy()
         newDataAll.dictAttrs.update(self.dataParentA.dictAttrs)

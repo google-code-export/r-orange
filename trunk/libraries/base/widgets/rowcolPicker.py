@@ -188,6 +188,8 @@ class rowcolPicker(OWRpy):
             return
         
         selectedDFItems = []
+        print self.attributes.listItems.values()
+        print [str(x.row()) for x in self.attributes.selectedIndexes()]
         for name in self.attributes.selectedItems():
             selectedDFItems.append('"'+unicode(name)+'"') # get the text of the selected items
         

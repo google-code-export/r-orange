@@ -118,7 +118,7 @@ class spline(OWRpy):
             self.RFunctionParam_x=data.getData()
             self.data = data
             colnames = self.R('colnames('+self.RFunctionParam_x+')', wantType = 'list')
-            if len(colnames) > 1:
+            if colnames and len(colnames) > 1:
                 self.xcolumnComboBox.update(colnames)
                 self.ycolumnComboBox.update(colnames)
             else:

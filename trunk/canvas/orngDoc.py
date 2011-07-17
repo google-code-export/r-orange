@@ -263,7 +263,9 @@ class SchemaDoc(QWidget):
     def addLink(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1, fireSignal = 1, process = True, loading = False):
         ## addLink should move through all of the icons on all canvases and check if there are icons which are clones of the outWidget and inWidget
         ## after this lines should be created between those widgets and the lines should be set to enabled and data.
+        print 'Adding link between %s and %s' % (outSignalName, inSignalName)
         
+        ### lots of for loops going on in here, this would be a major place to clean the code (again...)
         if inWidget.instance().inputs.getSignal(inSignalName):
             if not inWidget.instance().inputs.getSignal(inSignalName).multiple:
                 ## check existing link to the input signal

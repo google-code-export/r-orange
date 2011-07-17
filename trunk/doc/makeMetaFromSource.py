@@ -280,7 +280,7 @@ def makeHelp(d):
             s += '.. _%s: #\n\n' % (gui['class'])          
         else: 
             (package,guiClass) = gui['class'].split('.')
-            s += '.. _%s: ../../../../../%s/help/userDoc/qtWidgets/%s.html\n\n' % (gui['class'],package,guiClass)
+            s += '.. _%s: ../../../../../libraries/%s/help/userDoc/qtWidgets/%s.html\n\n' % (gui['class'],package,guiClass)
         
     for sig in d['signals']:
         # print sig, len(sig['signals'])
@@ -289,7 +289,7 @@ def makeHelp(d):
         else:
             for ss in sig['signals']:
                 (package,sigClass) = ss.split('.')
-                s += '.. _%s: ../../../../%s/help/userDoc/signalClasses/%s.html\n\n' % (ss, package,sigClass)                
+                s += '.. _%s: ../../../../libraries/%s/help/userDoc/signalClasses/%s.html\n\n' % (ss, package,sigClass)                
         
     return s
 

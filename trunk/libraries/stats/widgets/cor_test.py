@@ -85,4 +85,4 @@ class cor_test(OWRpy):
         self.R('txt<-capture.output('+self.Rvariables['cor.test']+')')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
-        self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
+        self.RoutputWindow.insertPlainText(tmp)
