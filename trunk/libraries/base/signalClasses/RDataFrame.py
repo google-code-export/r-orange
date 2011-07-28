@@ -432,7 +432,7 @@ class RDataFrameModel(QAbstractTableModel):
             
             
             elif criteria['method'] in ['logical','factor']:
-                f= '","'.join([unicode(x) for x in criteria['value']])
+                f= '","'.join([unicode(x, 'UTF-8', errors='ignore') for x in criteria['value']])
                 filters.append(self.Rdata+'[,'+unicode(col)+'] %in% as.factor(c("'+f+'"))')
             #elif 'logical' == critera['method']:
             

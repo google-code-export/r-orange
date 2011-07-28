@@ -73,7 +73,7 @@ class RedRplot(OWRpy):
             #self.data = data
             self.commitFunction()
         else:
-            self.RFunctionParam_plotatt=''
+            del self.plotAttributes[id]
     def commitFunction(self):
         if not self.dataFrameAttached:
             if unicode(self.RFunctionParam_y) == '': return

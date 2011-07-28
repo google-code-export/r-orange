@@ -3,35 +3,35 @@
 
 The redREnviron module is responsible for establishing and maintaining environment variables for the Red-R core.  For example, the following directory names are maintained in the redREnviron.directoryNames variable;
 
-dirs['redRDir'] = rootDir
-dirs['canvasDir'] = os.path.join(dirs['redRDir'], "canvas")
-dirs['canvasIconsDir'] = os.path.join(dirs['redRDir'], "canvas",'icons')
-dirs['widgetDir'] = os.path.join(dirs['redRDir'], "libraries")
-dirs['libraryDir'] = os.path.join(dirs['redRDir'], "libraries")
-dirs['qtWidgetsDir'] = os.path.join(dirs['redRDir'], "libraries",'base','qtWidgets')
-dirs['redRSignalsDir'] = os.path.join(dirs['redRDir'], "libraries",'base','signalClasses')
-dirs['examplesDir'] = os.path.join(dirs['redRDir'], "Examples")
-dirs['includes'] = os.path.join(dirs['redRDir'], "includes")
-dirs['picsDir'] = os.path.join(dirs['widgetDir'],'base', "icons")
+dirs['redRDir']         =   rootDir
+dirs['canvasDir']       =   os.path.join(dirs['redRDir'], "canvas")
+dirs['canvasIconsDir']  =   os.path.join(dirs['redRDir'], "canvas",'icons')
+dirs['widgetDir']       =   os.path.join(dirs['redRDir'], "libraries")
+dirs['libraryDir']      =   os.path.join(dirs['redRDir'], "libraries")
+dirs['qtWidgetsDir']    =   os.path.join(dirs['redRDir'], "libraries",'base','qtWidgets')
+dirs['redRSignalsDir']  =   os.path.join(dirs['redRDir'], "libraries",'base','signalClasses')
+dirs['examplesDir']     =   os.path.join(dirs['redRDir'], "Examples")
+dirs['includes']        =   os.path.join(dirs['redRDir'], "includes")
+dirs['picsDir']         =   os.path.join(dirs['widgetDir'],'base', "icons")
 
-dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
-dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'win32')
-#dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'win32', 'rpy3')
+dirs['RDir']            =   os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
+dirs['osSpecific']      =   os.path.join(dirs['redRDir'], 'win32')
+#dirs['rpyDir']         =   os.path.join(dirs['redRDir'], 'win32', 'rpy3')
 
 createDir['settingsDir'] = os.path.join(os.environ['APPDATA'],'red-r')
 objShell = win32com.client.Dispatch("WScript.Shell")
-dirs['documentsDir'] = os.path.join(objShell.SpecialFolders("MyDocuments"))
-dirs['RlibPath'] = os.path.join(dirs['RDir'], 'library').replace('\\','/')
+dirs['documentsDir']    =   os.path.join(objShell.SpecialFolders("MyDocuments"))
+dirs['RlibPath']        =   os.path.join(dirs['RDir'], 'library').replace('\\','/')
 
-createDir['reportsDir'] = os.path.join(createDir['settingsDir'], "RedRReports")
-createDir['logsDir'] = os.path.join(createDir['settingsDir'], "RedRlogs")
+createDir['reportsDir'] =   os.path.join(createDir['settingsDir'], "RedRReports")
+createDir['logsDir']    =   os.path.join(createDir['settingsDir'], "RedRlogs")
 createDir['canvasSettingsDir'] = os.path.join(createDir['settingsDir'], "RedRCanvas") 
-createDir['tempDirHolder'] = os.path.join(createDir['settingsDir'], 'RedRTemp')
-createDir['widgetSettingsDir'] = os.path.join(createDir['settingsDir'], "RedRWidgetSettings")
-createDir['downloadsDir'] = os.path.join(createDir['settingsDir'], "downloads")
+createDir['tempDirHolder']          =   os.path.join(createDir['settingsDir'], 'RedRTemp')
+createDir['widgetSettingsDir']      =   os.path.join(createDir['settingsDir'], "RedRWidgetSettings")
+createDir['downloadsDir']           =   os.path.join(createDir['settingsDir'], "downloads")
 
-createDir['templatesDir'] = os.path.join(dirs['documentsDir'], 'Red-R', 'Templates')    
-createDir['schemaDir'] = os.path.join(dirs['documentsDir'],'Red-R', 'Schemas')
+createDir['templatesDir']           =   os.path.join(dirs['documentsDir'], 'Red-R', 'Templates')    
+createDir['schemaDir']              =   os.path.join(dirs['documentsDir'],'Red-R', 'Schemas')
 
 Similarly, the following settings are available for other modules to access;
 

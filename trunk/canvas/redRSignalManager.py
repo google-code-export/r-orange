@@ -39,6 +39,13 @@ def getLinkPairsByInput(signal, inWidgetInstance):
             r.append(o)
     return r
     
+def getInputInstances(inWidgetInstance):
+    r = []
+    for o, i, e, n in _linkPairs:
+        if i.parent == inWidgetInstance and (o.parent not in r):
+            r.append(o.parent)
+    return r
+    
 class OutputSocket():
     def __init__(self, id, name, signalClass, parent, value = None):
         self.id = id

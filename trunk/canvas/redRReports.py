@@ -272,7 +272,33 @@ class reports(QWizard):
         # reportData = self.getReportData(fileDir2,name)
         if not widgets:
             import redRObjects
+            import redRSignalManager
             widgets = redRObjects.instances()
+            
+            """The widgets may be stored in a seemingly random manner in the instances section.  We would like to show the report in a way that makes sense.  There is no real easy way to do this but the general plan that seems to work most often is to ensure that we don't make a report on a widget that has signaling widgets that aren't reported on yet.  That is we report widgets as they send data.  Note that this might not be the chronological order in which the analysis was carried out but it will be close to the order in which processing occurs from the data's point of view."""
+            
+            widgetscopy = widgets
+            widgetsnew = []
+            def copywidget(w, widgetscopy, widgetsnew):
+                """Copies the widget to the right place."""
+                widgetscopy.remove(w)
+                widgetsnew.append(w)
+            def parentsIndexed(olist, widgetsnew):
+                """Checks if the parent widgets have been indexed or not"""
+                for o in olist:
+                    if o not in widgetsnew: return False
+                return True
+            while len(widgetscopy) > 0:
+                for w in widgetscopy:
+                    if len(w.inputs.inputs.keys()) == 0 or len(redRSignalManager.getInputInstances(w)) == 0:
+                        copywidget(w, widgetscopy, widgetsnew)
+                        print 'Copy widget %s' % unicode(w)
+                    elif parentsIndexed(redRSignalManager.getInputInstances(w), widgetsnew):
+                        copywidget(w, widgetscopy, widgetsnew)
+                        print 'Copy widget %s' % unicode(w)
+            print unicode(widgetsnew)
+            print unicode(widgets)
+            widgets = widgetsnew
         done = self.createReport(fileDir2,name,widgets,schemaImage)
         if not done:
             return
@@ -338,9 +364,12 @@ class reports(QWizard):
 
         reportText = self.buildReportHeader(fileDir,schemaImage)
         
-        for name, widgetReport in self.reportData.items():
-            if widgetReport['includeInReports']:
-                reportText+= self.formatWidgetReport(name,widgetReport)
+        ## This is where we compile the reportText to be written in the report.  We need to do this in the same order that the widgets are listed in the schema.
+        for w in widgets:
+            if (unicode(w.windowTitle()) in self.reportData.keys()) and self.reportData[unicode(w.windowTitle())]['includeInReports']:
+        #for name, widgetReport in self.reportData.items():
+        #    if widgetReport['includeInReports']:
+                reportText+= self.formatWidgetReport(unicode(w.windowTitle()),self.reportData[unicode(w.windowTitle())])
         
         print reportText
         if os.path.splitext(unicode(reportName))[1].lower() in [".odt"]:#, ".html", ".tex"]
