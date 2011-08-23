@@ -35,7 +35,7 @@ def getLinkPairsByInput(signal, inWidgetInstance):
     r = []
     #print 'Checking for links with signal: %s, owner %s' % (unicode(signal), unicode(signalOwner.instance()))
     for o, i, e, n in _linkPairs:
-        if i.id == signal and i.parent == inWidgetInstance:
+        if i.wid == signal and i.parent == inWidgetInstance:
             r.append(o)
     return r
     
@@ -47,8 +47,8 @@ def getInputInstances(inWidgetInstance):
     return r
     
 class OutputSocket():
-    def __init__(self, id, name, signalClass, parent, value = None):
-        self.id = id
+    def __init__(self, wid, name, signalClass, parent, value = None):
+        self.wid= wid
         self.name = name
         self.signalClass = signalClass
         self.value = value
@@ -68,8 +68,8 @@ class OutputSocket():
         pass
 
 class InputSocket():
-    def __init__(self, id, name, signalClass, handler, parent, multiple = False):
-        self.id = id
+    def __init__(self, wid, name, signalClass, handler, parent, multiple = False):
+        self.wid = wid
         self.name = name
         self.signalClass = signalClass
         self.handler = handler
@@ -87,8 +87,8 @@ class OutputHandler:
         """Returns a dict of all output sockets in this handler."""
         return self.outputs
     
-    def addOutput(self, id, name, signalClass):
-        self.outputs[id] = OutputSocket(id, name, signalClass, self.parent)   # set up an 'empty' signal
+    def addOutput(self, wid, name, signalClass):
+        self.outputs[wid] = OutputSocket(wid, name, signalClass, self.parent)   # set up an 'empty' signal
     
     def clearAll(self):
         """Clears all output signals in this handler, called when a widget is being deleted."""
@@ -97,9 +97,9 @@ class OutputHandler:
             if val == None: continue
             val.deleteSignal() # calls the distructor function for the signal
         self.outputs = {}
-    def connectSignal(self, signal, id, enabled = 1, process = True):
+    def connectSignal(self, signal, wid, enabled = 1, process = True):
         try:
-            outSig = self.outputs[id]
+            outSig = self.outputs[wid]
             #print '!@#$ adding signal %s %s' % (unicode(outSig), unicode(signal))
             _linkPairs.append((outSig, signal, enabled, 1))
             # now send data through
@@ -129,15 +129,15 @@ class OutputHandler:
         """Return a dict of id-signalValues pairs."""
         out = {}
         for o in self.outputs:
-            out[o.id] = o.getValue()
+            out[o.wid] = o.getValue()
         return out
         
-    def removeSignal(self, signal, id):
+    def removeSignal(self, signal, wid):
         """Remove the connection between the inSocket and outSocket (specified by id)"""
-        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Removing signal %s, %s') % (unicode(signal), unicode(id)))
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Removing signal %s, %s') % (unicode(signal), unicode(wid)))
         ## send None through the signal to the handler before we disconnect it.
         
-        l = getLinkPairBySignal(self.outputs[id], signal)
+        l = getLinkPairBySignal(self.outputs[wid], signal)
         if l:
             try:
                 if signal.multiple:
@@ -154,7 +154,7 @@ class OutputHandler:
                 redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             finally:
                 ## remove the signal from the outputs
-                rm = [l for l in _linkPairs if l[0] == self.outputs[id] and l[1] == signal]
+                rm = [l for l in _linkPairs if l[0] == self.outputs[wid] and l[1] == signal]
                 for s in rm:
                     #print 'Links before remove', _linkPairs
                     _linkPairs.remove(s)
@@ -168,8 +168,8 @@ class OutputHandler:
         """Called by widgetSignals to set the output data of a socket."""
         self.outputs[signalName].setValue(value)
     
-    def getSignal(self, id):
-        return self.outputs.get(id, None)
+    def getSignal(self, wid):
+        return self.outputs.get(wid, None)
     def _processSingle(self, outsig, insig, enabled = 1):
         """Process the data in the outsig socket through the handler specified by the insig socket."""
         #print 'Processing signal %s, %s' % (outsig.name, insig.name)
@@ -207,10 +207,10 @@ class OutputHandler:
         except:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
             
-    def processData(self, id):
-        """Begins sending of data to downstream widgets connected to the output socket specified by id"""
+    def processData(self, wid):
+        """Begins sending of data to downstream widgets connected to the output socket specified by wid"""
         # collect the signal ID
-        outSig = self.getSignal(id)
+        outSig = self.getSignal(wid)
         
         # collect the connections
         connections = getInputConnectionsFromOutput(outSig)
@@ -219,8 +219,8 @@ class OutputHandler:
         for inSig in connections:
             self._processSingle(outSig, inSig)
 
-    def _handleNone(self, parentWidget, id, none):
-        parentWidget.inputs.markNone(id, none)
+    def _handleNone(self, parentWidget, wid, none):
+        parentWidget.inputs.markNone(wid, none)
         links = self.getWidgetConnections(parentWidget)
         lines = redRObjects.getLinesByInstanceIDs(self.parent.widgetID, parentWidget.widgetID)
         for line in lines:
@@ -271,9 +271,9 @@ class OutputHandler:
             else:
                 data[key]['value'] = None
             for inSig in getInputConnectionsFromOutput(outSig):
-                data[key]['connections'].append({'id':inSig.id, 'parentID':inSig.parent.widgetID, 'enabled':getLinkPairBySignal(outSig, inSig)[2]})
+                data[key]['connections'].append({'wid':inSig.wid, 'parentID':inSig.parent.widgetID, 'enabled':getLinkPairBySignal(outSig, inSig)[2]})
             #for (vKey, vValue) in value['connections'].items():
-                #data[key]['connections'][vKey] = {'id':vValue['signal']['sid'], 'parentID':vValue['signal']['parent'].widgetID, 'enabled':vValue['enabled']} ## now we know the widgetId and the signalID (sid) used for connecting widgets in the future.
+                #data[key]['connections'][vKey] = {'wid':vValue['signal']['sid'], 'parentID':vValue['signal']['parent'].widgetID, 'enabled':vValue['enabled']} ## now we know the widgetId and the signalID (sid) used for connecting widgets in the future.
                 
             
         return data
@@ -307,7 +307,7 @@ class OutputHandler:
                     if not widget:
                         redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Failed to find input widget %s' % vValue['parentID'])
                         return
-                    inputSignal = widget.inputs.getSignal(vValue['id'])
+                    inputSignal = widget.inputs.getSignal(vValue['wid'])
                     self.connectSignal(inputSignal, key, vValue['enabled'], process = False)  # connect the signal but don't send data through it.
                     if tmp:
                         self.propogateNone(ask = False)
@@ -323,14 +323,14 @@ class OutputHandler:
                     if not widget:
                         redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Failed to find input widget %s' % vValue['parentID'])
                         return
-                    inputSignal = widget.inputs.getSignal(vValue['id'])
+                    inputSignal = widget.inputs.getSignal(vValue['wid'])
                     self.connectSignal(inputSignal, key, vValue['enabled'], process = False)  # connect the signal but don't send data through it.
                     if tmp:
                         self.propogateNone(ask = False)
     #def linkingWidgets(self):
         #widgets = []
         #for (i, s) in self.outputs.items():
-            #for (id, ls) in s['connections'].items():
+            #for (wid, ls) in s['connections'].items():
                 #if ls['signal']['parent'] not in widgets:
                     #widgets.append(ls['signal']['parent'])
         #return widgets
@@ -339,9 +339,9 @@ class OutputHandler:
         ## send None through all of my output channels
         try:
             redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Propagating None through signal'))
-            for id in self.outputIDs():
-                #print 'None sent in widget %s through id %s' % (self.parent.widgetID, id)
-                self.parent.send(id, None)
+            for wid in self.outputIDs():
+                #print 'None sent in widget %s through wid %s' % (self.parent.widgetID, wid)
+                self.parent.send(wid, None)
             
             ## identify all of the downstream widgets and send none through them, then propogateNone in their inputs
             dWidgets = []
@@ -365,14 +365,14 @@ class InputHandler:
         self.parent = parent # the parent widget that owns the InputHandler
     def getAllInputs(self):
         return self.inputs
-    def addInput(self, id, name, signalClass, handler, multiple = False):
+    def addInput(self, wid, name, signalClass, handler, multiple = False):
         if type(signalClass) != list:
             signalClass = [signalClass]
-        self.inputs[id] = InputSocket(id, name, signalClass, handler, parent = self.parent, multiple = multiple)
+        self.inputs[wid] = InputSocket(wid, name, signalClass, handler, parent = self.parent, multiple = multiple)
     def signalIDs(self):
         return self.inputs.keys()
-    def getSignal(self, id):
-        return self.inputs.get(id, None)
+    def getSignal(self, wid):
+        return self.inputs.get(wid, None)
     def matchConnections(self, outputHandler):
         ## determine if there are any valid matches between the signal handlers
         for outputKey in outputHandler.outputs.keys():
@@ -415,11 +415,11 @@ class InputHandler:
                         connections.append((outputKey, inputKey))
                         break
         return connections
-    def doesSignalMatch(self, id, signalClass):
+    def doesSignalMatch(self, wid, signalClass):
         if signalClass == 'All': return True
-        elif 'All' in self.getSignal(id).signalClass: return True
-        elif signalClass in self.getSignal(id).signalClass: return True
-        for s in self.getSignal(id).signalClass:
+        elif 'All' in self.getSignal(wid).signalClass: return True
+        elif signalClass in self.getSignal(wid).signalClass: return True
+        for s in self.getSignal(wid).signalClass:
             if s in signalClass.convertToList:
                 return True
             else:

@@ -469,9 +469,7 @@ class RDataFrameModel(QAbstractTableModel):
         if col-self.range < 0:
             r['cstart'] = 1
         else:
-            r['cstart'] = col-self.range
-        
-        #print 'cend: ', row+self.range,  self.nrow        
+            r['cstart'] = col-self.range   
         if col+self.range > self.ncol:
             r['cend'] = self.ncol
         else:
@@ -484,6 +482,11 @@ class RDataFrameModel(QAbstractTableModel):
         self.nrow = self.R('nrow(%s)' % self.Rdata,silent=True)
         #print self.nrow
         self.ncol = self.R('ncol(%s)' % self.Rdata,silent=True)
+        
+        # protect if there is a null table
+        if self.nrow == 0 or self.ncol == 0:
+            return
+        
         #print self.ncol
         self.currentRange = self.getRange(0,0)
         

@@ -39,12 +39,15 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         
         self.saveSettingsList = []  # a list of lists or strings that we will save.
         #uniqueWidgetNumber += 1
-        #ctime = unicode(time.time())
+        #ctime = 
         self.sessionID = 0  # a unique ID for the session.  This is not saved or reset when the widget is loaded.  Rather this added when the widget is loaded.  This allows for multiple widgets to use the same 
-        if 'id' in kwargs:
-            self.widgetID = kwargs['id']
+        if 'wid' in kwargs:
+            self.log('Setting id to %s, kwargs' % kwargs['wid'])
+            self.widgetID = kwargs['wid']
         else:
-            self.widgetID = unicode(uniqueWidgetNumber) + '_' + ctime
+            self.log('Setting id to %s, time' % unicode(time.time()))
+            self.widgetID = unicode(uniqueWidgetNumber) + '_' + unicode(time.time())
+        self.log(unicode(self.widgetID))
         self.variable_suffix = '_' + self.widgetID
         if 'Rvariables' in kwargs:
             self.Rvariables = kwargs['Rvariables']
@@ -64,15 +67,16 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         
         Passes parameters to the :mod:`redRLog` module.
         """
-        redRLog.log(redRLog.REDRWIDGET,level,comment,widget=self.widgetID)
+        #if not self.widgetID: self.widgetID = 1
+        redRLog.log(redRLog.REDRWIDGET,level,comment)
         
-    def resetRvariableNames(self, id = None):
+    def resetRvariableNames(self, wid = None):
         """Sets the self.Rvariables dict with a unique string for each variable desired.
         
         This should be considered a private function to core but there may be the extreme case where it would be useful.  One major problem with calling this function after setting a new widgetID (using self.widgetID = float) would be that variables that are already declared would be lost to Red-R and would be a waste of memory.
         """
-        if id:
-            self.widgetID = id
+        if wid:
+            self.widgetID = wid
             self.variable_suffix = '_' + self.widgetID
         for x in self.RvariablesNames:
             self.Rvariables[x] = x + self.variable_suffix

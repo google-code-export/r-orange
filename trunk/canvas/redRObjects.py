@@ -219,8 +219,8 @@ def getIconIDByIcon(icon):
             return k
     return None
 
-def getIconByIconID(id):
-    return _widgetIcons[id]
+def getIconByIconID(wid):
+    return _widgetIcons[wid]
     
 def getIconByIconCaption(caption):
     icons = []
@@ -238,11 +238,11 @@ def getIconByIconInstanceRef(instance):
                 icons.append(i)
     return icons
     
-def getIconByIconInstanceID(id):
+def getIconByIconInstanceID(wid):
     icons = []
     for t in _widgetIcons.values():
         for i in t:
-            if i.instanceID == id:
+            if i.instanceID == wid:
                 icons.append(i)
     return icons
 def instanceOnTab(inst, tabName):
@@ -278,7 +278,9 @@ def widgets():
         wlist += l
     return wlist
 def resolveCollisions(newwidget, x, y):
+    print 'Resolving collisions'
     if x==-1 or y==-1:
+        print 'Getting active tab'
         if activeTab().getSelectedWidgets():
             x = activeTab().getSelectedWidgets()[-1].x() + 110
             y = activeTab().getSelectedWidgets()[-1].y()
@@ -288,9 +290,11 @@ def resolveCollisions(newwidget, x, y):
         else:
             x = 30
             y = 50
+    print 'Setting Coords'
     newwidget.setCoords(x, y)
     # move the widget to a valid position if necessary
     invalidPosition = (activeTab().findItemTypeCount(activeCanvas().collidingItems(newwidget), orngCanvasItems.CanvasWidget) > 0)
+    print 'Invalid Position located'
     if invalidPosition:
         for r in range(50, 300, 50):
             for fi in [90, -90, 0, 45, -45]:
@@ -303,7 +307,8 @@ def resolveCollisions(newwidget, x, y):
                     break
             if not invalidPosition:
                 break
-def addWidget(widgetInfo, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None, id = None):
+    print 'Collisions Resolved'
+def addWidget(widgetInfo, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None, wid = None):
     """A core function to expose widget addition to the rest of core.  Taken over from :mod:`orngDoc`.
     .. note::
         The function in :mod:`orngDoc` is still active but will soon be depricated for this function.
@@ -312,7 +317,7 @@ def addWidget(widgetInfo, x= -1, y=-1, caption = "", widgetSettings = None, save
     global canvasDlg
     qApp.setOverrideCursor(Qt.WaitCursor)
     try:
-        instanceID = addInstance(widgetInfo, widgetSettings, forceInSignals, forceOutSignals, id = id)
+        instanceID = addInstance(widgetInfo, widgetSettings, forceInSignals, forceOutSignals, wid = wid)
         caption = widgetInfo.name
         if getIconByIconCaption(caption):
             i = 2
@@ -361,7 +366,7 @@ def closeAllWidgets():
         except Exception as inst:
             pass
         
-def addInstance(info, settings, insig, outsig, id = None):
+def addInstance(info, settings, insig, outsig, wid = None):
     """Called to add an instance of a widget to the canvas."""
     global _widgetInstances
     global _widgetIcons
@@ -374,15 +379,15 @@ def addInstance(info, settings, insig, outsig, id = None):
     _owShowStatus = redREnviron.settings["owShow"],
     _packageName = info.packageName)
     instance.__dict__['_widgetInfo'] = info
-    if not id or id == None:
+    if wid == None:
         OWRpy.uniqueWidgetNumber += 1
         ctime = unicode(time.time())
-        id = unicode(OWRpy.uniqueWidgetNumber) + '_' + ctime
+        wid = unicode(OWRpy.uniqueWidgetNumber) + '_' + ctime
     #redRLog.log(redRLog.REDRCORE, redRLog.DEBUG,redRLog.formatException())    
-    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('adding instance number %s name %s') % (id, info.name))
+    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('adding instance number %s name %s') % (str(wid), info.name))
     if info.name == 'Dummy': 
-        instance.__init__(forceInSignals = insig, forceOutSignals = outsig, id = id)
-    else: instance.__init__(id = id)
+        instance.__init__(forceInSignals = insig, forceOutSignals = outsig, wid = wid)
+    else: instance.__init__(wid = wid)
     
     instance.loadGlobalSettings()
     if settings:
@@ -401,30 +406,30 @@ def addInstance(info, settings, insig, outsig, id = None):
     #instance.canvasWidget = self
     instance.widgetInfo = info
     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('instance ID is %s') % instance.widgetID)
-    if id in _widgetInstances.keys():
+    if wid in _widgetInstances.keys():
         redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('id was found in the keys, placing as new ID'))
         ## this is interesting since we aren't supposed to have this, just in case, we throw a warning
         redRLog.log(redRLog.REDRCORE, redRLog.WARNING, _('Warning: widget id already in the keys, setting new widget instance'))
-        id = unicode(time.time())
-        instance.widgetID = id
+        wid = unicode(time.time())
+        instance.widgetID = wid
         instance.variable_suffix = '_' + instance.widgetID
         instance.resetRvariableNames()
     if not instance:
-        raise Exception(_('Error in loading widget %s') % id)
-    _widgetInstances[id] = instance
+        raise Exception(_('Error in loading widget %s') % wid)
+    _widgetInstances[wid] = instance
     
-    return id
-def getWidgetInstanceByID(id):
+    return wid
+def getWidgetInstanceByID(wid):
     global _widgetInstances
     #redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Loading widget %s keys are %s' % (id, _widgetInstances.keys()))
     try:
-        return _widgetInstances[id]
+        return _widgetInstances[wid]
     except Exception as inst:
-        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('Error in locating widget %s, available widget ID\'s are %s, %s') % (id, _widgetInstances.keys(), unicode(inst)))
-def getWidgetInstanceByTempID(id):
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('Error in locating widget %s, available widget ID\'s are %s' % (wid, _widgetInstances.keys())))
+def getWidgetInstanceByTempID(wid):
     global _widgetInstances
     for w in _widgetInstances.values():
-        if w.tempID == id:
+        if w.tempID == wid:
             return w
 def instances(wantType = 'list'):
     global _widgetInstances
@@ -433,14 +438,15 @@ def instances(wantType = 'list'):
         return _widgetInstances.values()
     else:
         return _widgetInstances
-def removeWidgetInstanceByID(id):
+def removeWidgetInstanceByID(wid):
     try:
-        widget = getWidgetInstanceByID(id)
-        del _widgetInstances[id]
+        widget = getWidgetInstanceByID(wid)
         removeWidgetInstance(widget)
+        del _widgetInstances[wid]
+        
         
     except Exception as inst: 
-        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Failed to remove the widget instance %s, %s' % (id, unicode(inst)))
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Failed to remove the widget instance %s, %s' % (wid, unicode(inst)))
 
 def removeWidgetInstance(widget):
     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Removing widget instance %s') % widget)
@@ -570,7 +576,7 @@ def removeLineInstance(line):
     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'removing the following signals %s' % unicode(obsoleteSignals))
     for o,i,e,n in obsoleteSignals:
         #signal = line.inWidget.instance().inputs.getSignal(id)
-        line.outWidget.instance().outputs.removeSignal(i, o.id)
+        line.outWidget.instance().outputs.removeSignal(i, o.wid)
     for k, l in _lines.items():
         if l == line:
             del _lines[k]   

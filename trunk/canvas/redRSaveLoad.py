@@ -30,7 +30,7 @@ tmp.RData; saved R data image of the session
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, sys, redRObjects, cPickle, redREnviron, redRLog, globalData, RSession, redRPackageManager
-import redRi18n
+import redRi18n, redRStyle
 from orngDlgs import TemplateDialog
 # def _(a):
     # return a
@@ -703,7 +703,7 @@ def loadTabs(tabs, loadingProgressBar, tmp, loadedSettingsDict = None):
             
                 import time
                 loadingInstanceID = unicode(time.time())
-                newwidget = schemaDoc.addWidgetByFileName(name, x = xPos, y = yPos + addY, widgetSettings = settings, id = loadingInstanceID)
+                newwidget = schemaDoc.addWidgetByFileName(name, x = xPos, y = yPos + addY, widgetSettings = settings, wid = loadingInstanceID)
                 nw = redRObjects.getWidgetInstanceByID(newwidget)
                 ## if tmp we need to set the tempID
                 nw.tempID = instance
@@ -732,7 +732,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             inputs = cPickle.loads(loadedSettingsDict[widgetID]['inputs'])
             outputs = cPickle.loads(loadedSettingsDict[widgetID]['outputs'])
             #print _('adding instance'), widgetID, inputs, outputs
-            newwidget = addWidgetInstanceByFileName(name, settings, inputs, outputs, id = widgetID)
+            newwidget = addWidgetInstanceByFileName(name, settings, inputs, outputs, wid = widgetID)
             if newwidget and tmp:
                 import time
                 nw = redRObjects.getWidgetInstanceByID(newwidget)
@@ -798,9 +798,9 @@ def loadLines(lineList, loadingProgressBar, freeze, tmp):
         qApp.processEvents()
         
     return (loadedOk, failureText)
-def addWidgetInstanceByFileName(name, settings = None, inputs = None, outputs = None, id = None):
+def addWidgetInstanceByFileName(name, settings = None, inputs = None, outputs = None, wid = None):
     widget = redRObjects.widgetRegistry()['widgets'][name]
-    return redRObjects.addInstance(widget, settings, inputs, outputs, id)
+    return redRObjects.addInstance(widget, settings, inputs, outputs, wid)
     
         
 def loadWidgets180(widgets, loadingProgressBar, loadedSettingsDict, tmp):
@@ -827,8 +827,8 @@ def loadWidgets180(widgets, loadingProgressBar, loadedSettingsDict, tmp):
                 widgetID += '_'+str(sessionID)
             #schemaDoc.addWidget(widgetInfo, x= xPos, y= yPos, caption = caption, widgetSettings = settings, forceInSignals = inputs, forceOutSignals = outputs, id = widgetID)
             
-            instanceID = redRObjects.addInstance(widgetInfo, settings = settings, insig = inputs, outsig = outputs, id = id)
-            #newwidget = redRObjects.newIcon(redRObjects.activeCanvas(), redRObjects.activeTab(), widgetInfo, redRStyle.defaultWidgetIcon, canvasDlg, instanceID =  instanceID, tabName = redRObjects.activeTabName())
+            instanceID = redRObjects.addInstance(widgetInfo, settings = settings, insig = inputs, outsig = outputs, wid = widgetID)
+            newwidget = redRObjects.newIcon(redRObjects.activeCanvas(), redRObjects.activeTab(), widgetInfo, redRStyle.defaultWidgetIcon, canvasDlg, instanceID =  instanceID, tabName = redRObjects.activeTabName())
             
             if newwidget.instanceID not in redRObjects._widgetInstances.keys():
                 raise Exception('widget instance not in instance keys')

@@ -65,7 +65,7 @@ class setOperations(OWRpy):
         #box.layout().setAlignment(self.resultInfo,Qt.AlignHCenter)
         self.resultInfo.hide()
         self.type = redRGUI.base.radioButtons(self.bottomAreaLeft,  label = _("Perform"), 
-        buttons = [_('Intersect'), _('Union'), _('Set Difference'), _('Set Equal')],setChecked=_('Intersect'),
+        buttons = [('intersect', _('Intersect')), ('union', _('Union')), ('setdiff', _('Set Difference')), ('setequal', _('Set Equal'))],setChecked='intersect',
         orientation='horizontal',callback=self.onTypeSelect)
         
         commitBox = redRGUI.base.widgetBox(self.bottomAreaRight,orientation = 'horizontal')
@@ -78,7 +78,7 @@ class setOperations(OWRpy):
             self.commitFunction()
     def onTypeSelect(self):
         self.resultInfo.setPlainText('')
-        if self.type.getChecked() == _('Set Equal'):
+        if self.type.getCheckedId() == 'setequal':
             self.resultInfo.show()
         else:
             self.resultInfo.hide()
@@ -116,24 +116,15 @@ class setOperations(OWRpy):
             return
             
         if self.colA.selectedItems():
-            nameA = self.colA.selectedItems()[0]
+            nameA = self.colA.selectedIds()[0]
         else:
             nameA = None
         if self.colB.selectedItems():
-            nameB = self.colB.selectedItems()[0]
+            nameB = self.colB.selectedIds()[0]
         else:
             nameB = None
-            
-        if self.type.getChecked() == _('Intersect'):
-            func = 'intersect'
-        elif self.type.getChecked() == _('Union'):
-            func = 'union'
-        elif self.type.getChecked() == _('Set Difference'):
-            func = 'setdiff'
-        elif self.type.getChecked() == _('Set Equal'):
-            func = 'setequal'
-        else:
-            return 
+        
+        func = self.type.getCheckedId()
             
         if nameA and nameB:
             self.R(self.Rvariables['intersect']+'<-%s(y=%s[["%s"]],x=%s[["%s"]])' 
@@ -142,9 +133,10 @@ class setOperations(OWRpy):
             self.R(self.Rvariables['intersect']+'<-%s(y=%s[["%s"]],x=%s[["%s"]])' 
             % (func, self.dataA,h[0],self.dataB,h[0]), wantType = 'NoConversion')
         else:
+            self.status.setText(_('You must select an item to compare from each list.'))
             return
             
-        if self.type.getChecked() == _('Set Equal'):
+        if self.type.getCheckedId() == 'setequal':
             eq = self.R(self.Rvariables['intersect'])
             if eq:
                 self.resultInfo.setPlainText('%s is equal to %s' % (nameA, nameB))

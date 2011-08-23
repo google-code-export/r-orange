@@ -149,25 +149,14 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         if not dataset:
             self.table.clear()
             return
-        #print dataset
         self.supressTabClick = True
-        #self.table.show()
         self.data = dataset.getData()
         self.dataParent = dataset
-        #print type(dataset)
-        #if isinstance(dataset, signals.base.RDataFrame):
-            #self.currentData = dataset.getData()
-            #dim = dataset.getDims_data()#self.R('dim(' + dataset['data'] + ')')
-            #self.rowColCount.setText(_('# Row: %(ROWCOUNT)s \n# Columns: %(COLCOUNT)s') %  {'ROWCOUNT':unicode(dim[0]), 'COLCOUNT':unicode(dim[1])})
-            #self.infoBox.setHidden(False)
         self.table.setTable(dataset, filterable = True, sortable = True)
 
         self.supressTabClick = False
-        #elif isinstance(dataset, signals.base.StructuredDict):
-            #self.table.setsignals.base.StructuredDictTable(dataset.getData())
-    
     def cellSelection(self,selections):
-        
+        return ## disabled, should be moved to the individual table instances.
         if len(selections) > 1:
             self.R('%s <- NULL' % self.Rvariables['summaryData'],silent=True)
             rows = []
@@ -197,9 +186,6 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
                 # rstart,rend,cstart,cend),silent=True)
             tmpData = '%s[%d:%d,%d:%d]' % (self.table.getFilteredData(),rstart,rend,cstart,cend)
         
-        # type = self.R('class('+tmpData+')', wantType = 'Convert', silent = True)
-        # print 'type:',type
-        # if type =='data.frame':
         isNumeric = self.R('sum(sapply(as.data.frame(%s),FUN=function(x) {!(is.numeric(x) | is.complex(x))})) ==0' % tmpData,silent=True)
         # print 'isNumeric', isNumeric
         if isNumeric:
@@ -230,8 +216,6 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
     def itemClicked(self, val):
         # print 'item clicked'
         # print self.data
-        
-        ######## if R data #########
         clickedRow = int(val.row())+1
         clickedCol = int(val.column())+1
         self.log('%s was clicked at row: %s and column %s' % (str(val.data().toString()), int(val.row()), int(val.column())))
@@ -242,26 +226,6 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
             import webbrowser
             self.log(url)
             webbrowser.open_new_tab(url)
-        return
-        ## make the summary of the data.
-        type = self.R('class('+self.data+'[,'+str(clickedCol)+'])', wantType = 'Convert', silent = True)
-        if type in ['integer', 'complex', 'float', 'numeric']:
-            summaryText = _('<strong>Mean</strong>: %(MEAN)s<br/> <strong>Median</strong>: %(MEDIAN)s<br/> <strong>Range</strong>: %(RANGE)s<br/> <strong>Standard Deviation</strong>: %(SD)s<br/> <strong>Count</strong>: %(COUNT)s<br/> <strong>Min</strong>: %(MIN)s<br/> <strong>Max</strong>: %(MAX)s<br/>') % {
-                'MEAN':str(self.R('mean(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
-                'MEDIAN':str(self.R('median(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
-                'RANGE':str(self.R('range(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
-                'SD':str(self.R('sd(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
-                'COUNT':str(self.R('length(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
-                'MIN':str(self.R('min(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
-                'MAX':str(self.R('max(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True))}
-        else:
-            summaryText = unicode(self.R('summary('+self.data+'[,'+str(val.column()+1)+'])', wantType = 'Convert', silent = True)).replace('\n', '<br/>')        
-        if unicode(self.customSummary.text()) != '':
-            summaryText += _('Custom: %s') % unicode(self.R(unicode(self.customSummary.text()).replace('{Col}', '%s[,%s]' % (self.data, val.column()+1)), wantType = 'Convert', silent = True))
-        
-        self.summaryLabel.setHtml(unicode(summaryText))
-        #print summaryText
-    
     def clearLinks(self):
         self.linksListBox.clear()
         self.currentLinks = {}
