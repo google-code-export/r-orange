@@ -52,6 +52,17 @@ Name "${NAME}-${REDRVERSION}"
 ; languages
 !insertmacro MUI_LANGUAGE "English"
 
+!define MUI_FINISHPAGE_RUN
+!define MUI_FINISHPAGE_RUN_TEXT "Start Red-R"
+!define MUI_FINISHPAGE_RUN_FUNCTION "LaunchRedR"
+!insertmacro MUI_PAGE_FINISH
+
+
+Function LaunchRedR
+    ExecShell "" "$INSTDIR\${NAME}-${REDRVERSION}\bin\red-RCanvas.exe"
+FunctionEnd
+
+
 Section "" ;this is the section that will install Red-R and all of it's files
     ; check if the user is admin, if not then we can't install.
     userInfo::getAccountType

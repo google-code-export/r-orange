@@ -1,3 +1,8 @@
+"""Widget Session
+
+Widget session handles loading and saving of data from a previous session.  This holds functions to return pickled or pickleable objects to the core saving routines.
+"""
+
 import os, cPickle, numpy, pprint, re, sys, redRLog
 import redREnviron
 import signals
@@ -21,7 +26,8 @@ class widgetSession():
         # self.sqlite = SQLiteHandler()
 
 
-    def getSettings(self):  # collects settings for the save function, these will be included in the output file.  Called in orngDoc during save.
+    def getSettings(self):  
+        """collects settings for the save function, these will be included in the output file.  Called in orngDoc during save."""
         redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'moving to save'+unicode(self.captionTitle))
         import re
         settings = {}
@@ -32,41 +38,35 @@ class widgetSession():
         self.progressBarInit()
         i = 0
         for att in allAtts:
-            # print att
             try:
-                if att in self.dontSaveList or re.search('^_', att):
-                    continue
+                if att in self.dontSaveList or re.search('^_', att): continue
                 i += 1
                 self.progressBarAdvance(i)
-                # print 'frist att: ' + att
                 var = getattr(self, att)
                 settings[att] = self.returnSettings(var)
             except:
                 redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
-        print 'saving custom settings'
+        #print 'saving custom settings'
         settings['_customSettings'] = self.saveCustomSettings()
-        print 'processing sent items'
+        #print 'processing sent items'
         tempSentItems = self.processSentItems()
-        print 'appending sent items'
+        #print 'appending sent items'
         settings['sentItems'] = {'sentItemsList':tempSentItems}
         self.progressBarFinished()
         return settings
-    def saveCustomSettings(self): # dummy function that should be overwritten in child classes if they want the function
+        
+    def saveCustomSettings(self): 
+        """Dummy function that should be overwritten in child classes if they want the function."""
         pass
 
     def isPickleable(self,d):  # check to see if the object can be included in the pickle file
         import re
-        #if isinstance(d,QObject):
-        # print unicode(type(d))
         if re.search('PyQt4|OWGUIEx|OWToolbars',unicode(type(d))) or d.__class__.__name__ in redRGUI.qtWidgets:
-            #print 'QT object NOT Pickleable'
             return False
         elif type(d) in [list, dict, tuple]:
-            #ok = True
             if type(d) in [list, tuple]:
                 for i in d:
                     if self.isPickleable(i) == False:
-                        #ok = False
                         return False
                 return True
             elif type(d) in [dict]:
@@ -85,21 +85,18 @@ class widgetSession():
             return False
         
             
-    def returnSettings(self,var, checkIfPickleable=True): ## parses through objects returning if they can be saved or not and collecting their settings.
+    def returnSettings(self,var, checkIfPickleable=True): 
+        """Parses through objects returning if they can be saved or not and collecting their settings."""
+        
         settings = {}
-        # from redRGUI import qtWidgetBox
         from redRGUI import widgetState
-        # from redRGUI import widgetState
         from signals import BaseRedRVariable
-        # print 'var class', var.__class__.__name__, isinstance(var, BaseRedRVariable), issubclass(var.__class__,BaseRedRVariable)
         if isinstance(var, widgetState):
             settings['redRGUIObject'] = {}
             settings['redRGUIObject']['widgetSettings'] = var.getSettings()
             settings['redRGUIObject']['defaultSettings'] = var.getDefaultState()
-        #elif isinstance(var, signals.BaseRedRVariable):
         elif isinstance(var, BaseRedRVariable) or issubclass(var.__class__,BaseRedRVariable) :
             settings['signalsObject'] = var.saveSettings()
-            #print '|#| Saving signalsObject '#, settings['signalsObject']
         elif not checkIfPickleable: 
             settings['pythonObject'] =  var
         elif self.isPickleable(var):
@@ -109,12 +106,10 @@ class widgetSession():
            for i in var:
                settings['list'].append(self.returnSettings(i))
         elif type(var) is dict:
-           #print var
            settings['dict'] = {}
            for k,v in var.iteritems():
                settings['dict'][k] = self.returnSettings(v)
         else:
-            #print '#####################\n\nNo settings saved for %s\n\n############' % var
             settings = None
         return settings
     def processSentItems(self):

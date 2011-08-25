@@ -7,8 +7,7 @@ import os.path
 import imp
 import redRi18n
 import redRLog
-# def _(a):
-    # return a
+
 _ = redRi18n.Coreget_()
 class qtWidgetBox(QWidget):
     def __init__(self,widget):
@@ -25,10 +24,8 @@ class qtWidgetBox(QWidget):
 class widgetState:
     def __init__(self,widget,widgetName,includeInReports,**kwargs):
         if not widgetName:
-            # print '#########widget Name is required############'
             raise RuntimeError(_('#########widget Name is required############'))
         self.controlArea = qtWidgetBox(widget)
-        #print widgetName,self.controlArea
         if hasattr(self,'getReportText'):
             self.controlArea.getReportText = self.getReportText
         else:
@@ -37,7 +34,6 @@ class widgetState:
         self.includeInReports=includeInReports
         
         if not widgetName:
-            # print '#########widget Name is required############'
             raise RuntimeError(_('#########widget Name is required############'))
 
         self.widgetName = widgetName
@@ -138,45 +134,9 @@ def registerQTWidgets():
                 qtWidgets.append(guiClass)
                 
                 c = forname('libraries.%s.qtWidgets.%s' % (package,guiClass),guiClass)
-                #c.__dict__['__package__'] = package
                 setattr(m, guiClass, c)
             except:
                redRLog.log(redRLog.REDRCORE, redRLog.WARNING,redRLog.formatException())
         setattr(current_module,package,m)
             
-# def registerQTWidgets():
-    # print '@@@@@@@@@@registerQTWidgets'
-    # import imp
-    # m = imp.new_module(package)
-    # directory = os.path.join(redREnviron.directoryNames['widgetDir'],package,'qtWidgets')
-    # for filename in glob.iglob(os.path.join(directory,  "*.py")):
-        # if os.path.isdir(filename) or os.path.islink(filename):
-            # continue
-        # guiClass = os.path.basename(filename).split('.')[0]
-        # qtWidgets.append(guiClass)
-        # c = forname(guiClass,guiClass)
-        # c.__dict__['__package__'] = package
-        # setattr(m, guiClass,c)
-    # setattr(current_module,package,m)
-
-
-
-# for filename in glob.iglob(os.path.join(redREnviron.directoryNames['widgetDir'] + '/base/qtWidgets', "*.py")):
-    # if os.path.isdir(filename) or os.path.islink(filename):
-        # continue
-    # guiClass = os.path.basename(filename).split('.')[0]
-    # qtWidgets.append(guiClass)
-    # setattr(current_module, guiClass,forname(guiClass,guiClass))
-
-    
-# def forname(modname, classname):
-    # ''' Returns a class of "classname" from module "modname". '''
-    # module = __import__(modname)
-    # classobj = getattr(module, classname)
-    # return classobj
-
-# current_module = __import__(__name__)
-# qtWidgets = []
-
-
-registerQTWidgets()
+#registerQTWidgets()

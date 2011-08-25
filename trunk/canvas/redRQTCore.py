@@ -3,11 +3,20 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtWebKit import *
 from PyQt4 import QtWebKit
+print 'End PyQt4 imports'
+
 import math, re, string, numpy, os
 import redRi18n, redREnviron
+
+print 'Begin redRGUI import'
+
 from redRGUI import widgetState
+print 'End widgetState import'
+
 from OrderedDict import OrderedDict
 _ = redRi18n.Coreget_()
+
+print 'End imports for redRQTCore'
 
 class dialog(QDialog,widgetState):
     def __init__(self, parent = None, 

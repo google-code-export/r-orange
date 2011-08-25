@@ -4,6 +4,24 @@ This widget reads in text files from either a delimited file or the clipboard.  
 
 .. helpdoc::
 This widget will read data from tab, comma, or space delimited text files. On Microsoft Windows it will also ready Excel files. Click the browse button to search your computer for the file to read. Select how the columns are delimited. On data read or change in these options, the first few lines of the file will be scanned. R will try to automaticlly determine the type of the column. The column data types can be changed. Once the data, column and row header information is properly selected click Load Data to read the full file into Red-R and send forward.
+
+This widget will likely be the start of any analysis pipeline since it is the principal way to get data into Red-R.
+
+The widget GUI is organized in the following:
+
+The first section is the file browse section.  This lists the active file that is being loaded in a drowpdown list and a button for browsing.  Clicking the browse button opens a file browser and the user can select the file to open.
+
+Below that is a section to select the file type.  Files can either be Text, Excel, or Clipboard.  The first two are self explanatory, but Clipboard may be confusing at first.  Reading from Clipboard reads data directly from the system clipboard, ignoring any file selection.  Users should take care to spefify the type of data appropriately for their needs.
+
+The next section is used to select the delimiter of the file.  This can be any string, but tab, comma, and space are provided for convinience.  
+
+The next section is used to specify the structure of the row and column names.  The user can select to use column names or not and can specify any column to be the rownames (optionally).  
+
+The next section is used to handle special circumstances in the data such as skipping lines, filling data, or setting special escapes.
+
+To the right, there is a section for displaying the table once read.  Below that is a section to specify the types of data in each column.
+
+Data types should be specified with care.  Note that integer and numeric data types may seem similar at first but they will be treated quite differently by Red-R functions.  Integers should represent only ordinal or discrete data while floating point data should be represented by the numeric type.  Similarly, character and factor types may seem similar, but factors should be used to represent catagorical data (and is coded as such in the underlying system) while character data represents text.  The data type selected will impact how the data is treated later and making a mistake may mean that your data aren't accurate and you have to read the data in again and repeat the analysis.
 """
 
 

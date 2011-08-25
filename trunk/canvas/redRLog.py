@@ -53,22 +53,12 @@ def setOutputManager(name,manager,level=None):
     
 def log(table, logLevel = INFO, comment ='', widget=None, html=True):   
     """Create a log entry."""
-    """Create a log entry."""
-    #fileLogger.defaultSysOutHandler.write('error type %s, debug mode %s\n' % (logLevel, redREnviron.settings['debugMode']))
-    # fileLogger.defaultSysOutHandler.write(str(logLevelsByName.get(redREnviron.settings['outputVerbosity'],0)) + ' ' + str(redREnviron.settings['outputVerbosity']) + '\n')
-    
-    # if table == STDOUT:
-        # fileLogger.defaultSysOutHandler.write(comment)
-        # return
     if redREnviron.settings['displayTraceback']:
         stack = traceback.format_stack()
     else:
         stack = None
 
     formattedLog = formatedLogOutput(table, logLevel, stack, comment, html)    
-
-    # if redREnviron.settings["writeLogFile"]:
-        # fileLogger.logFile.write(unicode(formattedLog).encode('Latin-1'))
 
     logOutput(table, logLevel, formattedLog,html=True)
     logTrigger(table, logLevel)
@@ -109,9 +99,10 @@ def formatedLogOutput(table, logLevel, stack, comment, html):
     else:
         color = "#0000FF"
     string = '<span style="color:%s">%s:%s </span>: ' %  (color, tables.get(table,'NOTABLE'),logLevelsByLevel.get(logLevel,'NOSET'))
-    if stack:
-        string+='%s || ' % (getSafeString(stack[-3]))
-    
+    if stack and len(stack) >= 3:
+        string += '%s || ' % (getSafeString(stack[-3]))
+    else:
+        string += unicode(stack)
     string += '%s<br>' % (comment) 
     return string
     
@@ -128,19 +119,14 @@ def formatException(type=None, value=None, tracebackInfo=None, errorMsg = None, 
     if not tracebackInfo:
         (type,value, tracebackInfo) =  sys.exc_info()
     
-    # tbList = traceback.format_exception(type,value,tracebackInfo)
-    # return '\n'.join(tbList)
-    # """
     t = datetime.today().isoformat(' ')
     text =  '<br>'*2 + '#'*60 + '<br>'
     if errorMsg:
         text += '<b>' + errorMsg + '</b><br>'
     text += "Unhandled exception of type %s occured at %s:<br>Traceback:<br>" % ( getSafeString(type.__name__), t)
     list = traceback.extract_tb(tracebackInfo, 10)
-    #print list
     space = "&nbsp; "
     totalSpace = space
-    #print range(len(list))
     for i in range(len(list)):
         # print list[i]
         (file, line, funct, code) = list[i]
@@ -170,8 +156,6 @@ def formatException(type=None, value=None, tracebackInfo=None, errorMsg = None, 
         return text
     else:
         return text
-    # """
-    
     
     
 class LogHandler():
@@ -186,7 +170,7 @@ class LogHandler():
         self.defaultExceptionHandler = sys.excepthook
         sys.stdout = self
         sys.excepthook = self.exceptionHandler
-	  
+  
         # self.currentLogFile = redREnviron.settings['logFile']
         self.clearOldLogs()
         # create the log file
@@ -261,9 +245,7 @@ class LogHandler():
         if logLevels[redREnviron.settings['outputVerbosity']] == DEVEL:
             self.defaultExceptionHandler(type, value, tracebackInfo)
         
-# print 'setting log handler'
 fileLogger = LogHandler()
-# print 'log handler set'
 setOutputManager('file',fileLogger.writetoFile,level=DEVEL)
 
 ###########################
@@ -309,16 +291,17 @@ class redRSubmitErrors():
             if not redREnviron.settings['askToUploadError']:
                 res = redREnviron.settings['uploadError']
             else:
-                self.msg = redRGUI.base.dialog(parent=qApp.canvasDlg,title='Red-R Error')
+                import redRQTCore
+                self.msg = redRQTCore.dialog(parent=qApp.canvasDlg,title='Red-R Error')
                 
-                error = redRGUI.base.widgetBox(self.msg,orientation='vertical')
-                redRGUI.base.widgetLabel(error, label='Do you wish to report the Error Log?')
-                buttons = redRGUI.base.widgetBox(error,orientation='horizontal')
+                error = redRQTCore.widgetBox(self.msg,orientation='vertical')
+                redRQTCore.widgetLabel(error, label='Do you wish to report the Error Log?')
+                buttons = redRQTCore.widgetBox(error,orientation='horizontal')
 
-                redRGUI.base.button(buttons, label = _('Yes'), callback = self.uploadYes)
-                redRGUI.base.button(buttons, label = _('No'), callback = self.uploadNo)
+                redRQTCore.button(buttons, label = _('Yes'), callback = self.uploadYes)
+                redRQTCore.button(buttons, label = _('No'), callback = self.uploadNo)
                 self.checked = False
-                self.remember = redRGUI.base.checkBox(error,label='response', displayLabel=None,
+                self.remember = redRQTCore.checkBox(error,label='response', displayLabel=None,
                 buttons=[_('Remember my Response')],callback=self.rememberResponse)
                 res = self.msg.exec_()
                 redREnviron.settings['uploadError'] = res
