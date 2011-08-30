@@ -95,6 +95,9 @@ class ListSelector(OWRpy):
         if self.data == None: 
             self.status.setText('No data to process')
             return
+        if len(self.names.selectedIds()) == 0:
+            self.status.setText('No Selections Made')
+            return
         name = unicode(self.names.row(self.names.currentItem())+1)
         self.Rvariables['listelement'] = self.data+'[['+name+']]'
         # use signals converter in OWWidget to convert to the signals class

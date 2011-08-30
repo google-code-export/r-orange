@@ -708,7 +708,7 @@ class SignalDialog(QDialog):
         import redRSignalManager
         links = redRSignalManager.getLinksByWidgetInstance(outWidget.instance(), inWidget.instance())
         for o, i, e, n in links:
-            self.addLink(o.id, i.id)
+            self.addLink(o.wid, i.wid)
         #print _('Output Handler Returned the following links'), links
 
     def countCompatibleConnections(self, outputs, inputs, outInstance, inInstance, outType, inType):
@@ -752,8 +752,8 @@ class SignalDialog(QDialog):
             
         inSignal = None
         inputs = self.inWidget.instance().inputs.getAllInputs()
-        for id, signal in inputs.items():
-            if id == inName: inSignal = id
+        for wid, signal in inputs.items():
+            if wid == inName: inSignal = wid
 
         # if inName is a single signal and connection already exists -> delete it
         for (outN, inN) in self._links:

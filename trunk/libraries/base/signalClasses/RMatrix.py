@@ -27,7 +27,9 @@ class RMatrix(RDataFrame):
         if isinstance(signal, RDataFrame):
             return self._convertFromRDataFrame(signal)
         elif isinstance(signal, StructuredDict):
-            return self._convertFromStructuredDict(signl)
+            return self._convertFromStructuredDict(signal)
+        else:
+            raise Exception
             
     def _convertFromStructuredDict(self, signal):
         self.assignR('matrixConversion'+self.newDataID, signal.getData())

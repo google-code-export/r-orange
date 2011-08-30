@@ -59,7 +59,7 @@ class lineEditHint(lineEdit):
         
         if items:
             self.itemsAsItems += items
-            if (type(items[0]) == str) or (type(items[0]) == numpy.string_):
+            if (type(items[0]) in [str, unicode]) or (type(items[0]) == numpy.string_):
                 self.itemsAsStrings += items
             elif type(items[0]) in [numpy.float64]:
                 self.itemsAsStrings += [unicode(item) for item in items]
@@ -67,6 +67,8 @@ class lineEditHint(lineEdit):
                 self.itemsAsStrings += [unicode(item.text()) for item in items]
             else:
                 print _("SuggestLineEdit error: unsupported type for the items: ")+unicode(type(items[0]))
+        else:
+            print _('Items removed from list')
          
     def setDelimiters(self, delimiters):
         self.delimiters = delimiters

@@ -365,7 +365,7 @@ class RDataFrameModel(QAbstractTableModel):
         if action=='cancel':
             self.menu.hide()
             return
-        colClass = self.R('class(%s[,%d])' % (self.Rdata,col),silent=True)
+        colClass = self.R('class(%s[,%d, FALSE])' % (self.Rdata,col),silent=True) # must set the subsetting to not drop in the case of only one column
         if action =='clear':
             del self.criteriaList[col]
         elif action=='OK':
@@ -577,9 +577,9 @@ class RDataFrameModel(QAbstractTableModel):
         self.emit(SIGNAL("layoutAboutToBeChanged()"))
         #print 'adfasfasdfasdfas', self.R('class(%s)' % self.orgRdata)
         if order == Qt.DescendingOrder:
-            self.Rdata = '%s[order(%s[,%d],decreasing=TRUE),]' % (self.orgRdata,self.orgRdata,Ncol)
+            self.Rdata = '%s[order(%s[,%d],decreasing=TRUE),,FALSE]' % (self.orgRdata,self.orgRdata,Ncol)
         else:
-            self.Rdata = '%s[order(%s[,%d]),]' % (self.orgRdata,self.orgRdata,Ncol)
+            self.Rdata = '%s[order(%s[,%d]),,FALSE]' % (self.orgRdata,self.orgRdata,Ncol)
             
         self.colnames = self.R('colnames(as.data.frame(' +self.Rdata+ '))', wantType = 'list', silent=True)
         self.rownames = self.R('rownames(as.data.frame(' +self.Rdata+'))', wantType = 'list', silent=True)

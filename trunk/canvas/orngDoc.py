@@ -231,7 +231,7 @@ class SchemaDoc(QWidget):
             dialog = SignalDialog(self.canvasDlg, None)
             dialog.setOutInWidgets(outWidget, inWidget)
             for o, i, e, n in signals:
-                dialog.addLink(o.id, i.id)
+                dialog.addLink(o.wid, i.wid)
             #for (outName, inName) in signals:
                 #print "<extra>orngDoc.py - SignalDialog.addLink() - adding signal to dialog: ", outName, inName
                 #dialog.addLink(outName, inName)
@@ -243,8 +243,8 @@ class SchemaDoc(QWidget):
             newSignals = dialog.getLinks()
         print newSignals
         for o, i, e, n in signals:
-            if (o.id, i.id) not in newSignals:
-                self.removeLink(outWidget.instance(), inWidget.instance(), o.id, i.id)
+            if (o.wid, i.wid) not in newSignals:
+                self.removeLink(outWidget.instance(), inWidget.instance(), o.wid, i.wid)
                 
                 print 'Done removing link'
                 signals.remove((o, i, e, n))
@@ -276,7 +276,7 @@ class SchemaDoc(QWidget):
                 #print 'The following signals will be removed: \n%s' % '  \n'.join([s.id for s in existing])
                 for l in existing:
                     #print 'Removing signals for %s' % unicode(l)
-                    l.parent.outputs.removeSignal(inWidget.instance().inputs.getSignal(inSignalName), l.id)
+                    l.parent.outputs.removeSignal(inWidget.instance().inputs.getSignal(inSignalName), l.wid)
                     
                     #print 'Checking for remaining signals in %s' % unicode(l)
                     remaining = redRSignalManager.getLinksByWidgetInstance(l.parent, inWidget.instance())

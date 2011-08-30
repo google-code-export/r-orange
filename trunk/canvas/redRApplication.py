@@ -13,21 +13,12 @@ from PyQt4.QtGui import *
    
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
-t = time.time()
 import redREnviron
-print 'Post redREnviron:', time.time() - t
 import redRLog
-
-print 'Post redRLog:', time.time() - t
 import redRStyle
-print 'Post redRStyle:', time.time() - t
 import redRQTCore
-print 'Post redRQTCore:', time.time() - t
-
 import redRReports
-print 'Post reports:', time.time() - t
 import RSession
-print 'RSession:', time.time() - t
 import redRHistory
 import redRi18n
 import redROutput, redRSaveLoad
@@ -47,6 +38,8 @@ _ = redRi18n.Coreget_()
 class OrangeCanvasDlg(QMainWindow):
     def __init__(self, app, parent = None, flags =  0):
         QMainWindow.__init__(self, parent)
+        
+        print "starting canvas dlg"
         
         self.setWindowTitle(_("Red-R Canvas %s") % redREnviron.version['REDRVERSION'])
         if os.path.exists(redRStyle.canvasIcon):
@@ -73,6 +66,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.notesDock.setWidget(self.notes)
         self.addDockWidget(Qt.RightDockWidgetArea, self.notesDock)
         self.connect(self.notesDock,SIGNAL('visibilityChanged(bool)'),self.updateDock)
+        
+        print "connected notes dock"
         
         self.outputDock = QDockWidget(_('Output'))
         self.outputDock.setObjectName(_('CanvasOutput'))
@@ -104,7 +99,9 @@ class OrangeCanvasDlg(QMainWindow):
         ###################
   
         self.widgetRegistry = redRObjects.widgetRegistry() # the widget registry has been created
+        
         print 'Register widgets'
+        
         import redRGUI
         redRGUI.registerQTWidgets()
         # signals.registerRedRSignals()
@@ -254,8 +251,9 @@ class OrangeCanvasDlg(QMainWindow):
         if redREnviron.settings['checkForPackageUpdates'] and self.packageManager.updatesAvailable(auto=True):
             self.packageManager.exec_()
             
-            
-        qApp.processEvents()
+        print "Processing events"
+        #qApp.processEvents()
+        print "events processed"
         #redRInitWizard.startSetupWizard()
     
     def saveOutputToFile(self):

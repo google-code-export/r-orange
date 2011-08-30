@@ -55,17 +55,19 @@ class spinBox(QDoubleSpinBox ,widgetState):
     def loadSettings(self,data):
         print data
         try:
-            self.setDecimals(data['decimals'])
-            self.setMaximum(float(data['max']))
-            self.setMinimum(float(data['min']))
-            self.setValue(float(data['value']))
-            self.setPrefix(data['prefix'])
-            self.setSuffix(data['suffix'])
-            self.setSingleStep(data['singleStep'])
+            self.setDecimals(data.get('decimals', 0))
+            if data.get('max', None):
+                self.setMaximum(float(data.get('max')))
+            if data.get('min', None):
+                self.setMinimum(float(data.get('min')))
+            self.setValue(float(data.get('value', 0)))
+            if data.get('prefix', None):
+                self.setPrefix(data.get('prefix'))
+            if data.get('suffix', None):
+                self.setSuffix(data.get('suffix'))
+            if data.get('singleStep', None):
+                self.setSingleStep(data.get('singleStep'))
             
-            print self.value(), data['value']
-            print self.minimum(), data['min']
-            print self.maximum(), data['max']
         except:
             redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, redRLog.formatException())
     def update(self, min, max):

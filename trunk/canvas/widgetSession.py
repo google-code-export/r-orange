@@ -173,21 +173,19 @@ class widgetSession():
                                     self.send(signalID, var)
                                     print 'Sending complete from load'
     #############################################
-                elif not hasattr(self,k):
+                elif not hasattr(self,k) or (getattr(self, k) == None):
                     continue
                 elif 'redRGUIObject' in v.keys():
                     #print getattr(self, k)
-                    try:
-                        print v['redRGUIObject']['widgetSettings']
+                    if v.get('redRGUIObject').get('widgetSettings', None):
+                        #print v['redRGUIObject']['widgetSettings']
                         getattr(self, k).loadSettings(v['redRGUIObject']['widgetSettings'])
                         getattr(self, k).setDefaultState(v['redRGUIObject']['defaultSettings'])
-                    except Exception as inst:
-                        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Loading failed using RedR185 Settings, attempting RedR180 Settings')
-                        redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
+                    else:
                         try:
                             getattr(self, k).loadSettings(v['redRGUIObject'])
                             getattr(self, k).setDefaultState(v['redRGUIObject'])
-                            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Loading using 180 setting was successful.')
+                            redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Loading using 180 setting was successful.')
                         except:
                             #print 'Exception occured during loading of settings.  These settings may not be the same as when the widget was closed.'
                             redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
