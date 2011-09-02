@@ -291,7 +291,7 @@ class OutputHandler:
         }...
         }
         """
-        if data.get('version', 1.85) > 1.85:
+        if data.get('version', 1.85) < 1.85:
             for (key, value) in data.items():
                 if key not in self.outputs.keys() or 'connections' not in value:
                     #print _('Signal does not exist')
@@ -323,7 +323,12 @@ class OutputHandler:
                     if not widget:
                         redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Failed to find input widget %s' % vValue['parentID'])
                         return
-                    inputSignal = widget.inputs.getSignal(vValue['wid'])
+                    
+                    if 'wid' in vValue.keys():
+                        inputSignal = widget.inputs.getSignal(vValue['wid'])
+                    elif 'id' in vValue.keys():
+                        inputSignal = widget.inputs.getSignal(vValue['id'])
+                    
                     self.connectSignal(inputSignal, key, vValue['enabled'], process = False)  # connect the signal but don't send data through it.
                     if tmp:
                         self.propogateNone(ask = False)
