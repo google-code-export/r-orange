@@ -24,7 +24,18 @@ _ = redRi18n.get_(package = 'base')
 .. convertTo:: `base:RList, base:RVariable, base:StructuredDict, base:UnstructuredDict, base:TableView`
 .. convertFrom:: `base:StructuredDict`
 """
-
+def toArray(v):
+    import array
+    try:
+        return array.array('i', v)
+    except:
+        try:
+            return array.array('d', v)
+        except:
+            try:
+                return array.array('c', v)
+            except:
+                return v
 class RDataFrame(RList, StructuredDict, TableView):
     
     convertFromList = [StructuredDict]
@@ -43,12 +54,22 @@ class RDataFrame(RList, StructuredDict, TableView):
         if isinstance(signal, StructuredDict):
             return self._convertFromStructuredDict(signal)
     def _convertFromStructuredDict(self, signal):
-        self.assignR('DataFrameConversion_'+self.newDataID, signal.getData())
-        self.R('DataFrameConversion_'+self.newDataID+'<-as.data.frame('+'DataFrameConversion_'+self.newDataID+')', wantType = 'NoConversion')
+        
+        rcall = []
+        for k, v in signal.getData().items():
+            if k == 'row_names': continue
+            # put the data into the right class
+            a = toArray(v)
+            if type(a) == list or a.typecode == 'c':
+                rcall.append('%s = factor(c("%s"))' % (unicode(k), '","'.join([unicode(b) for b in v])))
+            else:
+                rcall.append('%s = c(%s)' % (unicode(k), ','.join([unicode(b) for b in v])))
+        #self.assignR('DataFrameConversion_'+self.newDataID, newdata)
+        self.R('DataFrameConversion_'+self.newDataID+'<-data.frame(%s)' % ','.join(rcall), wantType = 'NoConversion')
         if 'row_names' in signal.getData().keys():
             self.R('rownames('+'DataFrameConversion_'+self.newDataID+')<-'+'DataFrameConversion_'+self.newDataID+'$row_names', wantType = 'NoConversion')
             self.R('DataFrameConversion_'+self.newDataID+'$row_names<-NULL', wantType = 'NoConversion')
-        return RDataFrame(data = 'DataFrameConversion_'+self.newDataID)  
+        return RDataFrame(signal.widget, data = 'DataFrameConversion_'+self.newDataID)  
     def convertToClass(self, varClass):
         if varClass == RList:
             return self._convertToList()

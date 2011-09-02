@@ -23,6 +23,7 @@ class SandBox(OWRpy):
         OWRpy.__init__(self, **kwargs)
         self.lineEditText = ''
         #self.require_librarys(['BARD'])
+        self.outputs.addOutput('id1', 'Test Dict', signals.base.StructuredDict)
         ### GUI ###
         
         #self.webBox = webViewBox(self.controlArea, label = 'Web Box')
@@ -39,3 +40,5 @@ class SandBox(OWRpy):
         a.setOpenExternalLinks(True)
         a.setWordWrap(True)
         a.setFixedWidth(350)
+        newdata = signals.base.StructuredDict(self, data = {'a':[1,2,3], 'b':['a', 'b', 'c']})
+        self.rSend('id1', newdata)

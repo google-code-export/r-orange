@@ -37,7 +37,7 @@ class rViewer(OWRpy):
         self.data = None
         
         """.. rrsignals::"""
-        self.inputs.addInput('id0', _('R Variable Data'), signals.base.RVariable, self.processdata)
+        self.inputs.addInput('id0', _('R Variable Data'), [signals.base.RVariable, signals.base.RDataFrame], self.processdata)
 
         self.RoutputWindow = redRGUI.base.textEdit(self.controlArea,label=_('Output'), editable=False)
         
