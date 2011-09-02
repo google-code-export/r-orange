@@ -107,7 +107,8 @@ class checkBox(widgetState,QWidget):
         """Removes all buttons from the widget.  Should be called before an end developer calls addButtons"""
         self.items = {}
         for i in self.buttons.buttons():
-            self.removeButton(i)
+            self.buttons.removeButton(i)
+            
     def getChecked(self):
         """Returns a list of checked button's labels"""
         return self.getCheckedItems().values()

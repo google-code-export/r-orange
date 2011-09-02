@@ -41,7 +41,7 @@ class RVarSeparator(OWRpy):
     globalSettingsList = ['commitButton']
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
-        
+        self.setRvariableNames(['savedvar'])
         """.. rrsignals::"""
         self.inputs.addInput('id0', _('R Environment'), renv.REnvironment, self.process)
 
@@ -98,6 +98,7 @@ class RVarSeparator(OWRpy):
     def commit(self):
         #must declare explilcitly as a string or an error will occur.  We remove NA's just in case they are in the data
         self.sendThis = unicode('local('+self.varBox.selectedItems().values()[0]+', '+self.envName+')') 
+        self.R('%s<-%s' % (self.Rvariables['savedvar'], self.sendThis), wantType = 'NoConversion') 
         
         #put logic for finding the type of variable that the object is and sending it from that channel of the output
         
@@ -105,38 +106,38 @@ class RVarSeparator(OWRpy):
             
         if type(dataClass) is str:
             if dataClass in ['numeric', 'character', 'real', 'complex', 'factor']: # we have a numeric vector as the object
-                newData = rvec.RVector(self, data = self.sendThis)
+                newData = rvec.RVector(self, data = self.Rvariables['savedvar'])
                 self.rSend('id4', newData)
                 self.status.setText(_('Data sent through the R Vector channel'))
             elif dataClass == 'character': #we have a character vector as the object
-                newData = rvec.RVector(self, data = self.sendThis)
+                newData = rvec.RVector(self, data = self.Rvariables['savedvar'])
                 self.rSend('id4', newData)
                 self.status.setText(_('Data sent through the R Vector channel'))
             elif dataClass == 'data.frame': # the object is a data.frame
-                newData = rdf.RDataFrame(self, data = self.sendThis)
+                newData = rdf.RDataFrame(self, data = self.Rvariables['savedvar'])
                 self.rSend('id2', newData)
                 self.status.setText(_('Data sent through the R Data Frame channel'))
             elif dataClass == 'matrix': # the object is a matrix
                 
-                newData = rmat.RMatrix(self, data = self.sendThis)
+                newData = rmat.RMatrix(self, data = self.Rvariables['savedvar'])
                 
                 self.rSend('id2', newData)
                 self.status.setText(_('Data sent through the R Data Frame channel'))
             elif dataClass == 'list': # the object is a list
-                for i in range(self.R('length('+self.sendThis+')')):
-                    if self.R('class(%s[[%s]])' % (self.sendThis, i), silent = True) not in ['numeric', 'character', 'real', 'complex', 'factor']:
-                        newData = ral.RArbitraryList(self, data = self.sendThis)
+                for i in range(self.R('length('+self.Rvariables['savedvar']+')')):
+                    if self.R('class(%s[[%s]])' % (self.Rvariables['savedvar'], i), silent = True) not in ['numeric', 'character', 'real', 'complex', 'factor']:
+                        newData = ral.RArbitraryList(self, data = self.Rvariables['savedvar'])
                         self.status.setText(_('Data sent through the R Arbitrary List channel'))
                         self.rSend('ral', newData)
                         return
-                newData = rlist.RList(self, data = self.sendThis)
+                newData = rlist.RList(self, data = self.Rvariables['savedvar'])
                 self.rSend('id3', newData)
                 self.status.setText(_('Data sent through the R List channel'))
             else:    # the data is of a non-normal type send anyway as generic  
-                newData = rvar.RVariable(self, data = self.sendThis)
+                newData = rvar.RVariable(self, data = self.Rvariables['savedvar'])
                 self.rSend('id1', newData)
                 self.status.setText(_('Data sent through the R Object channel'))
         else:
-            newData = rvar.RVariable(self, data = self.sendThis)
+            newData = rvar.RVariable(self, data = self.Rvariables['savedvar'])
             self.rSend('id1', newData)
             self.status.setText(_('Data sent through the R Object channel'))
