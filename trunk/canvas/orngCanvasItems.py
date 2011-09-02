@@ -411,6 +411,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
     # is mouse position inside the left signal channel
     def mouseInsideLeftChannel(self, pos):
         if self.ghost: return
+        if self.instance() == None: return
         if len(self.instance().inputs.getAllInputs()) == 0: return False
 
         boxRect = QRectF(self.x()-self.edgeSize.width(), self.y() + (self.widgetSize.height()-self.edgeSize.height())/2, self.edgeSize.width(), self.edgeSize.height())
@@ -422,6 +423,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
     # is mouse position inside the right signal channel
     def mouseInsideRightChannel(self, pos):
         if self.ghost: return
+        if self.instance() == None: return False
         if len(self.instance().outputs.getAllOutputs()) == 0: return False
 
         boxRect = QRectF(self.x()+self.widgetSize.width(), self.y() + (self.widgetSize.height()-self.edgeSize.height())/2, self.edgeSize.width(), self.edgeSize.height())
