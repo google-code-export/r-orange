@@ -39,7 +39,7 @@ class RDataTable(OWRpy):
         self.setRvariableNames(['summaryData'])
 
         """.. rrsignals::"""
-        self.inputs.addInput('id1', _('Input Data Table'), [signals.base.TableView, signals.base.RDataFrame, signals.base.StructuredDict], self.dataset) 
+        self.inputs.addInput('id1', _('Input Data Table'), [signals.base.TableView, signals.base.RDataFrame], self.dataset) 
 
         self.data = {}          # dict containing the table infromation
         self.dataParent = None

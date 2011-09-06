@@ -484,7 +484,7 @@ class redRPlot(graphicsView):
             self.data = data
             self.function = function
             self.layers = []
-            self.plotMultiple(self, self.processQuery(query), function = function, dwidth = self.optionWidgets['dwidth'].value(), dheight = self.optionWidgets['dheight'].value(), layers = [], data = None, legend = False)
+            self.plotMultiple(self.processQuery(query), function = function, dwidth = self.optionWidgets['dwidth'].value(), dheight = self.optionWidgets['dheight'].value(), layers = [], data = None, legend = False)
         finally:
             qApp.restoreOverrideCursor()
     def plotMultiple(self, query, function = 'plot', dwidth = 5, dheight = 5, layers = [], data = None, legend = False):

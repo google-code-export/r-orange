@@ -443,7 +443,7 @@ class filterTable(widgetState, QTableView):
 
             #if 'sortIndex' in data.keys():
                 #self.sortByColumn(data['sortIndex'][0],data['sortIndex'][1])
-            #selModel = self.selectionModel()
+            selModel = self.selectionModel()
             ## print selModel
             
             if 'selection2' in data.keys() and len(data['selection2']):
