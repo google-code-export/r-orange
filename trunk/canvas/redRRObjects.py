@@ -63,11 +63,11 @@ def loadWidgetObjects(widgetID):
     if not RSession.mutex.tryLock():  # the session is locked
         while not RSession.mutex.tryLock(): pass
   
-    R('load(\"%s\")' % os.path.join(redREnviron.directoryNames['tempDir'], widgetID).replace('\\', '/'), wantType = 'NoConversion', silent = True) != 'SessionLocked':
-    _rObjects[widgetID]['state'] = 1
-    redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(False)
-    extendTimer(widgetID)
-    setTotalMemory()
+    if R('load(\"%s\")' % os.path.join(redREnviron.directoryNames['tempDir'], widgetID).replace('\\', '/'), wantType = 'NoConversion', silent = True) != 'SessionLocked':
+        _rObjects[widgetID]['state'] = 1
+        redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(False)
+        extendTimer(widgetID)
+        setTotalMemory()
   
 def saveWidgetObjects(widgetID):
   global _rObjects
@@ -106,7 +106,14 @@ def setWidgetPersistent(widgetID):
   
 ### memory consumption
 TOTALMEMORYUSED = 0
-MEMORYLIMIT = R('memory.limit()*1024*1024', silent = True)
+
+if sys.platform == 'win32':
+    MEMORYLIMIT = R('memory.limit()*1024*1024', silent = True)
+else:
+    MEMORYLIMIT = float(3*1024*1024*1024)
+#MEMORYLIMIT = R('memory.limit()*1024*1024', silent = True)
+#print "MEMORYLIMIT ", MEMORYLIMIT, type(MEMORYLIMIT)
+
 def memoryConsumed(id):
     global _rObjects
     myMemory = 0

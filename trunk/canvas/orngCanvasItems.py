@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, sys, math, sip
 import redRStyle
-import signals, redREnviron, redRObjects, redRLog, redRHistory, redRi18n, redRSignalManager
+import signals, redREnviron, redRObjects, redRLog, redRHistory, redRi18n, redRSignalManager, redRRObjects
 ERROR = 0
 WARNING = 1
 
@@ -521,6 +521,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         ## paint the memory consumption
         TOTALMEMORY = redRRObjects.TOTALMEMORYUSED
         MEMORYLIMIT = redRRObjects.MEMORYLIMIT
+        #print MEMORYLIMIT
         THISWIDGET = redRRObjects.memoryConsumed(self.instanceID)
             ## this widget consumed
         percentThisWidget = (THISWIDGET)/MEMORYLIMIT

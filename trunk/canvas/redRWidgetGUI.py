@@ -216,21 +216,13 @@ class redRWidgetGUI(QMainWindow):
         self.windowState['documentationState'] = {'notesBox':True,'ROutputBox':False,'RVarNamesBox':False}
 
         docBox = redRQTCore.widgetBox(self.controlArea,orientation='horizontal',spacing=4)
-        
+         
+        self.collapseDataButton = redRQTCore.button(docBox, 'Collapse Data', toggleButton = True, toolTip = _('Collapses data to a saved file and sets the widget as collapsed'), callback = self.collapseData)
+        self.neverCollapseDataButton = redRQTCore.button(docBox, 'Never Collapse', toggleButton = True, toolTip = _('Sets this data to never be collapsed by the data collapsing system'), callback = self.neverCollapseData)
+        self.collapseDataButton.hide() # these are set to hidden by default because we don't want to belaybor widgets that don't set R data.
+        self.neverCollapseDataButton.hide()
+
         self.showNotesButton = redRQTCore.button(docBox, '',toggleButton=True, 
-        self.collapseDataButton = redRbutton(docBox, 'Collapse Data', toggleButton = True,
-	  toolTip = _('Collapses data to a saved file and sets the widget as collapsed'),
-	  callback = self.collapseData
-	  )
-	  
-	self.neverCollapseDataButton = redRbutton(docBox, 'Never Collapse', toggleButton = True,
-	  toolTip = _('Sets this data to never be collapsed by the data collapsing system'),
-	  callback = self.neverCollapseData
-	  )
-	self.collapseDataButton.hide() # these are set to hidden by default because we don't want to belaybor widgets that don't set R data.
-	self.neverCollapseDataButton.hide()
-	
-        self.showNotesButton = redRbutton(docBox, '',toggleButton=True, 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'),
         toolTip=_('Notes'),
         callback = self.updateDocumentationDock)
