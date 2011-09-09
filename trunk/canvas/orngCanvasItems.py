@@ -475,6 +475,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 
     # draw the widget
     def paint(self, painter, option, widget = None):
+        instance = self.instance()
         if self.isProcessing:
             color = redRStyle.widgetActiveColor
         
@@ -488,12 +489,14 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         if self.isProcessing or self.selected or self.potentialConnection:
             painter.setPen(QPen(color))
             painter.drawRect(-3, -3, self.widgetSize.width()+6, self.widgetSize.height()+6)
-
+        if instance.collapseDataButton.isChecked():
+            painter.setPen(QPen(Qt.gray))
+            painter.drawRect(-7, -7, self.widgetSize.width()+14, self.widgetSize.height()+14)
         painter.drawPixmap(0,0, self.icon.pixmap(self.widgetSize.width(), self.widgetSize.height()))
         # where the edges are painted
         try:
-            if len(self.instance().inputs.getAllInputs()) != 0:    painter.drawPixmap(-self.edgeSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownLeftEdge)
-            if len(self.instance().outputs.getAllOutputs()) != 0:   painter.drawPixmap(self.widgetSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownRightEdge)
+            if len(instance.inputs.getAllInputs()) != 0:    painter.drawPixmap(-self.edgeSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownLeftEdge)
+            if len(instance.outputs.getAllOutputs()) != 0:   painter.drawPixmap(self.widgetSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownRightEdge)
         except:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         ## drwaw the clone icon
@@ -514,6 +517,44 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             painter.setBrush(QBrush(QColor(0,128,255)))
             painter.drawRect(QRectF(0, yPos, self.widgetSize.width()*self.progressBarValue/100., 16))
             painter.drawText(rect, Qt.AlignCenter, "%d %%" % (self.progressBarValue))
+        
+        ## paint the memory consumption
+        TOTALMEMORY = redRRObjects.TOTALMEMORYUSED
+        MEMORYLIMIT = redRRObjects.MEMORYLIMIT
+        THISWIDGET = redRRObjects.memoryConsumed(self.instanceID)
+            ## this widget consumed
+        percentThisWidget = (THISWIDGET)/MEMORYLIMIT
+        twStart = 0
+        twStop = 360*16*percentThisWidget
+            ## total consumed elipse
+        percentFromOthers = (TOTALMEMORY-THISWIDGET)/MEMORYLIMIT
+        owStart = twStop
+        owStop = 360*16*percentFromOthers
+            ## total elipse
+        percentAvailable = (MEMORYLIMIT-TOTALMEMORY)/MEMORYLIMIT
+        aStart = owStop + owStart + twStop
+        aStop = 360*16*percentAvailable
+        #print twStart, twStop, owStart, owStop, aStart, aStop
+        twElipse = QGraphicsEllipseItem(38, -8, 15, 15)
+        twElipse.setStartAngle(int(twStart))
+        twElipse.setSpanAngle(int(twStop))
+        twElipse.setPen(QPen(Qt.red))
+        twElipse.setBrush(QBrush(Qt.red))
+        twElipse.paint(painter, QStyleOptionGraphicsItem())
+        
+        owElipse = QGraphicsEllipseItem(40, -8, 15, 15)
+        owElipse.setStartAngle(int(owStart))
+        owElipse.setSpanAngle(int(owStop))
+        owElipse.setPen(QPen(Qt.gray))
+        owElipse.setBrush(QBrush(Qt.gray))
+        owElipse.paint(painter, QStyleOptionGraphicsItem())
+        
+        aElipse = QGraphicsEllipseItem(42, -7, 15, 15)
+        aElipse.setStartAngle(int(aStart))
+        aElipse.setSpanAngle(int(aStop))
+        aElipse.setPen(QPen(Qt.green))
+        aElipse.setBrush(QBrush(Qt.green))
+        aElipse.paint(painter, QStyleOptionGraphicsItem())
         
     def addOutLine(self, line):
         self.outLines.append(line)

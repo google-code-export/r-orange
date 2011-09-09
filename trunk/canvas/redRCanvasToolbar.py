@@ -821,7 +821,15 @@ class SearchBox2(redRlineEdit):
         
         if self.listUpdateCallback:
             self.listUpdateCallback()
-    
+    def doneCompletion(self, *args):
+        if self.listWidget.isVisible():
+            widgetInfo = self.model.listdata[self.listWidget.selectedIndexes()[0].row()][1]
+            self.setText(unicode(widgetInfo.name))
+            self.listWidget.hide()
+            self.setFocus()
+            
+        if self.callbackOnComplete:
+            QTimer.singleShot(0, lambda:self.callbackOnComplete(widgetInfo))
               
     def textEdited(self):
         if len(self.getLastTextItem()) == 0:
@@ -830,10 +838,13 @@ class SearchBox2(redRlineEdit):
             self.updateSuggestedItems()
     
     def getLastTextItem(self):  ## returns a string of the entered text.
-        text = unicode(self.text())
-        if len(text) == 0: return []
-        if not self.delimiters: return [unicode(self.text())]     # if no delimiters, return full text
-        return text.split(self.delimiters)
+	try:
+	  text = unicode(self.text())
+	  if len(text) == 0: return []
+	  if not self.delimiters: return [unicode(self.text())]     # if no delimiters, return full text
+	  return text.split(self.delimiters)
+	except:
+	  return ''
    
     def eventFilter(self, object, ev):
         try: # a wrapper that prevents problems for the listbox debigging should remove this 

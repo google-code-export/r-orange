@@ -717,8 +717,8 @@ class MyTableModel(QAbstractTableModel):
         
         # print _('self.arraydata loaded')
 
-        self.colnames = self.R('colnames(as.data.frame(' +Rdata+ '))', wantType = 'list',silent=True)
-        self.rownames = self.R('rownames(as.data.frame(' +Rdata+'))', wantType = 'list',silent=True)
+        self.colnames = self.R('colnames(as.data.frame(%s))' % Rdata, wantType = 'list',silent=True)
+        self.rownames = self.R('rownames(as.data.frame(%s))' % Rdata, wantType = 'list',silent=True)
         if len(self.rownames) ==0: self.rownames = [1]
         # print self.rownames, self.rowCount(self)
         # print self.colnames
@@ -807,8 +807,8 @@ class MyTableModel(QAbstractTableModel):
         else:
             self.Rdata = '%s[order(%s[,%d]),]' % (self.orgRdata,self.orgRdata,Ncol+1)
             
-        self.colnames = self.R('colnames(as.data.frame(' +self.Rdata+ '))', wantType = 'list', silent=True)
-        self.rownames = self.R('rownames(as.data.frame(' +self.Rdata+'))', wantType = 'list', silent=True)
+        self.colnames = self.R('colnames(as.data.frame(%s))' % self.Rdata, wantType = 'list', silent=True)
+        self.rownames = self.R('rownames(as.data.frame(%s))' % self.Rdata, wantType = 'list', silent=True)
         self.nrow = self.R('nrow(as.matrix(%s))' % self.Rdata, silent=True)
         self.ncol = self.R('ncol(as.matrix(%s))' % self.Rdata, silent=True)
         

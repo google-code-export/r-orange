@@ -61,10 +61,10 @@ class RMatrix(RDataFrame):
         
     def _convertToStructuredDict(self):
         if not self.StructuredDictSignal:
-            data = self.R('as.data.frame('+self.data+')', wantType = 'dict')
+            data = self.R('as.data.frame('+str(self.getData())+')', wantType = 'dict')
             keys = ['row_names']
-            keys += self.R('colnames(as.data.frame('+self.data+'))', wantType = 'list')
-            rownames = self.R('rownames('+self.data+')', wantType = 'list')
+            keys += self.R('colnames(as.data.frame('+str(self.getData())+'))', wantType = 'list')
+            rownames = self.R('rownames('+str(self.getData())+')', wantType = 'list')
             if rownames[0] in [None, 'NULL', 'NA']:
                 rownames = [unicode(i+1) for i in range(len(data[data.keys()[0]]))]
             data['row_names'] = rownames

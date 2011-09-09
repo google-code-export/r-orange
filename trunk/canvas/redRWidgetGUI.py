@@ -6,7 +6,7 @@
 
 # import redRGUI 
 from PyQt4 import QtWebKit
-import urllib, os, redREnviron
+import urllib, os, redREnviron, redRRObjects
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRStyle
@@ -218,6 +218,19 @@ class redRWidgetGUI(QMainWindow):
         docBox = redRQTCore.widgetBox(self.controlArea,orientation='horizontal',spacing=4)
         
         self.showNotesButton = redRQTCore.button(docBox, '',toggleButton=True, 
+        self.collapseDataButton = redRbutton(docBox, 'Collapse Data', toggleButton = True,
+	  toolTip = _('Collapses data to a saved file and sets the widget as collapsed'),
+	  callback = self.collapseData
+	  )
+	  
+	self.neverCollapseDataButton = redRbutton(docBox, 'Never Collapse', toggleButton = True,
+	  toolTip = _('Sets this data to never be collapsed by the data collapsing system'),
+	  callback = self.neverCollapseData
+	  )
+	self.collapseDataButton.hide() # these are set to hidden by default because we don't want to belaybor widgets that don't set R data.
+	self.neverCollapseDataButton.hide()
+	
+        self.showNotesButton = redRbutton(docBox, '',toggleButton=True, 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'),
         toolTip=_('Notes'),
         callback = self.updateDocumentationDock)
@@ -619,6 +632,26 @@ class redRWidgetGUI(QMainWindow):
     def setProcessingHandler(self, handler):
         self.processingHandler = handler
         
+    def collapseData(self):
+      if self.neverCollapseDataButton.isChecked():
+	self.log(_('Never collapse is checked, please uncheck if you want to collapse the data'))
+	return
+      self.log(_('The collapse data button is set to %s') % self.collapseDataButton.isChecked())
+      if self.collapseDataButton.isChecked():
+	redRRObjects.saveWidgetObjects(self.widgetID)
+	#self.collapseDataButton.setChecked(False)
+      else:
+	redRRObjects.loadWidgetObjects(self.widgetID)
+	#self.collapseDataButton.setChecked(True)
+    def neverCollapseData(self):
+      if self.neverCollapseDataButton.isChecked():
+	redRRObjects.setWidgetPersistent(self.widgetID)
+	self.collapseDataButton.hide()
+      else:
+	redRRObjects.ensureVars(self.widgetID) # sure the user did just ask that we unset the never collapse rule, but why not give the data another few seconds of life, the user can always set the data to collapse on her own.
+	self.collapseDataButton.show()
+    def setDataCollapsed(self, collapsed):
+      self.collapseDataButton.setChecked(collapsed)
 
 
 class canvasWidget:

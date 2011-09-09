@@ -104,7 +104,7 @@ def Rcommand(query, silent = False, wantType = redR.CONVERT, listOfLists = False
         QMessageBox.NoButton, 
         qApp.canvasDlg)
         mb.exec_()
-        return
+        return 'SessionLocked'
         
     
     output = None
@@ -127,6 +127,7 @@ def Rcommand(query, silent = False, wantType = redR.CONVERT, listOfLists = False
         output = rpy.r(unicode(query).encode('Latin-1'))
         
     except Exception as inst:
+        redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br>The original query:<br> <b>%s</b><br>##################################<br>" % (inst,redRLog.getSafeString(query)))
         mutex.unlock()
         rtb = Rcommand('paste(capture.output(traceback()), collapse = "<br>")')
         redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br><br>The original query:<br> <b>%s</b><br>R Traceback was%s<br>##################################<br>" % (inst,redRLog.getSafeString(query),rtb))
@@ -200,6 +201,7 @@ def convertToPy(inobject):
          rclass=inobject.rclass[0] 
         if rclass not in ['data.frame', 'matrix', 'list', 'array', 'numeric', 'vector', 'complex', 'boolean', 'bool', 'factor', 'logical', 'character', 'integer', 'NULL']:
             print 'can not convert %s yet' % rclass
+            print 'Conversion not possible for class %s' % rclass
             return inobject
         return co.convert(inobject)
     except Exception as e:

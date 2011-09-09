@@ -389,6 +389,7 @@ def addInstance(info, settings, insig, outsig, wid = None):
         instance.__init__(forceInSignals = insig, forceOutSignals = outsig, wid = wid)
     else: instance.__init__(wid = wid)
     
+    ## check if an id is present, if this is the case then we should set the id to the widget.
     instance.loadGlobalSettings()
     if settings:
         try:

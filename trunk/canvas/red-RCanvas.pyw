@@ -18,13 +18,18 @@ import redRStyle
 import redRQTCore
 import redRReports
 import RSession
+#print 'loading histry'
 import redRHistory
+#print 'loading international'
 import redRi18n
 import redROutput, redRSaveLoad
+#print 'loading orngdoc'
 import orngDoc, orngDlgs
 import redRWidgetsTree
 import redRPackageManager, signals, redRInitWizard
+#print 'loading reports'
 import redRReports, redRObjects, redRUpdateManager
+#print 'loading R session'
 import redRCanvasToolbar
 
 #print 'Core module Load complete'
@@ -104,6 +109,11 @@ class OrangeCanvasDlg(QMainWindow):
         import redRGUI
         redRGUI.registerQTWidgets()
         # signals.registerRedRSignals()
+        
+        ###################
+        #Main Cavas########
+        ###################
+        splashWindow.showMessage(_("Main Cavas"), Qt.AlignHCenter + Qt.AlignBottom)
         
         ###################
         #Main Cavas########
@@ -193,8 +203,14 @@ class OrangeCanvasDlg(QMainWindow):
 
         splashWindow.showMessage(_("Setting States"), Qt.AlignHCenter + Qt.AlignBottom)
 
+        #qtsettings = QSettings("Red-R", "Red-R")
+        #print 'adsfasdf', qtsettings.value('windowState').toByteArray()
+        #print self.restoreState(qtsettings.value('windowState').toByteArray())
+
+
         if 'windowState' in redREnviron.settings.keys():
-            self.restoreState(redREnviron.settings['windowState'])
+            print self.restoreState(redREnviron.settings['windowState'])
+
 
         if 'geometry' in redREnviron.settings.keys():
             self.restoreGeometry(redREnviron.settings['geometry'])
@@ -348,7 +364,6 @@ class OrangeCanvasDlg(QMainWindow):
             redREnviron.settings['pos'] = self.pos()
             redREnviron.settings['size'] = self.size()
 
-            
             
             redREnviron.saveSettings()
             # closed = self.schema.close()

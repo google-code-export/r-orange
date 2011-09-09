@@ -434,7 +434,7 @@ class SchemaDoc(QWidget):
         
         qApp.setOverrideCursor(Qt.WaitCursor)
         try:
-            instanceID = self.addInstance(self.signalManager, widgetInfo, widgetSettings, forceInSignals, forceOutSignals, id = id)
+            instanceID = self.addInstance(self.signalManager, widgetInfo, forceInSignals, forceOutSignals, id = id)
             newwidget = self.addWidgetIcon(widgetInfo, instanceID)
             #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
             redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Create new widget named %s.') % newwidget.caption)
@@ -467,8 +467,8 @@ class SchemaDoc(QWidget):
         ## try to set up the ghost widgets
         qApp.restoreOverrideCursor()
         return newwidget.instanceID
-    def addInstance(self, signalManager, widgetInfo, widgetSettings = None, forceInSignals = None, forceOutSignals = None, id = None):
-        return redRObjects.addInstance(signalManager, widgetInfo, settings = widgetSettings, insig = forceInSignals, outsig = forceOutSignals, id = id)
+    def addInstance(self, signalManager, widgetInfo, forceInSignals = None, forceOutSignals = None, id = None):
+        return redRObjects.addInstance(signalManager, widgetInfo, insig = forceInSignals, outsig = forceOutSignals, id = id)
         
     def returnInstance(self, id):
         return redRObjects.getWidgetInstanceByID(id)
@@ -574,11 +574,11 @@ class SchemaDoc(QWidget):
         self.resolveCollisions(newwidget, x, y)
         if caption != "": 
             newwidget.updateText(caption)
-    def addWidgetInstanceByFileName(self, name, settings = None, inputs = None, outputs = None, id = None):
+    def addWidgetInstanceByFileName(self, name, inputs = None, outputs = None, id = None):
         #try:
             #if widgetFileName == 'base_dummy': print _('Loading dummy step 1a')
         widget = redRObjects.widgetRegistry()['widgets'][name]
-        return self.addInstance(self.signalManager, widget, settings, inputs, outputs, id = id)
+        return self.addInstance(self.signalManager, widget, inputs, outputs, id = id)
         # except Exception as inst:
             # redRLog.log(redRLog.REDRCORE, redRLog.ERROR,  _('Loading exception occured for widget ')+name+' '+unicode(inst))
             

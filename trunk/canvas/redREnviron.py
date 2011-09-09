@@ -140,6 +140,7 @@ def __getDirectoryNames(rootDir):
     dirs['canvasDir'] = os.path.join(dirs['redRDir'], "canvas")
     dirs['canvasIconsDir'] = os.path.join(dirs['redRDir'], "canvas",'icons')
     dirs['widgetDir'] = os.path.join(dirs['redRDir'], "libraries")
+    dirs['devAddonDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], 'RedRDevAddOn')
     dirs['libraryDir'] = os.path.join(dirs['redRDir'], "libraries")
     dirs['qtWidgetsDir'] = os.path.join(dirs['redRDir'], "libraries",'base','qtWidgets')
     dirs['redRSignalsDir'] = os.path.join(dirs['redRDir'], "libraries",'base','signalClasses')

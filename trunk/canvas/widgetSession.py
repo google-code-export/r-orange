@@ -129,7 +129,8 @@ class widgetSession():
             try:
                 #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Loading %s' % k)
                 if k in ['inputs', 'outputs']: continue
-                if v == None:
+                
+                elif v == None:
                     continue
                 elif 'pythonObject' in v.keys():
                     #print '|#| Setting pythonObject %s to %s' % (k,unicode(v['pythonObject']))

@@ -36,6 +36,6 @@ class RModelFit(RList):
         else:
             return self.RListSignal
     # def copy(self):
-        # newVariable = RModelFit(data = self.data, parent = self.parent)
+        # newVariable = RModelFit(data = str(self.getData()), parent = self.parent)
         # newVariable.dictAttrs = self.dictAttrs.copy()
         # return newVariable

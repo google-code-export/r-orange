@@ -54,7 +54,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         else:
             self.Rvariables = {}
         self.RvariablesNames = []
-        self.setRvariableNames(['title'])
+        #self.setRvariableNames(['title'])
         self.requiredRLibraries = []
         self.device = {}
         self.packagesLoaded = 0
@@ -83,6 +83,8 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             
         self.resetRVariableNameEdits()
         
+        if redRSaveLoad.LOADINGINPROGRESS: 
+            redRRObjects.addRObjects(self.widgetID, self.Rvariables.values())
     def setRvariableNames(self,names):
         """Sets the self.Rvariables dict with a unicode string for each variable, this is called in __init__.
         
@@ -91,7 +93,11 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         for x in names:
             self.Rvariables[x] = x + self.variable_suffix
             self.RvariablesNames.append(x)
-            
+        redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("adding variables to redRRObjects"))
+        redRRObjects.addRObjects(self.widgetID, self.Rvariables.values())
+        if len(names) > 0:
+          self.collapseDataButton.show() # these are set to hidden by default because we don't want to belaybor widgets that don't set R data.
+          self.neverCollapseDataButton.show()
         self.resetRVariableNameEdits()
         
     def makeCM(self, Variable):
@@ -103,7 +109,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             values = 'c('+','.join(values)+')'
         self.R(CM+'$'+colname+self.variable_suffix+'<-'+values, wantType = 'NoConversion') # commit to R
 
-    def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = 'convert', listOfLists = True):
+    def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = 'convert', listOfLists = True, ensureVariables = True):
         """Connection to the R session for widgets.  
         
         This function passes most arguments to :mod:`RSession` as Rcommand.  callType is currently depricated. processingNotice sets the widget status to processing.  silent indicates that the function call should be run in silent mode, silent calls will not be appended to the log or the history, silent should only be set when checking the value of an R object while assignment should not be slient.  Note that if silent is True, exceptions will not be raised should they occur and None will be returned silently.  showException indicates if a popup dialog should be shown when an exception occurs.
@@ -115,7 +121,10 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             self.status.setStatus(4)
             
         qApp.setOverrideCursor(Qt.WaitCursor)
+        
         try:
+            if ensureVariables:
+                redRRObjects.ensureVars(self.widgetID)  # this ensures that all variables that this widget has set are available for use in the R session.
             commandOutput = RSession.Rcommand(query = query, silent = silent, wantType = wantType, listOfLists = listOfLists)
         except RuntimeError as inst:
             qApp.restoreOverrideCursor()

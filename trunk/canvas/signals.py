@@ -18,6 +18,9 @@ class BaseRedRVariable:
         #checkVal - check that the value sent as data is of the appropriate type, implemented in child classes.
     def __init__(self, widget, data, parent = None, checkVal = False):
         
+
+        self.widget = widget
+        self.widgetID = widget.widgetID
         self.data = data
         self.dictAttrs = {}
         self.reserved = ['data', 'dictAttrs']

@@ -29,7 +29,7 @@ tmp.RData; saved R data image of the session
     
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import os, sys, redRObjects, cPickle, redREnviron, redRLog, globalData, RSession, redRPackageManager
+import os, sys, redRObjects, cPickle, redREnviron, redRLog, globalData, RSession, redRPackageManager, redRRObjects
 import redRi18n, redRStyle
 from orngDlgs import TemplateDialog
 # def _(a):
@@ -44,6 +44,7 @@ schemaDoc = None
 _tempWidgets = []
 notesTextWidget = None
 sessionID = 1
+LOADINGINPROGRESS = False
 def setNotesWidget(widget):
     global notesTextWidget
     notesTextWidget = widget
@@ -133,6 +134,7 @@ def saveInstances(instances, widgets, doc, progressBar):
         except Exception as inst:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('redRSaveLoad error saving widget %s-%s,  %s') % (widget.widgetInfo.package['Name'], str(widget.widgetID), unicode(inst)))
         widgets.appendChild(temp)
+        redRRObjects.saveWidgetObjects(widget.widgetID)
     return (widgets, settingsDict, requireRedRLibraries)
 
 def makeTemplate(filename, copy = False):
@@ -479,6 +481,7 @@ If you were loading a file from the quick bar, please try loading using "Open"."
             loadDocument180(filename, caption = None, freeze = 0, importing = 0)
             loadingProgressBar.hide()
             loadingProgressBar.close()
+            LOADINGINPROGRESS = False
             return
         else:
             print _('The version is:%s') % version
@@ -488,6 +491,7 @@ If you were loading a file from the quick bar, please try loading using "Open"."
         loadDocument180(filename, caption = None, freeze = 0, importing = 0)
         loadingProgressBar.hide()
         loadingProgressBar.close()
+        LOADINGINPROGRESS = False
         return
         
     ## extract the widgets and the tab settings
@@ -513,7 +517,7 @@ If you were loading a file from the quick bar, please try loading using "Open"."
         ## need to load the r session before we can load the widgets because the signals will beed to check the classes on init.
         if not checkWidgetDuplication(widgets = widgets):
             QMessageBox.information(canvasDlg, _('Schema Loading Failed'), _('Duplicated widgets were detected between this schema and the active one.  Loading is not possible.'),  QMessageBox.Ok + QMessageBox.Default)
-    
+            LOADINGINPROGRESS = False
             return
         ## load the R session
         print 'Loading R session'
@@ -729,6 +733,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             caption = widget.getAttribute('captionTitle')
             print 'Loading widget', name, caption, widgetID
             settings = cPickle.loads(loadedSettingsDict[widgetID]['settings'])
+            widgetSettingsList.append((widgetID, settings))  # we need to load the settings after we load all of the widgets, this will prevent errors when we load settings.
             inputs = cPickle.loads(loadedSettingsDict[widgetID]['inputs'])
             outputs = cPickle.loads(loadedSettingsDict[widgetID]['outputs'])
             #print _('adding instance'), widgetID, inputs, outputs
@@ -744,6 +749,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
                 ## send None through all of the widget ouptuts if this is a template
                 nw.outputs.propogateNone()
             nw = redRObjects.getWidgetInstanceByID(newwidget)
+            nw.setDataCollapsed(True)  # the data must come in colapsed, this will help to prevent loading needless R data.
             nw.setWindowTitle(caption)
             #print _('Settings'), settings
             lpb += 1
@@ -754,7 +760,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Loaded Settings Dict Is: %s' % unicode(loadedSettingsDict))
     ## now the widgets are loaded so we can move on to setting the connections
     
-    return (loadedOk, failureText)
+    return (loadedOk, failureText, widgetSettingsList)
 def loadLines(lineList, loadingProgressBar, freeze, tmp):
     global sessionID
     failureText = ""

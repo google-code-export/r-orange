@@ -21,7 +21,7 @@ class RVector(RMatrix):
     def __init__(self, widget, data, parent = None, checkVal = True, **kwargs):
         RMatrix.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
         if checkVal:
-            if self.R('class('+self.data+')', wantType = 'list')[0] not in ['complex', 'raw', 'numeric', 'factor', 'character', 'logical', 'integer', 'POSIXt', 'POSIXct']:
+            if self.R('class('+str(self.getData())+')', wantType = 'list')[0] not in ['complex', 'raw', 'numeric', 'factor', 'character', 'logical', 'integer', 'POSIXt', 'POSIXct']:
                 raise Exception, 'Not vector data'
         self.StructuredDictSignal = None
         self.RDataFrameSignal = None
@@ -46,10 +46,10 @@ class RVector(RMatrix):
             raise Exception
     def _convertToStructuredDict(self):
         if not self.StructuredDictSignal:
-            data = self.R('as.data.frame('+self.data+')', wantType = 'dict')
+            data = self.R('as.data.frame('+str(self.getData())+')', wantType = 'dict')
             keys = ['row_names']
-            keys += self.R('colnames(as.data.frame('+self.data+'))', wantType = 'list')
-            rownames = self.R('rownames('+self.data+')', wantType = 'list')
+            keys += self.R('colnames(as.data.frame('+str(self.getData())+'))', wantType = 'list')
+            rownames = self.R('rownames('+str(self.getData())+')', wantType = 'list')
             try:
                 if rownames in [None, 'NULL', 'NA']:
                     rownames = [unicode(i+1) for i in range(len(data[data.keys()[0]]))]
@@ -97,12 +97,12 @@ class RVector(RMatrix):
     def getColumnnames_data(self):
         return self.getNames_data()
     def getNames_call(self):
-        return self.data
+        return str(self.getData())
     def getNames_data(self):
-        return self.data # the only name to speek of the name of the variable
+        return str(self.getData()) # the only name to speek of the name of the variable
 
     def getRange_call(self, rowRange = None, colRange = None):
-        if rowRange == None: return self.data
-        else: return self.data+'['+unicode(rowRange)+']'
+        if rowRange == None: return str(self.getData())
+        else: return str(self.getData())+'['+unicode(rowRange)+']'
         
         
