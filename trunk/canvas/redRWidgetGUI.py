@@ -576,13 +576,6 @@ class redRWidgetGUI(QMainWindow):
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             pass
 
-        # try:
-            # import webbrowser
-            # webbrowser.open("http://www.ailab.si/orange/doc/widgets/catalog/%s/%s.htm" % (self._category, self.__class__.__name__[2:]))
-            # return
-        # except:
-            # pass
-    
     def keyPressEvent(self, e):
         if e.key() in (Qt.Key_Help, Qt.Key_F1):
             self.openWidgetHelp()
@@ -626,34 +619,31 @@ class redRWidgetGUI(QMainWindow):
         
     def collapseData(self):
       if self.neverCollapseDataButton.isChecked():
-	self.log(_('Never collapse is checked, please uncheck if you want to collapse the data'))
-	return
+        self.log(_('Never collapse is checked, please uncheck if you want to collapse the data'))
+        return
       self.log(_('The collapse data button is set to %s') % self.collapseDataButton.isChecked())
       if self.collapseDataButton.isChecked():
-	redRRObjects.saveWidgetObjects(self.widgetID)
-	#self.collapseDataButton.setChecked(False)
+        redRRObjects.saveWidgetObjects(self.widgetID)
+        #self.collapseDataButton.setChecked(False)
       else:
-	redRRObjects.loadWidgetObjects(self.widgetID)
-	#self.collapseDataButton.setChecked(True)
+        self.expandData()
+        #self.collapseDataButton.setChecked(True)
+    def expandData(self):
+        redRRObjects.loadWidgetObjects(self.widgetID)
     def neverCollapseData(self):
       if self.neverCollapseDataButton.isChecked():
-	redRRObjects.setWidgetPersistent(self.widgetID)
-	self.collapseDataButton.hide()
+        redRRObjects.setWidgetPersistent(self.widgetID)
+        self.collapseDataButton.hide()
       else:
-	redRRObjects.ensureVars(self.widgetID) # sure the user did just ask that we unset the never collapse rule, but why not give the data another few seconds of life, the user can always set the data to collapse on her own.
-	self.collapseDataButton.show()
+        redRRObjects.ensureVars(self.widgetID) # sure the user did just ask that we unset the never collapse rule, but why not give the data another few seconds of life, the user can always set the data to collapse on her own.
+        self.collapseDataButton.show()
     def setDataCollapsed(self, collapsed):
       self.collapseDataButton.setChecked(collapsed)
+    def isDataCollapsed(self):
+        """ Returns True if data is in a collapsed state, returns False otherwise"""
+        return redRRObjects.isDataCollapsed(self.widgetID)
 
 
 class canvasWidget:
     def __init__(self, **attrs):
         self.__dict__.update(attrs)
-
-
-# if __name__ == "__main__":
-    # a = QApplication(sys.argv)
-    # ow = OWWidget()
-    # ow.show()
-    # a.exec_()
-    # ow.saveGlobalSettings()

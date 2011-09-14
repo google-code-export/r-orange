@@ -183,6 +183,7 @@ class widgetSession():
                         getattr(self, k).loadSettings(v['redRGUIObject']['widgetSettings'])
                         getattr(self, k).setDefaultState(v['redRGUIObject']['defaultSettings'])
                     else:
+                        print v.get('redRGUIObject').keys(), "widgetSettings not in keys but should have been, please check the keys."
                         try:
                             getattr(self, k).loadSettings(v['redRGUIObject'])
                             getattr(self, k).setDefaultState(v['redRGUIObject'])
@@ -216,7 +217,7 @@ class widgetSession():
             for mod in d['class'].split('.')[1:]:
                 #print varc
                 varc = getattr(varc, mod)
-            var = varc(widget = self, **d) 
+            var = varc(widget = self, checkVal = False, **d) 
             var.loadSettings(d)
             
         except: # if it doesn't exist we need to set the class something so we look to the outputs. 

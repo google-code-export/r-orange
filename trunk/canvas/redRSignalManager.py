@@ -291,7 +291,9 @@ class OutputHandler:
         }...
         }
         """
-        if data.get('version', 1.85) < 1.85:
+        
+        if data.get('version', 1.85) > 1.85:
+            #redRLog.log(redRLog.REDRCPRE, redRLog.DEBUG, "Adding Outputs using prior 1.85 settings.")
             for (key, value) in data.items():
                 if key not in self.outputs.keys() or 'connections' not in value:
                     #print _('Signal does not exist')
@@ -308,10 +310,12 @@ class OutputHandler:
                         redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Failed to find input widget %s' % vValue['parentID'])
                         return
                     inputSignal = widget.inputs.getSignal(vValue['wid'])
+                    #redRLog.log(redRLog.REDRCPRE, redRLog.DEBUG, "Adding canvas line to using 1.85 settings.")
                     self.connectSignal(inputSignal, key, vValue['enabled'], process = False)  # connect the signal but don't send data through it.
                     if tmp:
                         self.propogateNone(ask = False)
-        elif data.get('version', 1.85) == 1.85: # 1.85 is the last supported version to not have version numbers in the output data containers.
+        elif data.get('version', 1.85) <= 1.85: # 1.85 is the last supported version to not have version numbers in the output data containers.
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, "Adding Outputs using pre 1.85 settings.")
             for (key, value) in data.items():
                 if key not in self.outputs.keys() or 'connections' not in value: continue
                 for (vKey, vValue) in value['connections'].items():
@@ -328,7 +332,7 @@ class OutputHandler:
                         inputSignal = widget.inputs.getSignal(vValue['wid'])
                     elif 'id' in vValue.keys():
                         inputSignal = widget.inputs.getSignal(vValue['id'])
-                    
+                    redRLog.log(redRLog.REDRCPRE, redRLog.DEBUG, "Adding canvas line to using < 1.85 settings.")
                     self.connectSignal(inputSignal, key, vValue['enabled'], process = False)  # connect the signal but don't send data through it.
                     if tmp:
                         self.propogateNone(ask = False)

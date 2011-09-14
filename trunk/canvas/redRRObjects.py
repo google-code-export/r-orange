@@ -25,7 +25,7 @@
 from RSession import Rcommand as R
 import redRi18n
 import redRLog
-import os, sys, redREnviron, redRObjects, redRLog
+import os, sys, redREnviron, redRObjects, redRLog, RSession
 import redRSaveLoad
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -37,7 +37,7 @@ def addRObjects(widgetID, ol):
   global _rObjects
   if widgetID not in _rObjects.keys():
     _rObjects[widgetID] = {'vars':ol, 'state':1, 'timer':QTimer()}
-    QObject.connect(_rObjects[widgetID]['timer'], SIGNAL('timeout()'), lambda: saveWidgetObjects(widgetID))
+    #QObject.connect(_rObjects[widgetID]['timer'], SIGNAL('timeout()'), lambda: saveWidgetObjects(widgetID))
   else:
     _rObjects[widgetID]['vars'] += ol
   extendTimer(widgetID)
@@ -62,19 +62,27 @@ def loadWidgetObjects(widgetID):
     redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("R objects from widgetID %s were expanded (loaded)") % widgetID)
     if not RSession.mutex.tryLock():  # the session is locked
         while not RSession.mutex.tryLock(): pass
-  
-    if R('load(\"%s\")' % os.path.join(redREnviron.directoryNames['tempDir'], widgetID).replace('\\', '/'), wantType = 'NoConversion', silent = True) != 'SessionLocked':
+    RSession.mutex.unlock() # we need to unlock now that we have waited and acquired the lock (one day this will be changed to a more generic form if we can figure out a way of determining who has the lock.
+    if R('load(\"%s\")' % os.path.join(redREnviron.directoryNames['tempDir'], widgetID).replace('\\', '/'), wantType = 'NoConversion') != 'SessionLocked':
         _rObjects[widgetID]['state'] = 1
         redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(False)
         extendTimer(widgetID)
         setTotalMemory()
-  
+def isDataCollapsed(widgetID):
+    """Returns True if data is collapsed (saved) and False otherwise"""
+    global _rObjects
+    if widgetID not in _rObjects: return False #if the data isn't under the control of the rObjects module then it can't very easily be collapsed can it??
+    if _rObjects[widgetID]['state']: return False
+    else: return True
+    
 def saveWidgetObjects(widgetID):
   global _rObjects
+  if widgetID not in _rObjects: return
   if _rObjects[widgetID]['state']:
     _rObjects[widgetID]['timer'].stop()
     redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("R objects from widgetID %s were collapsed (saved)") % widgetID)
-    if not RSession.mutex.tryLock():
+    if RSession.mutex.tryLock(): # means the mutex is locked
+        RSession.mutex.unlock()
         R('save(%s, file = \"%s\")' % (','.join(_rObjects[widgetID]['vars']), os.path.join(redREnviron.directoryNames['tempDir'], widgetID).replace('\\', '/')), wantType = 'NoConversion', silent = True)
         _rObjects[widgetID]['state'] = 0
         redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(True)
@@ -82,10 +90,12 @@ def saveWidgetObjects(widgetID):
             R('if(exists(\"%s\")){rm(\"%s\")}' % (v, v), wantType = 'NoConversion', silent = True)
         setTotalMemory()
     else:  # the session is locked so the data wasn't really saved.  We add time to the timer and try next time.
+        #RSession.mutex.unlock()
         extendTimer(widgetID)
   
 def ensureVars(widgetID):
   #redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("Ensuring variables for widgetID %s") % widgetID)
+  if widgetID not in _rObjects: return # this is the case where the widget is not being tracked by the system, for example if all of the objects are python objects.
   if not _rObjects[widgetID]['state']:
     loadWidgetObjects(widgetID)
   extendTimer(widgetID)
@@ -114,18 +124,26 @@ else:
 #MEMORYLIMIT = R('memory.limit()*1024*1024', silent = True)
 #print "MEMORYLIMIT ", MEMORYLIMIT, type(MEMORYLIMIT)
 
-def memoryConsumed(id):
+def memoryConsumed(widgetid):
     global _rObjects
     myMemory = 0
-    if _rObjects[id]['state']:
-        for v in _rObjects[id]['vars']:
+    return 0
+    ### code below is yet to be implemented in a way that does not cause errors in general use.
+    if not RSession.mutex.tryLock(): return 0
+    RSession.mutex.unlock()
+    if (widgetid in _rObjects) and (_rObjects[widgetid]['state']):
+        for v in _rObjects[widgetid]['vars']:
             myMemory += int(R('as.numeric(object.size(%s))' % v, silent = True))
+    
     return myMemory
     
 def setTotalMemory():
     global TOTALMEMORYUSED
+    return 0
+    ### code below is yet to be implemented in a way that does not cause errors in general use.
+    if not RSession.mutex.tryLock(): return 0
     if len(R('ls()', silent = True)) > 0:
         TOTALMEMORYUSED = R('sum(as.vector(sapply(unlist(ls()),object.size)))', silent = True)
     else:
         TOTALMEMORYUSED = 0
-    
+    RSession.mutex.unlock()

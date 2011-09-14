@@ -28,6 +28,7 @@ class BaseRedRVariable:
         self.widget = widget
     ## returns the current data object in self.data
     def getData(self):
+        self.widget.expandData() # this exapnds the data of the parent widget at the time that the data is requested.  This will exapnd all widget variables.
         return self.data
            
    ## returns the current data object in self.parent

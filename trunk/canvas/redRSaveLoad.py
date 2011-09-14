@@ -97,33 +97,34 @@ def saveInstances(instances, widgets, doc, progressBar):
     progress = 0
     if type(instances) == dict:
         instances = instances.values()
-    print 'Saving instances %s' % ','.join([w.widgetID for w in instances])
+    #print 'Saving instances %s' % ','.join([w.widgetID for w in instances])
     for widget in instances:
         try:
-            print 'Create doc elemtent'
+            #print 'Create doc elemtent'
             temp = doc.createElement("widget")
             
-            print 'set element nodes'
+            #print 'set element nodes'
             temp.setAttribute("widgetName", widget.widgetInfo.fileName)
             temp.setAttribute("packageName", widget.widgetInfo.package['Name'])
             temp.setAttribute("packageVersion", widget.widgetInfo.package['Version']['Number'])
             temp.setAttribute("widgetFileName", os.path.basename(widget.widgetInfo.fullName))
             temp.setAttribute('widgetID', widget.widgetID)
             temp.setAttribute('captionTitle', unicode(widget.windowTitle()))
-            print _('save in orngDoc ') + unicode(widget.captionTitle)
+            temp.setAttribute('collapsed', cPickle.dumps(widget.isDataCollapsed()))
+            #print _('save in orngDoc ') + unicode(widget.captionTitle)
             progress += 1
             progressBar.setValue(progress)
             
-            print 'get settings'
+            #print 'get settings'
             s = widget.getSettings()
-            print 'get inputs'
+            #print 'get inputs'
             i = widget.inputs.returnInputs()
-            print 'get outputs'
+            #print 'get outputs'
             o = widget.outputs.returnOutputs()
             #print 'return outputs'
             #c = widget.outputs.returnOutputs()
             settingsDict[widget.widgetID] = {}
-            print 'dump settings'
+            #print 'dump settings'
             settingsDict[widget.widgetID]['settings'] = cPickle.dumps(s,2)
             settingsDict[widget.widgetID]['inputs'] = cPickle.dumps(i,2)
             settingsDict[widget.widgetID]['outputs'] = cPickle.dumps(o,2)
@@ -535,7 +536,7 @@ If you were loading a file from the quick bar, please try loading using "Open"."
         if notesTextWidget and ('none' in globalData.globalData.keys()) and ('globalNotes' in globalData.globalData['none'].keys()):
             notesTextWidget.setHtml(globalData.globalData['none']['globalNotes']['data'])
     
-        (loadedOkW, tempFailureTextW) = loadWidgets(widgets = widgets, loadingProgressBar = loadingProgressBar, loadedSettingsDict = settingsDict, tmp = tmp)
+        (loadedOkW, tempFailureTextW, settingsList) = loadWidgets(widgets = widgets, loadingProgressBar = loadingProgressBar, loadedSettingsDict = settingsDict, tmp = tmp)
     
     ## LOAD tabs
     #####  move through all of the tabs and load them.
@@ -545,7 +546,10 @@ If you were loading a file from the quick bar, please try loading using "Open"."
         for widget in redRObjects.instances():
             redRLog.log(10, 9, 9, _('Setting Signals for %s') % widget)
             try:
-                if widget.widgetID not in settingsDict.keys(): continue
+                if widget.widgetID not in settingsDict.keys(): 
+                    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, "widget id not in settings dict.keys(), keys are: %s" % str(settingsDict.keys()))
+                    continue
+                redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, "setting widget outputs")
                 widget.outputs.setOutputs(cPickle.loads(settingsDict[widget.widgetID]['outputs']), tmp)
             except Exception as inst:
                 redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
@@ -553,6 +557,7 @@ If you were loading a file from the quick bar, please try loading using "Open"."
     else:
         for widget in redRObjects.instances():
             if widget.tempID and widget.tempID in settingsDict.keys():
+                redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, "widget id not in settings dict.keys(), keys are: %s" % str(settingsDict.keys()))
                 widget.outputs.setOutputs(cPickle.loads(settingsDict[widget.tempID]['outputs']), tmp)
     if pipe:        ## send none through all of the data.
         for w in redRObjects.instances():
@@ -578,6 +583,7 @@ If you were loading a file from the quick bar, please try loading using "Open"."
     qApp.restoreOverrideCursor()
     loadingProgressBar.hide()
     loadingProgressBar.close()
+    print redRObjects._lines
     redRObjects.updateLines()
     
 def loadDocument180(filename, caption = None, freeze = 0, importing = 0):
@@ -725,13 +731,14 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
     loadedOk = 1
     failureText = ''
     redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Loading widgets %s' % str(widgets.getElementsByTagName("widget")))
+    widgetSettingsList = []
     for widget in widgets.getElementsByTagName("widget"):
         try:
             name = widget.getAttribute("widgetName")
             
             widgetID = widget.getAttribute('widgetID')
             caption = widget.getAttribute('captionTitle')
-            print 'Loading widget', name, caption, widgetID
+            #print 'Loading widget', name, caption, widgetID
             settings = cPickle.loads(loadedSettingsDict[widgetID]['settings'])
             widgetSettingsList.append((widgetID, settings))  # we need to load the settings after we load all of the widgets, this will prevent errors when we load settings.
             inputs = cPickle.loads(loadedSettingsDict[widgetID]['inputs'])
@@ -749,7 +756,8 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
                 ## send None through all of the widget ouptuts if this is a template
                 nw.outputs.propogateNone()
             nw = redRObjects.getWidgetInstanceByID(newwidget)
-            nw.setDataCollapsed(True)  # the data must come in colapsed, this will help to prevent loading needless R data.
+            #nw.setDataCollapsed(True)  # the data must come in colapsed, this will help to prevent loading needless R data.
+            nw.setDataCollapsed(cPickle.loads(widget.getAttribute('collapsed')) or False)  # we set the default to be not collapsed.
             nw.setWindowTitle(caption)
             #print _('Settings'), settings
             lpb += 1

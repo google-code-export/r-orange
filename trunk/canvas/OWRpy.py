@@ -124,7 +124,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         
         try:
             if ensureVariables:
-                redRRObjects.ensureVars(self.widgetID)  # this ensures that all variables that this widget has set are available for use in the R session.
+                self.expandData() # this ensures that all variables that this widget has set are available for use in the R session.
             commandOutput = RSession.Rcommand(query = query, silent = silent, wantType = wantType, listOfLists = listOfLists)
         except RuntimeError as inst:
             qApp.restoreOverrideCursor()
