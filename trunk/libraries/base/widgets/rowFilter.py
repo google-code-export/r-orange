@@ -76,7 +76,7 @@ class rowFilter(OWRpy):
         self.dataParent = data
 
         self.data  = data.getData()
-        self.table.setRTable(self.data)
+        self.table.setTable(data, True, True)
         
     def onFilter(self):
         if _('Commit on Filter') in self.commitOnInput.getChecked():

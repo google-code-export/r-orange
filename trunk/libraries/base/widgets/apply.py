@@ -33,8 +33,7 @@ While applied across the columns would result in: [7, 8, 9].
 </widgetXML>
 """
 from OWRpy import * 
-import redRGUI, signals
-import redRGUI 
+import redRGUI, signals 
 
 from libraries.base.widgetImport import *
 import redRi18n
@@ -48,25 +47,28 @@ class apply(OWRpy):
         self.data=None
         
         """.. rrsignals::"""
-        self.inputs.addInput('id0', _('X'), signals.base.RMatrix, self.processX)
+        self.inputs.addInput('id0', _('X'), [signals.base.RMatrix, signals.base.RDataFrame], self.processX)
 
         """.. rrsignals::"""
         self.outputs.addOutput('id0', _('apply Output'), signals.base.RDataFrame)
 
         
-        area = redRGUI.base.widgetBox(self.controlArea,orientation='horizontal')       
+        area = redRGUI.base.widgetBox(self.controlArea,orientation='vertical')       
         
         box = redRGUI.base.widgetBox(area)
         box.setMinimumWidth(200)
         area.layout().setAlignment(box,Qt.AlignLeft)
         
         self.functions =  redRGUI.base.listBox(box,  label = _("Select Function"),
-        items=['mean','median','max','min','sum','log2', 'log10', 'var'],callback=self.functionSelect)
+        items=['mean','median','max','min','sum','log2', 'log10', 'var', 'custom'],callback=self.functionSelect)
         self.functions.setSelectionMode(QAbstractItemView.SingleSelection)
         
         #redRGUI.base.separator(box,height=10)
         self.functionText = redRGUI.base.textEdit(box,label=_('Function:'), orientation='vertical')
         self.parameters = redRGUI.base.lineEdit(box,label=_('Additional Parameters:'), orientation='vertical')
+        
+        self.customFunctionText = redRGUI.base.textEdit(box, label = _('Custom Function'), orientation = 'vertical', toolTip = _('Takes the object data as it\'s parameters, this is the vector of data across the margin being used.  May cause errors in use that are not the fault of the widget developers.'))
+        
         
         self.demension =  redRGUI.base.radioButtons(box, label = _("To:"), buttons = [_('All'), _('Rows'), _('Columns'),_('Other')],
         setChecked=_('Rows'), orientation='horizontal',callback= lambda: self.dimensionChange(1))
@@ -76,8 +78,9 @@ class apply(OWRpy):
         
         
         self.commit = redRGUI.base.commitButton(buttonBox, _("Commit"), alignment=Qt.AlignLeft, 
-        callback = self.commitFunction, processOnInput=True,processOnChange=True)
+        callback = self.commitFunction, processOnInput=True, processOnChange=True)
         
+        self.dataTable = redRGUI.base.textEdit(area, label = _('Data Sample'))
         self.outputTable = redRGUI.base.filterTable(area,label=_('Results of Apply'), sortable=True)
 
     def dimensionChange(self,type):
@@ -99,6 +102,7 @@ class apply(OWRpy):
             self.data=data.getData()
             self.numDims = self.R('length(dim(%s))' % self.data)
             self.indexSpinBox.setMaximum(self.numDims)
+            self.dataTable.captureOutput('head(%s)' % self.data)
             if self.commit.processOnInput():
                 self.commitFunction()
         else:
@@ -131,11 +135,18 @@ class apply(OWRpy):
         
         if self.demension.getChecked() != _('All'):
             injection = []
-            string = 'MARGIN = %s' % unicode(self.indexSpinBox.value())
+            string = 'MARGIN = %s' % unicode(int(self.indexSpinBox.value()))
             injection.append(string)
-                
-            string = 'FUN='+unicode(self.functionText.toPlainText())
-            injection.append(string)
+            
+            if self.functions.currentSelection()[0].split('\n--')[0] == 'custom':
+                try:
+                    self.R('tempFun<-function(data){%s}' % self.customFunctionText.toPlainText(), wantType = redR.NOCONVERSION)
+                    string = 'FUN=tempFun'
+                    injection.append(string)
+                except: return
+            else:
+                string = 'FUN='+unicode(self.functionText.toPlainText())
+                injection.append(string)
             
             injection.extend(params)
             
