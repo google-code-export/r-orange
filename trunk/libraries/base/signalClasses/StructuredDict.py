@@ -83,8 +83,8 @@ class StructuredDict(UnstructuredDict):
 
 import os, sys, time, redREnviron
 class StructuredDictModel(QAbstractTableModel): 
-    def __init__(self, parent, data, filteredOn = [], editable=False,
-    filterable=False,sortable=False, orgData = None, reload = False, criteriaList = {}): 
+    def __init__(self, parent, data, filteredOn = None, editable=False,
+    filterable=False,sortable=False, orgData = None, reload = False, criteriaList = None): 
         QAbstractTableModel.__init__(self,parent) 
         if not data: raise Exception('Rdata must be present')
         self.working = False
@@ -94,8 +94,12 @@ class StructuredDictModel(QAbstractTableModel):
         self.sortable = sortable
         self.editable = editable
         self.filterable = filterable
-        self.filteredOn = filteredOn
-        self.criteriaList = criteriaList
+        
+        if filteredOn != None: self.filteredOn = filteredOn
+        else: self.filteredOn = []
+        
+        if criteriaList != None: self.criteriaList = criteriaList
+        else: self.criteriaList = {}
         # self.filter_delete = os.path.join(redREnviron.directoryNames['picsDir'],'filterAdd.png')
         self.columnFiltered = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'columnFilter.png'))
         

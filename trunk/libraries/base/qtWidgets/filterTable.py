@@ -268,6 +268,7 @@ class filterTable(widgetState, QTableView):
     def setTable(self, data, filterable = False, sortable = False):
         """Sets the table to a table model returned from a signal.  data represents a Red-R signal that contains a table model function getTableModel()."""
         self.tm = data.getTableModel(self, filterable, sortable)
+        print self.tm, "Table model"
         self.setModel(self.tm)
         self.dataInfo.setText(self.tm.getSummary())
         

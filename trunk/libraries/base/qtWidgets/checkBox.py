@@ -88,12 +88,12 @@ class checkBox(widgetState,QWidget):
         # QWidget.setSizePolicy(self,h,w)
         self.box.setSizePolicy(h,w)
             
-    def setChecked(self,ids):
+    def setChecked(self,ids,logical = True):
         """Sets the keys listed in ids to checked"""
         for i in self.buttons.buttons():
             id = self.buttons.id(i)
-            if unicode(self.items.keys()[id]) in ids: i.setChecked(True)
-            else: i.setChecked(False)
+            if unicode(self.items.keys()[id]) in ids: i.setChecked(logical)
+            else: i.setChecked(not logical)
     
     def checkAll(self):
         """Checks all of the buttons"""

@@ -188,22 +188,34 @@ class RDataFrame(RList, StructuredDict, TableView):
         return output
     
     def getTableModel(self, widget, filtered = True, sortable = True):
-        return RDataFrameModel(widget, self.getData(), filteredOn = [], filterable = filtered, sortable = sortable)
+        print "Calling RDataFrameModel"
+        return RDataFrameModel(widget, self.getData(), filteredOn = [], filterable = filtered, sortable = sortable, signal = self)
         
 class RDataFrameModel(QAbstractTableModel): 
-    def __init__(self, parent, Rdata, filteredOn = [], editable=False,
-    filterable=False,sortable=False, orgRdata = None, reload = False, criteriaList = {}): 
+    def __new__(cls, *arg, **args):
+        self = QAbstractTableModel.__new__(cls)
+        return self
+        
+    def __init__(self, parent, Rdata, filteredOn = None, editable=False,
+    filterable=False,sortable=False, orgRdata = None, reload = False, criteriaList = None, signal = None): 
         QAbstractTableModel.__init__(self,parent) 
         if not Rdata: raise Exception('Rdata must be present')
         self.working = False
         self.range = 500
         self.parent =  parent
-        self.R = Rcommand
+        
+        #self.R = Rcommand
+        self.signal = signal
         self.sortable = sortable
         self.editable = editable
         self.filterable = filterable
-        self.filteredOn = filteredOn
-        self.criteriaList = criteriaList
+        if filteredOn != None:
+            self.filteredOn = filteredOn
+        else: self.filteredOn = []
+        if criteriaList:
+            self.criteriaList = criteriaList
+        else:
+            self.criteriaList = {}
         # self.filter_delete = os.path.join(redREnviron.directoryNames['picsDir'],'filterAdd.png')
         self.columnFiltered = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'columnFilter.png'))
         
@@ -215,6 +227,11 @@ class RDataFrameModel(QAbstractTableModel):
         self.initData(Rdata)
         
     ##########  functions accessed by filter table  #########
+    def R(self, *args, **kwargs):
+        self.working = True
+        self.signal.widget.expandData() # ensure that the parent widget data is expanded.
+        self.working = False
+        return Rcommand(*args, **kwargs)
     def getSummary(self):
         total = self.R('nrow(%s)' % self.orgRdata,silent=True)
         filtered = self.R('nrow(%s)' % self.Rdata, silent = True)
@@ -251,7 +268,8 @@ class RDataFrameModel(QAbstractTableModel):
         '''
         #print selectedCol, pos
         # print _('in createMenu'), self.criteriaList
-
+        if not self.sortable and not self.filterable: return
+        
         globalPos = QCursor.pos() #self.mapToGlobal(pos)
         self.menu = QDialog(None,Qt.Popup)
         self.menu.setLayout(QVBoxLayout())
@@ -386,10 +404,11 @@ class RDataFrameModel(QAbstractTableModel):
         if action=='cancel':
             self.menu.hide()
             return
-        colClass = self.R('class(%s[,%d, FALSE])' % (self.Rdata,col),silent=True) # must set the subsetting to not drop in the case of only one column
+        colClass = self.R('class(%s[,%d])' % (self.Rdata,col),silent=True) # must set the subsetting to not drop in the case of only one column
         if action =='clear':
             del self.criteriaList[col]
         elif action=='OK':
+            #print colClass
             if colClass in ['integer','numeric']:
                 for label,value in zip(menu.findChildren(QLabel),menu.findChildren(QLineEdit)):
                     if value.text() != '':
@@ -402,21 +421,26 @@ class RDataFrameModel(QAbstractTableModel):
                         self.criteriaList[col] = {'column':col, "method": _('String ') + unicode(label.text()), "value": unicode(value.text())}
             elif colClass in ['factor','logical']:
                 checks = menu.findChildren(checkBox)[0].getChecked()
+                print checks
+                
                 if _('Check All') in checks:
                     checks.remove(_('Check All'))
                 if len(checks) != 0:
                     self.criteriaList[col] = {'column':col, "method": colClass, "value": checks}
                 else:
+                    print "found no checked values"
                     del self.criteriaList[col]
             
-        #print _('criteriaList'), self.criteriaList
+        #print 'action: ', action
         self.menu.hide()
         self.filter()
     
     def filter(self):
+        #print "filtering"
+        #print self.criteriaList
         filters  = []
         for col,criteria in self.criteriaList.items():
-            #print _('in loop'), col,criteria['method']
+            print _('in loop'), col,criteria['method']
             if _('Numeric Equals') == criteria['method']:
                 filters.append('%s[,%s] == %s' % (self.Rdata,col,criteria['value']))
             elif _('Numeric Does Not Equal') == criteria['method']:
