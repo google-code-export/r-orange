@@ -48,7 +48,7 @@ class RedRcast(OWRpy):
     def processdata(self, data):
         
         if data:
-            self.RFunctionParam_data=data.getData()
+            self.RFunctionParam_data=str(data.getData())
             #self.data = data
             names = self.R('names('+self.RFunctionParam_data+')')
             self.RFunctionParamformula_listBox.update(names)

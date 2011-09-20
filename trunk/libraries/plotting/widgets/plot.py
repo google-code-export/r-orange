@@ -27,7 +27,7 @@ class plot(OWRpy):
     def processx(self, data):
         if data:
             self.data = data
-            self.RFunctionParam_x=data.getData()
+            self.RFunctionParam_x=str(data.getData())
             if data.optionalDataExists('plotTheme'):
                 self.plotArea.setTheme(data.getOptionalData('plotTheme')['data'])
             self.commitFunction()
@@ -35,7 +35,7 @@ class plot(OWRpy):
             self.clearPlots()
     def processLayer(self, data, id):
         if data:
-            self.plotAttributes[id] = data.getData()
+            self.plotAttributes[id] = str(data.getData())
             self.commitFunction()
         else:
             del self.plotAttributes[id.widgetID]

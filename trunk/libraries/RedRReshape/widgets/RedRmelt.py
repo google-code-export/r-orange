@@ -30,7 +30,7 @@ class RedRmelt(OWRpy):
         self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "R Output Window")
     def processdata(self, data):
         if data:
-            self.RFunctionParam_data=data.getData()
+            self.RFunctionParam_data=str(data.getData())
             #self.data = data
             if data.getClass_data() == 'matrix':
                 self.RFunctionParammeasure_vars_listBox.setEnabled(False)

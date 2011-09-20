@@ -79,8 +79,9 @@ class RVarSeparator(OWRpy):
     def process(self, data):
         if not data: return
         self.envName = data.getData()
-
-        dataList = self.R('local(ls(), '+self.envName+')', wantType = 'list')
+        #print "Got data"
+        #print "Environment Name", self.envName, data.getData()
+        dataList = self.R('local(ls(), %s)' % self.envName, wantType = 'list')
         
         if not dataList:
             self.status.setText(_('No data in the R session'))
@@ -97,7 +98,7 @@ class RVarSeparator(OWRpy):
             
     def commit(self):
         #must declare explilcitly as a string or an error will occur.  We remove NA's just in case they are in the data
-        self.sendThis = unicode('local('+self.varBox.selectedItems().values()[0]+', '+self.envName+')') 
+        self.sendThis = unicode('local(%s, %s)' % (self.varBox.selectedItems().values()[0], self.envName)) 
         self.R('%s<-%s' % (self.Rvariables['savedvar'], self.sendThis), wantType = 'NoConversion') 
         
         #put logic for finding the type of variable that the object is and sending it from that channel of the output

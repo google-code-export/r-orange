@@ -111,7 +111,7 @@ class rowcolPicker(OWRpy):
             self.subset()
     def setWidget(self, data):
         if data:
-            self.data = data.getData()
+            self.data = unicode(data.getData())
             self.dataParent = data
             self.rowcolButtonSelected()
             dims = data.getDims_data()
