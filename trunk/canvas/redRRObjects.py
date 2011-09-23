@@ -58,6 +58,7 @@ def removeWidget(widgetID):
   del _rObjects[widgetID]      
 def loadWidgetObjects(widgetID):
     global _rObjects
+    if widgetID not in _rObjects: return
     if _rObjects[widgetID]['state']: return
     redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("R objects from widgetID %s were expanded (loaded)") % widgetID)
     if not RSession.mutex.tryLock():  # the session is locked

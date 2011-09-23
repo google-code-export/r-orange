@@ -518,44 +518,44 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             painter.drawRect(QRectF(0, yPos, self.widgetSize.width()*self.progressBarValue/100., 16))
             painter.drawText(rect, Qt.AlignCenter, "%d %%" % (self.progressBarValue))
         
-        ## paint the memory consumption
-        TOTALMEMORY = redRRObjects.TOTALMEMORYUSED
-        MEMORYLIMIT = redRRObjects.MEMORYLIMIT
-        #print MEMORYLIMIT
-        THISWIDGET = redRRObjects.memoryConsumed(self.instanceID)
-            ## this widget consumed
-        percentThisWidget = (THISWIDGET)/MEMORYLIMIT
-        twStart = 0
-        twStop = 360*16*percentThisWidget
-            ## total consumed elipse
-        percentFromOthers = (TOTALMEMORY-THISWIDGET)/MEMORYLIMIT
-        owStart = twStop
-        owStop = 360*16*percentFromOthers
-            ## total elipse
-        percentAvailable = (MEMORYLIMIT-TOTALMEMORY)/MEMORYLIMIT
-        aStart = owStop + owStart + twStop
-        aStop = 360*16*percentAvailable
-        #print twStart, twStop, owStart, owStop, aStart, aStop
-        twElipse = QGraphicsEllipseItem(38, -8, 15, 15)
-        twElipse.setStartAngle(int(twStart))
-        twElipse.setSpanAngle(int(twStop))
-        twElipse.setPen(QPen(Qt.red))
-        twElipse.setBrush(QBrush(Qt.red))
-        twElipse.paint(painter, QStyleOptionGraphicsItem())
+        ## paint the memory consumption, this functionality is currently disabled because memory consumption is not standardized across all platforms. KRC
+        #TOTALMEMORY = redRRObjects.TOTALMEMORYUSED
+        #MEMORYLIMIT = redRRObjects.MEMORYLIMIT
+        ##print MEMORYLIMIT
+        #THISWIDGET = redRRObjects.memoryConsumed(self.instanceID)
+            ### this widget consumed
+        #percentThisWidget = (THISWIDGET)/MEMORYLIMIT
+        #twStart = 0
+        #twStop = 360*16*percentThisWidget
+            ### total consumed elipse
+        #percentFromOthers = (TOTALMEMORY-THISWIDGET)/MEMORYLIMIT
+        #owStart = twStop
+        #owStop = 360*16*percentFromOthers
+            ### total elipse
+        #percentAvailable = (MEMORYLIMIT-TOTALMEMORY)/MEMORYLIMIT
+        #aStart = owStop + owStart + twStop
+        #aStop = 360*16*percentAvailable
+        ##print twStart, twStop, owStart, owStop, aStart, aStop
+        #twElipse = QGraphicsEllipseItem(38, -8, 15, 15)
+        #twElipse.setStartAngle(int(twStart))
+        #twElipse.setSpanAngle(int(twStop))
+        #twElipse.setPen(QPen(Qt.red))
+        #twElipse.setBrush(QBrush(Qt.red))
+        #twElipse.paint(painter, QStyleOptionGraphicsItem())
         
-        owElipse = QGraphicsEllipseItem(40, -8, 15, 15)
-        owElipse.setStartAngle(int(owStart))
-        owElipse.setSpanAngle(int(owStop))
-        owElipse.setPen(QPen(Qt.gray))
-        owElipse.setBrush(QBrush(Qt.gray))
-        owElipse.paint(painter, QStyleOptionGraphicsItem())
+        #owElipse = QGraphicsEllipseItem(40, -8, 15, 15)
+        #owElipse.setStartAngle(int(owStart))
+        #owElipse.setSpanAngle(int(owStop))
+        #owElipse.setPen(QPen(Qt.gray))
+        #owElipse.setBrush(QBrush(Qt.gray))
+        #owElipse.paint(painter, QStyleOptionGraphicsItem())
         
-        aElipse = QGraphicsEllipseItem(42, -7, 15, 15)
-        aElipse.setStartAngle(int(aStart))
-        aElipse.setSpanAngle(int(aStop))
-        aElipse.setPen(QPen(Qt.green))
-        aElipse.setBrush(QBrush(Qt.green))
-        aElipse.paint(painter, QStyleOptionGraphicsItem())
+        #aElipse = QGraphicsEllipseItem(42, -7, 15, 15)
+        #aElipse.setStartAngle(int(aStart))
+        #aElipse.setSpanAngle(int(aStop))
+        #aElipse.setPen(QPen(Qt.green))
+        #aElipse.setBrush(QBrush(Qt.green))
+        #aElipse.paint(painter, QStyleOptionGraphicsItem())
         
     def addOutLine(self, line):
         self.outLines.append(line)

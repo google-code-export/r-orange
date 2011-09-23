@@ -40,7 +40,8 @@ class RVariable(BaseRedRVariable):
         return text
     def getData(self):
         self.widget.expandData() # this exapnds the data of the parent widget at the time that the data is requested.  This will exapnd all widget variables.
-        return unicode(self.data)
+        print "Returning string of data"
+        return str(self.data)
     def summary(self):
         return '\n'.join(self.R('capture.output(summary('+str(self.getData())+'))', wantType = 'list'))
     def _fullOutput(self, subsetting = ''):
