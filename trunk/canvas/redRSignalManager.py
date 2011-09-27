@@ -346,10 +346,10 @@ class OutputHandler:
         
     def propogateNone(self, ask = True):    
         ## send None through all of my output channels
+        if self.parent.signalLocked(): return
         try:
             redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Propagating None through signal'))
             for wid in self.outputIDs():
-                #print 'None sent in widget %s through wid %s' % (self.parent.widgetID, wid)
                 self.parent.send(wid, None)
             
             ## identify all of the downstream widgets and send none through them, then propogateNone in their inputs
@@ -357,9 +357,6 @@ class OutputHandler:
             for c in _linkPairs:
                 if c[0].parent == self.parent:
                     dWidgets.append(c[1].parent)
-            #dWidgets = self.linkingWidgets()
-            #print dWidgets
-            ## send None through all of the channels
             for w in dWidgets:
                 w.outputs.propogateNone(ask = False)    
         except Exception as inst:

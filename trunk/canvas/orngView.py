@@ -82,7 +82,13 @@ class SchemaView(QGraphicsView):
         self.tempWidget.instance().show()  ## simplified for showing the widget that was clicked.
         if self.tempWidget.instance().isMinimized():  # if widget is minimized, show its normal size
             self.tempWidget.instance().showNormal()
-
+    # popMenuAction - lock selected widgets.
+    def lockSelectedWidget(self):
+        widgets = self.getSelectedWidgets()
+        for w in widgets:
+            w.instance().toggleLocked()
+            
+        self.scene().update()
     # popMenuAction - user selected to rename active widget
     def renameActiveWidget(self):
         widgets = self.getSelectedWidgets()

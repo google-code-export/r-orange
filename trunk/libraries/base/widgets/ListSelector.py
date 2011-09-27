@@ -72,7 +72,7 @@ class ListSelector(OWRpy):
         self.data = None
         
         if data:
-            self.data = data.getData()
+            self.data = str(data.getData())
             names = self.R('names('+self.data+')', wantType = 'list')
             print unicode(names)
             if names == None:

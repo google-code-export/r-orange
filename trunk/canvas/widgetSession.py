@@ -24,6 +24,13 @@ class widgetSession():
         self.dontSaveList.extend(self.defaultGlobalSettingsList)
         self.dontSaveList.extend(['outputs','inputs', 'dontSaveList','redRGUIObjects','defaultGlobalSettingsList','globalSettingsList', 'loaded'])
         # self.sqlite = SQLiteHandler()
+        self.locked = False
+        
+    def toggleLocked(self):
+        self.locked = not self.locked
+        
+    def signalLocked(self):
+        return self.locked
 
 
     def getSettings(self):  

@@ -36,16 +36,16 @@ class RedRplot(OWRpy):
         processOnInput=True)
     def processy(self, data):
         if data:
-            if self.R('class('+data.getData()+')') in ['data.frame', 'list']:
+            if self.R('class('+str(data.getData())+')') in ['data.frame', 'list']:
                 self.namesListX.setEnabled(True)
-                self.namesListX.update(self.R('names('+data.getData()+')'))
+                self.namesListX.update(self.R('names('+str(data.getData())+')'))
                 self.namesListY.setEnabled(True)
-                self.namesListY.update(self.R('names('+data.getData()+')'))
-                self.dataFrame = data.getData()
+                self.namesListY.update(self.R('names('+str(data.getData())+')'))
+                self.dataFrame = str(data.getData())
                 self.dataFrameAttached = True
 
             else:
-                self.RFunctionParam_y=data.getData()
+                self.RFunctionParam_y=str(data.getData())
                 #self.data = data
                 self.dataFrame = ''
                 self.namesListX.setEnabled(False)
@@ -62,14 +62,14 @@ class RedRplot(OWRpy):
             self.RFunctionParam_y=''
     def processx(self, data):
         if data:
-            self.RFunctionParam_x=data.getData()
+            self.RFunctionParam_x=str(data.getData())
             #self.data = data
             self.commitFunction()
         else:
             self.RFunctionParam_x=''
     def processplotatt(self, data, id):
         if data:
-            self.plotAttributes[id] = data.getData()
+            self.plotAttributes[id] = str(data.getData())
             #self.data = data
             self.commitFunction()
         else:

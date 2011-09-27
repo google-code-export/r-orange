@@ -14,8 +14,7 @@ _ = redRi18n.get_(package = 'base')
 
 class shuffleBox(listBox):
     def __init__(self, *args, **kwargs):
-         listBox.__init__(self, *args, **kwargs)
-
+         listBox.__init__(self, enableDragDrop = True, *args, **kwargs)
     def dropEvent(self, ev):
         if not self.enableDragDrop: return
         if ev.mimeData().hasText():

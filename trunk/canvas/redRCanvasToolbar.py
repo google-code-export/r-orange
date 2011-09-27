@@ -146,6 +146,7 @@ class redRCanvasToolbarandMenu():
         self.widgetPopup.addSeparator()
         rename = self.widgetPopup.addAction( _("&Rename"), self.canvas.schema.activeTab().renameActiveWidget, Qt.Key_F2)
         delete = self.widgetPopup.addAction(_("Remove"), self.canvas.schema.activeTab().removeActiveWidget, Qt.Key_Delete)
+        lock = self.widgetPopup.addAction(_("(Un)Lock"), self.canvas.schema.activeTab().lockSelectedWidget)
         #copy = self.menuTabs.addAction("&Copy", redRSaveLoad.collectIcons, Qt.CTRL+Qt.Key_C)
         cloneToTab = self.menuTabs.addAction(_("Clone To Tab"), self.canvas.schema.cloneToTab, Qt.CTRL+Qt.Key_G)
         duplicateToTab = self.menuTabs.addAction(_("Duplicate To Tab"), redRSaveLoad.copy, Qt.CTRL+Qt.Key_H)

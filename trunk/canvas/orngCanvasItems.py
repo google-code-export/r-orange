@@ -218,6 +218,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.canvasDlg = canvasDlg
         canvasPicsDir  = os.path.join(redREnviron.directoryNames['canvasDir'], "icons")
         self.cloneIcon = QPixmap(os.path.join(canvasPicsDir, "clone.png"))
+        self.lockedIcon = QPixmap(os.path.join(canvasPicsDir, "locked.png"))
         #self.cloneIcon.setToolTip(_("This widget is cloned in another tab"))
         self.imageLeftEdge = QPixmap(os.path.join(canvasPicsDir,"leftEdge.png"))
         self.imageRightEdge = QPixmap(os.path.join(canvasPicsDir,"rightEdge.png"))
@@ -494,11 +495,9 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             painter.drawRect(-7, -7, self.widgetSize.width()+14, self.widgetSize.height()+14)
         painter.drawPixmap(0,0, self.icon.pixmap(self.widgetSize.width(), self.widgetSize.height()))
         # where the edges are painted
-        try:
-            if len(instance.inputs.getAllInputs()) != 0:    painter.drawPixmap(-self.edgeSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownLeftEdge)
-            if len(instance.outputs.getAllOutputs()) != 0:   painter.drawPixmap(self.widgetSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownRightEdge)
-        except:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+        if len(instance.inputs.getAllInputs()) != 0:    painter.drawPixmap(-self.edgeSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownLeftEdge)
+        if len(instance.outputs.getAllOutputs()) != 0:   painter.drawPixmap(self.widgetSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownRightEdge)
+        
         ## drwaw the clone icon
         if len(redRObjects.getIconByIconInstanceID(self.instanceID)) > 1:
             painter.drawPixmap(-20, -20, self.cloneIcon)
@@ -517,6 +516,10 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             painter.setBrush(QBrush(QColor(0,128,255)))
             painter.drawRect(QRectF(0, yPos, self.widgetSize.width()*self.progressBarValue/100., 16))
             painter.drawText(rect, Qt.AlignCenter, "%d %%" % (self.progressBarValue))
+            
+        # paint the fancy lock if the data is locked.
+        if instance.signalLocked():
+            painter.drawPixmap(20, -20, self.lockedIcon)
         
         ## paint the memory consumption, this functionality is currently disabled because memory consumption is not standardized across all platforms. KRC
         #TOTALMEMORY = redRRObjects.TOTALMEMORYUSED
