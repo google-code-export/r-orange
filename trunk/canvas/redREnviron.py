@@ -123,8 +123,8 @@ import os, sys, user, cPickle, time
 from OrderedDict import OrderedDict
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-if sys.platform=="win32":
-    import win32com.client
+#if sys.platform=="win32":
+#    import win32com.client
 #print 'Importing redREnviron.py'
 # import redRi18n
 def _(a):
@@ -173,8 +173,9 @@ def __getDirectoryNames(rootDir):
         #dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'win32', 'rpy3')
         
         createDir['settingsDir'] = os.path.join(os.environ['APPDATA'],'red-r')
-        objShell = win32com.client.Dispatch("WScript.Shell")
-        dirs['documentsDir'] = os.path.join(objShell.SpecialFolders("MyDocuments"))
+        #objShell = win32com.client.Dispatch("WScript.Shell")
+        #dirs['documentsDir'] = os.path.join(objShell.SpecialFolders("MyDocuments"))
+        dirs['documentsDir'] = os.path.join('/')
         dirs['RlibPath'] = os.path.join(dirs['RDir'], 'library').replace('\\','/')
 
     ####Mac#####

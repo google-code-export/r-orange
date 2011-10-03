@@ -36,7 +36,7 @@ os.environ['R_HOME'] = R_HOME
 
 # Win32-specific code copied from RPy-1.x
 if sys.platform == 'win32':
-    import win32api
+    import win32.win32api as win32api
     os.environ['PATH'] += ';' + os.path.join(R_HOME, 'bin')
     os.environ['PATH'] += ';' + os.path.join(R_HOME, 'modules')
     os.environ['PATH'] += ';' + os.path.join(R_HOME, 'lib')

@@ -22,10 +22,10 @@ repository = 'http://www.red-r.org/repository/Red-R-' + redREnviron.version['RED
 def getAvailablePackages():
     file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
     if not os.path.isfile(file):
-        self.createAvailablePackagesXML()
+        createAvailablePackagesXML()
     packages = readXML(file)
     if packages == None: 
-        self.createAvailablePackagesXML()
+        createAvailablePackagesXML()
     
     packageDict = {}
     for package in packages.firstChild.childNodes:
@@ -37,7 +37,18 @@ def getAvailablePackages():
     # pp = pprint.PrettyPrinter(indent=4)
     # pp.pprint(packageDict)        
     return packageDict
+def createAvailablePackagesXML():
+        xml = '<packages>'
+        for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
+            if (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
+            and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
+                f = open(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'),'r')
+                xml = xml + '\n' + f.read()
+                f.close()
         
+        f = open(os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml'),'w')
+        f.write(xml + '\n</packages>')
+        f.close()
 def getInstalledPackages():
     """Accessory function used by this and other modules to check for available packages on this installation and on the repository.  
     
@@ -332,19 +343,8 @@ class packageManager(redRQTCore.dialog):
     # runs through all the installed packages and creates red-RPackages.xml file
     # The file is stored in the canvasSettingsDir until overwritten by updatePackagesFromRepository function
     def createAvailablePackagesXML(self):
-        xml = '<packages>'
-        for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
-            if (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
-            and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
-                f = open(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'),'r')
-                xml = xml + '\n' + f.read()
-                f.close()
+        createAvailablePackagesXML()
         
-        f = open(os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml'),'w')
-        f.write(xml + '\n</packages>')
-        f.close()
-        # print 'asdfasdfsd', xml
-    ## moves through the local package file and returns a dict of packages with version, stability, update date, etc
     def getAvailablePackages(self):
         return getAvailablePackages()
         # file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
