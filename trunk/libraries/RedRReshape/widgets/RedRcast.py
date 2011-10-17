@@ -23,10 +23,10 @@ class RedRcast(OWRpy):
         
         box = redRGUI.base.gridBox(self.controlArea)
         
-        self.useAllRemainingCheckbox = redRGUI.base.checkBox(box.cell(0,0), label = 'Persistent Columns:', buttons = [('useAll', 'Make All Available Columns Static')], callback = self.useAllRemainingCheckboxChecked, setChecked = ['useAll'])
+        #self.useAllRemainingCheckbox = redRGUI.base.checkBox(box.cell(0,0), label = 'Persistent Columns:', buttons = [('useAll', 'Make All Available Columns Static')], callback = self.useAllRemainingCheckboxChecked, setChecked = ['useAll'])
         self.RFunctionParamformula_listBox = redRGUI.base.listBox(box.cell(0,0), label = "Static Variables:", toolTip = "These are the variables that will not be changed in the new data")
         self.RFunctionParamformula_listBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.RFunctionParamformula_listBox.hide()
+        #self.RFunctionParamformula_listBox.hide()
         self.aggregatingColumns = redRGUI.base.listBox(box.cell(0,1), label = "Aggregating Variables:", toolTip = "These variables will be combined to make new columns with the values in the Value Column filling them")
         self.aggregationMethod = redRGUI.base.radioButtons(box.cell(0,2), label = 'Aggregation Method:', buttons = [(' | ', 'List'), ('+', 'Data Table')], setChecked = '+', orientation = 'horizontal')
         
@@ -38,19 +38,12 @@ class RedRcast(OWRpy):
         self.margins.setSelectionMode(QAbstractItemView.ExtendedSelection)
         redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRGUI.base.textEdit(self.controlArea, label = "R Output Window")
-    def useAllRemainingCheckboxChecked(self):
-        if 'useAll' in self.useAllRemainingCheckbox.getCheckedIds():
-            self.RFunctionParamformula_listBox.setEnabled(False)
-            self.RFunctionParamformula_listBox.hide()
-        else:
-            self.RFunctionParamformula_listBox.setEnabled(True)
-            self.RFunctionParamformula_listBox.show()
     def processdata(self, data):
         
         if data:
             self.RFunctionParam_data=str(data.getData())
             #self.data = data
-            names = self.R('names('+self.RFunctionParam_data+')')
+            names = self.R('names(%s)' % self.RFunctionParam_data)
             self.RFunctionParamformula_listBox.update(names)
             self.aggregatingColumns.update(names)
             #self.valueColumn.update(names)
@@ -111,7 +104,7 @@ class RedRcast(OWRpy):
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText('This is your data:\n\n'+tmp)
         if dtype == 0: ## it's a data.frame
-            newData = signals.base.RDataFrame(self, data = 'as.data.frame('+self.Rvariables['cast']+')', parent = 'as.data.frame('+self.Rvariables['cast']+')')
+            newData = signals.base.RDataFrame(self, data = 'as.data.frame(%s)' % self.Rvariables['cast'], parent = 'as.data.frame('+self.Rvariables['cast']+')')
             self.rSend('cast Output', newData)
             self.rSend('cast Output List', None)
         elif dtype == 1: ## it's a list

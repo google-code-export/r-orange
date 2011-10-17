@@ -1,6 +1,6 @@
-"""
+"""R Executor
 .. helpdoc::
-
+The R executor allows advanced users to have access to the underlying R instance.  This includes functions and tools for unlocking a locked R session, sending commands to the R Session, listing variables from the R session, and viewing the R history.
 """
 
 """
@@ -164,7 +164,7 @@ class rExecutor(OWRpy):
         #self.R('txt<-"R error occured" #Benign error in case a real error occurs')
         try:
             if unicode(self.command.textCursor().selectedText()) != '':
-                text = unicode(self.command.textCursor().selectedText())
+                text = unicode(self.command.textCursor().selectedText().replace(u'\u2029', ';'))
             else:
                 text = unicode(self.command.toPlainText())
             output = self.R('capture.output(eval(parse(text = \"'+unicode(text).replace('\"', '\\\"')+'\")))', wantType = 'list', silent = True)
