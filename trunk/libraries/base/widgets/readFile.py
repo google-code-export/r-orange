@@ -65,11 +65,6 @@ import libraries.base.signalClasses.RDataFrame as rdf
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class readFile(OWRpy):
-    """
-        asdfasdfsd
-        
-        :py:class:`signals.base.RDataFrame`
-    """
     globalSettingsList = ['filecombo','path']
     def __init__(self, **kwargs):
         """asdfasdfasdaaaaaaaaaaaaaaaaaaaaaaaaaa"""
