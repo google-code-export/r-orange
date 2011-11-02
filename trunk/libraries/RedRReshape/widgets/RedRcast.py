@@ -55,10 +55,8 @@ class RedRcast(OWRpy):
         if str(self.RFunctionParam_data) == '': return
         injection = []
         ## build the formula
-        if 'useAll' in self.useAllRemainingCheckbox.getCheckedIds():
-            static = '...'
-        else:
-            static = ' + '.join([unicode(i) for i in self.RFunctionParamformula_listBox.selectedItems()])
+        
+        static = ' + '.join([unicode(i) for i in self.RFunctionParamformula_listBox.selectedItems()])
         if len(self.aggregatingColumns.selectedItems()) == 0: 
             self.status.setText('You must select an item to aggregate over')
             return

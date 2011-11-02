@@ -278,9 +278,9 @@ class filterTable(widgetState, QTableView):
         self.dataInfo.setText(self.tm.getSummary())
     
     def setRTable(self,data, setRowHeaders = 1, setColHeaders = 1,filtered=False):
-        """Conveinience function for setting an R table."""
-        redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'setRTable method depricated, use setTable instead.')
-        self.tm = signals.base.RDataFrame(self.parent, data = data).getTableModel(self)
+        """Conveinience function for setting an R table.  Data should be a tuple of (parentWidget, Rdata)"""
+        #redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'setRTable method depricated, use setTable instead.')
+        self.tm = signals.base.RDataFrame(data[0], data = data[1]).getTableModel(self)
         self.setModel(self.tm)
     
     def setModel(self, model):
@@ -404,19 +404,23 @@ class filterTable(widgetState, QTableView):
         # print data
         if not data: return
         if 'Rdata' not in data:
-            if data['modelSettings'] == None: return
+            if data['modelSettings'] == None: 
+                print 'modelsettings not found'
+                return
             
             print 'loading with 1.90 settings'
+            print data['modelSettings']
             if 'class' not in data:
                 redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'the class attribute is not found in the data %s' % str(data))
                 return
-            import imp
+            import imp, redRObjects
             fp, pathname, description = imp.find_module('libraries', [redREnviron.directoryNames['redRDir']])
             varc = imp.load_module('libraries', fp, pathname, description)
             
             for mod in data['class'].replace("<'", '').replace("'>", '').split('.')[1:]:
                 varc = getattr(varc, mod)
-            self.tm = varc(self, **data['modelSettings'])
+            # Get the widget and instantiate a data table signal that will then generate the table model for us.
+            self.tm = varc(redRObjects.getWidgetInstanceByID(data['modelSettings']['parentWidget']), **data['modelSettings'])
             #self.setTable(var, filterable = self.filterable, sortable = self.sortable) 
             
             self.setModel(self.tm)

@@ -27,11 +27,11 @@ class hist(OWRpy):
         processOnInput=True)
     def processx(self, data):
         if data:
-            self.RFunctionParam_x=data.getData()
+            self.RFunctionParam_x=str(data.getData())
             #self.commitFunction()
             myclass = self.R('class('+self.RFunctionParam_x+')')
             if myclass in ['matrix', 'data.frame', 'list']:
-                colnames = self.R('names('+self.RFunctionParam_x+')')
+                colnames = self.R('names(as.data.frame('+self.RFunctionParam_x+'))')
                 if type(colnames) == type(''):
                     colnames = [colnames]
                     

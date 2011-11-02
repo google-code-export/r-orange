@@ -12,21 +12,23 @@ class boxplot(OWRpy):
         OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_x = ''
         self.inputs.addInput('id0', 'x', signals.base.RList, self.processx)
-
+        self.guiparam_plottype = redRGUI.base.comboBox(self.controlArea, label = 'Chart Type', items = [('boxplot', "Boxplot"), ('stripchart', "Jitter Plot")], callback = self.commitFunction)
         self.plotArea = redRGUI.plotting.redRPlot(self.controlArea, label = 'Boxplot')
         self.commit = redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,processOnInput=True)
     def processx(self, data):
         if data:
-            self.RFunctionParam_x=data.getData()
+            self.RFunctionParam_x=str(data.getData())
             if self.commit.processOnInput():
                 self.commitFunction()
+        else:
+            self.RFunctionParam_x = ''
     def commitFunction(self):
-        if self.x == '': 
+        
+        if self.RFunctionParam_x == '': 
             self.status.setText('Do data. Can not plot')
             return
-        try:
-            self.plotArea.plot('x=as.list('+unicode(self.RFunctionParam_x)+'), notch = TRUE', function = 'boxplot')
-        except Exception as inst:
-            QMessageBox.information(self,'R Error', "Plotting failed.  Try to format the data in a way that is acceptable for this widget.\nSee the documentation for help.\n%s" % inst, 
-            QMessageBox.Ok + QMessageBox.Default)
-            return
+        if self.guiparam_plottype.currentId() == 'boxplot':
+            self.plotArea.plot('x=as.list(%(data)s), notch = TRUE' % {'data':self.RFunctionParam_x}, function = self.guiparam_plottype.currentId())
+        elif self.guiparam_plottype.currentId() == 'stripchart':
+            self.plotArea.plot('x=as.list(%(data)s)' % {'data':self.RFunctionParam_x}, function = self.guiparam_plottype.currentId())
+        

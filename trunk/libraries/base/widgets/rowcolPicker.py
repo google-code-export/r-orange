@@ -114,8 +114,8 @@ class rowcolPicker(OWRpy):
             self.data = unicode(data.getData())
             self.dataParent = data
             self.rowcolButtonSelected()
-            dims = data.getDims_data()
-            self.infoBox.setText(_('# Rows: %(ROWS)s\n# Columns: %(COLS)s') % {'ROWS':unicode(dims[0]), 'COLS':unicode(dims[1])})
+            #dims = data.getDims_data()
+            #self.infoBox.setText(_('# Rows: %(ROWS)s\n# Columns: %(COLS)s') % {'ROWS':unicode(dims[0]), 'COLS':unicode(dims[1])})
             if self.subsetButton.processOnInput():
                 self.subset()
         else:
@@ -150,10 +150,10 @@ class rowcolPicker(OWRpy):
             
         self.subsetBox.setEnabled(True)
 
-        self.ssv = data.getData()
+        self.ssv = str(data.getData())
         self.subsetColumn.clear()
         
-        self.subsetColumn.addItems(self.R('names(as.list('+data.getData()+'))', wantType = 'list'))
+        self.subsetColumn.addItems(self.R('names(as.list(%s))' % str(data.getData()), wantType = 'list'))
         self.ssvdata = data
         
     def subOnAttached(self):

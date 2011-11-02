@@ -26,7 +26,7 @@ The R executor allows advanced users to have access to the underlying R instance
 """
 
 from OWRpy import *
-import redRGUI, signals
+import redRGUI, signals, RSession
 import redRGUI
 import redRi18n
 _ = redRi18n.get_(package = 'base')
@@ -70,6 +70,7 @@ class rExecutor(OWRpy):
         self.infob = redRGUI.base.widgetLabel(self.box, "")
         
         self.infoa = redRGUI.base.widgetLabel(self.box, "")
+        redRGUI.base.button(self.box, label = "Unlock R Session", toolTip = "Click this to unlock the R session if it becomes locked accidentally", callback = self.unlockSession)
         # grid
         area = redRGUI.base.widgetBox(self.controlArea, orientation = 'horizontal')
         area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -102,7 +103,7 @@ class rExecutor(OWRpy):
         redRGUI.base.button(leftArea, _("Clear Output"), callback = self.clearOutput)
         redRGUI.base.button(leftArea, _('Start PMG'), callback = self.startRcmdr)
         
-        self.lsList = redRGUI.base.listBox(self.box, label = _('Available R Items'), items = self.R('ls()', wantType = 'list'), callback = self.addlsList)
+        self.lsList = redRGUI.base.listBox(self.box, label = _('Available R Items'), items = [] ) #self.R('ls()', wantType = 'list') or [], callback = self.addlsList)
         redRGUI.base.button(self.box, 'Refresh List', callback = self.refreshLsList)
 
         self.thistext = redRGUI.base.textEdit(rightArea,label=_('Output'), displayLabel=False)
@@ -225,7 +226,7 @@ class rExecutor(OWRpy):
         self.mystatus.setText(_("Data Frame Connected with %s columns") % unicode(self.R('length('+self.data+')')))
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and self.dfselected == None:
-            self.dfselected = redRGUI.base.listBox(self.dataBox, self)
+            self.dfselected = redRGUI.base.listBox(self.dataBox, label = 'Data Columns')
             for e in colnames:
                 self.dfselected.addItem(e)
         elif colnames != 'NULL' and self.dfselected != None:
@@ -244,6 +245,9 @@ class rExecutor(OWRpy):
                 print _('Error with colnames, may not exist.')
     def isList(self):
         self.mystatus.setText(_("List object connected with %s elements") % unicode(self.R('length('+self.data+')')))
+        
+    def unlockSession(self):
+        RSession.mutex.unlock()
     
         
         

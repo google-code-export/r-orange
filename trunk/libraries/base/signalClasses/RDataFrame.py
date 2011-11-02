@@ -189,14 +189,14 @@ class RDataFrame(StructuredDict, RList, TableView):
     
     def getTableModel(self, widget, filtered = True, sortable = True):
         print "Calling RDataFrameModel"
-        return RDataFrameModel(widget, str(self.getData()), filteredOn = [], filterable = filtered, sortable = sortable, signal = self)
+        return RDataFrameModel(widget, str(self.getData()), filteredOn = [], filterable = filtered, sortable = sortable, signal = self, parentWidget = self.widget)
         
 class RDataFrameModel(QAbstractTableModel): 
     def __new__(cls, *arg, **args):
         self = QAbstractTableModel.__new__(cls)
         return self
         
-    def __init__(self, parent, Rdata, filteredOn = None, editable=False,
+    def __init__(self, parent, Rdata, parentWidget, filteredOn = None, editable=False,
     filterable=False,sortable=False, orgRdata = None, reload = False, criteriaList = None, signal = None): 
         QAbstractTableModel.__init__(self,parent) 
         if not Rdata: raise Exception('Rdata must be present')
@@ -209,6 +209,7 @@ class RDataFrameModel(QAbstractTableModel):
         self.sortable = sortable
         self.editable = editable
         self.filterable = filterable
+        self.parentWidget = parentWidget
         if filteredOn != None:
             self.filteredOn = filteredOn
         else: self.filteredOn = []
@@ -245,6 +246,8 @@ class RDataFrameModel(QAbstractTableModel):
         r['editable'] = self.editable
         r['filterable'] = self.filterable
         r['criteriaList'] = self.criteriaList
+        r['parentWidget'] = self.parentWidget.widgetID
+        print r
         return r
     def startProgressBar(self, title,text,max):
         progressBar = QProgressDialog()

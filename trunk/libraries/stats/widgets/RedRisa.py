@@ -4,26 +4,11 @@ This widget reads in text files from either a delimited file or the clipboard.  
 
 .. helpdoc::
 For the impatient
-The easiest way to run ISA is to call the isa function with your input matrix as the single argument.
-This does all steps of a typical ISA work ﬂow, with the default parameters.
+The easiest way to run ISA is to call the isa function with your input matrix as the single argument. This does all steps of a typical ISA work flow, with the default parameters.
 
 ISA biclusters
 
-An ISA module is pair; a subset of the rows of the input matrix and a subset of its columns. In other
-words, a bicluster is a block of the reordered input matrix, where reordering means a permutation of
-both the rows and columns. (Another bicluster might be block of the same permuted input matrix
-or one after a different permutation.)
-The criteria of a good bicluster is that 1) its rows are signiﬁcantly different than the other rows, when
-we consider only the positions deﬁned by the columns of the same bicluster, and (symmetrically) 2)
-its columns are signiﬁcantly different than the other columns, when we consider only the positions
-deﬁned by the rows of the same bicluster.
-In other words, the rows of the bicluster are correlated, but only on the columns deﬁned by the same
-bicluster; and the opposite is also true, the columns of the bicluster are correlated, but only on the
-rows deﬁned by the same bicluster.
-ISA biclusters are soft, two biclusters may overlap in their rows, columns or even both. It is also
-possible that some rows and/or columns of the input matrix are not found to be part of any ISA
-biclusters. Depending on the stringency parameters, it might even happen that ISA does not ﬁnd
-any biclusters.
+An ISA module is pair; a subset of the rows of the input matrix and a subset of its columns. In other words, a bicluster is a block of the reordered input matrix, where reordering means a permutation of both the rows and columns. (Another bicluster might be block of the same permuted input matrix or one after a different permutation.) The criteria of a good bicluster is that 1) its rows are significantly different than the other rows, when we consider only the positions defined by the columns of the same bicluster, and (symmetrically) 2) its columns are significantly different than the other columns, when we consider only the positions defined by the rows of the same bicluster.  In other words, the rows of the bicluster are correlated, but only on the columns defined by the same bicluster; and the opposite is also true, the columns of the bicluster are correlated, but only on the rows defined by the same bicluster. ISA biclusters are soft, two biclusters may overlap in their rows, columns or even both. It is also possible that some rows and/or columns of the input matrix are not found to be part of any ISA biclusters. Depending on the stringency parameters, it might even happen that ISA does not find any biclusters.
 
     ISA row and column scores
 

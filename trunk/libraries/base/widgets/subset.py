@@ -79,9 +79,9 @@ class subset(OWRpy):
             self.dataA = None
             return 
             
-        self.dataA = data.getData()
+        self.dataA = str(data.getData())
         colsA = self.R('colnames('+self.dataA+')',wantType='list') #collect the sample names to make the differential matrix
-        print colsA
+        #print colsA
         colsA.insert(0, 'Rownames')
         self.colA.update(colsA)
 
@@ -93,7 +93,7 @@ class subset(OWRpy):
             self.colB.clear()
             self.dataB = None
             return 
-        self.dataB = data.getData()
+        self.dataB = str(data.getData())
         colsB = self.R('names('+self.dataB+')',wantType='list') 
         
         

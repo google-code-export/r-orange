@@ -1,3 +1,32 @@
+"""AOV
+
+
+.. helpdoc::
+Performed ANOVA on any model or data received.  This can result in errors if inappropriate models are supplied.
+"""
+
+
+"""<widgetXML>
+    <name>
+        ANOVA
+    </name>
+    <icon>
+        default.png
+    </icon>
+    <summary>
+        Performed ANOVA on any model or data received.  This can result in errors if inappropriate models are supplied.
+    </summary>
+    <tags>
+        <tag priority="10">
+            Advanced Stats
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+"""
 """
 <name>ANOVA</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>

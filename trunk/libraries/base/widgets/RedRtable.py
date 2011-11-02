@@ -57,16 +57,17 @@ class RedRtable(OWRpy):
             self.RFunctionParam_data=''
     def commitFunction(self):
         if unicode(self.RFunctionParam_data) == '': return
-        if len(self.cols.selectedItems()) > 0:
-            self.R(self.Rvariables['table']+'<-table(data='+unicode(self.RFunctionParam_data)+')', wantType = 'NoConversion')
+        if len(self.cols.selectedItems()) < 2:
+            thisData = unicode(self.RFunctionParam_data)
+            self.R(self.Rvariables['table']+'<-table(data='++')', wantType = 'NoConversion')
         else:
-            self.R(self.Rvariables['table']+'<-table('+self.RFunctionParam_data+'$'+unicode(', '+self.RFunctionParam_data+'$').join([unicode(a.text()) for a in self.cols.selectedItems()])+')', wantType = 'NoConversion')
-        self.R('txt<-capture.output('+self.Rvariables['table']+')', wantType = 'NoConversion')
+            thisData = ','.join(['%s$%s' % (unicode(self.RFunctionParam_data), a) for a in self.cols.selectedItems()])
+        self.R('%s<-table(%s)' % (self.Rvariables['table'], thisData), wantType = 'NoConversion')
+        self.R('%s<-prop.table(%s)' % (self.Rvariables['propTable'], self.Rvariables['table']), wantType = 'NoConversion')
+        
         self.RoutputWindow.clear()
-        tmp = self.R('paste(txt, collapse ="\n")')
-        self.R(self.Rvariables['propTable']+'<-prop.table('+self.Rvariables['table']+')', wantType = 'NoConversion')
-        self.R('txt<-capture.output('+self.Rvariables['propTable']+')', wantType = 'NoConversion')
-        tmp2 = self.R('paste(txt, collapse ="\n")')
+        tmp = self.R('paste(capture.output('+self.Rvariables['table']+'), collapse ="\n")')
+        tmp2 = self.R('paste(capture.output('+self.Rvariables['propTable']+'), collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp+'\n\n'+tmp2)
         newData = signals.base.RDataFrame(self, data = 'as.data.frame('+self.Rvariables["table"]+')', parent = 'as.data.frame('+self.Rvariables["table"]+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.

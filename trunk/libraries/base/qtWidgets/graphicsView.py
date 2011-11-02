@@ -14,6 +14,7 @@ from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.spinBox import spinBox
+from libraries.base.qtWidgets.textEdit import textEdit
 import RSession, redREnviron, datetime, os, time
 import redRi18n
 _ = redRi18n.get_(package = 'base')
@@ -290,6 +291,22 @@ class graphicsView(QGraphicsView, widgetState):
         if qname.isEmpty(): return
         qname = unicode(qname)
         self.saveAs(unicode(qname), 'pdf')
+    def saveAsPDFLatex(self):
+        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".pdf", "PDF Document (.pdf)")
+        if qname.isEmpty(): return
+        qname = unicode(qname)
+        self.saveAs(unicode(qname), 'pdf')
+        mb = dialog(None, title = "Latex Command")
+        textbox = textEdit(mb, label = "Latex Command")
+        textbox.setText(r"""
+        \being{figure}[tbh]
+        \centering
+        \label{}
+        \includegraphics[width = 90mm]{"%(qname)s"}
+        \caption{}
+        \end{figure}
+        """ % {'qname':qname})
+        mb.exec_()
     def saveAsPostScript(self):
         print _('save as post script')
         qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".eps", "Post Script (.eps)")
@@ -349,6 +366,8 @@ class graphicsView(QGraphicsView, widgetState):
                     self.saveAsBitmap()
                 elif unicode(action.text()) == 'PDF':
                     self.saveAsPDF()
+                elif unicode(action.text()) == 'PDF (LATEX)':
+                    self.saveAsPDFLatex()
                 elif unicode(action.text()) == 'Post Script':
                     self.saveAsPostScript()
                 elif unicode(action.text()) == 'JPEG':

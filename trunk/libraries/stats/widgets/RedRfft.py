@@ -6,7 +6,7 @@ Performs fast discrete fourier transform on a data matrix.
 
 
 """<widgetXML>
-    name>Fast Discrete Fourier Transform</name>
+    <name>Fast Discrete Fourier Transform</name>
     <icon>default.png</icon>
     <summary>
         Performs fast discrete fourier transform on a data matrix.

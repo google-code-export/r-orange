@@ -49,7 +49,7 @@ class RedRdata(OWRpy):
         
         
         self.table = redRGUI.base.filterTable(self.controlArea, label='R Datasets', includeInReports=False,
-        Rdata = self.Rvariables['datasets'], sortable=True,
+        Rdata = (self, self.Rvariables['datasets']), sortable=True,
         filterable=True,selectionMode = QAbstractItemView.SingleSelection, callback=self.selectDataSet)
         self.table.resizeColumnsToContents()
 

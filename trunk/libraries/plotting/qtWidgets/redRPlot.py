@@ -204,6 +204,7 @@ class redRPlot(graphicsView):
         save = self.menu.addMenu('Save As')
         save.addAction('Bitmap')
         save.addAction('PDF')
+        save.addAction('PDF (LATEX)')
         save.addAction('Post Script')
         save.addAction('JPEG')
         if sys.platform == 'win32':
