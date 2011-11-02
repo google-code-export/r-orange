@@ -128,8 +128,9 @@ def Rcommand(query, silent = False, wantType = redR.CONVERT, listOfLists = False
         output = rpy.r(unicode(query).encode('Latin-1'))
         
     except Exception as inst:
-        redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br>The original query:<br> <b>%s</b><br>##################################<br>" % (inst,redRLog.getSafeString(query)))
         mutex.unlock()
+        redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br>The original query:<br> <b>%s</b><br>##################################<br>" % (inst,redRLog.getSafeString(query)))
+        
         rtb = Rcommand('paste(capture.output(traceback()), collapse = "<br>")')
         redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br><br>The original query:<br> <b>%s</b><br>R Traceback was%s<br>##################################<br>" % (inst,redRLog.getSafeString(query),rtb))
         

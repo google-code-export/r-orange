@@ -135,7 +135,7 @@ def saveInstances(instances, widgets, doc, progressBar):
         except Exception as inst:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('redRSaveLoad error saving widget %s-%s,  %s') % (widget.widgetInfo.package['Name'], str(widget.widgetID), unicode(inst)))
         widgets.appendChild(temp)
-        redRRObjects.saveWidgetObjects(widget.widgetID)
+        #redRRObjects.saveWidgetObjects(widget.widgetID)
     return (widgets, settingsDict, requireRedRLibraries)
 
 def makeTemplate(filename, copy = False):
@@ -757,15 +757,17 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
                 nw.outputs.propogateNone()
             nw = redRObjects.getWidgetInstanceByID(newwidget)
             #nw.setDataCollapsed(True)  # the data must come in colapsed, this will help to prevent loading needless R data.
-            nw.setDataCollapsed(cPickle.loads(widget.getAttribute('collapsed')) or False)  # we set the default to be not collapsed.
+            #print str(widget.getAttribute('collapsed'))
+            if str(widget.getAttribute('collapsed')):
+                nw.setDataCollapsed(cPickle.loads(str(widget.getAttribute('collapsed'))))  # we set the default to be not collapsed.
             nw.setWindowTitle(caption)
             #print _('Settings'), settings
             lpb += 1
             loadingProgressBar.setValue(lpb)
         except Exception as inst:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, unicode(inst))
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Loaded Settings Dict Is: %s' % unicode(loadedSettingsDict))
+            #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, unicode(inst))
+            #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Loaded Settings Dict Is: %s' % unicode(loadedSettingsDict))
     ## now the widgets are loaded so we can move on to setting the connections
     
     return (loadedOk, failureText, widgetSettingsList)

@@ -42,7 +42,7 @@ def addRObjects(widgetID, ol):
     _rObjects[widgetID]['vars'] += ol
   extendTimer(widgetID)
   for o in ol:
-    R('%s<-NULL' % o, wantType = 'NoConversion') #, silent = True)
+    R('if(!exists(\"%(ob)s\")){%(ob)s<-NULL}' % {'ob':o}, wantType = 'NoConversion') #, silent = True)
   if redRSaveLoad.LOADINGINPROGRESS:
     _rObjects[widgetID]['state'] = 0 # we set this as 0 because the data lives in the saved session.  This means that the data really exists but is located still on disk.  The last thing that we want to do is to distroy it at this point by saving over the data.
     #redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(True)

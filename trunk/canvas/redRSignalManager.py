@@ -55,6 +55,12 @@ class OutputSocket():
         self.parent = parent
         self.connections = {}
     def setValue(self, value):
+        try: 
+            oldData = self.value.getData() # delete the value of the data socket so that it doesn't get lost, this is the last reference to it.
+            del oldData
+        except Exception as inst:
+            print inst
+            print type(self.value)
         self.value = value
     def getValue(self):
         return self.value
@@ -332,7 +338,7 @@ class OutputHandler:
                         inputSignal = widget.inputs.getSignal(vValue['wid'])
                     elif 'id' in vValue.keys():
                         inputSignal = widget.inputs.getSignal(vValue['id'])
-                    redRLog.log(redRLog.REDRCPRE, redRLog.DEBUG, "Adding canvas line to using < 1.85 settings.")
+                        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, "Adding canvas line to using < 1.85 settings.")
                     self.connectSignal(inputSignal, key, vValue['enabled'], process = False)  # connect the signal but don't send data through it.
                     if tmp:
                         self.propogateNone(ask = False)
