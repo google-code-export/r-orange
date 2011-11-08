@@ -162,7 +162,5 @@ class checkBox(widgetState,QWidget):
         else:
             text= _('Nothing Checked')
         r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': text}}
-        # print '@@@@@@@@@@@@@@@@@@@@@@@', r
-        #t = 'The following items were checked in %s:\n\n%s\n\n' % (self.label, self.getChecked())
         return r
 

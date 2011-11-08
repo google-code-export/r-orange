@@ -36,6 +36,7 @@ def toArray(v):
                 return array.array('c', v)
             except:
                 return v
+                
 class RDataFrame(StructuredDict, RList, TableView):
     
     convertFromList = [StructuredDict]

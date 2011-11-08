@@ -270,7 +270,9 @@ class OrangeCanvasDlg(QMainWindow):
         qApp.processEvents()
         print "events processed"
         #redRInitWizard.startSetupWizard()
-    
+    def createPopupMenu(self): 
+        print "calling overridden createPopupMenu"
+        return
     def saveOutputToFile(self):
         self.toolbarFunctions.menuItemSaveOutputWindow()
     def dockOutputManger(self,table, level, string, html):

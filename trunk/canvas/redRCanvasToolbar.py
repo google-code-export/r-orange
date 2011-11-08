@@ -20,6 +20,7 @@ class redRCanvasToolbarandMenu():
         self.recentDocs = []
         ###############################
         self.searchBox2 = SearchBox2(None, width=300)
+        self.searchBox3 = SearchBox2(None, width = 500)
         self.initMenu()
         self.initToolbar()
         
@@ -234,6 +235,7 @@ class redRCanvasToolbarandMenu():
         
         self.canvas.createWidgetsToolbar(redRObjects.widgetRegistry())
         self.searchBox2.setItems(redRObjects.widgetRegistry()['widgets'], redRObjects.widgetRegistry()['templates'])
+        self.searchBox3.setItems(redRObjects.widgetRegistry()['widgets'], redRObjects.widgetRegistry()['templates'])
 
         
     def menuItemSaveAs(self):
@@ -688,7 +690,10 @@ class SearchBox2(redRlineEdit):
         self.enteredText = ""
         self.itemList = []
         self.useRE = 0
-        self.callbackOnComplete = self.searchCallback
+        if not callback:
+            self.callbackOnComplete = self.searchCallback
+        else:
+            self.callbackOnComplete = callback
         self.listUpdateCallback = None
         self.autoSizeListWidget = 0
         self.nrOfSuggestions = 10
@@ -839,22 +844,24 @@ class SearchBox2(redRlineEdit):
             self.updateSuggestedItems()
     
     def getLastTextItem(self):  ## returns a string of the entered text.
-	try:
-	  text = unicode(self.text())
-	  if len(text) == 0: return []
-	  if not self.delimiters: return [unicode(self.text())]     # if no delimiters, return full text
-	  return text.split(self.delimiters)
-	except:
-	  return ''
+        try:
+            text = unicode(self.text())
+            if len(text) == 0: return []
+            if not self.delimiters: return [unicode(self.text())]     # if no delimiters, return full text
+            return text.split(self.delimiters)
+        except:
+            return ''
    
     def eventFilter(self, object, ev):
         try: # a wrapper that prevents problems for the listbox debigging should remove this 
-            if object != self.listWidget and object != self:
-                return 0
-            if ev.type() == QEvent.MouseButtonPress:
-                self.listWidget.hide()
-                return 1
-                    
+            #print type(self)
+            try: # apparently calls are sent to this widget without the listWidget existing.  Still don't know why but this catches the error.
+                if object != self.listWidget and object != self:
+                    return 0
+                if ev.type() == QEvent.MouseButtonPress:
+                    self.listWidget.hide()
+                    return 1
+            except: return 0
             consumed = 0
             if ev.type() == QEvent.KeyPress:
                 consumed = 1
@@ -919,7 +926,7 @@ class SearchBox2(redRlineEdit):
             #url = 'http://www.red-r.org/?s='+itemText
             #self.searchBox.updateUrl(url)
     
-    def searchCallback(self,info, c):
+    def searchCallback(self, info, c):
         """The default search callback, this is run when the return or enter key is pressed after passing through the doneCompletion argument"""
         if c == 't':
             redRSaveLoad.loadTemplate(info.file)

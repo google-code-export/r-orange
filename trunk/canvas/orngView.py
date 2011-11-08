@@ -198,6 +198,7 @@ class SchemaView(QGraphicsView):
         if ev.key() == Qt.Key_Control:
             self.controlHeld = False
     def mousePressEvent(self, ev):
+        ev.accept() # we always want to accept the event
         self.scene().update()
         self.mouseDownPosition = self.mapToScene(ev.pos())
         
@@ -335,7 +336,7 @@ class SchemaView(QGraphicsView):
         # if we are drawing line
         elif self.tempLine:
             # show again the empty input/output boxes
-            redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'setting line')
+            #redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'setting line')
             for widget in self.doc.widgets():
               widget.resetLeftRightEdges()      
             
@@ -346,9 +347,26 @@ class SchemaView(QGraphicsView):
 
             # we must check if we have really connected some output to input
             if start and end and start != end:
-                redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'setting start and end')
+                #redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'setting start and end')
                 self.doc.addLine(start, end)
-            #else:
+            else:
+                """If the user is drawing a line and simply drops the line on a point then we would like to place a widget there, as we assume that the user wanted to actually connect the line to something.  There is a copy of the searchbar located in the redRCanvasToolbar.redRCanvasToolbarandMenu.SearchBox3 attribute.  We simply want to show this toolbar at approximately the widget location."""
+                newCoords = QPoint(ev.globalPos()) # find where the pointer ended.
+                import redRQTCore, redRCanvasToolbar
+                dialog = redRQTCore.dialog(None, title = "Widget Lookup")
+                def searchCallback(info, c, x = point.x(), y = point.y(), start = start, end = end, self = self, dialog = dialog):
+                    import redRObjects
+                    if c == 'w':
+                        newWidget = redRObjects.addWidget(redRObjects.widgetRegistry()['widgets'][info.fileName], x = x, y = y) # add the correct widget to the schema
+                        nw = redRObjects.getWidgetByIDActiveTabOnly(newWidget)
+                        self.doc.addLine(start or nw, end or nw)
+                    dialog.accept()
+                    return
+                searchBox = redRCanvasToolbar.SearchBox2(dialog, width = 500, callback = searchCallback)
+                searchBox.setItems(redRObjects.widgetRegistry()['widgets'], [])
+                dialog.exec_()
+                del searchBox
+                del dialog
                 ##state = [self.doc.widgets()[i].widgetInfo.name for i in range(min(len(self.doc.widgets()), 5))]
                 ##predictedWidgets = orngHistory.predictWidgets(state, 20)
 
@@ -365,10 +383,25 @@ class SchemaView(QGraphicsView):
                         #else:
                             #self.doc.addLine(start or nw, end or nw)
 
-        #elif ev.button() == Qt.RightButton:
-            #activeItem = self.scene().itemAt(point)
-            #diff = self.mouseDownPosition - point
-            #if not activeItem and (diff.x()**2 + diff.y()**2) < 25:     # if no active widgets and we pressed and released mouse at approx same position
+        elif ev.button() == Qt.RightButton:
+            activeItem = self.scene().itemAt(point)
+            diff = self.mouseDownPosition - point
+            if not activeItem and (diff.x()**2 + diff.y()**2) < 25:     # if no active widgets and we pressed and released mouse at approx same position
+                import redRQTCore, redRCanvasToolbar
+                dialog = redRQTCore.dialog(None, title = "Widget Lookup")
+                def searchCallback(info, c, x = point.x(), y = point.y(), self = self, dialog = dialog):
+                    import redRObjects
+                    if c == 'w':
+                        newWidget = redRObjects.addWidget(redRObjects.widgetRegistry()['widgets'][info.fileName], x = x, y = y) # add the correct widget to the schema
+                        #nw = redRObjects.getWidgetByIDActiveTabOnly(newWidget)
+                        #self.doc.addLine(start or nw, end or nw)
+                    dialog.accept()
+                    return
+                searchBox = redRCanvasToolbar.SearchBox2(dialog, width = 500, callback = searchCallback)
+                searchBox.setItems(redRObjects.widgetRegistry()['widgets'], [])
+                dialog.exec_()
+                
+                
                 #newCoords = QPoint(ev.globalPos())
                 #self.doc.widgetPopupMenu.showAllWidgets()
                 ##state = [self.doc.widgets()[i].widgetInfo.name for i in range(min(len(self.doc.widgets()), 5))]

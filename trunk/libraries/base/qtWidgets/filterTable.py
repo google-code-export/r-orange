@@ -265,9 +265,13 @@ class filterTable(widgetState, QTableView):
         self.setModel(self.tm)
         self.dataInfo.setText(self.tm.getSummary())
         
-    def setTable(self, data, filterable = False, sortable = False):
+    def setTable(self, data, filterable = None, sortable = None):
         """Sets the table to a table model returned from a signal.  data represents a Red-R signal that contains a table model function getTableModel()."""
-        self.tm = data.getTableModel(self, filterable, sortable)
+        if filterable != None:
+            self.filterable = filterable
+        if sortable != None:
+            self.sortable = sortable
+        self.tm = data.getTableModel(self, self.filterable, self.sortable)
         print self.tm, "Table model"
         self.setModel(self.tm)
         self.dataInfo.setText(self.tm.getSummary())
@@ -377,7 +381,9 @@ class filterTable(widgetState, QTableView):
           selections = [(x.top(),x.left(),x.bottom(),x.right()) for x in self.selectionModel().selection()]
         else:
             selections = None
+        #import cPickle
         r = {
+        'signal': self.tm.signal.saveSettings(),
         'modelSettings': self.tm.getSettings(),
         'class':unicode(self.tm.__class__),
         'criteriaList': self.criteriaList,
@@ -413,14 +419,17 @@ class filterTable(widgetState, QTableView):
             if 'class' not in data:
                 redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'the class attribute is not found in the data %s' % str(data))
                 return
-            import imp, redRObjects
-            fp, pathname, description = imp.find_module('libraries', [redREnviron.directoryNames['redRDir']])
-            varc = imp.load_module('libraries', fp, pathname, description)
+            #import imp, redRObjects
+            #fp, pathname, description = imp.find_module('libraries', [redREnviron.directoryNames['redRDir']])
+            #varc = imp.load_module('libraries', fp, pathname, description)
             
-            for mod in data['class'].replace("<'", '').replace("'>", '').split('.')[1:]:
-                varc = getattr(varc, mod)
+            #for mod in data['class'].replace("<'", '').replace("'>", '').split('.')[1:]:
+            #    varc = getattr(varc, mod)
             # Get the widget and instantiate a data table signal that will then generate the table model for us.
-            self.tm = varc(redRObjects.getWidgetInstanceByID(data['modelSettings']['parentWidget']), **data['modelSettings'])
+            #self.tm = varc(redRObjects.getWidgetInstanceByID(data['modelSettings']['parentWidget']), **data['modelSettings'])
+            import redRObjects
+            signal = redRObjects.signalFromSettings(data['signal'])
+            self.tm = signal.getTableModel(self, self.filterable, self.sortable)
             #self.setTable(var, filterable = self.filterable, sortable = self.sortable) 
             
             self.setModel(self.tm)

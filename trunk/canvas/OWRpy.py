@@ -185,8 +185,8 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
                         text += c1.getReportText(fileDir)
                 elif re.search('PyQt4|OWGUIEx|OWToolbars',unicode(type(i))) or i.__class__.__name__ in redRGUI.qtWidgets:
                     ## we can try to get the settings of this.
+                    
                     text += i.getReportText(fileDir)
-                    #print i.__class__.__name__
             except Exception as inst:
                 redRLog.log(redRLog.REDRCORE, redRLog.ERROR, inst)
                 continue
@@ -196,40 +196,16 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         ## should be implimented by each widget.
         from redRGUI import qtWidgetBox
         children = self.controlArea.children() + self.bottomAreaRight.children() + self.bottomAreaCenter.children() + self.bottomAreaLeft.children()
-        # print 'OWRpy= ',children
-        #import re
         reportData = {}
         for i in children:
             if isinstance(i, qtWidgetBox):
                 d = i.getReportText(fileDir)
+                
                 if type(d) is dict:
                     reportData.update(d)
-                # dd = []
-                # if type(d) is list:
-                    # for x in d:
-                        # x['includeInReports'] = i.includeInReports
-                        # dd.append(x)
-                    # reportData = reportData + dd
-                # elif d:
-                    # d['includeInReports'] = i.includeInReports
-                    # reportData.append(d)
-        
+                
         return reportData
 
-        # arrayOfArray = []
-        # for d in reportData:
-            # if type(d) is dict:
-                # arrayOfArray.append([d['label'], d['text']])
-            # elif type(d) is list:
-                # for x in d:
-                    # arrayOfArray.append([x['label'], x['text']])
-                    
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(arrayOfArray)
-        # text = redRReports.createTable(arrayOfArray,columnNames = [_('Parameter'),_('Value')],
-        # tableName=_('Parameters'))
-        # return text        
 
     def require_librarys(self, librarys, repository = None, load = True):
         """Load R libraries using the :mod:`RSession` require_librarys function.

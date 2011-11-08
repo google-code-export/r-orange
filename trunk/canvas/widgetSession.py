@@ -67,6 +67,13 @@ class widgetSession():
         pass
 
     def isPickleable(self,d):  # check to see if the object can be included in the pickle file
+        # try:
+            # cPickle.dumps(d)
+            # return True
+        # except:
+            # return False
+            
+        
         import re
         if re.search('PyQt4|OWGUIEx|OWToolbars',unicode(type(d))) or d.__class__.__name__ in redRGUI.qtWidgets:
             return False
@@ -86,8 +93,7 @@ class widgetSession():
             return True
         elif isinstance(d, signals.BaseRedRVariable):
             return True
-        else: 
-            
+        else:
             redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Type ' + unicode(d) + ' is not supported at the moment..')  # notify the developer that the class that they are using is not saveable
             return False
         

@@ -278,7 +278,7 @@ def widgets():
         wlist += l
     return wlist
 def resolveCollisions(newwidget, x, y):
-    print 'Resolving collisions'
+    #print 'Resolving collisions'
     if x==-1 or y==-1:
         print 'Getting active tab'
         if activeTab().getSelectedWidgets():
@@ -290,11 +290,11 @@ def resolveCollisions(newwidget, x, y):
         else:
             x = 30
             y = 50
-    print 'Setting Coords'
+    #print 'Setting Coords'
     newwidget.setCoords(x, y)
     # move the widget to a valid position if necessary
     invalidPosition = (activeTab().findItemTypeCount(activeCanvas().collidingItems(newwidget), orngCanvasItems.CanvasWidget) > 0)
-    print 'Invalid Position located'
+    #print 'Invalid Position located'
     if invalidPosition:
         for r in range(50, 300, 50):
             for fi in [90, -90, 0, 45, -45]:
@@ -307,7 +307,7 @@ def resolveCollisions(newwidget, x, y):
                     break
             if not invalidPosition:
                 break
-    print 'Collisions Resolved'
+    #print 'Collisions Resolved'
 def addWidget(widgetInfo, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None, wid = None):
     """A core function to expose widget addition to the rest of core.  Taken over from :mod:`orngDoc`.
     .. note::
@@ -390,15 +390,7 @@ def addInstance(info, settings, insig, outsig, wid = None):
     else: instance.__init__(wid = wid)
     
     ## check if an id is present, if this is the case then we should set the id to the widget.
-    instance.loadGlobalSettings()
-    if settings:
-        try:
-            instance.setSettings(settings)
-            instance.loadCustomSettings(settings)
-        except Exception as inst:
-            # print '##########################\n'*5 
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('redRObjects addInstance; error in setting settings or custom settings. <b>%s<b>') % inst)
-            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG,redRLog.formatException())
+    
             
 
     instance.setProgressBarHandler(activeTab().progressBarHandler)   # set progress bar event handler
@@ -418,6 +410,17 @@ def addInstance(info, settings, insig, outsig, wid = None):
     if not instance:
         raise Exception(_('Error in loading widget %s') % wid)
     _widgetInstances[wid] = instance
+    
+    # setting the settings should be the last thing that we do since this is a change of the widget data and may depend on access to the registry.
+    instance.loadGlobalSettings()
+    if settings:
+        try:
+            instance.setSettings(settings)
+            instance.loadCustomSettings(settings)
+        except Exception as inst:
+            # print '##########################\n'*5 
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('redRObjects addInstance; error in setting settings or custom settings. <b>%s<b>') % inst)
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG,redRLog.formatException())
     
     return wid
 def getWidgetInstanceByID(wid):
@@ -599,3 +602,20 @@ def getLinesByWidgetInstanceID(outID, inID):  # must return a list of lines that
         if l.outWidget.instanceID == outID and l.inWidget.instanceID == inID:
             tempLines.append(l)
     return tempLines
+    
+    
+### signals ###
+def signalFromSettings(d): # d is a dict of settings that we should use to make the new signal.
+    import signals
+    import imp, redREnviron
+    fp, pathname, description = imp.find_module('libraries', [redREnviron.directoryNames['redRDir']])
+    varc = imp.load_module('libraries', fp, pathname, description)
+    for mod in d['class'].replace("<'", '').replace("'>", '').split('.')[1:]:
+       varc = getattr(varc, mod)
+    signal = varc(widget = getWidgetInstanceByID(d['wid']), data = d['data'], parent = d['parent'])
+    signal.loadSettings(d)
+    return signal
+       
+       
+
+       

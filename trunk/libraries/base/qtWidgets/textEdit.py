@@ -57,7 +57,7 @@ class textEdit(QTextEdit,widgetState):
         r = {'text': unicode(self.toHtml())}
         # print r['text']
         
-        print r
+        #print r
         
         return r
     def loadSettings(self,data):

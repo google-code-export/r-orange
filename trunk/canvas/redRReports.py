@@ -350,17 +350,13 @@ class reports(QWizard):
 
         progressBar.close()
 
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(self.reportData)
-
         self.updateWidgetList()
         if self.exec_() == QDialog.Rejected:
-            print _('deleting data')
+            #print _('deleting data')
             del self.reportData
             import gc
             gc.collect()
-            print _('done deleting data')
+            #print _('done deleting data')
             return False
         
 
@@ -373,7 +369,7 @@ class reports(QWizard):
         #    if widgetReport['includeInReports']:
                 reportText+= self.formatWidgetReport(unicode(w.windowTitle()),self.reportData[unicode(w.windowTitle())])
         
-        print reportText
+        #print reportText
         if os.path.splitext(unicode(reportName))[1].lower() in [".odt"]:#, ".html", ".tex"]
             reader = Reader()
             writer = Writer()
@@ -390,9 +386,6 @@ class reports(QWizard):
             file.close()
         elif os.path.splitext(unicode(reportName))[1].lower() in [".html"]:# , ".tex"]
             output = publish_string(reportText, writer_name='html')
-            # print output
-            # print type(output)
-            # print unicode(output)
             file = open(reportName, 'w')
             file.write(output)
             file.close()
@@ -400,13 +393,7 @@ class reports(QWizard):
         return True
     def getReportData(self,fileDir,widget):
         widgetReport = {}
-        # print '##############################', widget
-        #widgetReport['notes'] = widget.instance.notes.getReportText(fileDir)
-        # print widget.instance._widgetInfo.widgetName
         d = widget.getReportText3(fileDir)
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(d)
         
         data = {'main':{}}
         for k,v in d.items():
@@ -420,10 +407,11 @@ class reports(QWizard):
             else:
                 data['main'][k] = v
         
+        
         widgetReport['reportData'] = data
         n = widget.notes.getReportText(fileDir)
         widgetReport['notes'] = n['Notes']
-        if n['Notes']['text'] =='': widgetReport['notes']['includeInReports'] = False
+        if n['Notes']['text'] == '': widgetReport['notes']['includeInReports'] = False
         widgetReport['includeInReports'] = widget.includeInReport.isChecked()
         return widgetReport
         

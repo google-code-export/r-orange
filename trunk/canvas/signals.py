@@ -21,11 +21,11 @@ class BaseRedRVariable:
 
         self.widget = widget
         self.widgetID = widget.widgetID
+        
         self.data = data
         self.dictAttrs = {}
         self.reserved = ['data', 'dictAttrs']
         self.parent = parent
-        self.widget = widget
     ## returns the current data object in self.data
     def getData(self):
         self.widget.expandData() # this exapnds the data of the parent widget at the time that the data is requested.  This will exapnd all widget variables.
@@ -37,7 +37,7 @@ class BaseRedRVariable:
         
     ## returns a dict of settings used to reset the signal class on loading.
     def saveSettings(self):
-        return {'class':unicode(self.__class__), 'data':self.data, 'parent':self.parent, 'dictAttrs':self.dictAttrs}
+        return {'class':unicode(self.__class__), 'data':self.data, 'parent':self.parent, 'dictAttrs':self.dictAttrs, 'wid':self.widgetID}
         
     ## sets the signal data from a dict returned by saveSettings
     def loadSettings(self, settings):
@@ -158,6 +158,8 @@ def forname(modname, classname):
     module = __import__(modname, globals(), locals(),classname)
     classobj = getattr(module, classname)
     return classobj
+    
+
           
 ################Run on Init###############
 

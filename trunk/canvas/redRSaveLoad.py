@@ -110,7 +110,7 @@ def saveInstances(instances, widgets, doc, progressBar):
             temp.setAttribute("widgetFileName", os.path.basename(widget.widgetInfo.fullName))
             temp.setAttribute('widgetID', widget.widgetID)
             temp.setAttribute('captionTitle', unicode(widget.windowTitle()))
-            temp.setAttribute('collapsed', cPickle.dumps(widget.isDataCollapsed()))
+            temp.setAttribute('collapsed', str(widget.isDataCollapsed()))
             #print _('save in orngDoc ') + unicode(widget.captionTitle)
             progress += 1
             progressBar.setValue(progress)
@@ -125,7 +125,15 @@ def saveInstances(instances, widgets, doc, progressBar):
             #c = widget.outputs.returnOutputs()
             settingsDict[widget.widgetID] = {}
             #print 'dump settings'
-            settingsDict[widget.widgetID]['settings'] = cPickle.dumps(s,2)
+            
+            """Settings for some widgets may be quite large, exceeding memory limits for writing to a file if all settings are considered together.  We attempt to quench that here by saving the settings for each widget to a single file that is then read back in for each widget.  We can do this because we always save by widget ID, and we know the location of the tempdir that we are reading into."""
+            
+            with open(os.path.join(redREnviron.directoryNames['tempDir'], str(widget.widgetID)+'.pickle'), "wb") as file:
+                
+                cPickle.dump(s,file,2)
+                file.close()
+            
+            #settingsDict[widget.widgetID]['settings'] = cPickle.dumps(s,2)
             settingsDict[widget.widgetID]['inputs'] = cPickle.dumps(i,2)
             settingsDict[widget.widgetID]['outputs'] = cPickle.dumps(o,2)
             #settingsDict[widget.widgetID]['connections'] = cPickle.dumps(o, 2)
@@ -134,6 +142,7 @@ def saveInstances(instances, widgets, doc, progressBar):
                 requireRedRLibraries[widget.widgetInfo.package['Name']] = widget.widgetInfo.package
         except Exception as inst:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('redRSaveLoad error saving widget %s-%s,  %s') % (widget.widgetInfo.package['Name'], str(widget.widgetID), unicode(inst)))
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         widgets.appendChild(temp)
         #redRRObjects.saveWidgetObjects(widget.widgetID)
     return (widgets, settingsDict, requireRedRLibraries)
@@ -505,10 +514,6 @@ If you were loading a file from the quick bar, please try loading using "Open"."
     settingsDict = eval(unicode(f.read()))
     f.close()
     
-    ## print the settings dict
-    #for k, v in settingsDict.items():
-        #print '$$$$$$$$$ Settings Dict $$$$$$$$$$$$'
-        #print k, v
     
     ## load the required packages
     loadRequiredPackages(settingsDict['_requiredPackages'], loadingProgressBar = loadingProgressBar)
@@ -739,7 +744,22 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             widgetID = widget.getAttribute('widgetID')
             caption = widget.getAttribute('captionTitle')
             #print 'Loading widget', name, caption, widgetID
-            settings = cPickle.loads(loadedSettingsDict[widgetID]['settings'])
+            
+            # compatibility for redr185
+            if 'settings' in loadedSettingsDict[widgetID]:
+                settings = cPickle.loads(loadedSettingsDict[widgetID]['settings'])
+            else: 
+                """ reload the settings from save time """
+                print "Loading settings for widget %s" % str(widgetID)+'.pickle'
+                with open(os.path.join(redREnviron.directoryNames['tempDir'], str(widgetID)+'.pickle'), 'rb') as f:
+                    try:
+                        settings = cPickle.load(f)
+                    except Exception as inst:
+                        print "Error occurred in getting widget settings: ", str(inst)
+                        settings = {}
+                    f.close()
+            
+            
             widgetSettingsList.append((widgetID, settings))  # we need to load the settings after we load all of the widgets, this will prevent errors when we load settings.
             inputs = cPickle.loads(loadedSettingsDict[widgetID]['inputs'])
             outputs = cPickle.loads(loadedSettingsDict[widgetID]['outputs'])
@@ -759,9 +779,8 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             #nw.setDataCollapsed(True)  # the data must come in colapsed, this will help to prevent loading needless R data.
             #print str(widget.getAttribute('collapsed'))
             if str(widget.getAttribute('collapsed')):
-                nw.setDataCollapsed(cPickle.loads(str(widget.getAttribute('collapsed'))))  # we set the default to be not collapsed.
+                nw.setDataCollapsed(eval(widget.getAttribute('collapsed')))  # we set the default to be not collapsed.
             nw.setWindowTitle(caption)
-            #print _('Settings'), settings
             lpb += 1
             loadingProgressBar.setValue(lpb)
         except Exception as inst:

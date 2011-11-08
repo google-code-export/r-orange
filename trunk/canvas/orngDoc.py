@@ -859,6 +859,8 @@ class CanvasWidgetAction(QWidgetAction):
                 QApplication.sendEvent(self.widgetSuggestEdit, QKeyEvent(QEvent.KeyPress, Qt.Key_Enter, Qt.NoModifier))
                 return
         
+        
+
 class CanvasPopup(QMenu):
     def __init__(self, parent):
         QMenu.__init__(self, parent)
@@ -1036,11 +1038,3 @@ class CanvasPopup(QMenu):
         for m in self.catActions:
             self.addMenu(m)
             
-
-
-        
-
-        
-        
-        
-        
