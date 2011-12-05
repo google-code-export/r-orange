@@ -56,6 +56,7 @@ class Heatmap(OWRpy):
         #OWGUI.redRGUI.base.checkBox(infobox, self, )
         self.gview1 = redRGUI.base.graphicsView(self.controlArea,label='Heatmap', displayLabel=False)
         self.gview1.image = 'heatmap1_'+self.widgetID
+        self.gview1.setImagePNG()
         #self.gview2 = redRGUI.base.graphicsView(self.controlArea)
         #self.gview2.image = 'heatmap2_'+self.widgetID
     def resetColors(self):
@@ -140,7 +141,7 @@ class Heatmap(OWRpy):
             else:
                 self.rowvChoice = 'NULL'
                 
-    def identify(self, kill = True):
+    def identify(self):
         if self.plotdata == '': 
             self.status.setText(_('No Data To Identify'))
             return
@@ -156,7 +157,7 @@ class Heatmap(OWRpy):
         else:
             inj = 'h = ' + unicode(self.groupOrHeightSpin.value())
         self.R(self.Rvariables['heatsubset']+'<-cutree('+self.Rvariables['hclust']+', '+inj+')')       
-        self.gview1.plotMultiple(query = self.Rvariables['hclust']+',col = %s' % self.Rvariables['heatsubset'], layers = ['rect.hclust(%s, %s, cluster = %s, which = 1:%s, border = 2:(%s + 1))' % (self.Rvariables['hclust'], inj, self.Rvariables['heatsubset'], self.groupOrHeightSpin.value(), self.groupOrHeightSpin.value())])
+        self.gview1.plotMultiple(query = self.Rvariables['hclust']+',col = %s' % self.Rvariables['heatsubset'], layers = ['rect.hclust(%s, %s, cluster = %s, which = 1:%s, border = 2:(%s + 1))' % (self.Rvariables['hclust'], inj, self.Rvariables['heatsubset'], int(self.groupOrHeightSpin.value()), self.groupOrHeightSpin.value()), 'legend(x = "topright", legend = 1:%(spin)s, col = 2:(%(spin)s +1), lwd = 1)' % {'spin': str(int(self.groupOrHeightSpin.value()))}])
         newData = signals.base.RVector(self, data = 'as.vector('+self.Rvariables['heatsubset']+')', parent = self.Rvariables['heatsubset'])
         self.rSend("id1", newData)
         

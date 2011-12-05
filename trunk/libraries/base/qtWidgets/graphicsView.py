@@ -287,14 +287,16 @@ class graphicsView(QGraphicsView, widgetState):
         QApplication.clipboard().setImage(self.returnImage())
     def saveAsPDF(self):
         print _('save as pdf')
-        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".pdf", "PDF Document (.pdf)")
+        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.settings['workingDir'] + "/Image-"+unicode(datetime.date.today())+".pdf", "PDF Document (.pdf)")
         if qname.isEmpty(): return
+        redREnviron.settings['workingDir'] = os.path.split(qname)[0]
         qname = unicode(qname)
         self.saveAs(unicode(qname), 'pdf')
     def saveAsPDFLatex(self):
-        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".pdf", "PDF Document (.pdf)")
+        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.settings['workingDir'] + "/Image-"+unicode(datetime.date.today())+".pdf", "PDF Document (.pdf)")
         if qname.isEmpty(): return
         qname = unicode(qname)
+        redREnviron.settings['workingDir'] = os.path.split(qname)[0]
         self.saveAs(unicode(qname), 'pdf')
         mb = dialog(None, title = "Latex Command")
         textbox = textEdit(mb, label = "Latex Command")
@@ -309,27 +311,31 @@ class graphicsView(QGraphicsView, widgetState):
         mb.exec_()
     def saveAsPostScript(self):
         print _('save as post script')
-        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".eps", "Post Script (.eps)")
+        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.settings['workingDir'] + "/Image-"+unicode(datetime.date.today())+".eps", "Post Script (.eps)")
         if qname.isEmpty(): return
         qname = unicode(qname)
+        redREnviron.settings['workingDir'] = os.path.split(qname)[0]
         self.saveAs(unicode(qname), 'ps')
     def saveAsWMF(self):
         print _('save as wmf')
-        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".wmf", "WindowsMetafile (.wmf)")
+        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.settings['workingDir'] + "/Image-"+unicode(datetime.date.today())+".wmf", "WindowsMetafile (.wmf)")
         if qname.isEmpty(): return
         qname = unicode(qname)
+        redREnviron.settings['workingDir'] = os.path.split(qname)[0]
         self.saveAs(unicode(qname), 'wmf')
     def saveAsBitmap(self):
         print _('save as bitmap')
-        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".bmp", "Bitmap (.bmp)")
+        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.settings['workingDir'] + "/Image-"+unicode(datetime.date.today())+".bmp", "Bitmap (.bmp)")
         if qname.isEmpty(): return
         qname = unicode(qname)
+        redREnviron.settings['workingDir'] = os.path.split(qname)[0]
         self.saveAs(unicode(qname), 'bmp')
     def saveAsJPEG(self):
         print _('save as jpeg')
-        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".jpg", "JPEG Image (.jpg)")
+        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.settings['workingDir'] + "/Image-"+unicode(datetime.date.today())+".jpg", "JPEG Image (.jpg)")
         if qname.isEmpty(): return
         qname = unicode(qname)
+        redREnviron.settings['workingDir'] = os.path.split(qname)[0]
         self.saveAs(unicode(qname), 'jpeg')
     def backToParent(self):
         self.parent.layout().addWidget(self.controlArea)
@@ -421,10 +427,10 @@ class graphicsView(QGraphicsView, widgetState):
         if imageType == 'svg':
             #self.convertSVG(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/')) ## handle the conversion to glyph free svg
             mainItem = QGraphicsSvgItem(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/'))
-        elif imageType == 'cairo':
-            print 'Executing cairo plotting'
-            self.convertSVG(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/')) ## handle the conversion to glyph free svg
-            mainItem = QGraphicsSvgItem(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/'))
+        #elif imageType == 'cairo':
+            #print 'Executing cairo plotting'
+            #self.convertSVG(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/')) ## handle the conversion to glyph free svg
+            #mainItem = QGraphicsSvgItem(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/'))
         elif imageType in ['png', 'jpeg']:
             mainItem = QGraphicsPixmapItem(QPixmap(os.path.join(redREnviron.directoryNames['tempDir'], image.replace('\\', '/'))))
         else:
@@ -569,20 +575,20 @@ class graphicsView(QGraphicsView, widgetState):
               imageType = 'png'
             else:
                   self.R('devSVG(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\')', wantType = 'NoConversion')
-        if imageType == 'cairo':
-            if not self.require_librarys(['Cairo']):
-                self.setImagePNG()
-                self.imageFileName = unicode(self.image).replace('\\', '/')+'.'+unicode('png')
-                imageType = 'png'
-            else:
-                self.R('Cairo(file = \'%s\')' % unicode(os.path.join(redREnviron.directoryNames['tempDir'],   self.imageFileName).replace('\\', '/')), wantType = 'NoConversion')
-        if imageType == 'png':
-            self.R('png(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\')', wantType = 'NoConversion')
-        if imageType == 'jpeg':
+        #if imageType == 'cairo':
+            #if not self.require_librarys(['Cairo']):
+                #self.setImagePNG()
+                #self.imageFileName = unicode(self.image).replace('\\', '/')+'.'+unicode('png')
+                #imageType = 'png'
+            #else:
+                #self.R('Cairo(file = \'%s\')' % unicode(os.path.join(redREnviron.directoryNames['tempDir'],   self.imageFileName).replace('\\', '/')), wantType = 'NoConversion')
+        
+        elif imageType == 'jpeg':
             self.R('jpeg(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
                 +unicode(dwidth)+', height = '+unicode(dheight)
                 +')', wantType = 'NoConversion')
-                
+        else:
+            self.R('png(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\')', wantType = 'NoConversion')
     def plot(self, query, function = 'plot', dwidth=250, dheight=250, data = None, legend = False):
         """Plots the query to the plot area."""
         self.plotMultiple(query, function = function, dwidth = dwidth, dheight = dheight, layers = [], data = data, legend = legend)
@@ -778,6 +784,10 @@ class graphicsView(QGraphicsView, widgetState):
             templ = ' '.join(templ)
             col.append(templ)
         return ' '.join(col)
+        
+    def deleteWidget(self):
+        os.remove(self.image)
+        widgetState.deleteWidget(self)
     
 class colorListDialog(QDialog):
     def __init__(self, parent = None, layout = 'vertical', title = _('Color List Dialog'), data = ''):

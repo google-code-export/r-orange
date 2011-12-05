@@ -2,8 +2,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from libraries.base.signalClasses.RDataFrame import *
 class ShapeDataFrame(RDataFrame):
-    def __init__(self, data, parent = None, checkVal = True):
-        RDataFrame.__init__(self, data = data, parent = parent, checkVal = False)
+    def __init__(self, data, parent = None, checkVal = True, **kwargs):
+        RDataFrame.__init__(self, data = data, parent = parent, checkVal = False, **kwargs)
         
     def convertToClass(self, valClass):
         if valClass == ShapeDataFrame:

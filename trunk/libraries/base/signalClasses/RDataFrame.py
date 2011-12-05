@@ -42,9 +42,9 @@ class RDataFrame(StructuredDict, RList, TableView):
     convertFromList = [StructuredDict]
     convertToList = [RList, RVariable, StructuredDict, UnstructuredDict, TableView]
     def __init__(self, widget, data, parent = None, checkVal = True, **kwargs):
-        StructuredDict.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
-        RList.__init__(self, widget, data = data, parent = parent, checkVal = False)
-        TableView.__init__(self)
+        StructuredDict.__init__(self, widget = widget, data = data, parent = parent, checkVal = False, **kwargs)
+        RList.__init__(self, widget, data = data, parent = parent, checkVal = False, **kwargs)
+        TableView.__init__(self, **kwargs)
         if checkVal and not self.R('is.data.frame(%s)' % self.data, silent = True, wantType = 'convert'):
             raise Exception('not a dataframe') # there this isn't the right kind of data for me to get !!!!!
         self.newDataID = unicode(time.time()).replace('.', '_')

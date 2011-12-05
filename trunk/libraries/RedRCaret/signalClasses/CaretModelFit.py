@@ -6,8 +6,8 @@ from libraries.base.signalClasses.RModelFit import *
 class CaretModelFit(RModelFit):
     convertToList = [RVariable, UnstructuredDict, RArbitraryList, RModelFit]
     
-    def __init__(self, widget, data, parent = None, checkVal = True):
-        RModelFit.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
+    def __init__(self, widget, data, parent = None, checkVal = True, **kwargs):
+        RModelFit.__init__(self, widget = widget, data = data, parent = parent, checkVal = False, **kwargs)
         
     def getClasses(self):
         return self.classes

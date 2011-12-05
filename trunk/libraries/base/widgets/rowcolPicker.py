@@ -222,6 +222,7 @@ class rowcolPicker(OWRpy):
                 self.rSend('id1', None)
         self.SubsetByAttached = 0
     def loadCustomSettings(self,settings):
+        return
         selected = []
         print settings['sendSection']['redRGUIObject']['checked']
         if 'True' in settings['sendSection']['redRGUIObject']['checked']:

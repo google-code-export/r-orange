@@ -13,7 +13,7 @@ class RMatrix(RDataFrame):
     convertFromList = [RDataFrame, StructuredDict]
     convertToList = [RDataFrame, StructuredDict, UnstructuredDict, RVariable, RList, TableView]
     def __init__(self, widget, data, parent = None, checkVal = True, **kwargs):
-        RDataFrame.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
+        RDataFrame.__init__(self, widget = widget, data = data, parent = parent, checkVal = False, **kwargs)
         if checkVal and self.getClass_data() not in ['matrix', 'numeric', 'complex']:
             raise Exception('not a Matrix.') # there this isn't the right kind of data for me to get !!!!!
 

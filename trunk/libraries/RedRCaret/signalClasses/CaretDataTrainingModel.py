@@ -6,8 +6,8 @@ class CaretDataTrainingModel(RArbitraryList):
     convertFromList = [UnstructuredDict, StructuredDict]
     convertToList = [RVariable, UnstructuredDict, RArbitraryList]
     
-    def __init__(self, data, parent, checkVal):
-        RArbitraryList.__init__(self, data = data, parent = parent, checkVal = False)
+    def __init__(self, data, parent, checkVal, **kwargs):
+        RArbitraryList.__init__(self, data = data, parent = parent, checkVal = False, **kwargs)
         if checkVal and self.getClass_data() != 'list':
             raise Exception
             

@@ -1,7 +1,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRObjects, redRLog
-import redRi18n
+import redRi18n, gc
 # def _(a):
     # return a
 _ = redRi18n.Coreget_()
@@ -56,8 +56,10 @@ class OutputSocket():
         self.connections = {}
     def setValue(self, value):
         try: 
-            oldData = self.value.getData() # delete the value of the data socket so that it doesn't get lost, this is the last reference to it.
-            del oldData
+            if self.value:
+                oldData = self.value.getData() # delete the value of the data socket so that it doesn't get lost, this is the last reference to it.
+                del oldData
+                gc.collect() # clears the old data out of memeory.  This is diminutive for r signal classes, but very important for other signal classes
         except Exception as inst:
             print inst
             print type(self.value)

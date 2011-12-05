@@ -17,7 +17,7 @@ class RModelFit(RList):
     convertToList = [RList, RVariable]
     convertFromList = []
     def __init__(self, widget, data, parent = None, checkVal = True, **kwargs):
-        RList.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
+        RList.__init__(self, widget = widget, data = data, parent = parent, checkVal = False, **kwargs)
         self.RListSignal = None
     def convertToClass(self, varClass):
         if varClass == RVariable:

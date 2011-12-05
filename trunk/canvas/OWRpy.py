@@ -83,8 +83,8 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             
         self.resetRVariableNameEdits()
         
-        if redRSaveLoad.LOADINGINPROGRESS: 
-            redRRObjects.addRObjects(self.widgetID, self.Rvariables.values())
+        #if redRSaveLoad.LOADINGINPROGRESS: 
+        #    redRRObjects.addRObjects(self.widgetID, self.Rvariables.values())
     def setRvariableNames(self,names):
         """Sets the self.Rvariables dict with a unicode string for each variable, this is called in __init__.
         
@@ -231,6 +231,10 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         for k in self.Rvariables:
             #print self.Rvariables[k]
             self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }', wantType = 'NoConversion')
+            
+        """The widget must also call the delete function in all of it's qtWidgets because these may have consequences that we don't want lying around."""
+        self.controlArea.deleteWidget()
+        
         # send none through the signals
         globalData.removeGlobalData(self)
         self.outputs.propogateNone(ask = False)

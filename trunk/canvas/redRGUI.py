@@ -81,7 +81,25 @@ class widgetState:
                     reportData.update(d)
         
         return reportData
-    
+    def deleteWidget(self):
+        """Call the deleteWidget function in all of the child widgets, this will remove or undo any concequences of the widgets actions.
+        
+        All child widgets that reimplement this function should, at a minimum, do the following;
+        
+        children = self.children()
+        if len(children) == 0: return
+        for i in children:
+            if isinstance(i, qtWidgetBox):
+                i.deleteWidget()
+                
+        This can be achieved by calling widgetState.deletWidget(self).
+        """
+        children = self.children()
+        if len(children) == 0: return
+        for i in children:
+            if isinstance(i, qtWidgetBox):
+                i.deleteWidget()
+                
     def getDefaultState(self):
         r = {'enabled': self.controlArea.isEnabled(),'hidden': self.controlArea.isHidden()}
         return r

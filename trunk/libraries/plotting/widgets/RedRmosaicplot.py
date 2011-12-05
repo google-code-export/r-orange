@@ -19,7 +19,7 @@ class RedRmosaicplot(OWRpy):
         redRGUI.base.commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
-                self.RFunctionParam_x=data.getData()
+                self.RFunctionParam_x=str(data.getData())
                 #self.data = data
                 self.commitFunction()
         else:
@@ -27,4 +27,4 @@ class RedRmosaicplot(OWRpy):
     def commitFunction(self):
         if unicode(self.RFunctionParam_x) == '': return
         
-        self.plotArea.plot('x=table('+unicode(self.RFunctionParam_x)+'),'+inj, function = 'mosaicplot')
+        self.plotArea.plot('x=table('+unicode(self.RFunctionParam_x)+')', function = 'mosaicplot')

@@ -12,7 +12,7 @@ class NumpyArray(BaseRedRVariable):
     convertToList = [BaseRedRVariable]
     convertFromList = []
     def __init__(self, widget, data, parent = None, checkVal = False, **kwargs):
-        BaseRedRVariable.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
+        BaseRedRVariable.__init__(self, widget = widget, data = data, parent = parent, checkVal = False, **kwargs)
         
         if checkVal:
             if type(data) not in [np.ndarray]:

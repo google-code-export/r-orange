@@ -7,8 +7,8 @@ class CaretData(RArbitraryList):
     convertFromList = [UnstructuredDict, StructuredDict]
     convertToList = [RVariable, UnstructuredDict, RDataFrame]
     
-    def __init__(self, widget, data, classes = '', parent = None, checkVal = True):
-        RArbitraryList.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
+    def __init__(self, widget, data, classes = '', parent = None, checkVal = True, **kwargs):
+        RArbitraryList.__init__(self, widget = widget, data = data, parent = parent, checkVal = False, **kwargs)
         if checkVal and self.getClass_data() not in ['data.frame', 'matrix', 'preProcess']:
             raise Exception
         self.classes = classes

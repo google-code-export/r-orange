@@ -776,11 +776,12 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
                 ## send None through all of the widget ouptuts if this is a template
                 nw.outputs.propogateNone()
             nw = redRObjects.getWidgetInstanceByID(newwidget)
+            nw.setWindowTitle(caption)
             #nw.setDataCollapsed(True)  # the data must come in colapsed, this will help to prevent loading needless R data.
             #print str(widget.getAttribute('collapsed'))
             if str(widget.getAttribute('collapsed')):
                 nw.setDataCollapsed(eval(widget.getAttribute('collapsed')))  # we set the default to be not collapsed.
-            nw.setWindowTitle(caption)
+            
             lpb += 1
             loadingProgressBar.setValue(lpb)
         except Exception as inst:
@@ -847,7 +848,10 @@ def loadWidgets180(widgets, loadingProgressBar, loadedSettingsDict, tmp):
     for widget in widgets.getElementsByTagName("widget"):
         try:
             name = widget.getAttribute("widgetName")
-
+            if name in redRObjects.widgetRegistry()['widgets']:
+                widgetInfo =  redRObjects.widgetRegistry()['widgets'][name]
+            else:
+                widgetInfo =  redRObjects.widgetRegistry()['widgets']['base_dummy']
             widgetID = widget.getAttribute('widgetID')
             settings = cPickle.loads(loadedSettingsDict[widgetID]['settings'])
             inputs = cPickle.loads(loadedSettingsDict[widgetID]['inputs'])
@@ -861,11 +865,11 @@ def loadWidgets180(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             if tmp:
                 widgetID += '_'+str(sessionID)
             #schemaDoc.addWidget(widgetInfo, x= xPos, y= yPos, caption = caption, widgetSettings = settings, forceInSignals = inputs, forceOutSignals = outputs, id = widgetID)
+            newwidget = redRObjects.addWidget(widgetInfo, x = xPos, y = yPos, caption = caption, widgetSettings = settings, forceInSignals = inputs, forceOutSignals = outputs, wid = widgetID)
+            #instanceID = redRObjects.addInstance(widgetInfo, settings = settings, insig = inputs, outsig = outputs, wid = widgetID)
+            #newwidget = redRObjects.newIcon(redRObjects.activeCanvas(), redRObjects.activeTab(), widgetInfo, redRStyle.defaultWidgetIcon, canvasDlg, instanceID =  instanceID, tabName = redRObjects.activeTabName())
             
-            instanceID = redRObjects.addInstance(widgetInfo, settings = settings, insig = inputs, outsig = outputs, wid = widgetID)
-            newwidget = redRObjects.newIcon(redRObjects.activeCanvas(), redRObjects.activeTab(), widgetInfo, redRStyle.defaultWidgetIcon, canvasDlg, instanceID =  instanceID, tabName = redRObjects.activeTabName())
-            
-            if newwidget.instanceID not in redRObjects._widgetInstances.keys():
+            if newwidget not in redRObjects._widgetInstances.keys():
                 raise Exception('widget instance not in instance keys')
             
             lpb += 1

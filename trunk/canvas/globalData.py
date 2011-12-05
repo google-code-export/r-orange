@@ -9,6 +9,8 @@ def setGlobalData(creatorWidget, name, data, description = None):
         widgetID = 'none'
     elif hasattr(creatorWidget, 'widgetID'):
         widgetID = creatorWidget.widgetID
+    else:
+        widgetID = 'none'
         
     if widgetID not in globalData.keys():
         globalData[widgetID] = {}

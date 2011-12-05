@@ -108,7 +108,7 @@ class RedRsave(OWRpy):
         
     def processlist(self, data):
         if data:
-            self.data=data.getData()
+            self.data=str(data.getData())
             self.varName.setText(self.data)
         else:
             self.data = None

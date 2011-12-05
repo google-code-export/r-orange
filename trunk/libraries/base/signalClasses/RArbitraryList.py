@@ -16,7 +16,7 @@ class RArbitraryList(RVariable, UnstructuredDict):
     convertFromList = [UnstructuredDict, StructuredDict]
     convertToList = [RVariable, UnstructuredDict]
     def __init__(self, widget, data, parent = None, checkVal = True, **kwargs):
-        RVariable.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
+        RVariable.__init__(self, widget = widget, data = data, parent = parent, checkVal = False, **kwargs)
         if checkVal and not self.R('is.list(%s)' % data):
             raise Exception
         self.newDataID = unicode(time.time()).replace('.', '_')

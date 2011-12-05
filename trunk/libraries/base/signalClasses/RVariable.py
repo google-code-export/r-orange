@@ -16,8 +16,8 @@ from RSession import assign
 class RVariable(BaseRedRVariable): 
     convertToList = []
     convertFromList = []
-    def __init__(self, widget, data, parent = None, checkVal = False):
-        BaseRedRVariable.__init__(self,widget = widget, data = data)
+    def __init__(self, widget, data, parent = None, checkVal = False, **kwargs):
+        BaseRedRVariable.__init__(self,widget = widget, data = data, **kwargs)
         if not parent:
             parent = data
         self.parent = parent

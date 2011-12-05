@@ -61,7 +61,7 @@ class textEdit(QTextEdit,widgetState):
         
         return r
     def loadSettings(self,data):
-        print 'Loading text edit data %s' % unicode(data)
+        #print 'Loading text edit data %s' % unicode(data)
         self.clear()
         
         self.insertHtml(data['text'])

@@ -343,8 +343,14 @@ class reports(QWizard):
         progressBar.show()
         progress= 0
         for widget in widgets:
+            print _('Gathering Report Data from %s') % unicode(widget.windowTitle())
             progressBar.setLabelText(_('Gathering Report Data from %s') % unicode(widget.windowTitle()))
-            self.reportData[unicode(widget.windowTitle())] = self.getReportData(fileDir, widget)
+            try:
+                self.reportData[unicode(widget.windowTitle())] = self.getReportData(fileDir, widget)
+                print self.getReportData(fileDir, widget)
+            except Exception as inst:
+                
+                print "Error: ", str(inst)
             progress += 1
             progressBar.setValue(progress)
 
@@ -352,11 +358,11 @@ class reports(QWizard):
 
         self.updateWidgetList()
         if self.exec_() == QDialog.Rejected:
-            #print _('deleting data')
+
             del self.reportData
             import gc
             gc.collect()
-            #print _('done deleting data')
+
             return False
         
 
@@ -368,8 +374,7 @@ class reports(QWizard):
         #for name, widgetReport in self.reportData.items():
         #    if widgetReport['includeInReports']:
                 reportText+= self.formatWidgetReport(unicode(w.windowTitle()),self.reportData[unicode(w.windowTitle())])
-        
-        #print reportText
+
         if os.path.splitext(unicode(reportName))[1].lower() in [".odt"]:#, ".html", ".tex"]
             reader = Reader()
             writer = Writer()

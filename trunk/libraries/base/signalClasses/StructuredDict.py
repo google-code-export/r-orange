@@ -14,7 +14,7 @@ class StructuredDict(UnstructuredDict):
     convertFromList = []
     def __init__(self, widget, data, parent = None, keys = None, checkVal = True, **kwargs):
         
-        UnstructuredDict.__init__(self, widget, data = data, parent = parent, keys = keys, checkVal = False)
+        UnstructuredDict.__init__(self, widget, data = data, parent = parent, keys = keys, checkVal = False, **kwargs)
         
         
         if checkVal:

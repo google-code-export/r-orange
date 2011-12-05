@@ -557,11 +557,11 @@ class SchemaDoc(QWidget):
         self.activeCanvas().update()
 
     # return a new widget instance of a widget with filename "widgetName"
-    def addWidgetByFileName(self, widgetFileName, x, y, caption = '', widgetSettings=None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None, id = None):
+    def addWidgetByFileName(self, widgetFileName, x, y, caption = '', widgetSettings=None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None, wid = None):
         try:
             if widgetFileName == 'base_dummy': print _('Loading dummy step 1a')
             widget = redRObjects.widgetRegistry()['widgets'][widgetFileName]
-            return self.addWidget(widget, x, y, caption, widgetSettings, saveTempDoc, forceInSignals, forceOutSignals, id = id)
+            return self.addWidget(widget, x, y, caption, widgetSettings, saveTempDoc, forceInSignals, forceOutSignals, id = wid)
         except Exception as inst:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('Loading exception occured for widget ')+widgetFileName+' '+unicode(inst))
             
