@@ -27,13 +27,29 @@ class fileNamesComboBox(comboBox,widgetState):
             self.files = files
         else:
             self.files=[_('Select File')]
+        if 'fileFilterString' in kwargs:
+            self.fileFilterString = kwargs['fileFilterString']
+        else:
+            self.fileFilterString = ''
         self.setFileList()
-        
+        QObject.connect(self, SIGNAL('activated(const QString&)'), self.openFile)
         
     def getSettings(self):
         r = {'files':self.files,'current':self.currentText()}
         # print r
         return r
+        
+    def openFile(self, string):
+        print string
+        if str(string) == _('Select File'):
+            import redREnviron, os
+            
+            fn = QFileDialog.getOpenFileName(self, _("Open File"), redREnviron.settings['workingDir'], self.fileFilterString)
+            #print unicode(fn)
+            if fn.isEmpty(): return
+            fn = unicode(fn)
+            redREnviron.settings['workingDir'] = os.path.split(fn)[0]
+            self.addFile(fn)
         
     def loadSettings(self,data):
         # print _('in comboBox load')
