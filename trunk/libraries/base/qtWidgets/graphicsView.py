@@ -291,7 +291,6 @@ class graphicsView(QGraphicsView, widgetState):
         if qname.isEmpty(): return
         qname = unicode(qname)
         redREnviron.settings['workingDir'] = os.path.split(qname)[0]
-        qname = unicode(qname)
         self.saveAs(unicode(qname), 'pdf')
     def saveAsPDFLatex(self):
         qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.settings['workingDir'] + "/Image-"+unicode(datetime.date.today())+".pdf", "PDF Document (.pdf)")

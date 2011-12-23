@@ -17,10 +17,12 @@ class fileNamesComboBox(comboBox,widgetState):
     def __init__(self,widget,label=None, displayLabel=True,files=None, editable=False,orientation='horizontal',callback = None, **kwargs):
         kwargs.setdefault('includeInReports', True)
         kwargs.setdefault('sizePolicy', QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        
         comboBox.__init__(self,widget,label=label,displayLabel=displayLabel,
         items=None, orientation=orientation,editable=editable,
         callback=callback, **kwargs)
         
+        self.setAcceptDrops(True)
         self.label = label
         
         if files:
@@ -42,15 +44,13 @@ class fileNamesComboBox(comboBox,widgetState):
     def openFile(self, string):
         print string
         if str(string) == _('Select File'):
-            import redREnviron, os
+            
             
             fn = QFileDialog.getOpenFileName(self, _("Open File"), redREnviron.settings['workingDir'], self.fileFilterString)
             #print unicode(fn)
             if fn.isEmpty(): return
-            fn = unicode(fn)
-            redREnviron.settings['workingDir'] = os.path.split(fn)[0]
             self.addFile(fn)
-        
+            
     def loadSettings(self,data):
         # print _('in comboBox load')
         # print data
@@ -101,6 +101,11 @@ class fileNamesComboBox(comboBox,widgetState):
         # print '@##############', type(fn), fn
         # for x in self.files:
             # print type(x),x
+        
+        import redREnviron, os
+        fn = unicode(fn)
+        redREnviron.settings['workingDir'] = os.path.split(fn)[0]
+            
         if fn in self.files:
             self.files.remove(fn)
         self.files.insert(1,fn)
@@ -117,3 +122,29 @@ class fileNamesComboBox(comboBox,widgetState):
         r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': self.getCurrentFile()}}
         #return '%s set to %s' % (self.label, self.currentText())
         return r
+        
+    
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.accept()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.setDropAction(Qt.CopyAction)
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.setDropAction(Qt.CopyAction)
+            event.accept()
+            links = []
+            for url in event.mimeData().urls():
+                links.append(str(url.toLocalFile()))
+            self.addFile(links[0])
+        else:
+            event.ignore()

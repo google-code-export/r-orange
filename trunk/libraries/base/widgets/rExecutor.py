@@ -227,20 +227,17 @@ class rExecutor(OWRpy):
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and self.dfselected == None:
             self.dfselected = redRGUI.base.listBox(self.dataBox, label = 'Data Columns')
-            for e in colnames:
-                self.dfselected.addItem(e)
+            self.dfselected.addItems(colnames)
         elif colnames != 'NULL' and self.dfselected != None:
             self.dfselected.clear()
-            for e in colnames:
-                self.dfselected.addItem(e)
+            self.dfselected.addItems(colnames)
     def isMatrix(self):
         self.mystatus.setText(_("Matrix connected with %s elements and %s columns") % (unicode(self.R('length('+self.data+')')), unicode(self.R('length('+self.data+'[1,])'))))
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and colnames != '' and colnames != 'None' and colnames != None:
             self.dfselected = redRGUI.base.listBox(self.dataBox, self)
             try:
-                for e in colnames:
-                    self.dfselected.addItem(e)
+                self.dfselected.addItems(colnames)
             except:
                 print _('Error with colnames, may not exist.')
     def isList(self):

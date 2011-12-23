@@ -1,4 +1,4 @@
-"""
+"""Row or Column Names
 .. helpdoc::
 """
 
@@ -28,7 +28,6 @@ import redRGUI
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class rownames(OWRpy): 
-    globalSettingsList = ['commit']
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(["rownames", "renamedRowColData"])
@@ -62,7 +61,9 @@ class rownames(OWRpy):
         toolTips=[_('logical. Should this create names if they are NULL?')]*2,
         buttons=[_('TRUE'),_('FALSE')],setChecked=_('TRUE'), orientation='horizontal')
         buttonBox = redRGUI.base.widgetBox(box,orientation='horizontal')
+        
         redRGUI.base.commitButton(buttonBox, _("Commit"), callback = self.commitFunction)
+        
         self.autoCommit = redRGUI.base.checkBox(buttonBox,label=_('commit'), displayLabel=False,
         buttons=[_('Commit on Input')],setChecked=[_('Commit on Input')])
         
@@ -70,6 +71,7 @@ class rownames(OWRpy):
         self.rcrename =  redRGUI.base.radioButtons(box2, label=_('Row or Column'),displayLabel=False,
         buttons=[('row', _('Row Names')),('col', _('Column Names'))],setChecked=_('row'), orientation='horizontal', callback = self.resetrcrename)
         self.attsList = redRGUI.base.listBox(box2, label = _("Row or Column Choices"), toolTip = _("Select the Row or Column to use for the new Column or Row names, you choose a Row name to set column names and vice versa."))
+        
         redRGUI.base.commitButton(box2, _("Commit"), callback = self.setNames)
     def processx(self, data):
         if data:

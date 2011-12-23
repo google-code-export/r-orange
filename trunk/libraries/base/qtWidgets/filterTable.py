@@ -267,10 +267,16 @@ class filterTable(widgetState, QTableView):
         
     def setTable(self, data, filterable = None, sortable = None):
         """Sets the table to a table model returned from a signal.  data represents a Red-R signal that contains a table model function getTableModel()."""
+        if not 'getTableModel' in [method for method in dir(data) if callable(getattr(data, method))]: 
+            # check if the data has a getTableModel method, if not then we should kill the processing and place a blank table in the object's place.
+            self.clear()
+            return
+            
         if filterable != None:
             self.filterable = filterable
         if sortable != None:
             self.sortable = sortable
+        
         self.tm = data.getTableModel(self, self.filterable, self.sortable)
         print self.tm, "Table model"
         self.setModel(self.tm)

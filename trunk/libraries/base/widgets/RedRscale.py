@@ -71,7 +71,7 @@ class RedRscale(OWRpy):
         else:
             string = 'scale = FALSE'
             injection.append(string)
-        if unicode(self.RFunctionParamcenter_radioButtons.getChecked()) != _('Yes'):
+        if unicode(self.RFunctionParamcenter_radioButtons.getChecked()) == _('Yes'):
             string = 'center = TRUE'
             injection.append(string)
         else:

@@ -53,7 +53,7 @@ class score(OWRpy):
         """.. rrsignals::"""
         self.outputs.addOutput("maxScore", _("Max Scored Class"), signals.base.RVector)
 
-        wb = redRGUI.base.widgetBox(self.controlArea, orientation = 'horizontal')
+        wb = redRGUI.base.widgetBox(self.controlArea, orientation = 'vertical')
         self.scoremethod = redRGUI.base.comboBox(wb, label = _('Scoring Method'), items = [_('Multiplication'), _('Correlation')], callback = self.commitFunction)
         redRGUI.base.commitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
         self.RoutputWindow = redRGUI.base.filterTable(wb,label=_('Scores'), displayLabel=False,
@@ -86,12 +86,13 @@ class score(OWRpy):
         ## now make the matrixes
         if unicode(self.scoremethod.currentText()) == _('Multiplication'):
             ## for each col in the samples we need to multiply the cols in the score matrix and save the result.
-            self.R('%s<-as.data.frame(t(data.matrix(%s)) %*% data.matrix(%s))' % (self.Rvariables['score'], self.Rvariables['mergedmatrix'], self.Rvariables['mergedvals']), wantType = 'NoConversion')
+            self.R('%s<-as.data.frame(t(data.matrix(%s)) %%*%% data.matrix(%s))' % (self.Rvariables['score'], self.Rvariables['mergedmatrix'], self.Rvariables['mergedvals']), wantType = 'NoConversion')
             
         elif unicode(self.scoremethod.currentText()) == _('Correlation'):
             # perform cor and show the results
             self.R('%s<-as.data.frame(cor(data.matrix(%s), data.matrix(%s)))' % (self.Rvariables['score'], self.Rvariables['mergedmatrix'], self.Rvariables['mergedvals']), wantType = 'NoConversion')
-        self.RoutputWindow.setRTable(self.Rvariables['score'])
+        
         newScores = signals.base.RDataFrame(self, data = self.Rvariables['score'])
+        self.RoutputWindow.setTable(newScores)
         self.rSend('fscoremat', newScores)
         
