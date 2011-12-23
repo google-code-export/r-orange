@@ -2,7 +2,7 @@
 # Author: Kyle R Covington and Anup Parikh, adapted from orangeCanvas
 # Description:
 #    main file, that creates the MDI environment
-
+print "Staring Up"
 import sys, os, cPickle, time
 #print time.time()
 from PyQt4.QtCore import *
@@ -12,27 +12,30 @@ from PyQt4.QtGui import *
    
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
-import redREnviron
+print "Loading Red-R"
+import redREnviron, redR
+print "Loaded Environ"
 import redRLog
+print "Loaded Log"
 import redRStyle
 import redRQTCore
 import redRReports
 import RSession
-#print 'loading histry'
+print 'loading histry'
 import redRHistory
-#print 'loading international'
+print 'loading international'
 import redRi18n
 import redROutput, redRSaveLoad
-#print 'loading orngdoc'
+print 'loading orngdoc'
 import orngDoc, orngDlgs
 import redRWidgetsTree
 import redRPackageManager, signals, redRInitWizard
-#print 'loading reports'
+print 'loading reports'
 import redRReports, redRObjects, redRUpdateManager
-#print 'loading R session'
+print 'loading R session'
 import redRCanvasToolbar
 
-#print 'Core module Load complete'
+print 'Core module Load complete'
 
 from redRQTCore import button as redRbutton
 from redRQTCore import widgetBox as redRwidgetBox
@@ -269,6 +272,7 @@ class OrangeCanvasDlg(QMainWindow):
         print "Processing events"
         qApp.processEvents()
         print "events processed"
+        redR.LOADING = False # this is the last thing we do to signal to things that look globally that the loading of the application is finished.
         #redRInitWizard.startSetupWizard()
     def createPopupMenu(self): 
         print "calling overridden createPopupMenu"

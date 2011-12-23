@@ -949,3 +949,33 @@ class SearchBox2(redRlineEdit):
                     
                     # self.widgetSuggestEdit.clear()  # clear the line edit for the next widget
                     # return
+from redRQTCore import *
+class SearchDialogPopup(dialog):
+    def __init__(self, parent = None, title = "Widget Lookup"):
+        dialog.__init__(self, parent, title = title)
+        
+        
+    def eventFilter(self, object, ev):
+        try: # a wrapper that prevents problems for the listbox debigging should remove this 
+            if ev.type() == QEvent.MouseButtonPress:
+                self.listWidget.hide()
+                return 1
+            consumed = 0
+            if ev.type() == QEvent.KeyPress:
+                consumed = 1
+                if ev.key() in [Qt.Key_Enter, Qt.Key_Return]:
+                    self.doneCompletion()
+                elif ev.key() == Qt.Key_Escape:
+                    self.listWidget.hide()
+                    # self.setFocus()
+                elif ev.key() in [Qt.Key_Up, Qt.Key_Down, Qt.Key_Home, Qt.Key_End, Qt.Key_PageUp, Qt.Key_PageDown]:
+                    
+                    self.listWidget.setFocus()
+                    self.listWidget.event(ev)
+                else:
+                    # self.setFocus()
+                    self.event(ev)
+            return consumed
+        except: 
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            return 0

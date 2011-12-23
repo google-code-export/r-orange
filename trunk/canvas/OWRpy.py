@@ -233,8 +233,10 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }', wantType = 'NoConversion')
             
         """The widget must also call the delete function in all of it's qtWidgets because these may have consequences that we don't want lying around."""
-        self.controlArea.deleteWidget()
-        
+        try:
+            self.controlArea.deleteWidget()
+        except:
+            redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, redRLog.formatException())
         # send none through the signals
         globalData.removeGlobalData(self)
         self.outputs.propogateNone(ask = False)

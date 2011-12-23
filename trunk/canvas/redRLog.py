@@ -4,7 +4,7 @@ Handles the standard output and error and redirects it to the various output man
 
 """
 
-import redREnviron, os, traceback, sys
+import redREnviron, os, traceback, sys, redR
 from datetime import tzinfo, timedelta, datetime
 #
 #Red-R output writers
@@ -242,7 +242,7 @@ class LogHandler():
     def exceptionHandler(self, type, value, tracebackInfo):
         
         log(REDRCORE,CRITICAL,formatException(type,value,tracebackInfo))
-        if logLevels[redREnviron.settings['outputVerbosity']] == DEVEL:
+        if logLevels[redREnviron.settings['outputVerbosity']] == DEVEL or redR.LOADING:
             self.defaultExceptionHandler(type, value, tracebackInfo)
         
 fileLogger = LogHandler()

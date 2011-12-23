@@ -336,7 +336,7 @@ def save(filename = None, template = False, copy = False, pipe = False):
         tempschema = os.path.join(redREnviron.directoryNames['tempDir'], "tempSchema.tmp")
         tempR = os.path.join(redREnviron.directoryNames['tempDir'], "tmp.RData").replace('\\','/')
         file = open(tempschema, "wt")
-        file.write(xmlText)
+        file.write(xmlText.encode('utf-8', 'replace'))
         file.close()
         doc.unlink()
         

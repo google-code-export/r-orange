@@ -94,11 +94,19 @@ class widgetState:
                 
         This can be achieved by calling widgetState.deletWidget(self).
         """
-        children = self.children()
+        try:
+            children = self.children()
+        except: return # this is a generic function so we should have a case for all conditions
         if len(children) == 0: return
         for i in children:
             if isinstance(i, qtWidgetBox):
-                i.deleteWidget()
+                try:
+                    i.deleteWidget()
+                except: # case that there is no deleteWidget function but the object actually has chilren, in that case we apply this generic function
+                    try:
+                        widgetState.deletWidget(i) # pass the widget as though it were self
+                    except: # perhaps this isn't really something that we can delete, at least we tried.
+                        return
                 
     def getDefaultState(self):
         r = {'enabled': self.controlArea.isEnabled(),'hidden': self.controlArea.isHidden()}

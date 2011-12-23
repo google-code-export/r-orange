@@ -453,6 +453,7 @@ def removeWidgetInstanceByID(wid):
         redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Failed to remove the widget instance %s, %s' % (wid, unicode(inst)))
 
 def removeWidgetInstance(widget):
+    print "deleting widget instance"
     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Removing widget instance %s') % widget)
     widget.onDeleteWidget()
     import sip
