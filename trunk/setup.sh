@@ -1,6 +1,6 @@
 # red-r linux setup.  Several things we need to do here.
 
-BASEDIR=$(dirname $0)
+BASEDIR=$PWD
 echo $BASEDIR
 last=$(uname -m)
 
@@ -37,6 +37,8 @@ then
 else 
     cp -r redrrpy-setup/build/lib.linux*/_conversion.so linux32/redrrpy/_conversion.so
 fi
+ 
+echo "Your base dir is $BASEDIR" 
  
 echo  "#!/bin/bash
 # Shell wrapper for R executable.

@@ -41,10 +41,8 @@ else:
         R_HOME = R_HOME[0]
         R_HOME = R_HOME.strip()
 
-if sys.platform == 'linux2':
-  
-  os.environ['R_HOME'] = '/usr/lib/R'
-print os.environ['R_HOME']
+os.environ['R_HOME'] = R_HOME
+
 # Win32-specific code copied from RPy-1.x
 if sys.platform == 'win32':
     import win32api
