@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>    
+    <name>R Executor</name>
+    <icon>rexecutor.png</icon>
+    <tags> 
+        <tag>Special</tag> 
+        <tag>R</tag> 
+    </tags>
+    <summary></summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML>
+<signals>
+<input>
+	<name>R.object</name>
+	<description>
+
+	</description>
+	<signalClass>base.RVariable</signalClass>
+</input>
+<output>
+	<name>R Data Frame</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</output>
+<output>
+	<name>R List</name>
+	<description>
+
+	</description>
+	<signalClass>base.RList</signalClass>
+</output>
+<output>
+	<name>R Vector</name>
+	<description>
+
+	</description>
+	<signalClass>base.RVector</signalClass>
+</output>
+<output>
+	<name>R.object</name>
+	<description>
+
+	</description>
+	<signalClass></signalClass>
+</output>
+<output>
+	<name>R Matrix</name>
+	<description>
+
+	</description>
+	<signalClass>base.RMatrix</signalClass>
+</output>
+</signals>
+</documentation>

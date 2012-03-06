@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+    <name>
+        Attributes
+    </name>
+    <icon>
+        default.png
+    </icon>
+    <summary>
+        Performed ANOVA on any model or data received.  This can result in errors if inappropriate models are supplied.
+    </summary>
+    <tags>
+        <tag priority="10">
+            Advanced Stats
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+<signals>
+<input>
+	<name>Objectd</name>
+	<description>
+Model object
+	</description>
+	<signalClass>base.RVariable</signalClass>
+</input>
+</signals>
+</documentation>

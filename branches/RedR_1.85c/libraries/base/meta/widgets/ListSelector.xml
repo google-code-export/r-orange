@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>    
+    <name>List Selection</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag>Subsetting</tag> 
+    </tags>
+    <summary>View all the elements of a list and select one to send forward.</summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML>
+<signals>
+<input>
+	<name>R List</name>
+	<description>
+
+	</description>
+	<signalClass>base.RList,base.RArbitraryList</signalClass>
+</input>
+<output>
+	<name>R Data Frame</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</output>
+<output>
+	<name>R Vector</name>
+	<description>
+
+	</description>
+	<signalClass>base.RVector</signalClass>
+</output>
+<output>
+	<name>R List</name>
+	<description>
+
+	</description>
+	<signalClass>base.RList</signalClass>
+</output>
+<output>
+	<name>R Variable</name>
+	<description>
+
+	</description>
+	<signalClass>base.RVariable</signalClass>
+</output>
+<output>
+	<name>R Matrix</name>
+	<description>
+
+	</description>
+	<signalClass>base.RMatrix</signalClass>
+</output>
+</signals>
+</documentation>

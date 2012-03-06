@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+    <name>Fast Discrete Fourier Transform</name>
+    <icon>default.png</icon>
+    <summary>
+        Performs fast discrete fourier transform on a data matrix.
+    </summary>
+    <tags>
+        <tag priority="10">
+            Data Input
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+<signals>
+<input>
+	<name>z</name>
+	<description>
+Z matrix
+	</description>
+	<signalClass>base.RMatrix</signalClass>
+</input>
+<output>
+	<name>fft Output</name>
+	<description>
+Transformed data matrix
+	</description>
+	<signalClass>base.RMatrix</signalClass>
+</output>
+</signals>
+</documentation>

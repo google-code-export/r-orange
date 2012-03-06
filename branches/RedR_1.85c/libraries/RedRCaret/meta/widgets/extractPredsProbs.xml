@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+<name>Caret Predictions and Probabilities</name>
+    <icon>default.png</icon>
+    <tags>
+        <tag priority = '400'>Caret</tag>
+    </tags>
+    <summary>Generates two data tables one for predictions and one for probabilities of the supplied samples being of a class.</summary>
+    <author>
+            <authorname>Red-R Core Development Team</authorname>
+            <authorcontact>www.red-r.org</authorcontact>
+        </author>
+    </widgetXML>
+<signals>
+<input>
+	<name>Fitted Prediction Model</name>
+	<description>
+Prediction model.
+	</description>
+	<signalClass>base.RModelFit</signalClass>
+</input>
+<input>
+	<name>Classification Data</name>
+	<description>
+Classification Data
+	</description>
+	<signalClass></signalClass>
+</input>
+<output>
+	<name>Caret Predictions</name>
+	<description>
+Data table of predictions, this can be output as a table.
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</output>
+<output>
+	<name>Caret Probabilities</name>
+	<description>
+Data table of probabilities, this can be output as a table.
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</output>
+</signals>
+</documentation>

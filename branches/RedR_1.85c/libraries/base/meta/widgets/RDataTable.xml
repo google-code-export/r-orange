@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>    
+    <name>View Data Table</name>
+    <icon>datatable.png</icon>
+    <tags> 
+        <tag>View Data</tag> 
+    </tags>
+    <summary>Shows data in a spreadsheet.</summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML>
+<signals>
+<input>
+	<name>Input Data Table</name>
+	<description>
+
+	</description>
+	<signalClass>base.TableView,base.RDataFrame,base.StructuredDict</signalClass>
+</input>
+</signals>
+</documentation>

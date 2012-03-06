@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+    <name>Cluster Boot</name>
+    <icon>default.png</icon>
+    <summary>
+        Clusterwise cluster stability assessment by resampling
+    </summary>
+    <tags>
+        <tag priority="10">
+            Data Input
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+<signals>
+<input>
+	<name>data</name>
+	<description>
+Data matrix input on which to model.
+	</description>
+	<signalClass>base.RMatrix</signalClass>
+</input>
+<output>
+	<name>clusterboot Output</name>
+	<description>
+Output list of clustering stability.
+	</description>
+	<signalClass>base.RArbitraryList</signalClass>
+</output>
+</signals>
+</documentation>

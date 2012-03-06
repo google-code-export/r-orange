@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>    
+    <name>Table Normalization<!-- [REQUIRED] title --></name>
+    <icon>default.png</icon>
+    <tags>
+        <tag>Data Manipulation</tag>
+    </tags>
+    <summary>Performs normalization and background correction on tables.<!-- [REQUIRED] A Brief description of the widget and what it does--></summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML>
+<signals>
+<input>
+	<name>Plate Data (must be numeric)</name>
+	<description>
+
+	</description>
+	<signalClass>base.RMatrix</signalClass>
+</input>
+<output>
+	<name>Processed Values</name>
+	<description>
+
+	</description>
+	<signalClass>base.RList</signalClass>
+</output>
+</signals>
+</documentation>

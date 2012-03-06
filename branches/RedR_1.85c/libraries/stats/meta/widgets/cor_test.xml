@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+    <name>
+        Test For Correlation (Single)
+    </name>
+    <icon>
+        default.png
+    </icon>
+    <summary>
+        Read data files into Red-R.
+    </summary>
+    <tags>
+        <tag priority="10">
+            Parametric
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+<signals>
+<input>
+	<name>x</name>
+	<description>
+X Vector
+	</description>
+	<signalClass>base.RVector</signalClass>
+</input>
+<input>
+	<name>y</name>
+	<description>
+Y Vector
+	</description>
+	<signalClass>base.RVector</signalClass>
+</input>
+</signals>
+</documentation>

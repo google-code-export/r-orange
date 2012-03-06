@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>    
+    <name>Subset Summary</name>
+    <icon>subset.png</icon>
+    <tags> 
+        <tag>R</tag> 
+    </tags>
+    <summary>Very similar to summary except that this function first splits a data table into multiple tables based on the levels of a factor(s) and then performs the summary function on each resulting data table.</summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML>
+<signals>
+<input>
+	<name>R Variable Object</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</input>
+</signals>
+</documentation>

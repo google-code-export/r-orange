@@ -1,0 +1,6 @@
+!define DATE "2011.07.28"
+!define SVNVERSION "1424"
+!define NAME "Red-R" 
+!define REDRVERSION "1.85b" 
+!define TYPE "compiled" 
+!define RVERSION "R-2.11.1" 

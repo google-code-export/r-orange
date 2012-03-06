@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+<name>Caret Data Model</name>
+    <icon>default.png</icon>
+    <tags>
+        <tag priority='10'>Caret</tag>
+    </tags>
+    <summary>Make a data model that can be used in other Caret widgets.</summary>
+    <author>
+            <authorname>Red-R Core Development Team</authorname>
+            <authorcontact>www.red-r.org</authorcontact>
+        </author>
+    </widgetXML>
+<signals>
+<input>
+	<name>Data Table</name>
+	<description>
+Input data table, this can have optionally, class predictors.
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</input>
+<output>
+	<name>Reduced Data Table</name>
+	<description>
+The complete Caret Data Container.
+	</description>
+	<signalClass></signalClass>
+</output>
+</signals>
+</documentation>

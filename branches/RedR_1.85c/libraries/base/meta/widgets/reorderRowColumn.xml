@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>    
+    <name>Reorder Rows and Columns</name>
+    <icon>default.png</icon>
+    <tags>
+        <tag>Data Manipulation</tag>
+    </tags>
+    <summary>Reorders the rows and columns of a Data Table</summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML>
+<signals>
+<input>
+	<name>Data Table</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</input>
+<output>
+	<name>Data Table</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</output>
+</signals>
+</documentation>

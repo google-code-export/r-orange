@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+<name>Apply Data PreProcessing</name>
+    <icon>default.png</icon>
+    <tags>
+        <tag priorit='20'>Caret</tag>
+    </tags>
+    <summary>Apply a pre-processing data model to a part of a data parition, this will make the data look like the processed data to test in a model.</summary>
+    <author>
+            <authorname>Red-R Core Development Team</authorname>
+            <authorcontact>www.red-r.org</authorcontact>
+        </author>
+    </widgetXML>
+<signals>
+<input>
+	<name>Input Caret Data</name>
+	<description>
+Input Caret Data container
+	</description>
+	<signalClass></signalClass>
+</input>
+<input>
+	<name>PreProcessed Model</name>
+	<description>
+Caret data preprocessing model
+	</description>
+	<signalClass>base.RModelFit</signalClass>
+</input>
+<output>
+	<name>Processed Data</name>
+	<description>
+Processed Caret Data
+	</description>
+	<signalClass></signalClass>
+</output>
+</signals>
+</documentation>

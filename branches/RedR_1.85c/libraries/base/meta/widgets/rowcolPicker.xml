@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>    
+    <name>Row or Column Selection</name>
+    <icon>subset.png</icon>
+    <tags> 
+        <tag>Subsetting</tag> 
+    </tags>
+    <summary></summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML>
+<signals>
+<input>
+	<name>Data Table</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</input>
+<input>
+	<name>Subsetting Vector</name>
+	<description>
+
+	</description>
+	<signalClass>base.RList</signalClass>
+</input>
+<output>
+	<name>Selected Items</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</output>
+<output>
+	<name>Non-selected Items</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</output>
+</signals>
+</documentation>

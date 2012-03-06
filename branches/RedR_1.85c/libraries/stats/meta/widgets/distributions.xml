@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+    <name>
+        Generate Distributions
+    </name>
+    <icon>
+        defualt.png
+    </icon>
+    <summary>
+        Generates vectors of distributions for a variety of preset distributions.
+    </summary>
+    <tags>
+        <tag priority="70">
+            Stats
+        </tag>
+    </tags>
+    <author>
+        <authorname>Anup Parikh</authorname>
+        <authorcontact>anup@red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+<signals>
+<output>
+	<name>Results</name>
+	<description>
+A resulting distribution as a vector.
+	</description>
+	<signalClass>base.RVector</signalClass>
+</output>
+</signals>
+</documentation>

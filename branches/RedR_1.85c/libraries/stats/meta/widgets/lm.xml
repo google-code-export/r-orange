@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+    <name>
+        Linear Model
+    </name>
+    <icon>
+        defualt.png
+    </icon>
+    <summary>
+        Generates a linear model fit to data.
+    </summary>
+    <tags>
+        <tag priority="10">
+            Parametric
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+<signals>
+<input>
+	<name>data</name>
+	<description>
+Input data table.
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</input>
+<output>
+	<name>lm Output</name>
+	<description>
+LM Fit object for further modeling.
+	</description>
+	<signalClass>stats.RLMFit</signalClass>
+</output>
+<output>
+	<name>lm plot attribute</name>
+	<description>
+LM Plot Attribute, for plotting.
+	</description>
+	<signalClass>plotting.RPlotAttribute</signalClass>
+</output>
+</signals>
+</documentation>

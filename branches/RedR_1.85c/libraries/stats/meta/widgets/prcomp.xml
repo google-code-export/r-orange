@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+    <name>Principal Component</name>
+    <icon>stats.png</icon>
+    <summary>Calculates principal components for a numeric matrix.</summary>
+    <tags>
+        <tag priority="10">
+            Parametric
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+<signals>
+</signals>
+</documentation>

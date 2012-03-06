@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>    
+    <name>Dummy</name>
+    <icon>dummy.png</icon>
+    <tags> 
+        <tag>R</tag> 
+    </tags>
+    <summary>A special widget that takes the place of any widget that fails during session load.</summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML>
+<signals>
+</signals>
+</documentation>

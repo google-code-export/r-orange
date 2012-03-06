@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>    
+    <name>Row or Column Names</name>
+    <icon>readfile.png</icon>
+    <tags> 
+        <tag>Subsetting</tag> 
+    </tags>
+    <summary>Return Rownames</summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML>
+<signals>
+<input>
+	<name>Input Data</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</input>
+<output>
+	<name>Row or Column Names</name>
+	<description>
+
+	</description>
+	<signalClass>base.RVector</signalClass>
+</output>
+<output>
+	<name>Renamed Data Table</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</output>
+</signals>
+</documentation>

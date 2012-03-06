@@ -1,0 +1,261 @@
+Read File
+)))))))))
+
+Documentation
+((((((((((((((((((
+
+
+
+Just some simple help documentation.  Nothing really special.
+
+
+Interface
+((((((((((((
+
+Files
+{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+Sets the file that the widget is reading and immediatly scans the file.
+
+
+
+Class: base.fileNamesComboBox
+
+Browse
+{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.button
+
+File Type
+{{{{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.radioButtons
+
+Column Seperator
+{{{{{{{{{{{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.radioButtons
+
+Seperator
+{{{{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.lineEdit
+
+Row and Column Names
+{{{{{{{{{{{{{{{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.groupBox
+
+Column Header
+{{{{{{{{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.checkBox
+
+Select Row Names
+{{{{{{{{{{{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.comboBox
+
+Options
+{{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.checkBox
+
+Quote:
+{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.lineEdit
+
+Decimal:
+{{{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.lineEdit
+
+# Lines to Preview:
+{{{{{{{{{{{{{{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.lineEdit
+
+# Lines to Read:
+{{{{{{{{{{{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.lineEdit
+
+# Lines to Skip:
+{{{{{{{{{{{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.lineEdit
+
+Rescan File
+{{{{{{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.button
+
+Load File
+{{{{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.button
+
+File Info
+{{{{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.groupBox
+
+
+
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.widgetBox
+
+File Preview
+{{{{{{{{{{{{
+
+Description
+{{{{{{{{{{{{{{{
+
+No description entered for this GUI parameter
+
+
+
+Class: base.textEdit
+
+Signals
+((((((((((((((
+
+Output Data
+{{{{{{{{{{{
+
+Classes: base.RDataFrame
+
+Description
+{{{{{{{{{{{{{{{
+
+A data table read in by the widget
+
+
+
+R Packages
+((((((((((((((
+
+RODBC

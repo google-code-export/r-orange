@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+<name>Predict</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag priority='100'>Caret</tag> 
+    </tags>
+    <summary>Predict classes or outcome based on a Caret Train model and an optional data collection.</summary>
+    <author>
+            <authorname>Red-R Core Team</authorname>
+            <authorcontact>http://www.red-r.org/contact</authorcontact>
+        </author>
+</widgetXML>
+<signals>
+<input>
+	<name>object</name>
+	<description>
+Trained model
+	</description>
+	<signalClass>base.RModelFit</signalClass>
+</input>
+<input>
+	<name>newData</name>
+	<description>
+New data
+	</description>
+	<signalClass>base.RArbitraryList,base.RArbitraryList</signalClass>
+</input>
+<output>
+	<name>predict Output</name>
+	<description>
+Prediction output
+	</description>
+	<signalClass>base.RModelFit</signalClass>
+</output>
+</signals>
+</documentation>

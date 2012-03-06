@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>    
+    <name>Summary</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag>R</tag> 
+    </tags>
+    <summary>Output a summary of the data</summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML>
+<signals>
+<input>
+	<name>R Variable Object</name>
+	<description>
+
+	</description>
+	<signalClass>base.RVariable</signalClass>
+</input>
+<output>
+	<name>R Summary</name>
+	<description>
+
+	</description>
+	<signalClass>base.RArbitraryList</signalClass>
+</output>
+</signals>
+</documentation>

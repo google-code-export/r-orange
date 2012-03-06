@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+    <name>Kolmogorov-Smirnov</name>
+    <icon>default.png</icon>
+    <summary>Kolmogorov-Smirnov test providing a comparison of a fitted distribution with the empirical distribution.</summary>
+    <tags>
+        <tag priority="10">
+            Distributions
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+<signals>
+<input>
+	<name>x</name>
+	<description>
+X vector
+	</description>
+	<signalClass>base.RVector</signalClass>
+</input>
+<input>
+	<name>y</name>
+	<description>
+Y vector
+	</description>
+	<signalClass>base.RVector</signalClass>
+</input>
+</signals>
+</documentation>

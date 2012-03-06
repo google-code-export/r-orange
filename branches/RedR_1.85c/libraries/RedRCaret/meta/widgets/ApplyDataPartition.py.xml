@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation>
+<name>Apply Data Partition</name>
+    <icon>default.png</icon>
+    <tags>
+        <tag priority='30'>Caret</tag>
+    </tags>
+    <summary>Used in conjunction with the Partition widget, this widget subsets caret data based on an established parition into two groups; in the partition and not in the partition.</summary>
+    <author>
+            <authorname>Red-R Core Development Team</authorname>
+            <authorcontact>www.red-r.org</authorcontact>
+        </author>
+    <signals><input>
+	<name>Input Caret Data</name>
+	<description>
+A Caret Data Container
+	</description>
+	<signalClass></signalClass>
+</input>
+<input>
+	<name>Partition List</name>
+	<description>
+Partition list
+	</description>
+	<signalClass>base.RList</signalClass>
+</input>
+<output>
+	<name>Partitioned Data Included</name>
+	<description>
+Partitioned data included in the model
+	</description>
+	<signalClass></signalClass>
+</output>
+<output>
+	<name>Partitioned Data Excluded</name>
+	<description>
+Partitioned data excluded from the model
+	</description>
+	<signalClass></signalClass>
+</output>
+</signals>
+</documentation>

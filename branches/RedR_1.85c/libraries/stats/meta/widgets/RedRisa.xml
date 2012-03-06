@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+    <name>Iterative Signature Algorithm</name>
+    <icon>default.png</icon>
+    <summary>Run ISA with the default parameters</summary>
+    <tags>
+        <tag priority="10">
+            Advanced Stats
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+<signals>
+<input>
+	<name>data</name>
+	<description>
+Input data.
+	</description>
+	<signalClass>base.RMatrix</signalClass>
+</input>
+<output>
+	<name>isa Output</name>
+	<description>
+ISA Output model.
+	</description>
+	<signalClass>base.RModelFit</signalClass>
+</output>
+</signals>
+</documentation>

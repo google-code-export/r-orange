@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>    
+    <name>Intersect</name>
+    <icon>datatable.png</icon>
+    <tags> 
+        <tag>Deprecated</tag> 
+    </tags>
+    <summary>This widget takes two vectors and performs a set intersect. Returns the set of element common to both.</summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML>
+<signals>
+<input>
+	<name>y</name>
+	<description>
+
+	</description>
+	<signalClass>base.RVector</signalClass>
+</input>
+<input>
+	<name>x</name>
+	<description>
+
+	</description>
+	<signalClass>base.RVector</signalClass>
+</input>
+<output>
+	<name>intersect Output</name>
+	<description>
+
+	</description>
+	<signalClass>base.RVector</signalClass>
+</output>
+</signals>
+</documentation>

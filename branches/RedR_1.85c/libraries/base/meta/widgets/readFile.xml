@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+    <name>
+        Read File
+    </name>
+    <icon>
+        readfile.png
+    </icon>
+    <summary>
+        Read data files into Red-R.
+    </summary>
+    <tags>
+        <tag priority="10">
+            Data Input
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+<signals>
+<output>
+	<name>Output Data</name>
+	<description>
+A data table read in by the widget
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</output>
+</signals>
+</documentation>

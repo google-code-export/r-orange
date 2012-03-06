@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+    <name>
+        Fisher Exact Test
+    </name>
+    <icon>
+        default.png
+    </icon>
+    <summary>
+        Perform Fisher Exact Test on data.
+    </summary>
+    <tags>
+        <tag priority="10">
+            Stats
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+<signals>
+<input>
+	<name>x</name>
+	<description>
+Data matrix
+	</description>
+	<signalClass>base.RMatrix</signalClass>
+</input>
+</signals>
+</documentation>

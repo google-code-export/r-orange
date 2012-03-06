@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><name>Partition/Resample/Fold (Caret)</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag priority='45'>Caret</tag> 
+    </tags>
+    <summary>Creates a data partition, a resample of the data or a fold depending on the selections in the function box.  Partition, partitions the data into groups, resample generates a bootstrap resampling of the data and folds generates an evenly split dataset across the number of folds.</summary>
+    <author>
+            <authorname>Red-R Core Team</authorname>
+            <authorcontact>http://www.red-r.org/contact</authorcontact>
+        </author>
+    <signals><input>
+	<name>Input Caret Data</name>
+	<description>
+Caret data container.
+	</description>
+	<signalClass></signalClass>
+</input>
+<output>
+	<name>Partition/Resample/Fold List</name>
+	<description>
+Partitioned Caret data container.
+	</description>
+	<signalClass>base.RList</signalClass>
+</output>
+</signals>
+</documentation>

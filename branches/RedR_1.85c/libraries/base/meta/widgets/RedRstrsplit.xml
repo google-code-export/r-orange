@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>    
+    <name>String Split</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag>Data Manipulation</tag> 
+    </tags>
+    <summary>Split strings by some function or string from a vector or list selection (works on data tables too).</summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML>
+<signals>
+<input>
+	<name>Input Data</name>
+	<description>
+
+	</description>
+	<signalClass>base.RVector,base.RList</signalClass>
+</input>
+<output>
+	<name>strsplit Output</name>
+	<description>
+
+	</description>
+	<signalClass>base.RList</signalClass>
+</output>
+<output>
+	<name>strsplit Vector</name>
+	<description>
+
+	</description>
+	<signalClass>base.RVector</signalClass>
+</output>
+<output>
+	<name>Data Table</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame,base.RList(self,base.RVector(self</signalClass>
+</output>
+</signals>
+</documentation>

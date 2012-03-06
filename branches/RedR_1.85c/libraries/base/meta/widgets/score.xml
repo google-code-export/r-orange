@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>    
+    <name>Score</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag>Data Classification</tag> 
+    </tags>
+    <summary>Scores samples based on a scoring matrix.  First merges the data by the row names and extracts only those row names that are in the scoring matrix.  Also any NA values are removed prior to scoring.  Several scoring options are available and include; multiplication (values are multiplied and summed to generate a score for every sample for every level of the scoring matrix), correlation (identical to correlation / variance widget).</summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML>
+<signals>
+<input>
+	<name>Sample Data</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</input>
+<input>
+	<name>Scoring Matrix</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</input>
+<output>
+	<name>Sored Samples</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</output>
+<output>
+	<name>Max Scored Class</name>
+	<description>
+
+	</description>
+	<signalClass>base.RVector</signalClass>
+</output>
+</signals>
+</documentation>

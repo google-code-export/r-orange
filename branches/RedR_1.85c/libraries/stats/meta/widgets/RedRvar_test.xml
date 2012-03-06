@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+    <name>F Test</name>
+    <icon>default.png</icon>
+    <summary>Performs an F test.</summary>
+    <tags>
+        <tag priority="10">
+            Stats
+        </tag>
+    </tags>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+    </widgetXML>
+<signals>
+<input>
+	<name>x</name>
+	<description>
+X data
+	</description>
+	<signalClass>base.RVector</signalClass>
+</input>
+<input>
+	<name>y</name>
+	<description>
+Y data
+	</description>
+	<signalClass>base.RVector</signalClass>
+</input>
+</signals>
+</documentation>

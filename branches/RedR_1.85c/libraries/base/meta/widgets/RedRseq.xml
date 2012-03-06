@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>    
+    <name>Generate sequence</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag>Prototypes</tag> 
+    </tags>
+    <summary></summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML>
+<signals>
+<output>
+	<name>Sequence Output</name>
+	<description>
+
+	</description>
+	<signalClass>base.RVector</signalClass>
+</output>
+</signals>
+</documentation>

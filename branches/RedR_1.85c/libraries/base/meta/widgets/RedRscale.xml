@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>    
+    <name>scale</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag>Prototypes</tag> 
+    </tags>
+    <summary></summary>
+    <author>
+        <authorname>Red-R Core Development Team</authorname>
+        <authorcontact>www.red-r.org</authorcontact>
+    </author>
+</widgetXML>
+<signals>
+<input>
+	<name>Input Data</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame,base.RMatrix</signalClass>
+</input>
+<output>
+	<name>scale Output</name>
+	<description>
+
+	</description>
+	<signalClass>base.RDataFrame</signalClass>
+</output>
+<output>
+	<name>scale Output (Matrix)</name>
+	<description>
+
+	</description>
+	<signalClass>base.RMatrix</signalClass>
+</output>
+</signals>
+</documentation>

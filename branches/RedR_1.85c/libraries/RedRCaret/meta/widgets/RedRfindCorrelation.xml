@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><widgetXML>
+<name>PreProcess Data</name>
+    <icon>default.png</icon>
+    <tags> 
+        <tag priority='47'>Caret</tag> 
+    </tags>
+    <summary>Find internal correlations within data and provide an index of items to remove that will resolve these correlations.</summary>
+        <author>
+            <authorname>Red-R Core Team</authorname>
+            <authorcontact>http://www.red-r.org/contact</authorcontact>
+        </author>
+</widgetXML>
+<signals>
+<input>
+	<name>Data Table / Sample List</name>
+	<description>
+A Caret data signal or data container
+	</description>
+	<signalClass></signalClass>
+</input>
+<output>
+	<name>Reduced Data Table</name>
+	<description>
+A processed Caret data signal
+	</description>
+	<signalClass></signalClass>
+</output>
+<output>
+	<name>PreProcess Model (To Calibrate Test Data)</name>
+	<description>
+A special Caret model for use in applying preprocessing to other data sets.  This is a consequence of Caret's configuration and, confusing as it is, one can use Predict to apply these predictions to a new data container.
+	</description>
+	<signalClass></signalClass>
+</output>
+</signals>
+</documentation>

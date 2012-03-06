@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
+<documentation><signals></signals>
+<convertTo>base:RDataFrame,base:StructuredDict,base:UnstructuredDict,base:RMatrix,base:RVariable,base:RList</convertTo>
+<convertFrom></convertFrom>
+</documentation>
