@@ -1,9 +1,17 @@
 ## setup file for the conversion module Kyle R. Covington Copywrite 2010
 
 from distutils.core import setup, Extension
-import os
-RHOME = 'C:/Program Files/R/R-2.9.2/'  # this must be changed if the location of the R installation is different from the default or if the user wishes to use versions of R other than 2.9.2
-include_dirs = [ os.path.join(RHOME.strip(), 'include'),
+import os, platform, sys
+if sys.platform == 'linux2':
+    print "installing for linux"
+    RHOME = '/usr/lib/R'
+    include_dirs = [ os.path.join(RHOME.strip(), 'include'),
+                         'src', os.path.join('/', 'usr', 'share', 'R', 'include') ]
+else:   
+    print "installing for win"
+    RHOME = 'C:/Program Files/R/R-2.9.2/'  # this must be changed if the location of the R installation is different from the default or if the user wishes to use versions of R other than 2.9.2
+
+    include_dirs = [ os.path.join(RHOME.strip(), 'include'),
                          'src' ]
 libraries= ['R']
 r_libs = [ # Different verisons of R put .so/.dll in different places

@@ -315,9 +315,9 @@ def getRinterface_ext():
             libraries = ['R', ],
             library_dirs = r_libs,
             define_macros = define_macros,
-            runtime_library_dirs = r_libs,
+            runtime_library_dirs = r_libs
             #extra_compile_args=['-O0', '-g'],
-            extra_link_args = ['-arch', 'i386','-arch','x86_64']
+            #extra_link_args = ['-arch', 'i386','-arch','x86_64']
             )
     #print extra_link_args
     
@@ -362,7 +362,7 @@ setup(
     description = "Python interface to the R language",
     url = "http://rpy.sourceforge.net",
     license = "AGPLv3.0 (except rpy3.rinterface: LGPL)",
-    author = "Laurent Gautier",
+    author = "Laurent Gautier, modified by Kyle R. Covington",
     author_email = "lgautier@gmail.com",
     ext_modules = rinterface_exts[0],
     package_dir = pack_dir,
