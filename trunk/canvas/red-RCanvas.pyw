@@ -403,6 +403,7 @@ class OrangeCanvasDlg(QMainWindow):
                 redRLog.fileLogger.closeLogFile()
                 #redRLog.closeLogger()
                 ce.accept()
+                RSession.close()
                 QMainWindow.closeEvent(self,ce)
                 
 

@@ -430,9 +430,15 @@ I want to put in an image below that likely isn't there.
             for x in self.colNames:
                 self.rowNamesCombo.addItem(x,x)
         self.scanarea.clear()
-        data = self.R('rbind(colnames(' + self.Rvariables['dataframe_org'] 
-        + '), as.matrix(' + self.Rvariables['dataframe_org'] + '))',wantType='list')
+        data = self.R(
+            #'rbind(colnames(' + 
+            self.Rvariables['dataframe_org'] 
+            #+ '), ' + self.Rvariables['dataframe_org'] + ')'
+            ,wantType='dict')
+        
         rownames = self.R('rownames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
+        
+        #self.colnames = self.R('colnames(rbind(colnames(' + self.Rvariables['dataframe_org'] + '), ' + self.Rvariables['dataframe_org'] + ')', wantType = 'list')
         
         txt = self.html_table(data,rownames)
         self.scanarea.setText(txt)
@@ -476,16 +482,24 @@ I want to put in an image below that likely isn't there.
         # print self.getReportText('./')
           
     def html_table(self,lol,rownames):
+        print "loading data with colnames: ", self.colNames
+        print len(rownames), len(lol[self.colNames[0]])
         s = '<table border="1" cellpadding="3">'
         s+= _('  <tr><td>Rownames</td><td><b>')
-        s+= '    </b></td><td><b>'.join(lol[0])
+        s+= '    </b></td><td><b>'.join(self.colNames)
         s+= '  </b></td></tr>'
         
-        for row, sublist in zip(rownames,lol[1:]):
-            s+= '  <tr><td><b>' +row + '</b></td><td>'
-            s+= '    </td><td>'.join(sublist)
+        for i in range(len(lol[self.colNames[0]])):
+            s+= '  <tr><td><b>' +rownames[i] + '</b></td><td>'
+            s+= '    </td><td>'.join([unicode(lol[unicode(col).encode('ascii')][i]).encode('ascii') for col in self.colNames])
             s+= '  </td></tr>'
         s+= '</table>'
+        
+        # for row, sublist in zip(rownames,lol[1:]):
+            # s+= '  <tr><td><b>' +row + '</b></td><td>'
+            # s+= '    </td><td>'.join(sublist)
+            # s+= '  </td></tr>'
+        # s+= '</table>'
         return s
         
     def updateGUI(self):

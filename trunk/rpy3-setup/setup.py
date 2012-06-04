@@ -132,7 +132,8 @@ class build_ext(_build_ext):
 
 def get_rversion(r_home):
     print 'checking r-home %s' % r_home
-    r_exec = os.path.abspath(os.path.join(r_home, 'bin', 'R'))
+    ## i386 added for 64 bit support
+    r_exec = os.path.abspath(os.path.join(r_home, 'bin', "i386", 'R'))
     # Twist if Win32
     if sys.platform == "win32":
         print 'opening R for version %s' % r_exec
@@ -262,15 +263,21 @@ def get_rconfig(r_home, about, allow_empty = False):
     cmd = '"'+r_exec+'" CMD config '+about
     rp = os.popen(cmd)
     print cmd
-    rconfig = rp.readline()
+    ## override here for my path, R CMD not working for some reason
+    
+    rconfig = {"--ldflags":"-LC:/PROGRA~1/R/R-215~1.0/bin/i386 -lR",
+            "--cppflags":"-IC:/PROGRA~1/R/R-215~1.0/include -IC:/PROGRA~1/R/R-215~1.0/include/i386",
+            "LAPACK_LIBS":"-LC:PROGRA~1/R/R-215~1.0/bin/i386 -lRlapack",
+            "BLAS_LIBS":"-LC:PROGRA~1/R/R-215~1.0/bin/i386 -lRblas"}[about]
+        #= rp.readline()
     #Twist if 'R RHOME' spits out a warning
     if rconfig.startswith("WARNING"):
         rconfig = rp.readline()
     rconfig = rconfig.strip()
-    try:
-        rc = RConfig.from_string(rconfig)
-    except Exception as inst:
-        print str(inst)
+    #try:
+    rc = RConfig.from_string(rconfig)
+    # except Exception as inst:
+        # print str(inst)
     return rc
 
 
@@ -362,8 +369,8 @@ setup(
     description = "Python interface to the R language",
     url = "http://rpy.sourceforge.net",
     license = "AGPLv3.0 (except rpy3.rinterface: LGPL)",
-    author = "Laurent Gautier, modified by Kyle R. Covington",
-    author_email = "lgautier@gmail.com",
+    author = "Laurent Gautier, modified by Kyle Covington",
+    author_email = "lgautier@gmail.com, kyle@red-r.org",
     ext_modules = rinterface_exts[0],
     package_dir = pack_dir,
     packages = [pack_name,

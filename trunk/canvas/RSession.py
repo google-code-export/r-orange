@@ -22,7 +22,7 @@
 ## Controls the execution of R funcitons into the underlying R session
 
 
-import sys, os, redREnviron, numpy, redR, redRLog
+import sys, os, redREnviron, numpy, redR, redRLog, pyRserve
 
 def writeR(s):
     try:
@@ -31,49 +31,74 @@ def writeR(s):
 
 ####### system specific import of rpy in it's various flavors ##########
 ## if mac ##
-if sys.platform == 'darwin':
-    os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
-    os.environ['R_HOME_DIR'] = os.path.join(redREnviron.directoryNames['RDir'])
-    os.environ['R_ARCH'] = 'i386'
-    os.environ['R_INCLUDE_DIR'] = os.path.join(redREnviron.directoryNames['RDir'],'include')
-    os.environ['R_SHARE_DIR'] = os.path.join(redREnviron.directoryNames['RDir'],'share')
-    os.environ['R_DOC_DIR'] = os.path.join(redREnviron.directoryNames['RDir'],'doc')
-    os.environ['R_LD_LIBRARY_PATH'] = os.path.join(redREnviron.directoryNames['RDir'],'lib','i386')
-    os.environ['DYLD_LIBRARY_PATH'] = os.path.join(redREnviron.directoryNames['RDir'],'lib','i386')    
-    os.environ['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home'
-    import rpy3.robjects as rpy
-    import rpy3.rinterface
-    rpy3.rinterface.set_writeconsole(writeR)
-## if windows ##
-elif sys.platform == 'win32':
-    print redREnviron.directoryNames['RDir']
-    os.environ['R_HOME'] = redREnviron.directoryNames['RDir']
-    sys.path.append(os.path.abspath(os.path.join(redREnviron.directoryNames['redRDir'], '..', 'win32')))
-    import rpy3.robjects as rpy
-    #import rpy3.rinterface
-    #rpy3.rinterface.set_writeconsole(writeR)
-## if linux ##
-elif sys.platform == 'linux2':
-    print 'loading rpy3'
-    import rpy3.robjects as rpy
-    import rpy3.rinterface
-    rpy3.rinterface.set_writeconsole(writeR)
-## if we don't know ##
-else:
-    import rpy2.robjects as rpy
-    import rpy2.rinterface
-    rpy2.rinterface.set_writeconsole(writeR)
+# if sys.platform == 'darwin':
+    # os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
+    # os.environ['R_HOME_DIR'] = os.path.join(redREnviron.directoryNames['RDir'])
+    # os.environ['R_ARCH'] = 'i386'
+    # os.environ['R_INCLUDE_DIR'] = os.path.join(redREnviron.directoryNames['RDir'],'include')
+    # os.environ['R_SHARE_DIR'] = os.path.join(redREnviron.directoryNames['RDir'],'share')
+    # os.environ['R_DOC_DIR'] = os.path.join(redREnviron.directoryNames['RDir'],'doc')
+    # os.environ['R_LD_LIBRARY_PATH'] = os.path.join(redREnviron.directoryNames['RDir'],'lib','i386')
+    # os.environ['DYLD_LIBRARY_PATH'] = os.path.join(redREnviron.directoryNames['RDir'],'lib','i386')    
+    # os.environ['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home'
+    # import rpy3.robjects as rpy
+    # import rpy3.rinterface
+    # rpy3.rinterface.set_writeconsole(writeR)
+# if windows ##
+# elif sys.platform == 'win32':
+    # print redREnviron.directoryNames['RDir']
+    # os.environ['R_HOME'] = redREnviron.directoryNames['RDir']
+    # sys.path.append(os.path.abspath(os.path.join(redREnviron.directoryNames['redRDir'], '..', 'win32')))
+    # import rpy3.robjects as rpy
+    # import rpy3.rinterface
+    # rpy3.rinterface.set_writeconsole(writeR)
+# if linux ##
+# elif sys.platform == 'linux2':
+    # print 'loading rpy3'
+    # import rpy3.robjects as rpy
+    # import rpy3.rinterface
+    # rpy3.rinterface.set_writeconsole(writeR)
+# if we don't know ##
+# else:
+    # import rpy2.robjects as rpy
+    # import rpy2.rinterface
+    # rpy2.rinterface.set_writeconsole(writeR)
     
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 #print 'importing conversion'
-import redrrpy._conversion as co
+## import redrrpy._conversion as co
+def _(a):
+    return a
+
+def startRserve(i):
+    import subprocess
+    subprocess.Popen("\"C:/Program Files/R/R-2.15.0/bin/i386/Rscript.exe\" -e \"require(Rserve); Rserve(%s)\"" % str(i))
+    print "opened R Serve"
+    
+    
+import socket
+i = 6311
+validConnection = False
+while not validConnection:
+    try:
+        print "Testing port %s" % str(i)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect(('localhost', i))
+        print "made connection shuttin down port to reopen"
+        s.shutdown(socket.SHUT_RDWR)
+        s.close()
+        validConnection = True
+    except Exception as inst:
+        print str(inst)
+        i+=1
+print "Starting R with prot %s" % str(i)
+startRserve(i)
+con = pyRserve.connect(host = 'localhost', port=i)
 #print 'done importing conversion'
 import redRLog
 #print 'Rsession loaded'
 # import redRi18n
-def _(a):
-    return a
 
 mutex = QMutex()
 
@@ -109,8 +134,8 @@ def Rcommand(query, silent = False, wantType = redR.CONVERT, listOfLists = False
         
     
     output = None
-    if not silent:
-        redRLog.log(redRLog.R, redRLog.DEBUG, redRLog.getSafeString(query))
+    # if not silent:
+    redRLog.log(redRLog.R, redRLog.DEBUG, redRLog.getSafeString(query))
     #####################Forked verions of R##############################
     # try:
         # output = qApp.R.R(query)            
@@ -125,7 +150,7 @@ def Rcommand(query, silent = False, wantType = redR.CONVERT, listOfLists = False
         # return None # now processes can catch potential errors
     #####################Forked verions of R##############################
     try:
-        output = rpy.r(unicode(query).encode('Latin-1'))
+        output = con.r(unicode(query).encode('Latin-1'))
         
     except Exception as inst:
         mutex.unlock()
@@ -192,6 +217,42 @@ def Rcommand(query, silent = False, wantType = redR.CONVERT, listOfLists = False
     return output
 
 def convertToPy(inobject):
+    try:
+        if type(inobject) == pyRserve.taggedContainers.AttrArray:
+            print "Converting tagged array"
+            if hasattr(inobject, 'attr'):
+                newObj = []
+                if 'factor' in inobject.attr['class']:
+                    levels = inobject.attr['levels']
+                    for i in range(len(inobject)):
+                        if inobject[i] < 1: newObj.append("NA")
+                        else: newObj.append(levels[inobject[i]-1])
+                    return newObj
+                else:
+                    for i in range(len(inobject)):
+                        newObj.append(inobject[i])
+                    return newObj
+            else:
+                return inobject.tolist()
+        elif type(inobject) == numpy.ndarray:
+            print "converting numpy.ndarray"
+            return inobject.tolist()
+        elif type(inobject) == pyRserve.taggedContainers.TaggedList:
+            print "converting tagged list"
+            newObj = {}
+            for k in inobject.keys:
+                newObj[str(k)] = convertToPy(inobject[str(k)])
+            return newObj
+        elif type(inobject) == numpy.string_:
+            return unicode(inobject).encode('ascii')
+        else:
+            return inobject
+    except Exception as inst:
+        print str(inst)
+        print "Failed to convert object of type", type(inobject)
+        return inobject
+
+
     try:
         if sys.platform =='win32':
          rclass = inobject.getrclass()[0]
@@ -273,5 +334,10 @@ def updatePackages(repository = 'http://cran.r-project.org'):
     Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + repository + '"; options(repos=r)})', wantType = 'NoConversion')
     Rcommand('setRepositories(ind=1:7)', wantType = 'NoConversion')
     Rcommand('update.packages(ask=F)', wantType = 'NoConversion')
-                        
-                    
+          
+def close():
+    try:
+        con.r('q("no")')
+        con.close()
+    except Exception as inst:
+        print str(inst)

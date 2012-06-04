@@ -528,24 +528,24 @@ class RDataFrameModel(QAbstractTableModel):
         
     def initData(self,Rdata):
         self.Rdata = Rdata
-        self.nrow = self.R('nrow(%s)' % self.Rdata,silent=True)
+        self.nrow = int(self.R('nrow(%s)' % self.Rdata,silent=True))
         #print self.nrow
-        self.ncol = self.R('ncol(%s)' % self.Rdata,silent=True)
-        
+        self.ncol = int(self.R('ncol(%s)' % self.Rdata,silent=True))
+        ## self.keys = self.R("colnames(%s)" % self.Rdata, silent = True)
         # protect if there is a null table
         if self.nrow == 0 or self.ncol == 0:
             return
         
         #print self.ncol
         self.currentRange = self.getRange(0,0)
-        
-        self.arraydata = self.R('as.matrix(%s[%d:%d,%d:%d])' % (self.Rdata,
+        self.arraydata = {}
+        self.arraydata = self.R('%s[%d:%d,%d:%d]' % (self.Rdata,
         self.currentRange['rstart'],
         self.currentRange['rend'],
         self.currentRange['cstart'],
         self.currentRange['cend']
         ),
-        wantType = 'listOfLists',silent=True)
+        wantType = 'dict',silent=True)
         
         # print _('self.arraydata loaded')
 
@@ -555,9 +555,9 @@ class RDataFrameModel(QAbstractTableModel):
         # print self.rownames, self.rowCount(self)
         # print self.colnames
 
-        if self.arraydata == [[]]:
+        if self.arraydata == {}:
             toAppend= ['' for i in xrange(self.columnCount(self))]
-            self.arraydata = [toAppend]
+            self.arraydata[self.colnames[0]] = toAppend
         # print 'self.arraydata' , self.arraydata
         self.parent.setModel(self)
         #self.parent.setModel(self)
@@ -586,24 +586,24 @@ class RDataFrameModel(QAbstractTableModel):
             self.currentRange = self.getRange(index.row(), index.column())
             if not self.working:
                 self.working = True
-                self.arraydata = self.R('as.matrix(%s[%d:%d,%d:%d])' % (self.Rdata,
+                self.arraydata = self.R('%s[%d:%d,%d:%d]' % (self.Rdata,
             self.currentRange['rstart'],
             self.currentRange['rend'],
             self.currentRange['cstart'],
             self.currentRange['cend']
             ),
-            wantType = 'list',silent=True)
+            wantType = 'dict',silent=True)
                 self.working = False
                 
-            else: self.arraydata = []
-        if len(self.arraydata) == 0 or len(self.arraydata[0]) == 0:
+            else: self.arraydata = {}
+        if len(self.arraydata.values()[0]) == 0 or len(self.arraydata.keys()) == 0:
             return QVariant()
         
         rowInd = index.row() - self.currentRange['rstart'] + 1
         colInd = index.column() - self.currentRange['cstart'] + 1
         # self.working = False
         #print self.arraydata[rowInd][colInd], rowInd, colInd
-        return QVariant(self.arraydata[rowInd][colInd]) 
+        return QVariant(self.arraydata[self.colnames[colInd]][rowInd]) 
 
     def headerData(self, col, orientation, role):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
