@@ -105,8 +105,9 @@ class Heatmap(OWRpy):
             # self.classes = self.classesData+'[,\''+unicode(self.classesDropdown.currentText()) + '\']'
         if 'Show Classes' in self.showClasses.getChecked() and self.classesData != '':
             
+            cols = {0:"#000000", 1:'#ff0000', 2:'#00ff00', 3:'#0000ff', 4:'#ffffff', 5:'#ffff00', 6:'#ff00ff', 7:'#00ffff', 8:'#880000', 9:'#888800'}
             
-            colClasses = ', ColSideColors= c(%s)[%s]' % (','.join(self.classColors), self.classesData)  #divPalette(length(levels(as.factor(%s))), name="RdYlGn")[%s]' % (self.classesData, self.classesData) 
+            colClasses = ', ColSideColors= c("%s")' % '", "'.join([cols[c%10] for c in self.R('as.numeric(%s)' % self.classesData, wantType = 'list')])  #divPalette(length(levels(as.factor(%s))), name="RdYlGn")[%s]' % (self.classesData, self.classesData) 
         else:
             colClasses = ''
         # colorType = unicode(self.colorTypeCombo.currentText())

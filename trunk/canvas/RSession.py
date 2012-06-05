@@ -70,31 +70,51 @@ from PyQt4.QtGui import *
 ## import redrrpy._conversion as co
 def _(a):
     return a
+    
+def getOpenPort():
+    import socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(("localhost", 0))
+    i = s.getsockname()[1]
+    s.close()
+    return i
 
 def startRserve(i):
     import subprocess
-    subprocess.Popen("\"C:/Program Files/R/R-2.15.0/bin/i386/Rscript.exe\" -e \"require(Rserve); Rserve(%s)\"" % str(i))
+    if sys.platform == 'win32':
+        subprocess.Popen("\"%s/Rscript.exe\" -e \"require(Rserve); Rserve(port = %s)\"" % (redREnviron.directoryNames['RDir'], str(i)))
+    else:
+        subprocess.Popen("Rscript -e \"require(Rserve); Rserve(port = %s)\"" % str(i), shell = True)
     print "opened R Serve"
     
     
-import socket
-i = 6311
-validConnection = False
-while not validConnection:
-    try:
-        print "Testing port %s" % str(i)
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(('localhost', i))
-        print "made connection shuttin down port to reopen"
-        s.shutdown(socket.SHUT_RDWR)
-        s.close()
-        validConnection = True
-    except Exception as inst:
-        print str(inst)
-        i+=1
-print "Starting R with prot %s" % str(i)
+#import socket
+#i = 6311
+#validConnection = False
+#while not validConnection:
+    #try:
+        #print "Testing port %s" % str(i)
+        #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        #s.connect(('localhost', i))
+        #print "made connection shuttin down port to reopen"
+        #s.shutdown(socket.SHUT_RDWR)
+        #s.close()
+        #validConnection = True
+    #except Exception as inst:
+        #print str(inst)
+        #i+=1
+i = getOpenPort()
+
+print "Starting R with port %s" % str(i)
 startRserve(i)
-con = pyRserve.connect(host = 'localhost', port=i)
+import time
+con = None
+while con==None:
+    try:
+        con = pyRserve.connect(host = 'localhost', port=i)
+    except:
+        print "R connection not active"
+        time.sleep(1)
 #print 'done importing conversion'
 import redRLog
 #print 'Rsession loaded'
@@ -152,14 +172,18 @@ def Rcommand(query, silent = False, wantType = redR.CONVERT, listOfLists = False
     try:
         output = con.r(unicode(query).encode('Latin-1'))
         
+    except pyRserve.rexceptions.REvalError as inst:
+        redRLog.log(redRLog.R, redRLog.DEBUG, "Error in parsing R sendback")
+        return None
+        
     except Exception as inst:
         mutex.unlock()
-        redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br>The original query:<br> <b>%s</b><br>##################################<br>" % (inst,redRLog.getSafeString(query)))
+        redRLog.log(redRLog.R, redRLog.DEBUG, unicode("<br>##################################<br>Error occured in the R session.<br>%s<br>The original query:<br> <b>%s</b><br>##################################<br>" % (unicode(str(inst), errors = 'ignore').encode('ascii', 'ignore'),redRLog.getSafeString(query))).encode('ascii', 'ignore'))
         
         rtb = Rcommand('paste(capture.output(traceback()), collapse = "<br>")')
-        redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br><br>The original query:<br> <b>%s</b><br>R Traceback was%s<br>##################################<br>" % (inst,redRLog.getSafeString(query),rtb))
+        redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br><br>The original query:<br> <b>%s</b><br>R Traceback was%s<br>##################################<br>" % (unicode(str(inst), errors = 'ignore').encode('ascii', 'ignore'),redRLog.getSafeString(query),unicode(rtb).encode('ascii', 'ignore')))
         
-        raise RuntimeError(unicode(inst) + '<br>Original Query was:  %s<br>R Traceback was%s' % (unicode(query), rtb))
+        raise RuntimeError(unicode(inst) + '<br>Original Query was:  %s<br>R Traceback was%s' % (unicode(query), unicode(str(rtb), errors = 'ignore').encode('ascii', 'ignore')))
         return None # now processes can catch potential errors
     if wantType == redR.NOCONVERSION: 
         mutex.unlock()
@@ -217,6 +241,7 @@ def Rcommand(query, silent = False, wantType = redR.CONVERT, listOfLists = False
     return output
 
 def convertToPy(inobject):
+    print unicode(inobject).encode('ascii')
     try:
         if type(inobject) == pyRserve.taggedContainers.AttrArray:
             print "Converting tagged array"
@@ -226,7 +251,7 @@ def convertToPy(inobject):
                     levels = inobject.attr['levels']
                     for i in range(len(inobject)):
                         if inobject[i] < 1: newObj.append("NA")
-                        else: newObj.append(levels[inobject[i]-1])
+                        else: newObj.append(unicode(levels[inobject[i]-1]).encode('ascii'))
                     return newObj
                 else:
                     for i in range(len(inobject)):
@@ -253,23 +278,23 @@ def convertToPy(inobject):
         return inobject
 
 
-    try:
-        if sys.platform =='win32':
-         rclass = inobject.getrclass()[0]
-        elif sys.platform =='darwin':
-         rclass=inobject.rclass[0]
-        elif sys.platform == 'linux2':
-         rclass=inobject.rclass[0] 
-        else:
-         rclass=inobject.rclass[0] 
-        if rclass not in ['data.frame', 'matrix', 'list', 'array', 'numeric', 'vector', 'complex', 'boolean', 'bool', 'factor', 'logical', 'character', 'integer', 'NULL']:
-            print 'can not convert %s yet' % rclass
-            print 'Conversion not possible for class %s' % rclass
-            return inobject
-        return co.convert(inobject)
-    except Exception as e:
-        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, unicode(e))
-        return None
+    #try:
+        #if sys.platform =='win32':
+         #rclass = inobject.getrclass()[0]
+        #elif sys.platform =='darwin':
+         #rclass=inobject.rclass[0]
+        #elif sys.platform == 'linux2':
+         #rclass=inobject.rclass[0] 
+        #else:
+         #rclass=inobject.rclass[0] 
+        #if rclass not in ['data.frame', 'matrix', 'list', 'array', 'numeric', 'vector', 'complex', 'boolean', 'bool', 'factor', 'logical', 'character', 'integer', 'NULL']:
+            #print 'can not convert %s yet' % rclass
+            #print 'Conversion not possible for class %s' % rclass
+            #return inobject
+        #return co.convert(inobject)
+    #except Exception as e:
+        #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, unicode(e))
+        #return None
 
 def getInstalledLibraries():
    setLibPaths(redREnviron.directoryNames['RlibPath'])

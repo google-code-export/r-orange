@@ -109,10 +109,10 @@ def formatedLogOutput(table, logLevel, stack, comment, html):
 def getSafeString(s):
     """Escape log strings for HTML."""
     try:
-        return unicode(s).replace("<", "&lt;").replace(">", "&gt;")
+        return unicode(s, errors='ignore').replace("<", "&lt;").replace(">", "&gt;").encode('ascii', 'ignore')
     except Exception as inst:
         print unicode(inst)
-        return s ## can't convert the string so we just return it and hope for the best.
+        return unicode(s).encode('ascii', 'ignore') ## can't convert the string so we just return it and hope for the best.
 
 def formatException(type=None, value=None, tracebackInfo=None, errorMsg = None, plainText=False):
     """Format Exception for output."""
